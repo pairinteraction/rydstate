@@ -1,5 +1,5 @@
 import numpy as np
-from ryd_numerov.angular import AngularKetFJ, AngularKetJJ, AngularKetLS
+from rydstate.angular import AngularKetFJ, AngularKetJJ, AngularKetLS
 
 
 def test_fj_to_ls() -> None:

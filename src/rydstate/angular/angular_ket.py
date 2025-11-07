@@ -4,7 +4,7 @@ import logging
 from abc import ABC
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self, get_args, overload
 
-from ryd_numerov.angular.angular_matrix_element import (
+from rydstate.angular.angular_matrix_element import (
     AngularMomentumQuantumNumbers,
     AngularOperatorType,
     calc_prefactor_of_operator_in_coupled_scheme,
@@ -12,7 +12,7 @@ from ryd_numerov.angular.angular_matrix_element import (
     calc_reduced_spherical_matrix_element,
     calc_reduced_spin_matrix_element,
 )
-from ryd_numerov.angular.utils import (
+from rydstate.angular.utils import (
     calc_wigner_3j,
     check_spin_addition_rule,
     clebsch_gordan_6j,
@@ -21,10 +21,10 @@ from ryd_numerov.angular.utils import (
     minus_one_pow,
     try_trivial_spin_addition,
 )
-from ryd_numerov.species import SpeciesObject
+from rydstate.species import SpeciesObject
 
 if TYPE_CHECKING:
-    from ryd_numerov.angular.angular_state import AngularState
+    from rydstate.angular.angular_state import AngularState
 
 logger = logging.getLogger(__name__)
 
@@ -207,7 +207,7 @@ class AngularKetBase(ABC):
             The angular state in the specified coupling scheme.
 
         """
-        from ryd_numerov.angular.angular_state import AngularState  # noqa: PLC0415
+        from rydstate.angular.angular_state import AngularState  # noqa: PLC0415
 
         if coupling_scheme is None or coupling_scheme == self.coupling_scheme:
             return AngularState([1], [self])
@@ -250,7 +250,7 @@ class AngularKetBase(ABC):
                         kets.append(ls_ket)
                         coefficients.append(coeff)
 
-        from ryd_numerov.angular.angular_state import AngularState  # noqa: PLC0415
+        from rydstate.angular.angular_state import AngularState  # noqa: PLC0415
 
         return AngularState(coefficients, kets)
 
@@ -285,7 +285,7 @@ class AngularKetBase(ABC):
                         kets.append(jj_ket)
                         coefficients.append(coeff)
 
-        from ryd_numerov.angular.angular_state import AngularState  # noqa: PLC0415
+        from rydstate.angular.angular_state import AngularState  # noqa: PLC0415
 
         return AngularState(coefficients, kets)
 
@@ -320,7 +320,7 @@ class AngularKetBase(ABC):
                         kets.append(fj_ket)
                         coefficients.append(coeff)
 
-        from ryd_numerov.angular.angular_state import AngularState  # noqa: PLC0415
+        from rydstate.angular.angular_state import AngularState  # noqa: PLC0415
 
         return AngularState(coefficients, kets)
 

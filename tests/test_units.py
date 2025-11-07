@@ -1,5 +1,5 @@
 import numpy as np
-from ryd_numerov.units import rydberg_constant, ureg
+from rydstate.units import rydberg_constant, ureg
 
 
 def test_constants() -> None:

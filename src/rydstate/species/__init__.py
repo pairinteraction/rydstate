@@ -1,12 +1,12 @@
-from ryd_numerov.species.cesium import Cesium
-from ryd_numerov.species.hydrogen import Hydrogen, HydrogenTextBook
-from ryd_numerov.species.lithium import Lithium
-from ryd_numerov.species.potassium import Potassium
-from ryd_numerov.species.rubidium import Rubidium
-from ryd_numerov.species.sodium import Sodium
-from ryd_numerov.species.species_object import SpeciesObject
-from ryd_numerov.species.strontium import Strontium87, Strontium88
-from ryd_numerov.species.ytterbium import Ytterbium171, Ytterbium173, Ytterbium174
+from rydstate.species.cesium import Cesium
+from rydstate.species.hydrogen import Hydrogen, HydrogenTextBook
+from rydstate.species.lithium import Lithium
+from rydstate.species.potassium import Potassium
+from rydstate.species.rubidium import Rubidium
+from rydstate.species.sodium import Sodium
+from rydstate.species.species_object import SpeciesObject
+from rydstate.species.strontium import Strontium87, Strontium88
+from rydstate.species.ytterbium import Ytterbium171, Ytterbium173, Ytterbium174
 
 __all__ = [
     "Cesium",

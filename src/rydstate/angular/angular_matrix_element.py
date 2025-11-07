@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Callable, Literal, TypeVar
 
 import numpy as np
 
-from ryd_numerov.angular.utils import calc_wigner_3j, calc_wigner_6j, minus_one_pow
+from rydstate.angular.utils import calc_wigner_3j, calc_wigner_6j, minus_one_pow
 
 if TYPE_CHECKING:
     from typing_extensions import ParamSpec

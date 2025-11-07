@@ -1,31 +1,31 @@
-# Rydberg Numerov
+# RydState - A Rydberg State Calculator
 
 [![PyPI Package][pypi-svg]][pypi-link]
 [![License: LGPL v3][license-lgpl-svg]][license-lgpl-link]
 [![CI Workflow][gh-workflow-svg]][gh-workflow-link]
 [![Documentation][docs-svg]][docs-link]
 
-[pypi-svg]: https://img.shields.io/pypi/v/ryd-numerov.svg?style=flat
-[pypi-link]: https://pypi.org/project/ryd-numerov/
+[pypi-svg]: https://img.shields.io/pypi/v/rydstate.svg?style=flat
+[pypi-link]: https://pypi.org/project/rydstate/
 [license-lgpl-svg]: https://img.shields.io/badge/License-LGPL_v3-blue.svg?style=flat
 [license-lgpl-link]: https://www.gnu.org/licenses/lgpl-3.0.html
-[gh-workflow-svg]: https://github.com/pairinteraction/ryd-numerov/actions/workflows/python_wheel.yml/badge.svg
-[gh-workflow-link]: https://github.com/pairinteraction/ryd-numerov/actions/workflows/python_wheel.yml
-[docs-svg]: https://img.shields.io/badge/Documentation-rydnumerov-blue.svg?style=flat
-[docs-link]: https://www.pairinteraction.org/ryd-numerov/sphinx/html/
+[gh-workflow-svg]: https://github.com/pairinteraction/rydstate/actions/workflows/python_wheel.yml/badge.svg
+[gh-workflow-link]: https://github.com/pairinteraction/rydstate/actions/workflows/python_wheel.yml
+[docs-svg]: https://img.shields.io/badge/Documentation-rydstate-blue.svg?style=flat
+[docs-link]: https://www.pairinteraction.org/rydstate/sphinx/html/
 
-The *Rydberg Numerov* software calculates properties of Rydberg states.
+The *RydState* software calculates properties of Rydberg states.
 We especially focus on the calculation of the radial wavefunction of Rydberg states via the Numerov method.
 The software can be installed via pip (requires Python >= 3.9):
 
 ```bash
-pip install ryd-numerov
+pip install rydstate
 ```
 
 To install the latest development version from github, use:
 
 ```bash
-pip install git+https://github.com/pairinteraction/ryd-numerov
+pip install git+https://github.com/pairinteraction/rydstate
 ```
 
 
@@ -71,21 +71,21 @@ This package relies on quantum defects provided by the community. Consider citin
 
 **User Guide**
 
-- [Tutorials] - Examples of how to use the Rydberg Numerov library.
+- [Tutorials] - Examples of how to use the RydState library.
 
-- [API Reference] - Documentation of classes and functions of the Rydberg Numerov Python library.
+- [API Reference] - Documentation of classes and functions of the RydState Python library.
 
 
-[Tutorials]: https://www.pairinteraction.org/ryd-numerov/sphinx/html/examples.html
-[API Reference]: https://www.pairinteraction.org/ryd-numerov/sphinx/html/modules.html
+[Tutorials]: https://www.pairinteraction.org/rydstate/sphinx/html/examples.html
+[API Reference]: https://www.pairinteraction.org/rydstate/sphinx/html/modules.html
 
 
 ## Using custom quantum defects
-To use custom quantum defects (or quantum defects for a new species), you can simply create a subclass of `ryd_numerov.species.species_object.SpeciesObject` (e.g. `class CustomRubidium(SpeciesObject):`) with a custom species name (e.g. `name = "Custom_Rb"`).
-Then, similarly to `ryd_numerov.species.rubidium.py` you can define the quantum defects (and model potential parameters, ...) for your species.
-Finally, you can use the custom species by simply calling `ryd_numerov.RydbergStateAlkali("Custom_Rb", n=50, l=0, j=1/2, m=1/2)` (the code will look for all subclasses of `SpeciesObject` until it finds one with the species name "Custom_Rb").
+To use custom quantum defects (or quantum defects for a new species), you can simply create a subclass of `rydstate.species.species_object.SpeciesObject` (e.g. `class CustomRubidium(SpeciesObject):`) with a custom species name (e.g. `name = "Custom_Rb"`).
+Then, similarly to `rydstate.species.rubidium.py` you can define the quantum defects (and model potential parameters, ...) for your species.
+Finally, you can use the custom species by simply calling `rydstate.RydbergStateAlkali("Custom_Rb", n=50, l=0, j=1/2, m=1/2)` (the code will look for all subclasses of `SpeciesObject` until it finds one with the species name "Custom_Rb").
 
 
 ## License
 
-The ryd-numerov software is licensed under [LGPL v3][license-lgpl-link]. For more information, see [LICENSE.txt](https://github.com/pairinteraction/ryd-numerov/blob/master/LICENSE.txt).
+The rydstate software is licensed under [LGPL v3][license-lgpl-link]. For more information, see [LICENSE.txt](https://github.com/pairinteraction/rydstate/blob/master/LICENSE.txt).

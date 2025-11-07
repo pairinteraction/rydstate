@@ -4,19 +4,19 @@ import logging
 import math
 from typing import TYPE_CHECKING, Literal, overload
 
-from ryd_numerov.radial.grid import Grid
-from ryd_numerov.radial.model import Model
-from ryd_numerov.radial.radial_matrix_element import calc_radial_matrix_element_from_w_z
-from ryd_numerov.radial.wavefunction import WavefunctionNumerov, WavefunctionWhittaker
-from ryd_numerov.species import SpeciesObject
-from ryd_numerov.species.utils import calc_energy_from_nu
-from ryd_numerov.units import ureg
+from rydstate.radial.grid import Grid
+from rydstate.radial.model import Model
+from rydstate.radial.radial_matrix_element import calc_radial_matrix_element_from_w_z
+from rydstate.radial.wavefunction import WavefunctionNumerov, WavefunctionWhittaker
+from rydstate.species import SpeciesObject
+from rydstate.species.utils import calc_energy_from_nu
+from rydstate.units import ureg
 
 if TYPE_CHECKING:
-    from ryd_numerov.radial.model import PotentialType
-    from ryd_numerov.radial.radial_matrix_element import INTEGRATION_METHODS
-    from ryd_numerov.radial.wavefunction import Wavefunction, WavefunctionSignConvention
-    from ryd_numerov.units import PintFloat
+    from rydstate.radial.model import PotentialType
+    from rydstate.radial.radial_matrix_element import INTEGRATION_METHODS
+    from rydstate.radial.wavefunction import Wavefunction, WavefunctionSignConvention
+    from rydstate.units import PintFloat
 
 logger = logging.getLogger(__name__)
 

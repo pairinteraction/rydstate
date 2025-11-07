@@ -7,7 +7,7 @@ import numpy as np
 import scipy.integrate
 
 if TYPE_CHECKING:
-    from ryd_numerov.units import NDArray
+    from rydstate.units import NDArray
 
 logger = logging.getLogger(__name__)
 

@@ -10,14 +10,14 @@ from typing import TYPE_CHECKING, ClassVar, overload
 
 import numpy as np
 
-from ryd_numerov.species.utils import calc_nu_from_energy, convert_electron_configuration
-from ryd_numerov.units import rydberg_constant, ureg
+from rydstate.species.utils import calc_nu_from_energy, convert_electron_configuration
+from rydstate.units import rydberg_constant, ureg
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ryd_numerov.radial.model import PotentialType
-    from ryd_numerov.units import PintFloat
+    from rydstate.radial.model import PotentialType
+    from rydstate.units import PintFloat
 
 logger = logging.getLogger(__name__)
 
@@ -176,7 +176,7 @@ class SpeciesObject(ABC):
 
         This method searches through all subclasses of SpeciesObject until it finds one with a matching species name.
         This approach allows for easy extension of the library with new species.
-        A user can even subclass SpeciesObject in his code (without modifying the ryd-numerov library),
+        A user can even subclass SpeciesObject in his code (without modifying the rydstate library),
         e.g. `class CustomRubidium(SpeciesObject): name = "Custom_Rb" ...`
         and then use the new species by calling RydbergStateAlkali("Custom_Rb", ...)
 
