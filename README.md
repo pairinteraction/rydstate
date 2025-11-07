@@ -88,4 +88,4 @@ Finally, you can use the custom species by simply calling `rydstate.RydbergState
 
 ## License
 
-The rydstate software is licensed under [LGPL v3][license-lgpl-link]. For more information, see [LICENSE.txt](https://github.com/pairinteraction/rydstate/blob/master/LICENSE.txt).
+The rydstate software is licensed under [LGPL v3][license-lgpl-link]. For more information, see [LICENSE.txt](https://github.com/pairinteraction/rydstate/blob/main/LICENSE.txt).
