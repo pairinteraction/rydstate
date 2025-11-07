@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
-    from ryd_numerov.units import NDArray
+    from rydstate.units import NDArray
 
 
 class Grid:

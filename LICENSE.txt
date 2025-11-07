@@ -1,4 +1,4 @@
-The ryd-numerov software is licensed under:
+The RydState software is licensed under:
 
     SPDX-License-Identifier: LGPL-3.0-or-later
 

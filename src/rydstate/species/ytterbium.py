@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import ClassVar
 
-from ryd_numerov.species.species_object import SpeciesObject
-from ryd_numerov.units import electron_mass, rydberg_constant
+from rydstate.species.species_object import SpeciesObject
+from rydstate.units import electron_mass, rydberg_constant
 
 
 class _YtterbiumAbstract(SpeciesObject):

@@ -1,5 +1,5 @@
-from ryd_numerov.angular.angular_ket import AngularKetFJ, AngularKetJJ, AngularKetLS
-from ryd_numerov.angular.angular_state import AngularState
+from rydstate.angular.angular_ket import AngularKetFJ, AngularKetJJ, AngularKetLS
+from rydstate.angular.angular_state import AngularState
 
 __all__ = [
     "AngularKetFJ",

@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING, get_args
 
 import numpy as np
 import pytest
-from ryd_numerov.angular import AngularKetFJ, AngularKetJJ, AngularKetLS
-from ryd_numerov.angular.angular_matrix_element import AngularMomentumQuantumNumbers
+from rydstate.angular import AngularKetFJ, AngularKetJJ, AngularKetLS
+from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers
 
 if TYPE_CHECKING:
-    from ryd_numerov.angular.angular_ket import AngularKetBase, CouplingScheme
-    from ryd_numerov.angular.angular_matrix_element import AngularOperatorType
+    from rydstate.angular.angular_ket import AngularKetBase, CouplingScheme
+    from rydstate.angular.angular_matrix_element import AngularOperatorType
 
 TEST_KET_PAIRS = [
     (

@@ -8,18 +8,18 @@ from typing import TYPE_CHECKING, overload
 
 import numpy as np
 
-from ryd_numerov.angular import AngularKetLS
-from ryd_numerov.angular.utils import try_trivial_spin_addition
-from ryd_numerov.radial import RadialState
-from ryd_numerov.species.species_object import SpeciesObject
-from ryd_numerov.species.utils import calc_energy_from_nu
-from ryd_numerov.units import BaseQuantities, MatrixElementOperatorRanks, ureg
+from rydstate.angular import AngularKetLS
+from rydstate.angular.utils import try_trivial_spin_addition
+from rydstate.radial import RadialState
+from rydstate.species.species_object import SpeciesObject
+from rydstate.species.utils import calc_energy_from_nu
+from rydstate.units import BaseQuantities, MatrixElementOperatorRanks, ureg
 
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from ryd_numerov.angular.angular_ket import AngularKetBase
-    from ryd_numerov.units import MatrixElementOperator, PintFloat
+    from rydstate.angular.angular_ket import AngularKetBase
+    from rydstate.units import MatrixElementOperator, PintFloat
 
 
 logger = logging.getLogger(__name__)

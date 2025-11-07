@@ -2,11 +2,11 @@ API Reference
 =============
 
 
-The Rydberg Numerov python API can be accessed via the ``ryd_numerov`` module by
+The RydState python API can be accessed via the ``rydstate`` module by
 
 .. code-block:: python
 
-    import ryd_numerov
+    import rydstate
 
 
 All the available classes, methods and functions are documented here:
@@ -15,4 +15,4 @@ All the available classes, methods and functions are documented here:
     :toctree: _autosummary/modules
     :recursive:
 
-    ryd_numerov
+    rydstate

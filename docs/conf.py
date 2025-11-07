@@ -1,14 +1,14 @@
 # ruff: noqa: INP001
 
-import ryd_numerov
+import rydstate
 
 # -- Project information -----------------------------------------------------
 
-project = "ryd-numerov"
-copyright = "2025, Rydberg Numerov Developers"  # noqa: A001
-author = "Rydberg Numerov Developers"
+project = "RydState"
+copyright = "2025, RydState Developers"  # noqa: A001
+author = "RydState Developers"
 
-version = ryd_numerov.__version__  # The short X.Y version, use via |version|
+version = rydstate.__version__  # The short X.Y version, use via |version|
 release = version  # The full version, including alpha/beta/rc tags, use via |release|
 
 language = "en"

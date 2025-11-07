@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, Literal, TypeVar, get_args
 
 import numpy as np
 
-from ryd_numerov.species import SpeciesObject
+from rydstate.species import SpeciesObject
 
 if TYPE_CHECKING:
-    from ryd_numerov.units import NDArray
+    from rydstate.units import NDArray
 
 
 logger = logging.getLogger(__name__)

@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 
 [project]
-name = "ryd-numerov"
+name = "rydstate"
 dynamic = ["version"]
 description = "A Python package for calculating Rydberg wavefunctions."
 readme = "README.md"
 keywords = ["rydberg", "wavefunctions", "numerov", "quantum physics"]
 authors = [
-    { name = "Rydberg Numerov Developers" },
+    { name = "RydState Developers" },
 ]
 maintainers = [
     { name = "Johannes Mögerle", email = "johannes.moegerle@itp3.uni-stuttgart.de" },
@@ -47,7 +47,7 @@ dependencies = [
 tests = [
   "pytest >= 8.0",
   "nbmake >= 1.3",
-  "ryd-numerov[comparison]",
+  "rydstate[comparison]",
 ]
 docs = [
   "sphinx >= 7",
@@ -75,32 +75,32 @@ mypy = [
 
 [dependency-groups]
 dev = [
-  "ryd-numerov[docs,tests,comparison,jupyter,mypy]",
+  "rydstate[docs,tests,comparison,jupyter,mypy]",
   "check-wheel-contents >= 0.6",
 ]
 
 [project.urls]
-Repository = "https://github.com/pairinteraction/ryd-numerov"
+Repository = "https://github.com/pairinteraction/rydstate"
 
 
 [tool.setuptools.dynamic]
-version = {attr = "ryd_numerov.__version__"}
+version = {attr = "rydstate.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-ryd_numerov = ["species/nist_energy_levels/*.txt"]
+rydstate = ["species/nist_energy_levels/*.txt"]
 
 [tool.check-wheel-contents]
-toplevel = ["ryd_numerov"]
+toplevel = ["rydstate"]
 
 
 [tool.pytest.ini_options]
 testpaths = [
   "tests",
   "docs/examples",
-  "src/ryd_numerov"
+  "src/rydstate"
 ]
 addopts = [
     "--import-mode=importlib",

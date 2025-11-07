@@ -6,19 +6,19 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, Self, TypeVar, get_args
 
 import numpy as np
 
-from ryd_numerov.angular.angular_ket import (
+from rydstate.angular.angular_ket import (
     AngularKetBase,
     AngularKetFJ,
     AngularKetJJ,
     AngularKetLS,
 )
-from ryd_numerov.angular.angular_matrix_element import AngularMomentumQuantumNumbers
+from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from ryd_numerov.angular.angular_ket import CouplingScheme
-    from ryd_numerov.angular.angular_matrix_element import AngularOperatorType
+    from rydstate.angular.angular_ket import CouplingScheme
+    from rydstate.angular.angular_matrix_element import AngularOperatorType
 
 
 logger = logging.getLogger(__name__)

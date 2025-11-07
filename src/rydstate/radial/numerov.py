@@ -7,7 +7,7 @@ from numba import njit
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from ryd_numerov.units import NDArray
+    from rydstate.units import NDArray
 
 
 def _run_numerov_integration_python(

@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
-from ryd_numerov.radial import RadialState
-from ryd_numerov.rydberg_state import RydbergStateAlkali
-from ryd_numerov.species import SpeciesObject
+from rydstate.radial import RadialState
+from rydstate.rydberg_state import RydbergStateAlkali
+from rydstate.species import SpeciesObject
 
 
 @pytest.mark.parametrize(

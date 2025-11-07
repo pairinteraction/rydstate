@@ -9,7 +9,7 @@ import scipy.integrate
 if TYPE_CHECKING:
     import arc
 
-    from ryd_numerov.units import NDArray
+    from rydstate.units import NDArray
 
 
 def radialWavefunction(  # noqa: N802

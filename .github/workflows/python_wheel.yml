@@ -25,13 +25,13 @@ jobs:
     - name: Test wheel  # TODO: replace this by using tox or nox
       run: |
         uv pip uninstall .
-        uv pip install dist/ryd_numerov*.whl
+        uv pip install dist/rydstate*.whl
         uv run --no-project pytest
     - name: Upload wheels
       uses: actions/upload-artifact@v5
       with:
         name: dist
-        path: dist/ryd_numerov*
+        path: dist/rydstate*
 
   publish-to-testpypi:
     name: Publish to TestPyPI
@@ -42,7 +42,7 @@ jobs:
 
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/ryd-numerov
+      url: https://test.pypi.org/p/rydstate
 
     permissions:
       id-token: write

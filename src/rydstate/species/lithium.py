@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import ClassVar
 
-from ryd_numerov.species.species_object import SpeciesObject
+from rydstate.species.species_object import SpeciesObject
 
 
 class Lithium(SpeciesObject):

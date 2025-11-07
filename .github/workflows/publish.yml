@@ -19,7 +19,7 @@ jobs:
 
     environment:
       name: pypi
-      url: https://pypi.org/p/ryd-numerov
+      url: https://pypi.org/p/rydstate
 
     permissions:
       id-token: write

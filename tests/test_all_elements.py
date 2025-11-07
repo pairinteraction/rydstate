@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING
 
 import pytest
-from ryd_numerov.rydberg_state import RydbergStateAlkali, RydbergStateAlkalineLS
-from ryd_numerov.species import SpeciesObject
+from rydstate.rydberg_state import RydbergStateAlkali, RydbergStateAlkalineLS
+from rydstate.species import SpeciesObject
 
 if TYPE_CHECKING:
-    from ryd_numerov.rydberg_state import RydbergStateBase
+    from rydstate.rydberg_state import RydbergStateBase
 
 
 @pytest.mark.parametrize("species_name", SpeciesObject.get_available_species())

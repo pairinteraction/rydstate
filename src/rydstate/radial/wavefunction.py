@@ -9,13 +9,13 @@ import numpy as np
 from mpmath import whitw
 from scipy.special import gamma
 
-from ryd_numerov.radial.numerov import _run_numerov_integration_python, run_numerov_integration
-from ryd_numerov.species.utils import calc_energy_from_nu
+from rydstate.radial.numerov import _run_numerov_integration_python, run_numerov_integration
+from rydstate.species.utils import calc_energy_from_nu
 
 if TYPE_CHECKING:
-    from ryd_numerov.radial import Grid, Model
-    from ryd_numerov.radial.radial_state import RadialState
-    from ryd_numerov.units import NDArray
+    from rydstate.radial import Grid, Model
+    from rydstate.radial.radial_state import RadialState
+    from rydstate.units import NDArray
 
 logger = logging.getLogger(__name__)
 

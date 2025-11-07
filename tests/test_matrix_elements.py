@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
-from ryd_numerov.rydberg_state import RydbergStateAlkali
-from ryd_numerov.units import BaseUnits, ureg
+from rydstate.rydberg_state import RydbergStateAlkali
+from rydstate.units import BaseUnits, ureg
 
 
 @pytest.mark.parametrize("l", [0, 1, 20])
