@@ -48,7 +48,7 @@ def sympify_args(func: Callable[P, R]) -> Callable[P, R]:
     return wrapper
 
 
-@lru_cache(maxsize=10_000)
+@lru_cache(maxsize=100_000)
 @sympify_args
 def calc_wigner_3j(j1: float, j2: float, j3: float, m1: float, m2: float, m3: float) -> float:
     """Calculate the Wigner 3j symbol using lru_cache to improve performance."""
@@ -136,7 +136,7 @@ def calc_wigner_3j_with_symmetries(j1: float, j2: float, j3: float, m1: float, m
     elif j3 < j1 and j3 < j2:
         j1, j2, j3, m1, m2, m3 = j3, j1, j2, m3, m1, m2
 
-    # odd permutation -> sort seccond smallest j to be j2
+    # odd permutation -> sort second smallest j to be j2
     if j3 < j2:
         symmetry_factor *= minus_one_pow(j1 + j2 + j3)
         j1, j2, j3, m1, m2, m3 = j1, j3, j2, m1, m3, m2  # noqa: PLW0127
