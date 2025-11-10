@@ -35,6 +35,19 @@ class _StrontiumAbstract(SpeciesObject):
     model_potential_parameter_fei_2009 = (0.9959, 16.9567, 0.2648, 0.1439)
 
 
+class Strontium87(_StrontiumAbstract):
+    name = "Sr87"
+    i_c = 9 / 2
+
+    # https://physics.nist.gov/PhysRefData/Handbook/Tables/strontiumtable1.htm
+    _isotope_mass_u = 86.908884  # u
+    _corrected_rydberg_constant = (
+        rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass_u),
+        None,
+        str(rydberg_constant.u),
+    )
+
+
 class Strontium88(_StrontiumAbstract):
     name = "Sr88"
     i_c = 0
@@ -47,9 +60,20 @@ class Strontium88(_StrontiumAbstract):
         str(rydberg_constant.u),
     )
 
-    # -- [1] Phys. Rev. A 108, 022815 (2023)
-    # -- [2] http://dx.doi.org/10.17169/refubium-34581
-    # -- [3] Comput. Phys. Commun. 45, 107814 (2021)
+    # -- [1] Brienza 2023, Phys. Rev. A 108, 022815
+    #        Microwave spectroscopy of low-l singlet strontium Rydberg states at intermediate n
+    #        Isotope Sr84
+    # -- [2] Patsch 2021, http://dx.doi.org/10.17169/refubium-34581
+    #        Dissertation: Control of Rydberg atoms for quantum technologies
+    #        see table A.2 (and A.3)
+    #        Isotope not specified (probably Sr88)
+    # -- [3] Robertson 2021, Comput. Phys. Commun. 45, 107814 (2021)
+    #        ARC 3.0: An expanded Python toolbox for atomic physics calculations
+    #        see table B.1
+    #        Isotope Sr88
+    # -- [4] (not used but also lot of data) Vaillant 2012, J. Phys. B: At. Mol. Opt. Phys. 45 135004
+    #        Long-range Rydberg-Rydberg interactions in calcium, strontium and ytterbium
+
     _quantum_defects: ClassVar = {
         # singlet
         (0, 0.0, 0): (3.2688559, -0.0879, -3.36, 0.0, 0.0),  # [1]
@@ -70,16 +94,3 @@ class Strontium88(_StrontiumAbstract):
         (3, 3.0, 1): (0.119, -2.0, 100, 0.0, 0.0),  # [3]
         (3, 4.0, 1): (0.120, -2.4, 120, 0.0, 0.0),  # [3]
     }
-
-
-class Strontium87(_StrontiumAbstract):
-    name = "Sr87"
-    i_c = 9 / 2
-
-    # https://physics.nist.gov/PhysRefData/Handbook/Tables/strontiumtable1.htm
-    _isotope_mass_u = 86.908884  # u
-    _corrected_rydberg_constant = (
-        rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass_u),
-        None,
-        str(rydberg_constant.u),
-    )
