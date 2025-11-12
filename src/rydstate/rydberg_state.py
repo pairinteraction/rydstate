@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, overload
 
 import numpy as np
 
-from rydstate.angular import AngularKetLS
+from rydstate.angular import AngularKetJJ, AngularKetLS
 from rydstate.angular.utils import try_trivial_spin_addition
 from rydstate.radial import RadialState
 from rydstate.species.species_object import SpeciesObject
@@ -302,3 +302,79 @@ class RydbergStateAlkalineLS(RydbergStateBase):
 
     def get_nu(self) -> float:
         return self.species.calc_nu(self.n, self.l, self.j_tot, s_tot=self.s_tot)
+
+
+class RydbergStateAlkalineJJ(RydbergStateBase):
+    """Create an Alkaline Rydberg state, including the radial and angular states."""
+
+    def __init__(
+        self,
+        species: str | SpeciesObject,
+        n: int,
+        l: int,
+        j_r: float,
+        j_tot: int | None = None,
+        f_tot: float | None = None,
+        m: float | None = None,
+    ) -> None:
+        r"""Initialize the Rydberg state.
+
+        Args:
+            species: Atomic species.
+            n: Principal quantum number of the rydberg electron.
+            l: Orbital angular momentum quantum number of the rydberg electron.
+            j_r: Total angular momentum quantum number of the Rydberg electron.
+            j_tot: Total angular momentum quantum number of all electrons.
+            f_tot: Total angular momentum quantum number of the atom (rydberg electron + core)
+              Optional, only needed if the species supports hyperfine structure (i.e. species.i_c is not None or 0).
+            m: Total magnetic quantum number.
+              Optional, only needed for concrete angular matrix elements.
+
+        """
+        if isinstance(species, str):
+            species = SpeciesObject.from_name(species)
+        self.species = species
+        s_r, s_c = 1 / 2, 1 / 2
+        i_c = species.i_c if species.i_c is not None else 0
+        self.n = n
+        if l < 5:
+            raise RuntimeError("RydbergStateAlkalineJJ is intended for high-l states only.")
+        self.l = l
+        self.j_r = try_trivial_spin_addition(l, s_r, j_r, "j_r")
+        self.j_tot = try_trivial_spin_addition(self.j_r, s_c, j_tot, "j_tot")
+        self.f_tot = try_trivial_spin_addition(self.j_tot, i_c, f_tot, "f_tot")
+        self.m = m
+
+        if species.number_valence_electrons != 2:
+            raise ValueError(f"The species {species.name} is not an alkaline atom.")
+        for s_tot in [0, 1]:
+            if not species.is_allowed_shell(n, l, s_tot=s_tot):
+                raise ValueError(f"The shell ({n=}, {l=}) is not allowed for the species {self.species}.")
+
+    @cached_property
+    def angular(self) -> AngularKetJJ:
+        """The angular/spin state of the Rydberg electron."""
+        return AngularKetJJ(
+            l_r=self.l, j_r=self.j_r, j_tot=self.j_tot, f_tot=self.f_tot, m=self.m, species=self.species
+        )
+
+    @cached_property
+    def radial(self) -> RadialState:
+        """The radial state of the Rydberg electron."""
+        radial_state = RadialState(self.species, nu=self.get_nu(), l_r=self.l)
+        radial_state.set_n_for_sanity_check(self.n)
+        return radial_state
+
+    def __repr__(self) -> str:
+        species, n, l, j_r, j_tot, m = self.species, self.n, self.l, self.j_r, self.j_tot, self.m
+        return f"{self.__class__.__name__}({species.name}, {n=}, {l=}, {j_r=}, {j_tot=}, {m=})"
+
+    def get_nu(self) -> float:
+        nu_singlet = self.species.calc_nu(self.n, self.l, self.j_tot, s_tot=0)
+        nu_triplet = self.species.calc_nu(self.n, self.l, self.j_tot, s_tot=1)
+        if abs(nu_singlet - nu_triplet) > 1e-10:
+            raise ValueError(
+                "RydbergStateAlkalineJJ is intended for high-l states only, "
+                "where the quantum defects are the same for singlet and triplet states."
+            )
+        return nu_singlet
