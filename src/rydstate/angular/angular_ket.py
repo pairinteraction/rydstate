@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABC
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self, get_args, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, get_args, overload
 
 from rydstate.angular.angular_matrix_element import (
     AngularMomentumQuantumNumbers,
@@ -24,6 +24,8 @@ from rydstate.angular.utils import (
 from rydstate.species import SpeciesObject
 
 if TYPE_CHECKING:
+    from typing_extensions import Self
+
     from rydstate.angular.angular_state import AngularState
 
 logger = logging.getLogger(__name__)
