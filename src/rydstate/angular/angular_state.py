@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import math
-from typing import TYPE_CHECKING, Any, Generic, Literal, Self, TypeVar, get_args, overload
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, get_args, overload
 
 import numpy as np
 
@@ -17,9 +17,10 @@ from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumber
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
+    from typing_extensions import Self
+
     from rydstate.angular.angular_ket import CouplingScheme
     from rydstate.angular.angular_matrix_element import AngularOperatorType
-
 
 logger = logging.getLogger(__name__)
 
