@@ -68,6 +68,12 @@ class RydbergStateBase(ABC):
             return energy
         return energy.to(unit, "spectroscopy").magnitude
 
+    def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
+        """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
+        radial_overlap = self.radial.calc_overlap(other.radial)
+        angular_overlap = self.angular.calc_reduced_overlap(other.angular)
+        return radial_overlap * angular_overlap
+
     @overload
     def calc_reduced_matrix_element(
         self, other: Self, operator: MatrixElementOperator, unit: None = None
