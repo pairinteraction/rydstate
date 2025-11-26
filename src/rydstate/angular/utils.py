@@ -33,9 +33,9 @@ def sympify_args(func: Callable[P, R]) -> Callable[P, R]:
         return func
 
     def check_arg(arg: float) -> Integer:
-        if arg.is_integer():
+        if isinstance(arg, int) or arg.is_integer():
             return Integer(int(arg))
-        if (arg * 2).is_integer():
+        if isinstance(arg * 2, int) or (arg * 2).is_integer():
             return Integer(int(arg * 2)) / Integer(2)
         raise ValueError(f"Invalid input to {func.__name__}: {arg}.")
 
