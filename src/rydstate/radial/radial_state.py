@@ -197,11 +197,28 @@ class RadialState:
         self._wavefunction.apply_sign_convention(sign_convention)
         self._grid = self._wavefunction.grid
 
-    @overload
-    def calc_matrix_element(self, other: RadialState, k_radial: int) -> PintFloat: ...
+    def calc_overlap(self, other: RadialState, *, integration_method: INTEGRATION_METHODS = "sum") -> float:
+        r"""Calculate the overlap <self|other> of two radial states.
+
+        Args:
+            other: Other radial state
+            integration_method: Integration method to use
+
+        Returns:
+            The overlap inegral between self and other.
+
+        """
+        return self.calc_matrix_element(other, k_radial=0, unit="a.u.", integration_method=integration_method)
 
     @overload
-    def calc_matrix_element(self, other: RadialState, k_radial: int, unit: str) -> float: ...
+    def calc_matrix_element(
+        self, other: RadialState, k_radial: int, *, integration_method: INTEGRATION_METHODS = "sum"
+    ) -> PintFloat: ...
+
+    @overload
+    def calc_matrix_element(
+        self, other: RadialState, k_radial: int, unit: str, *, integration_method: INTEGRATION_METHODS = "sum"
+    ) -> float: ...
 
     def calc_matrix_element(
         self,
