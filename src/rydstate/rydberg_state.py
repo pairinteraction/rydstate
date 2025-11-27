@@ -383,3 +383,26 @@ class RydbergStateAlkalineJJ(RydbergStateBase):
                 "where the quantum defects are the same for singlet and triplet states."
             )
         return nu_singlet
+
+
+class RydbergKetMQDT(RydbergStateBase):
+    def __init__(self, radial_state: RadialState, angular_ket: AngularKetBase) -> None:
+        self._radial = radial_state
+        self._angular = angular_ket
+        self.species = radial_state.species
+
+    @property
+    def radial(self) -> RadialState:
+        """The radial state of the Rydberg electron."""
+        return self._radial
+
+    @property
+    def angular(self) -> AngularKetBase:
+        """The angular/spin state of the Rydberg electron."""
+        return self._angular
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.radial!r}, {self.angular!r})"
+
+    def get_nu(self) -> float:
+        return self.radial.nu
