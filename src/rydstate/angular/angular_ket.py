@@ -708,3 +708,20 @@ class AngularKetFJ(AngularKetBase):
             msgs.append(f"{self.f_c=}, {self.j_r=}, {self.f_tot=} don't satisfy spin addition rule.")
 
         super().sanity_check(msgs)
+
+
+def mqdt_julia_qn_to_angular_ket(species: str, qn: Any) -> AngularKetBase:
+    """Convert MQDT Julia quantum numbers to an AngularKet object."""
+    if "fjQuantumNumbers" in str(qn):
+        return AngularKetFJ(
+            s_c=qn.sc, l_c=qn.lc, j_c=qn.Jc, f_c=qn.Fc, l_r=qn.lr, j_r=qn.Jr, f_tot=qn.F, species=species
+        )
+    if "jjQuantumNumbers" in str(qn):
+        return AngularKetJJ(
+            s_c=qn.sc, l_c=qn.lc, j_c=qn.Jc, l_r=qn.lr, j_r=qn.Jr, j_tot=qn.J, f_tot=qn.F, species=species
+        )
+    if "lsQuantumNumbers" in str(qn):
+        return AngularKetLS(
+            s_c=qn.sc, s_tot=qn.S, l_c=qn.lc, l_r=qn.lr, l_tot=qn.L, j_tot=qn.J, f_tot=qn.F, species=species
+        )
+    raise ValueError(f"Unknown MQDT Julia quantum numbers  {qn!s}.")
