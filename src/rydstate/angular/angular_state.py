@@ -96,7 +96,7 @@ class AngularState(Generic[_AngularKet]):
                 else:
                     kets.append(scheme_ket)
                     coefficients.append(coeff * scheme_coeff)
-        return AngularState(coefficients, kets, warn_if_not_normalized=abs(self.norm - 1) < 1e-10)
+        return AngularState(coefficients, kets, warn_if_not_normalized=False)
 
     def calc_exp_qn(self, q: AngularMomentumQuantumNumbers) -> float:
         """Calculate the expectation value of a quantum number q.
