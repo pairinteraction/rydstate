@@ -9,7 +9,7 @@ from rydstate.angular import AngularState
 from rydstate.rydberg.rydberg_sqdt import RydbergStateSQDTBase
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterator, Sequence
 
     from typing_extensions import Self
 
@@ -22,9 +22,9 @@ logger = logging.getLogger(__name__)
 _RydbergState = TypeVar("_RydbergState", bound=RydbergStateSQDTBase)
 
 
-class MQDTState(Generic[_RydbergState]):
+class RydbergStateMQDT(Generic[_RydbergState]):
     def __init__(
-        self, coefficients: list[float], kets: list[_RydbergState], *, warn_if_not_normalized: bool = True
+        self, coefficients: Sequence[float], kets: Sequence[_RydbergState], *, warn_if_not_normalized: bool = True
     ) -> None:
         self.coefficients = np.array(coefficients)
         self.kets = kets
@@ -34,10 +34,10 @@ class MQDTState(Generic[_RydbergState]):
         if not all(type(ket) is type(kets[0]) for ket in kets):
             raise ValueError("All kets must be of the same type.")
         if len(set(kets)) != len(kets):
-            raise ValueError("MQDTState initialized with duplicate kets.")
+            raise ValueError("RydbergStateMQDT initialized with duplicate kets.")
         if abs(self.norm - 1) > 1e-10 and warn_if_not_normalized:
             logger.warning(
-                "MQDTState initialized with non-normalized coefficients (norm=%s, coefficients=%s, kets=%s)",
+                "RydbergStateMQDT initialized with non-normalized coefficients (norm=%s, coefficients=%s, kets=%s)",
                 self.norm,
                 coefficients,
                 kets,
@@ -65,12 +65,12 @@ class MQDTState(Generic[_RydbergState]):
     def angular(self) -> AngularState[Any]:
         """Return the angular part of the MQDT state as an AngularState."""
         angular_kets = [ket.angular for ket in self.kets]
-        return AngularState(self.coefficients, angular_kets)
+        return AngularState(self.coefficients.tolist(), angular_kets)
 
-    def calc_reduced_overlap(self, other: MQDTState[Any] | RydbergStateSQDTBase) -> float:
+    def calc_reduced_overlap(self, other: RydbergStateMQDT[Any] | RydbergStateSQDTBase) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
         if isinstance(other, RydbergStateSQDTBase):
-            other = MQDTState([1.0], [other])
+            other = RydbergStateMQDT([1.0], [other])
 
         ov = 0
         for coeff1, ket1 in self:
@@ -79,7 +79,7 @@ class MQDTState(Generic[_RydbergState]):
         return ov
 
     def calc_matrix_element(
-        self: Self, other: MQDTState[Any] | RydbergStateSQDTBase, operator: MatrixElementOperator, kappa: int
+        self: Self, other: RydbergStateMQDT[Any] | RydbergStateSQDTBase, operator: MatrixElementOperator, kappa: int
     ) -> float:
         r"""Calculate the reduced angular matrix element.
 
@@ -90,7 +90,7 @@ class MQDTState(Generic[_RydbergState]):
 
         """
         if isinstance(other, RydbergStateSQDTBase):
-            other = MQDTState([1.0], [other])
+            other = RydbergStateMQDT([1.0], [other])
 
         value = 0
         for coeff1, ket1 in self:
