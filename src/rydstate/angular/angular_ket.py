@@ -24,6 +24,7 @@ from rydstate.angular.utils import (
 from rydstate.species import SpeciesObject
 
 if TYPE_CHECKING:
+    import juliacall
     from typing_extensions import Self
 
     from rydstate.angular.angular_state import AngularState
@@ -710,7 +711,7 @@ class AngularKetFJ(AngularKetBase):
         super().sanity_check(msgs)
 
 
-def mqdt_julia_qn_to_angular_ket(species: str, qn: Any) -> AngularKetBase:
+def mqdt_julia_qn_to_angular_ket(species: str, qn: juliacall.AnyValue) -> AngularKetBase:
     """Convert MQDT Julia quantum numbers to an AngularKet object."""
     if "fjQuantumNumbers" in str(qn):
         return AngularKetFJ(
