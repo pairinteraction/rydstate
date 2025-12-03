@@ -32,9 +32,11 @@ class RydbergStateSQDT:
         species: str | SpeciesObject,
         n: int | None = None,
         nu: float | None = None,
+        s_c: float | None = None,
         l_c: int = 0,
         j_c: float | None = None,
         f_c: float | None = None,
+        s_r: float = 0.5,
         l_r: int | None = None,
         j_r: float | None = None,
         s_tot: float | None = None,
@@ -50,9 +52,11 @@ class RydbergStateSQDT:
             n: Principal quantum number of the rydberg electron.
             nu: Effective principal quantum number of the rydberg electron.
               Optional, if not given it will be calculated from n, l, j_tot, s_tot.
+            s_c: Spin quantum number of the core electron (0 for Alkali, 0.5 for divalent atoms).
             l_c: Orbital angular momentum quantum number of the core electron.
             j_c: Total angular momentum quantum number of the core electron.
             f_c: Total angular momentum quantum number of the core (core electron + nucleus).
+            s_r: Spin quantum number of the rydberg electron always 0.5)
             l_r: Orbital angular momentum quantum number of the rydberg electron.
             j_r: Total angular momentum quantum number of the rydberg electron.
             s_tot: Total spin quantum number of all electrons.
@@ -68,13 +72,30 @@ class RydbergStateSQDT:
         self.species = species
 
         self._qns = dict(  # noqa: C408
-            l_c=l_c, j_c=j_c, f_c=f_c, l_r=l_r, j_r=j_r, s_tot=s_tot, l_tot=l_tot, j_tot=j_tot, f_tot=f_tot, m=m
+            s_c=s_c,
+            l_c=l_c,
+            j_c=j_c,
+            f_c=f_c,
+            s_r=s_r,
+            l_r=l_r,
+            j_r=j_r,
+            s_tot=s_tot,
+            l_tot=l_tot,
+            j_tot=j_tot,
+            f_tot=f_tot,
+            m=m,
         )
 
         self.n = n
         self._nu = nu
         if nu is None and n is None:
             raise ValueError("Either n or nu must be given to initialize the Rydberg state.")
+
+    def __repr__(self) -> str:
+        species, n, nu = self.species.name, self.n, self.nu
+        n_str = f", {n=}" if n is not None else ""
+        return f"{self.__class__.__name__}({species=}{n_str}, {nu=}, {self.angular})"
+
 
     def __str__(self) -> str:
         return self.__repr__()
