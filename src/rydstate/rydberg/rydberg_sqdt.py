@@ -4,9 +4,9 @@ import logging
 import math
 from functools import cached_property
 from typing import TYPE_CHECKING, overload
-from warnings import deprecated
 
 import numpy as np
+from typing_extensions import deprecated
 
 from rydstate.angular.angular_ket import quantum_numbers_to_angular_ket
 from rydstate.radial import RadialKet
@@ -110,7 +110,7 @@ class RydbergStateSQDT:
             self.n, self.angular.l_r, self.angular.get_qn("j_tot"), s_tot=self.angular.get_qn("s_tot")
         )
 
-    @deprecated
+    @deprecated("Use the property nu instead.")
     def get_nu(self) -> float:
         """Get the effective principal quantum number nu (for alkali atoms also known as n*) for the Rydberg state."""
         return self.nu
