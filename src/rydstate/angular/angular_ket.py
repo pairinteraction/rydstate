@@ -759,9 +759,7 @@ def quantum_numbers_to_angular_ket(
 
     """
     if all(qn is None for qn in [j_c, f_c, j_r]):
-        return AngularKetLS(
-            l_c=l_c, l_r=l_r, s_tot=s_tot, l_tot=l_tot, j_tot=j_tot, f_tot=f_tot, m=m, species=species
-        )
+        return AngularKetLS(l_c=l_c, l_r=l_r, s_tot=s_tot, l_tot=l_tot, j_tot=j_tot, f_tot=f_tot, m=m, species=species)
     if all(qn is None for qn in [s_tot, l_tot, f_c]):
         return AngularKetJJ(l_c=l_c, j_c=j_c, l_r=l_r, j_r=j_r, j_tot=j_tot, f_tot=f_tot, m=m, species=species)
     if all(qn is None for qn in [s_tot, l_tot, j_tot]):
