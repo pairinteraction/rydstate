@@ -30,7 +30,7 @@ _AngularKet = TypeVar("_AngularKet", bound=AngularKetBase)
 
 class AngularState(Generic[_AngularKet]):
     def __init__(
-        self, coefficients: Sequence[float], kets: Sequence[_AngularKet], *, warn_if_not_normalized: bool = True
+        self, coefficients: Sequence[float], kets: Sequence[_AngularKet], *, warn_if_not_normalized: bool = False
     ) -> None:
         self.coefficients = np.array(coefficients)
         self.kets = kets
