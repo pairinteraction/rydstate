@@ -739,20 +739,14 @@ class AngularKetFJ(AngularKetBase):
         super().sanity_check(msgs)
 
 
-def mqdt_julia_qn_to_angular_ket(species: str, qn: juliacall.AnyValue) -> AngularKetBase:
-    """Convert MQDT Julia quantum numbers to an AngularKet object."""
+def julia_qn_to_dict(qn: juliacall.AnyValue) -> dict[str, float]:
+    """Convert MQDT Julia quantum numbers to dict object."""
     if "fjQuantumNumbers" in str(qn):
-        return AngularKetFJ(
-            s_c=qn.sc, l_c=qn.lc, j_c=qn.Jc, f_c=qn.Fc, l_r=qn.lr, j_r=qn.Jr, f_tot=qn.F, species=species
-        )
+        return dict(s_c=qn.sc, l_c=qn.lc, j_c=qn.Jc, f_c=qn.Fc, l_r=qn.lr, j_r=qn.Jr, f_tot=qn.F)  # noqa: C408
     if "jjQuantumNumbers" in str(qn):
-        return AngularKetJJ(
-            s_c=qn.sc, l_c=qn.lc, j_c=qn.Jc, l_r=qn.lr, j_r=qn.Jr, j_tot=qn.J, f_tot=qn.F, species=species
-        )
+        return dict(s_c=qn.sc, l_c=qn.lc, j_c=qn.Jc, l_r=qn.lr, j_r=qn.Jr, j_tot=qn.J, f_tot=qn.F)  # noqa: C408
     if "lsQuantumNumbers" in str(qn):
-        return AngularKetLS(
-            s_c=qn.sc, s_tot=qn.S, l_c=qn.lc, l_r=qn.lr, l_tot=qn.L, j_tot=qn.J, f_tot=qn.F, species=species
-        )
+        return dict(s_c=qn.sc, s_tot=qn.S, l_c=qn.lc, l_r=qn.lr, l_tot=qn.L, j_tot=qn.J, f_tot=qn.F)  # noqa: C408
     raise ValueError(f"Unknown MQDT Julia quantum numbers  {qn!s}.")
 
 
