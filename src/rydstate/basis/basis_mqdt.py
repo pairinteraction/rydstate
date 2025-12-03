@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from rydstate.angular.angular_ket import julia_qn_to_dict
@@ -10,16 +11,17 @@ from rydstate.rydberg.rydberg_sqdt import RydbergStateSQDT
 try:
     USE_JULIACALL = True
     from juliacall import (
-        Main as jl,
-        Pkg as jlPkg,
+        Main as jl,  # noqa: N813
         convert,
     )
 except ImportError:
     USE_JULIACALL = False
 
 
+logger = logging.getLogger(__name__)
+
 if USE_JULIACALL:
-    # TODO also try except and prit some meaningful warning if it fails
+    # TODO also try except and print some meaningful warning if it fails
     jl.seval("using MQDT")
     jl.seval("using CGcoefficient")
     jl.include(str(Path(__file__).parent / "tables.jl"))
@@ -40,14 +42,14 @@ class BasisMQDT(BasisBase):
 
         parameters = jl.PARA_TABLE[species]
 
-        print("Calculating low l MQDT states...")
+        logger.debug("Calculating low l MQDT states...")
         models = jl.MODELS_TABLE[species]
         states = [jl.eigenstates(n_min, n_max, M, parameters) for M in models]
 
         if skip_high_l:
-            print("Skipping high l states.")
+            logger.debug("Skipping high l states.")
         else:
-            print("Calculating high l SQDT states...")
+            logger.debug("Calculating high l SQDT states...")
             l_max = n_max - 1
             l_start = jl.FMODEL_MAX_L[species] + 1
             high_l_models = jl.single_channel_models(species, range(l_start, l_max + 1), parameters)
@@ -58,7 +60,7 @@ class BasisMQDT(BasisBase):
         jl_states = convert(jl.Vector, states)
 
         jl_basis = jl.basisarray(jl_states, models)
-        print(f"Generated state table with {len(jl_basis.states)} states")
+        logger.debug("Generated state table with %d states", len(jl_basis.states))
 
         mqdt_states: list[RydbergStateMQDT] = []
 
