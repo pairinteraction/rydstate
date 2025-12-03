@@ -85,14 +85,14 @@ class RydbergStateMQDT(Generic[_RydbergState]):
         return ov
 
     def calc_matrix_element(
-        self: Self, other: RydbergStateMQDT[Any] | RydbergStateSQDT, operator: MatrixElementOperator, kappa: int
+        self: Self, other: RydbergStateMQDT[Any] | RydbergStateSQDT, operator: MatrixElementOperator, q: int
     ) -> float:
         r"""Calculate the reduced angular matrix element.
 
         This means, calculate the following matrix element:
 
         .. math::
-            \left\langle self || \hat{O}^{(\kappa)} || other \right\rangle
+            \left\langle self || \hat{O}^{(\kappa)}_q || other \right\rangle
 
         """
         if isinstance(other, RydbergStateSQDT):
@@ -101,5 +101,5 @@ class RydbergStateMQDT(Generic[_RydbergState]):
         value = 0
         for coeff1, sqdt1 in self:
             for coeff2, sqdt2 in other:
-                value += np.conjugate(coeff1) * coeff2 * sqdt1.calc_matrix_element(sqdt2, operator, kappa)
+                value += np.conjugate(coeff1) * coeff2 * sqdt1.calc_matrix_element(sqdt2, operator, q)
         return value
