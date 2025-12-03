@@ -726,3 +726,45 @@ def mqdt_julia_qn_to_angular_ket(species: str, qn: juliacall.AnyValue) -> Angula
             s_c=qn.sc, s_tot=qn.S, l_c=qn.lc, l_r=qn.lr, l_tot=qn.L, j_tot=qn.J, f_tot=qn.F, species=species
         )
     raise ValueError(f"Unknown MQDT Julia quantum numbers  {qn!s}.")
+
+
+def quantum_numbers_to_angular_ket(
+    species: str | SpeciesObject,
+    l_c: int = 0,
+    j_c: float | None = None,
+    f_c: float | None = None,
+    l_r: int | None = None,
+    j_r: float | None = None,
+    s_tot: float | None = None,
+    l_tot: int | None = None,
+    j_tot: float | None = None,
+    f_tot: float | None = None,
+    m: float | None = None,
+) -> AngularKetBase:
+    r"""Return an AngularKet object in the corresponding coupling scheme from the given quantum numbers.
+
+    Args:
+        species: Atomic species.
+        l_c: Orbital angular momentum quantum number of the core electron.
+        j_c: Total angular momentum quantum number of the core electron.
+        f_c: Total angular momentum quantum number of the core (core electron + nucleus).
+        l_r: Orbital angular momentum quantum number of the rydberg electron.
+        j_r: Total angular momentum quantum number of the rydberg electron.
+        s_tot: Total spin quantum number of all electrons.
+        l_tot: Total orbital angular momentum quantum number of all electrons.
+        j_tot: Total angular momentum quantum number of all electrons.
+        f_tot: Total angular momentum quantum number of the atom (rydberg electron + core)
+        m: Total magnetic quantum number.
+          Optional, only needed for concrete angular matrix elements.
+
+    """
+    if all(qn is None for qn in [j_c, f_c, j_r]):
+        return AngularKetLS(
+            l_c=l_c, l_r=l_r, s_tot=s_tot, l_tot=l_tot, j_tot=j_tot, f_tot=f_tot, m=m, species=species
+        )
+    if all(qn is None for qn in [s_tot, l_tot, f_c]):
+        return AngularKetJJ(l_c=l_c, j_c=j_c, l_r=l_r, j_r=j_r, j_tot=j_tot, f_tot=f_tot, m=m, species=species)
+    if all(qn is None for qn in [s_tot, l_tot, j_tot]):
+        return AngularKetFJ(l_c=l_c, j_c=j_c, f_c=f_c, l_r=l_r, f_tot=f_tot, m=m, species=species)
+
+    raise ValueError("Invalid combination of angular quantum numbers provided.")

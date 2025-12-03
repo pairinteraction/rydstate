@@ -5,7 +5,7 @@ from rydstate import RydbergStateSQDTAlkali, RydbergStateSQDTAlkalineLS
 from rydstate.species import SpeciesObject
 
 if TYPE_CHECKING:
-    from rydstate.rydberg.rydberg_sqdt import RydbergStateSQDTBase
+    from rydstate import RydbergStateSQDT
 
 
 @pytest.mark.parametrize("species_name", SpeciesObject.get_available_species())
@@ -13,7 +13,7 @@ def test_magnetic(species_name: str) -> None:
     """Test magnetic units."""
     species = SpeciesObject.from_name(species_name)
 
-    state: RydbergStateSQDTBase
+    state: RydbergStateSQDT
     if species.number_valence_electrons == 1:
         if species.i_c is None:
             state = RydbergStateSQDTAlkali(species, n=50, l=0)
