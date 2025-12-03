@@ -10,13 +10,13 @@ from typing_extensions import deprecated
 
 from rydstate.angular.angular_ket import quantum_numbers_to_angular_ket
 from rydstate.radial import RadialKet
+from rydstate.rydberg.rydberg_base import RydbergStateBase
 from rydstate.species import SpeciesObject
 from rydstate.species.utils import calc_energy_from_nu
 from rydstate.units import BaseQuantities, MatrixElementOperatorRanks, ureg
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
-
+    from rydstate import RydbergStateMQDT
     from rydstate.angular.angular_ket import AngularKetBase, AngularKetJJ, AngularKetLS
     from rydstate.units import MatrixElementOperator, PintFloat
 
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class RydbergStateSQDT:
+class RydbergStateSQDT(RydbergStateBase):
     species: SpeciesObject
 
     def __init__(
@@ -96,7 +96,6 @@ class RydbergStateSQDT:
         n_str = f", {n=}" if n is not None else ""
         return f"{self.__class__.__name__}({species=}{n_str}, {nu=}, {self.angular})"
 
-
     def __str__(self) -> str:
         return self.__repr__()
 
@@ -110,7 +109,8 @@ class RydbergStateSQDT:
             for s_tot in s_tot_list:
                 if not self.species.is_allowed_shell(self.n, self.angular.l_r, s_tot=s_tot):
                     raise ValueError(
-                        f"The shell (n={self.n}, l_r={self.angular.l_r}, s_tot={s_tot}) is not allowed for the species {self.species}."
+                        f"The shell (n={self.n}, l_r={self.angular.l_r}, s_tot={s_tot})"
+                        f" is not allowed for the species {self.species}."
                     )
         return radial_ket
 
@@ -161,22 +161,33 @@ class RydbergStateSQDT:
             return energy
         return energy.to(unit, "spectroscopy").magnitude
 
-    def calc_reduced_overlap(self, other: RydbergStateSQDT) -> float:
+    def to_mqdt(self) -> RydbergStateMQDT:
+        """Convert to a trivial RydbergMQDT state with only one contribution with coefficient 1."""
+        from rydstate import RydbergStateMQDT  # noqa: PLC0415
+
+        return RydbergStateMQDT([1], [self])
+
+    def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
+        if not isinstance(other, RydbergStateSQDT):
+            return self.to_mqdt().calc_reduced_overlap(other)
+
         radial_overlap = self.radial.calc_overlap(other.radial)
         angular_overlap = self.angular.calc_reduced_overlap(other.angular)
         return radial_overlap * angular_overlap
 
     @overload
     def calc_reduced_matrix_element(
-        self, other: Self, operator: MatrixElementOperator, unit: None = None
+        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: None = None
     ) -> PintFloat: ...
 
     @overload
-    def calc_reduced_matrix_element(self, other: Self, operator: MatrixElementOperator, unit: str) -> float: ...
+    def calc_reduced_matrix_element(
+        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str
+    ) -> float: ...
 
     def calc_reduced_matrix_element(
-        self, other: Self, operator: MatrixElementOperator, unit: str | None = None
+        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str | None = None
     ) -> PintFloat | float:
         r"""Calculate the reduced matrix element.
 
@@ -199,6 +210,9 @@ class RydbergStateSQDT:
             The reduced matrix element for the given operator.
 
         """
+        if not isinstance(other, RydbergStateSQDT):
+            return self.to_mqdt().calc_reduced_matrix_element(other, operator)
+
         if operator not in MatrixElementOperatorRanks:
             raise ValueError(
                 f"Operator {operator} not supported, must be one of {list(MatrixElementOperatorRanks.keys())}."
@@ -241,13 +255,15 @@ class RydbergStateSQDT:
         return matrix_element.to(unit).magnitude
 
     @overload
-    def calc_matrix_element(self, other: Self, operator: MatrixElementOperator, q: int) -> PintFloat: ...
+    def calc_matrix_element(self, other: RydbergStateSQDT, operator: MatrixElementOperator, q: int) -> PintFloat: ...
 
     @overload
-    def calc_matrix_element(self, other: Self, operator: MatrixElementOperator, q: int, unit: str) -> float: ...
+    def calc_matrix_element(
+        self, other: RydbergStateSQDT, operator: MatrixElementOperator, q: int, unit: str
+    ) -> float: ...
 
     def calc_matrix_element(
-        self, other: Self, operator: MatrixElementOperator, q: int, unit: str | None = None
+        self, other: RydbergStateSQDT, operator: MatrixElementOperator, q: int, unit: str | None = None
     ) -> PintFloat | float:
         r"""Calculate the matrix element.
 

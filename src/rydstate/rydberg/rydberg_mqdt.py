@@ -6,12 +6,11 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 import numpy as np
 
 from rydstate.angular import AngularState
+from rydstate.rydberg.rydberg_base import RydbergStateBase
 from rydstate.rydberg.rydberg_sqdt import RydbergStateSQDT
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
-
-    from typing_extensions import Self
 
     from rydstate.units import MatrixElementOperator
 
@@ -22,7 +21,7 @@ logger = logging.getLogger(__name__)
 _RydbergState = TypeVar("_RydbergState", bound=RydbergStateSQDT)
 
 
-class RydbergStateMQDT(Generic[_RydbergState]):
+class RydbergStateMQDT(RydbergStateBase, Generic[_RydbergState]):
     def __init__(
         self,
         coefficients: Sequence[float],
@@ -73,33 +72,37 @@ class RydbergStateMQDT(Generic[_RydbergState]):
         angular_kets = [ket.angular for ket in self.sqdt_states]
         return AngularState(self.coefficients.tolist(), angular_kets)
 
-    def calc_reduced_overlap(self, other: RydbergStateMQDT[Any] | RydbergStateSQDT) -> float:
+    def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
         if isinstance(other, RydbergStateSQDT):
-            other = RydbergStateMQDT([1.0], [other])
+            other = other.to_mqdt()
 
-        ov = 0
-        for coeff1, sqdt1 in self:
-            for coeff2, sqdt2 in other:
-                ov += np.conjugate(coeff1) * coeff2 * sqdt1.calc_reduced_overlap(sqdt2)
-        return ov
+        if isinstance(other, RydbergStateMQDT):
+            ov = 0
+            for coeff1, sqdt1 in self:
+                for coeff2, sqdt2 in other:
+                    ov += np.conjugate(coeff1) * coeff2 * sqdt1.calc_reduced_overlap(sqdt2)
+            return ov
 
-    def calc_matrix_element(
-        self: Self, other: RydbergStateMQDT[Any] | RydbergStateSQDT, operator: MatrixElementOperator, q: int
-    ) -> float:
+        raise NotImplementedError(f"calc_reduced_overlap not implemented for {type(self)=}, {type(other)=}")
+
+    def calc_reduced_matrix_element(self, other: RydbergStateBase, operator: MatrixElementOperator) -> float:
         r"""Calculate the reduced angular matrix element.
 
         This means, calculate the following matrix element:
 
         .. math::
-            \left\langle self || \hat{O}^{(\kappa)}_q || other \right\rangle
+            \left\langle self || \hat{O}^{(\kappa)} || other \right\rangle
 
         """
         if isinstance(other, RydbergStateSQDT):
-            other = RydbergStateMQDT([1.0], [other])
+            other = other.to_mqdt()
 
-        value = 0
-        for coeff1, sqdt1 in self:
-            for coeff2, sqdt2 in other:
-                value += np.conjugate(coeff1) * coeff2 * sqdt1.calc_matrix_element(sqdt2, operator, q)
-        return value
+        if isinstance(other, RydbergStateMQDT):
+            value = 0
+            for coeff1, sqdt1 in self:
+                for coeff2, sqdt2 in other:
+                    value += np.conjugate(coeff1) * coeff2 * sqdt1.calc_reduced_matrix_element(sqdt2, operator)
+            return value
+
+        raise NotImplementedError(f"calc_reduced_overlap not implemented for {type(self)=}, {type(other)=}")
