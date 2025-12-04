@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from functools import lru_cache
-from typing import TYPE_CHECKING, Callable, Literal, TypeVar
+from typing import TYPE_CHECKING, Callable, Literal, TypeGuard, TypeVar, get_args
 
 import numpy as np
 
@@ -39,6 +39,16 @@ AngularOperatorType = Literal[
     AngularMomentumQuantumNumbers,
     IdentityOperators,
 ]
+
+
+def is_angular_momentum_quantum_number(qn: str) -> TypeGuard[AngularMomentumQuantumNumbers]:
+    """Check if the given string is an AngularMomentumQuantumNumbers."""
+    return qn in get_args(AngularMomentumQuantumNumbers)
+
+
+def is_angular_operator_type(qn: str) -> TypeGuard[AngularOperatorType]:
+    """Check if the given string is an AngularOperatorType."""
+    return qn in get_args(AngularOperatorType)
 
 
 @lru_cache(maxsize=10_000)

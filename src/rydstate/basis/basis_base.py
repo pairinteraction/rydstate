@@ -1,22 +1,23 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import TYPE_CHECKING, get_args, overload
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
 
 import numpy as np
 from typing_extensions import Self
 
-from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers
+from rydstate.angular.angular_matrix_element import is_angular_momentum_quantum_number
+from rydstate.rydberg.rydberg_base import RydbergStateBase
 from rydstate.species.species_object import SpeciesObject
 
 if TYPE_CHECKING:
-    from rydstate.rydberg import RydbergStateMQDT, RydbergStateSQDT
-    from rydstate.rydberg.rydberg_base import RydbergStateBase
     from rydstate.units import MatrixElementOperator, NDArray, PintArray
 
+_RydbergState = TypeVar("_RydbergState", bound=RydbergStateBase)
 
-class BasisBase(ABC):
-    states: list[RydbergStateSQDT | RydbergStateMQDT]
+
+class BasisBase(ABC, Generic[_RydbergState]):
+    states: list[_RydbergState]
 
     def __init__(self, species: str | SpeciesObject) -> None:
         if isinstance(species, str):
@@ -27,7 +28,7 @@ class BasisBase(ABC):
         return len(self.states)
 
     def filter_states(self, qn: str, qn_mi: float, qn_max: float) -> Self:
-        if qn in get_args(AngularMomentumQuantumNumbers):
+        if is_angular_momentum_quantum_number(qn):
             self.states = [state for state in self.states if qn_mi <= state.angular.calc_exp_qn(qn) <= qn_max]
         elif qn in ["n", "nu", "nu_energy"]:
             self.states = [state for state in self.states if qn_mi <= getattr(state, qn) <= qn_max]
@@ -37,14 +38,14 @@ class BasisBase(ABC):
         return self
 
     def calc_exp_qn(self, qn: str) -> list[float]:
-        if qn in get_args(AngularMomentumQuantumNumbers):
+        if is_angular_momentum_quantum_number(qn):
             return [state.angular.calc_exp_qn(qn) for state in self.states]
         if qn in ["n", "nu", "nu_energy"]:
             return [getattr(state, qn) for state in self.states]
         raise ValueError(f"Unknown quantum number {qn}")
 
     def calc_std_qn(self, qn: str) -> list[float]:
-        if qn in get_args(AngularMomentumQuantumNumbers):
+        if is_angular_momentum_quantum_number(qn):
             return [state.angular.calc_std_qn(qn) for state in self.states]
         if qn in ["n", "nu", "nu_energy"]:
             return [0 for state in self.states]
@@ -54,7 +55,7 @@ class BasisBase(ABC):
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
         return np.array([bra.calc_reduced_overlap(other) for bra in self.states])
 
-    def calc_reduced_overlaps(self, other: BasisBase) -> NDArray:
+    def calc_reduced_overlaps(self, other: BasisBase[Any]) -> NDArray:
         """Calculate the reduced overlap <bra|ket> for all states in the bases self and other.
 
         Returns a numpy array overlaps, where overlaps[i,j] corresponds to the overlap of the
@@ -84,16 +85,16 @@ class BasisBase(ABC):
 
     @overload
     def calc_reduced_matrix_elements(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: None = None
+        self, other: BasisBase[Any], operator: MatrixElementOperator, unit: None = None
     ) -> PintArray: ...
 
     @overload
     def calc_reduced_matrix_elements(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str
+        self, other: BasisBase[Any], operator: MatrixElementOperator, unit: str
     ) -> NDArray: ...
 
     def calc_reduced_matrix_elements(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str | None = None
+        self, other: BasisBase[Any], operator: MatrixElementOperator, unit: str | None = None
     ) -> PintArray | NDArray:
         r"""Calculate the reduced matrix element.
 

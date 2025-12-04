@@ -35,7 +35,7 @@ if USE_JULIACALL:
 FMODEL_MAX_L = {"Sr87": 2, "Sr88": 2, "Yb171": 4, "Yb173": 1, "Yb174": 4}
 
 
-class BasisMQDT(BasisBase):
+class BasisMQDT(BasisBase[RydbergStateMQDT[Any]]):
     def __init__(
         self,
         species: str | SpeciesObject,
@@ -94,8 +94,7 @@ class BasisMQDT(BasisBase):
 
         logger.debug("Generated state table with %d states", len(jl_basis.states))
 
-        mqdt_states: list[RydbergStateMQDT[Any]] = []
-
+        self.states = []
         for jl_state in jl_basis.states:
             coeffs = jl_state.coeff
             nus = jl_state.nu
@@ -108,6 +107,4 @@ class BasisMQDT(BasisBase):
             [(s.angular, s.radial) for s in sqdt_states]
 
             mqdt_state = RydbergStateMQDT(coeffs, sqdt_states, nu_energy=nu_energy, warn_if_not_normalized=False)
-            mqdt_states.append(mqdt_state)
-
-        self.states = mqdt_states
+            self.states.append(mqdt_state)
