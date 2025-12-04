@@ -1,16 +1,22 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 from rydstate.angular.angular_ket import julia_qn_to_dict
 from rydstate.basis.basis_base import BasisBase
 from rydstate.rydberg.rydberg_mqdt import RydbergStateMQDT
 from rydstate.rydberg.rydberg_sqdt import RydbergStateSQDT
 
+if TYPE_CHECKING:
+    from rydstate.species import SpeciesObject
+
+logger = logging.getLogger(__name__)
+
 try:
     USE_JULIACALL = True
     from juliacall import (
+        JuliaError,
         Main as jl,  # noqa: N813
         convert,
     )
@@ -18,18 +24,37 @@ except ImportError:
     USE_JULIACALL = False
 
 
-logger = logging.getLogger(__name__)
-
 if USE_JULIACALL:
-    # TODO also try except and print some meaningful warning if it fails
-    jl.seval("using MQDT")
-    jl.seval("using CGcoefficient")
-    jl.include(str(Path(__file__).parent / "tables.jl"))
+    try:
+        jl.seval("using MQDT")
+        jl.seval("using CGcoefficient")
+    except JuliaError:
+        logger.exception("Failed to load Julia MQDT or CGcoefficient package")
+        USE_JULIACALL = False
+
+FMODEL_MAX_L = {"Sr87": 2, "Sr88": 2, "Yb171": 4, "Yb173": 1, "Yb174": 4}
 
 
 class BasisMQDT(BasisBase):
-    def __init__(self, species: str, n_min: int = 0, n_max: int | None = None, *, skip_high_l: bool = True):
+    def __init__(
+        self,
+        species: str | SpeciesObject,
+        n_min: int = 0,
+        n_max: int | None = None,
+        *,
+        skip_high_l: bool = True,
+        model_names: list[str] | None = None,
+    ) -> None:
         super().__init__(species)
+
+        if not USE_JULIACALL:
+            raise ImportError("JuliaCall or the MQDT Julia package is not available.")
+
+        try:
+            self.jl_species = getattr(jl.MQDT, self.species.name)
+            parameters = self.jl_species.PARA
+        except AttributeError as e:
+            raise ValueError(f"Species '{species}' is not supported in the MQDT Julia package.") from e
 
         # TODO use n_min and n_max of the different models
 
@@ -42,29 +67,34 @@ class BasisMQDT(BasisBase):
         else:
             jl.CGcoefficient.wigner_init_float(n_max - 1, "Jmax", 9)
 
-        parameters = jl.PARA_TABLE[species]
-
         logger.debug("Calculating low l MQDT states...")
-        models = jl.MODELS_TABLE[species]
-        states = [jl.eigenstates(n_min, n_max, M, parameters) for M in models]
+
+        jl_species_attr_names = [str(name) for name in jl.seval(f"names(MQDT.{self.species.name}, all=true)")]
+        self.models = {name: getattr(self.jl_species, name) for name in jl_species_attr_names}
+        self.models = {k: v for k, v in self.models.items() if str(v).startswith("fModel")}
+        if model_names is not None:
+            self.models = {k: v for k, v in self.models.items() if k in model_names}
 
         if skip_high_l:
             logger.debug("Skipping high l states.")
         else:
             logger.debug("Calculating high l SQDT states...")
-            l_max = n_max - 1
-            l_start = jl.FMODEL_MAX_L[species] + 1
-            high_l_models = jl.single_channel_models(species, range(l_start, l_max + 1), parameters)
-            high_l_states = [jl.eigenstates(n_min, n_max, M, parameters) for M in high_l_models]
-            states = jl.vcat(states, high_l_states)
-            models = jl.vcat(models, high_l_models)
+            l_start = FMODEL_MAX_L[self.species.name] + 1
+            high_l_models = {
+                f"high_l_{l_ryd}": jl.single_channel_models(species, l_ryd, parameters)
+                for l_ryd in range(l_start, n_max)
+            }
+            self.models.update(high_l_models)
 
-        jl_states = convert(jl.Vector, states)
+        model_names = list(self.models.keys())
+        jl_states = {name: jl.eigenstates(n_min, n_max, model, parameters) for name, model in self.models.items()}
+        _models_vector = convert(jl.Vector, [self.models[name] for name in model_names])
+        _jl_states_vector = convert(jl.Vector, [jl_states[name] for name in model_names])
+        jl_basis = jl.basisarray(_jl_states_vector, _models_vector)
 
-        jl_basis = jl.basisarray(jl_states, models)
         logger.debug("Generated state table with %d states", len(jl_basis.states))
 
-        mqdt_states: list[RydbergStateMQDT] = []
+        mqdt_states: list[RydbergStateMQDT[Any]] = []
 
         for jl_state in jl_basis.states:
             coeffs = jl_state.coeff
