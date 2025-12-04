@@ -99,7 +99,7 @@ class RydbergStateSQDT(RydbergStateBase):
     def __str__(self) -> str:
         return self.__repr__()
 
-    @property
+    @cached_property
     def radial(self) -> RadialKet:
         """The radial part of the Rydberg electron."""
         radial_ket = RadialKet(self.species, nu=self.nu, l_r=self.angular.l_r)
