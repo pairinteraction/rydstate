@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from functools import cached_property
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
 
 import numpy as np
@@ -67,7 +68,7 @@ class RydbergStateMQDT(RydbergStateBase, Generic[_RydbergState]):
         """Return the norm of the state (should be 1)."""
         return np.linalg.norm(self.coefficients)  # type: ignore [return-value]
 
-    @property
+    @cached_property
     def angular(self) -> AngularState[Any]:
         """Return the angular part of the MQDT state as an AngularState."""
         angular_kets = [ket.angular for ket in self.sqdt_states]
