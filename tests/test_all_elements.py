@@ -20,7 +20,7 @@ def test_magnetic(species_name: str) -> None:
         else:
             state = RydbergStateSQDTAlkali(species, n=50, l=0, f=species.i_c + 0.5)
         state.radial.create_wavefunction()
-        with pytest.raises(ValueError, match="j must be set"):
+        with pytest.raises(ValueError, match="j_tot must be set"):
             RydbergStateSQDTAlkali(species, n=50, l=1)
     elif species.number_valence_electrons == 2 and species._quantum_defects is not None:  # noqa: SLF001
         for s_tot in [0, 1]:
