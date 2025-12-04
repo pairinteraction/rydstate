@@ -102,7 +102,7 @@ class RydbergStateSQDT(RydbergStateBase):
     @property
     def radial(self) -> RadialKet:
         """The radial part of the Rydberg electron."""
-        radial_ket = RadialKet(self.species, nu=self.get_nu(), l_r=self.angular.l_r)
+        radial_ket = RadialKet(self.species, nu=self.nu, l_r=self.angular.l_r)
         if self.n is not None:
             radial_ket.set_n_for_sanity_check(self.n)
             s_tot_list = [self.angular.get_qn("s_tot")] if "s_tot" in self.angular.quantum_number_names else [0, 1]
@@ -152,8 +152,7 @@ class RydbergStateSQDT(RydbergStateBase):
 
         where `\mu = R_M/R_\infty` is the reduced mass and `\nu` the effective principal quantum number.
         """
-        nu = self.get_nu()
-        energy_au = calc_energy_from_nu(self.species.reduced_mass_au, nu)
+        energy_au = calc_energy_from_nu(self.species.reduced_mass_au, self.nu)
         if unit == "a.u.":
             return energy_au
         energy: PintFloat = energy_au * BaseQuantities["energy"]
@@ -324,7 +323,7 @@ class RydbergStateSQDTAlkali(RydbergStateSQDT):
               Optional, if not given it will be calculated from n, l, j.
 
         """
-        super().__init__(species=species, n=n, nu=nu, l_r=l, j_r=j, f_tot=f, m=m)
+        super().__init__(species=species, n=n, nu=nu, l_r=l, j_tot=j, f_tot=f, m=m)
 
         self.l = l
         self.j = self.angular.j_tot
