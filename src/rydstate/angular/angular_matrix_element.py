@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import math
 from functools import lru_cache
-from typing import TYPE_CHECKING, Callable, Literal, TypeGuard, TypeVar, get_args
+from typing import TYPE_CHECKING, Callable, Literal, TypeVar, get_args
 
 import numpy as np
+from typing_extensions import TypeGuard
 
 from rydstate.angular.utils import calc_wigner_3j, calc_wigner_6j, minus_one_pow
 
