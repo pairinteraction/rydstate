@@ -31,6 +31,8 @@ class BasisMQDT(BasisBase):
     def __init__(self, species: str, n_min: int = 0, n_max: int | None = None, *, skip_high_l: bool = True):
         super().__init__(species)
 
+        # TODO use n_min and n_max of the different models
+
         if n_max is None:
             raise ValueError("n_max must be given")
 
