@@ -9,9 +9,10 @@ from typing_extensions import Self
 from rydstate.angular.angular_matrix_element import is_angular_momentum_quantum_number
 from rydstate.rydberg.rydberg_base import RydbergStateBase
 from rydstate.species.species_object import SpeciesObject
+from rydstate.units import ureg
 
 if TYPE_CHECKING:
-    from rydstate.units import MatrixElementOperator, NDArray, PintArray
+    from rydstate.units import MatrixElementOperator, NDArray, PintArray, PintFloat
 
 _RydbergState = TypeVar("_RydbergState", bound=RydbergStateBase)
 
@@ -76,12 +77,15 @@ class BasisBase(ABC, Generic[_RydbergState]):
     def calc_reduced_matrix_element(
         self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str | None = None
     ) -> PintArray | NDArray:
-        r"""Calculate the reduced matrix element.
+        r"""Calculate the reduced matrix element."""
+        values_list = [bra.calc_reduced_matrix_element(other, operator, unit=unit) for bra in self.states]
+        if unit is not None:
+            return np.array(values_list)
 
-        See also ...
-
-        """
-        return np.array([bra.calc_reduced_matrix_element(other, operator, unit=unit) for bra in self.states])
+        values: list[PintFloat] = values_list  # type: ignore[assignment]
+        _unit = values[0].units
+        _values = np.array([v.magnitude for v in values])
+        return ureg.Quantity(_values, _unit)
 
     @overload
     def calc_reduced_matrix_elements(
@@ -96,11 +100,14 @@ class BasisBase(ABC, Generic[_RydbergState]):
     def calc_reduced_matrix_elements(
         self, other: BasisBase[Any], operator: MatrixElementOperator, unit: str | None = None
     ) -> PintArray | NDArray:
-        r"""Calculate the reduced matrix element.
+        r"""Calculate the reduced matrix element."""
+        values_list = [
+            [bra.calc_reduced_matrix_element(ket, operator, unit=unit) for ket in other.states] for bra in self.states
+        ]
+        if unit is not None:
+            return np.array(values_list)
 
-        See also ...
-
-        """
-        return np.array(
-            [[bra.calc_reduced_matrix_element(ket, operator, unit=unit) for ket in other.states] for bra in self.states]
-        )
+        values: list[PintFloat] = values_list  # type: ignore[assignment]
+        _unit = values[0].units
+        _values = np.array([v.magnitude for v in values])
+        return ureg.Quantity(_values, _unit)
