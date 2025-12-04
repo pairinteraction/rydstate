@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import math
 from functools import cached_property
-from typing import TYPE_CHECKING, overload
+from typing import TYPE_CHECKING, Any, overload
 
 import numpy as np
 from typing_extensions import deprecated
@@ -117,7 +117,7 @@ class RydbergStateSQDT(RydbergStateBase):
     @cached_property
     def angular(self) -> AngularKetBase:
         """The angular/spin part of the Rydberg electron."""
-        return quantum_numbers_to_angular_ket(species=self.species, **self._qns)
+        return quantum_numbers_to_angular_ket(species=self.species, **self._qns)  # type: ignore [arg-type]
 
     @cached_property
     def nu(self) -> float:
@@ -161,7 +161,7 @@ class RydbergStateSQDT(RydbergStateBase):
             return energy
         return energy.to(unit, "spectroscopy").magnitude
 
-    def to_mqdt(self) -> RydbergStateMQDT:
+    def to_mqdt(self) -> RydbergStateMQDT[Any]:
         """Convert to a trivial RydbergMQDT state with only one contribution with coefficient 1."""
         from rydstate import RydbergStateMQDT  # noqa: PLC0415
 
@@ -176,7 +176,7 @@ class RydbergStateSQDT(RydbergStateBase):
         angular_overlap = self.angular.calc_reduced_overlap(other.angular)
         return radial_overlap * angular_overlap
 
-    @overload
+    @overload  # type: ignore [override]
     def calc_reduced_matrix_element(
         self, other: RydbergStateBase, operator: MatrixElementOperator, unit: None = None
     ) -> PintFloat: ...
@@ -211,7 +211,7 @@ class RydbergStateSQDT(RydbergStateBase):
 
         """
         if not isinstance(other, RydbergStateSQDT):
-            return self.to_mqdt().calc_reduced_matrix_element(other, operator)
+            return self.to_mqdt().calc_reduced_matrix_element(other, operator, unit=unit)
 
         if operator not in MatrixElementOperatorRanks:
             raise ValueError(

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
 
 import numpy as np
 
@@ -12,7 +12,7 @@ from rydstate.rydberg.rydberg_sqdt import RydbergStateSQDT
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
-    from rydstate.units import MatrixElementOperator
+    from rydstate.units import MatrixElementOperator, PintFloat
 
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,8 @@ class RydbergStateMQDT(RydbergStateBase, Generic[_RydbergState]):
             raise ValueError("RydbergStateMQDT initialized with duplicate sqdt_states.")
         if abs(self.norm - 1) > 1e-10 and warn_if_not_normalized:
             logger.warning(
-                "RydbergStateMQDT initialized with non-normalized coefficients (norm=%s, coefficients=%s, sqdt_states=%s)",
+                "RydbergStateMQDT initialized with non-normalized coefficients "
+                "(norm=%s, coefficients=%s, sqdt_states=%s)",
                 self.norm,
                 coefficients,
                 sqdt_states,
@@ -86,7 +87,19 @@ class RydbergStateMQDT(RydbergStateBase, Generic[_RydbergState]):
 
         raise NotImplementedError(f"calc_reduced_overlap not implemented for {type(self)=}, {type(other)=}")
 
-    def calc_reduced_matrix_element(self, other: RydbergStateBase, operator: MatrixElementOperator) -> float:
+    @overload  # type: ignore [override]
+    def calc_reduced_matrix_element(
+        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: None = None
+    ) -> PintFloat: ...
+
+    @overload
+    def calc_reduced_matrix_element(
+        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str
+    ) -> float: ...
+
+    def calc_reduced_matrix_element(
+        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str | None = None
+    ) -> PintFloat | float:
         r"""Calculate the reduced angular matrix element.
 
         This means, calculate the following matrix element:
@@ -102,7 +115,9 @@ class RydbergStateMQDT(RydbergStateBase, Generic[_RydbergState]):
             value = 0
             for coeff1, sqdt1 in self:
                 for coeff2, sqdt2 in other:
-                    value += np.conjugate(coeff1) * coeff2 * sqdt1.calc_reduced_matrix_element(sqdt2, operator)
+                    value += (
+                        np.conjugate(coeff1) * coeff2 * sqdt1.calc_reduced_matrix_element(sqdt2, operator, unit=unit)
+                    )
             return value
 
         raise NotImplementedError(f"calc_reduced_overlap not implemented for {type(self)=}, {type(other)=}")
