@@ -451,7 +451,7 @@ class RydbergStateSQDTAlkalineFJ(RydbergStateSQDT):
         n: int,
         l: int,
         j_r: float,
-        f_c: int | None = None,
+        f_c: float | None = None,
         f_tot: float | None = None,
         m: float | None = None,
         nu: float | None = None,
