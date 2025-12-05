@@ -4,6 +4,7 @@ from rydstate.rydberg import (
     RydbergStateMQDT,
     RydbergStateSQDT,
     RydbergStateSQDTAlkali,
+    RydbergStateSQDTAlkalineFJ,
     RydbergStateSQDTAlkalineJJ,
     RydbergStateSQDTAlkalineLS,
 )
@@ -16,6 +17,7 @@ __all__ = [
     "RydbergStateMQDT",
     "RydbergStateSQDT",
     "RydbergStateSQDTAlkali",
+    "RydbergStateSQDTAlkalineFJ",
     "RydbergStateSQDTAlkalineJJ",
     "RydbergStateSQDTAlkalineLS",
     "angular",
