@@ -101,7 +101,8 @@ def _sanity_check_integration(z1: NDArray, z2: NDArray) -> None:
     assert len(z1) == len(z2), f"Length mismatch: {len(z1)=} != {len(z2)=}"
     assert z1[0] - z2[0] < tol, f"First point mismatch: {z1[0]=} != {z2[0]=}"
     assert z1[1] - z2[1] < tol, f"Second point mismatch: {z1[1]=} != {z2[1]=}"
-    assert z1[2] - z2[2] < tol, f"Third point mismatch: {z1[2]=} != {z2[2]=}"
+    if len(z1) > 2:
+        assert z1[2] - z2[2] < tol, f"Third point mismatch: {z1[2]=} != {z2[2]=}"
     assert z1[-1] - z2[-1] < tol, f"Last point mismatch: {z1[-1]=} != {z2[-1]=}"
 
 

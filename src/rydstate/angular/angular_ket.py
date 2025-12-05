@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import logging
 from abc import ABC
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, get_args, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, overload
 
 from rydstate.angular.angular_matrix_element import (
-    AngularMomentumQuantumNumbers,
-    AngularOperatorType,
     calc_prefactor_of_operator_in_coupled_scheme,
     calc_reduced_identity_matrix_element,
     calc_reduced_spherical_matrix_element,
     calc_reduced_spin_matrix_element,
+    is_angular_momentum_quantum_number,
+    is_angular_operator_type,
 )
 from rydstate.angular.utils import (
     calc_wigner_3j,
@@ -24,8 +24,10 @@ from rydstate.angular.utils import (
 from rydstate.species import SpeciesObject
 
 if TYPE_CHECKING:
+    import juliacall
     from typing_extensions import Self
 
+    from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers, AngularOperatorType
     from rydstate.angular.angular_state import AngularState
 
 logger = logging.getLogger(__name__)
@@ -185,6 +187,34 @@ class AngularKetBase(ABC):
         if qn not in self.quantum_number_names:
             raise ValueError(f"Quantum number {qn} not found in {self!r}.")
         return getattr(self, qn)  # type: ignore [no-any-return]
+
+    def calc_exp_qn(self, qn: AngularMomentumQuantumNumbers) -> float:
+        """Calculate the expectation value of a quantum number qn.
+
+        If the quantum number is a good quantum number simply return it,
+        otherwise calculate it, see also AngularState.calc_exp_qn for more details.
+
+        Args:
+            qn: The quantum number to calculate the expectation value for.
+
+        """
+        if qn in self.quantum_number_names:
+            return self.get_qn(qn)
+        return self.to_state().calc_exp_qn(qn)
+
+    def calc_std_qn(self, qn: AngularMomentumQuantumNumbers) -> float:
+        """Calculate the standard deviation of a quantum number qn.
+
+        If the quantum number is a good quantum number return 0,
+        otherwise calculate the std, see also AngularState.calc_std_qn for more details.
+
+        Args:
+            qn: The quantum number to calculate the standard deviation for.
+
+        """
+        if qn in self.quantum_number_names:
+            return 0
+        return self.to_state().calc_std_qn(qn)
 
     @overload
     def to_state(self, coupling_scheme: Literal["LS"]) -> AngularState[AngularKetLS]: ...
@@ -382,12 +412,12 @@ class AngularKetBase(ABC):
             \left\langle self || \hat{O}^{(\kappa)} || other \right\rangle
 
         """
-        if operator not in get_args(AngularOperatorType):
+        if not is_angular_operator_type(operator):
             raise NotImplementedError(f"calc_reduced_matrix_element is not implemented for operator {operator}.")
 
         if type(self) is not type(other):
             return self.to_state().calc_reduced_matrix_element(other.to_state(), operator, kappa)
-        if operator in get_args(AngularMomentumQuantumNumbers) and operator not in self.quantum_number_names:
+        if is_angular_momentum_quantum_number(operator) and operator not in self.quantum_number_names:
             return self.to_state().calc_reduced_matrix_element(other.to_state(), operator, kappa)
 
         qn_name: AngularMomentumQuantumNumbers
@@ -708,3 +738,64 @@ class AngularKetFJ(AngularKetBase):
             msgs.append(f"{self.f_c=}, {self.j_r=}, {self.f_tot=} don't satisfy spin addition rule.")
 
         super().sanity_check(msgs)
+
+
+def julia_qn_to_dict(qn: juliacall.AnyValue) -> dict[str, float]:
+    """Convert MQDT Julia quantum numbers to dict object."""
+    if "fjQuantumNumbers" in str(qn):
+        return dict(s_c=qn.sc, l_c=qn.lc, j_c=qn.Jc, f_c=qn.Fc, l_r=qn.lr, j_r=qn.Jr, f_tot=qn.F)  # noqa: C408
+    if "jjQuantumNumbers" in str(qn):
+        return dict(s_c=qn.sc, l_c=qn.lc, j_c=qn.Jc, l_r=qn.lr, j_r=qn.Jr, j_tot=qn.J, f_tot=qn.F)  # noqa: C408
+    if "lsQuantumNumbers" in str(qn):
+        return dict(s_c=qn.sc, s_tot=qn.S, l_c=qn.lc, l_r=qn.lr, l_tot=qn.L, j_tot=qn.J, f_tot=qn.F)  # noqa: C408
+    raise ValueError(f"Unknown MQDT Julia quantum numbers  {qn!s}.")
+
+
+def quantum_numbers_to_angular_ket(
+    species: str | SpeciesObject,
+    s_c: float | None = None,
+    l_c: int = 0,
+    j_c: float | None = None,
+    f_c: float | None = None,
+    s_r: float = 0.5,
+    l_r: int | None = None,
+    j_r: float | None = None,
+    s_tot: float | None = None,
+    l_tot: int | None = None,
+    j_tot: float | None = None,
+    f_tot: float | None = None,
+    m: float | None = None,
+) -> AngularKetBase:
+    r"""Return an AngularKet object in the corresponding coupling scheme from the given quantum numbers.
+
+    Args:
+        species: Atomic species.
+        s_c: Spin quantum number of the core electron (0 for Alkali, 0.5 for divalent atoms).
+        l_c: Orbital angular momentum quantum number of the core electron.
+        j_c: Total angular momentum quantum number of the core electron.
+        f_c: Total angular momentum quantum number of the core (core electron + nucleus).
+        s_r: Spin quantum number of the rydberg electron always 0.5)
+        l_r: Orbital angular momentum quantum number of the rydberg electron.
+        j_r: Total angular momentum quantum number of the rydberg electron.
+        s_tot: Total spin quantum number of all electrons.
+        l_tot: Total orbital angular momentum quantum number of all electrons.
+        j_tot: Total angular momentum quantum number of all electrons.
+        f_tot: Total angular momentum quantum number of the atom (rydberg electron + core)
+        m: Total magnetic quantum number.
+          Optional, only needed for concrete angular matrix elements.
+
+    """
+    if all(qn is None for qn in [j_c, f_c, j_r]):
+        return AngularKetLS(
+            s_c=s_c, l_c=l_c, s_r=s_r, l_r=l_r, s_tot=s_tot, l_tot=l_tot, j_tot=j_tot, f_tot=f_tot, m=m, species=species
+        )
+    if all(qn is None for qn in [s_tot, l_tot, f_c]):
+        return AngularKetJJ(
+            s_c=s_c, l_c=l_c, j_c=j_c, s_r=s_r, l_r=l_r, j_r=j_r, j_tot=j_tot, f_tot=f_tot, m=m, species=species
+        )
+    if all(qn is None for qn in [s_tot, l_tot, j_tot]):
+        return AngularKetFJ(
+            s_c=s_c, l_c=l_c, j_c=j_c, f_c=f_c, s_r=s_r, l_r=l_r, j_r=j_r, f_tot=f_tot, m=m, species=species
+        )
+
+    raise ValueError("Invalid combination of angular quantum numbers provided.")
