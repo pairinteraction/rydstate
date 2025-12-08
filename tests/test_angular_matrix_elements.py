@@ -56,7 +56,7 @@ def test_exp_q_different_coupling_schemes(ket: AngularKetBase) -> None:
 def test_overlap_different_coupling_schemes(ket1: AngularKetBase, ket2: AngularKetBase) -> None:
     ov = ket1.calc_reduced_overlap(ket2)
 
-    coupling_schemes: list[CouplingScheme] = ["LS", "JJ", "FJ"]
+    coupling_schemes: list[CouplingScheme] = get_args(CouplingScheme)  # type: ignore [assignment]
     for scheme in coupling_schemes:
         assert np.isclose(ov, ket1.to_state().calc_reduced_overlap(ket2.to_state(scheme)))
         assert np.isclose(ov, ket1.to_state(scheme).calc_reduced_overlap(ket2))
@@ -69,7 +69,7 @@ def test_reduced_identity(ket: AngularKetBase) -> None:
     reduced_identity = np.sqrt(2 * ket.f_tot + 1)
 
     op: AngularMomentumQuantumNumbers
-    coupling_schemes: list[CouplingScheme] = ["LS", "JJ", "FJ"]
+    coupling_schemes: list[CouplingScheme] = get_args(CouplingScheme)  # type: ignore [assignment]
     for scheme in coupling_schemes:
         state = ket.to_state(scheme)
         for op in state.kets[0].quantum_number_names:
@@ -89,7 +89,7 @@ def test_matrix_elements_in_different_coupling_schemes(ket1: AngularKetBase, ket
         ("f_tot", 1),
         ("j_tot", 1),
     ]
-    coupling_schemes: list[CouplingScheme] = ["LS", "JJ", "FJ"]
+    coupling_schemes: list[CouplingScheme] = get_args(CouplingScheme)  # type: ignore [assignment]
 
     for scheme in coupling_schemes:
         for operator, kappa in example_list:

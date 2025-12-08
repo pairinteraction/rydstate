@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-CouplingScheme = Literal["LS", "JJ", "FJ"]
+CouplingScheme = Literal["LS", "JJ", "FJ", "KS"]
 
 
 class InvalidQuantumNumbersError(ValueError):
@@ -226,6 +226,9 @@ class AngularKetBase(ABC):
     def to_state(self, coupling_scheme: Literal["FJ"]) -> AngularState[AngularKetFJ]: ...
 
     @overload
+    def to_state(self, coupling_scheme: Literal["KS"]) -> AngularState[AngularKetKS]: ...
+
+    @overload
     def to_state(self: Self) -> AngularState[Self]: ...
 
     def to_state(self, coupling_scheme: CouplingScheme | None = None) -> AngularState[Any]:
@@ -249,6 +252,8 @@ class AngularKetBase(ABC):
             return self._to_state_jj()
         if coupling_scheme == "FJ":
             return self._to_state_fj()
+        if coupling_scheme == "KS":
+            return self._to_state_ks()
         raise ValueError(f"Unknown coupling scheme {coupling_scheme!r}.")
 
     def _to_state_ls(self) -> AngularState[AngularKetLS]:
@@ -356,7 +361,42 @@ class AngularKetBase(ABC):
 
         return AngularState(coefficients, kets)
 
-    def calc_reduced_overlap(self, other: AngularKetBase) -> float:
+    def _to_state_ks(self) -> AngularState[AngularKetKS]:
+        """Convert a single ket to state in KS coupling."""
+        kets: list[AngularKetKS] = []
+        coefficients: list[float] = []
+
+        j_c_list = get_possible_quantum_number_values(self.s_c, self.l_c, getattr(self, "j_c", None))
+        for j_c in j_c_list:
+            k_list = get_possible_quantum_number_values(j_c, self.l_r, getattr(self, "k", None))
+            for k in k_list:
+                j_tot_list = get_possible_quantum_number_values(k, self.s_r, getattr(self, "j_tot", None))
+                for j_tot in j_tot_list:
+                    try:
+                        ks_ket = AngularKetKS(
+                            i_c=self.i_c,
+                            s_c=self.s_c,
+                            l_c=self.l_c,
+                            s_r=self.s_r,
+                            l_r=self.l_r,
+                            j_c=j_c,
+                            k=k,
+                            j_tot=j_tot,
+                            f_tot=self.f_tot,
+                            m=self.m,
+                        )
+                    except InvalidQuantumNumbersError:
+                        continue
+                    coeff = self.calc_reduced_overlap(ks_ket)
+                    if coeff != 0:
+                        kets.append(ks_ket)
+                        coefficients.append(coeff)
+
+        from rydstate.angular.angular_state import AngularState  # noqa: PLC0415
+
+        return AngularState(coefficients, kets)
+
+    def calc_reduced_overlap(self, other: AngularKetBase) -> float:  # noqa: PLR0911
         """Calculate the reduced overlap <self||other> (ignoring the magnetic quantum number m).
 
         If both kets are of the same type (=same coupling scheme), this is just a delta function
@@ -397,6 +437,18 @@ class AngularKetBase(ABC):
             for coeff, jj_ket in fj.to_state("JJ"):
                 ov += coeff * ls.calc_reduced_overlap(jj_ket)
             return float(ov)
+
+        # JJ - KS overlaps
+        if any(isinstance(s, AngularKetJJ) for s in kets) and any(isinstance(s, AngularKetKS) for s in kets):
+            jj = next(s for s in kets if isinstance(s, AngularKetJJ))
+            ks = next(s for s in kets if isinstance(s, AngularKetKS))
+            return clebsch_gordan_6j(ks.s_r, ks.l_r, ks.j_c, jj.j_r, ks.k, ks.j_tot)
+
+        if any(isinstance(s, AngularKetKS) for s in kets):
+            ks = next(s for s in kets if isinstance(s, AngularKetKS))
+            other = next(s for s in kets if not isinstance(s, AngularKetJJ))
+            other_jj = other.to_state("JJ")
+            return other_jj.calc_reduced_overlap(ks)
 
         raise NotImplementedError(f"This method is not yet implemented for {self!r} and {other!r}.")
 
@@ -740,6 +792,69 @@ class AngularKetFJ(AngularKetBase):
         super().sanity_check(msgs)
 
 
+class AngularKetKS(AngularKetBase):
+    """Spin ket in KS coupling."""
+
+    __slots__ = ("j_c", "k", "j_tot")
+    quantum_number_names: ClassVar = ("i_c", "s_c", "l_c", "s_r", "l_r", "j_c", "k", "j_tot", "f_tot")
+    coupled_quantum_numbers: ClassVar = {
+        "j_c": ("s_c", "l_c"),
+        "k": ("j_c", "l_r"),
+        "j_tot": ("k", "s_r"),
+        "f_tot": ("i_c", "j_tot"),
+    }
+    coupling_scheme = "KS"
+
+    j_c: float
+    """Total core electron angular quantum number (s_c + l_c)."""
+    k: float
+    """Intermediate angular momentum (j_c + l_r)."""
+    j_tot: float
+    """Total electron angular momentum quantum number (s_tot + l_tot)."""
+
+    def __init__(
+        self,
+        i_c: float | None = None,
+        s_c: float | None = None,
+        l_c: int = 0,
+        s_r: float = 0.5,
+        l_r: int | None = None,
+        j_c: float | None = None,
+        k: float | None = None,
+        j_tot: float | None = None,
+        f_tot: float | None = None,
+        m: float | None = None,
+        species: str | SpeciesObject | None = None,
+    ) -> None:
+        """Initialize the Spin ket."""
+        super().__init__(i_c, s_c, l_c, s_r, l_r, f_tot, m, species)
+
+        self.j_c = try_trivial_spin_addition(self.l_c, self.s_c, j_c, "j_c")
+        self.k = try_trivial_spin_addition(self.j_c, self.l_r, k, "k")
+        self.j_tot = try_trivial_spin_addition(self.k, self.s_r, j_tot, "j_tot")
+        self.f_tot = try_trivial_spin_addition(self.i_c, self.j_tot, f_tot, "f_tot")
+
+        super()._post_init()
+
+    def sanity_check(self, msgs: list[str] | None = None) -> None:
+        """Check that the quantum numbers are valid."""
+        msgs = msgs if msgs is not None else []
+
+        if not check_spin_addition_rule(self.l_c, self.s_c, self.j_c):
+            msgs.append(f"{self.l_c=}, {self.s_c=}, {self.j_c=} don't satisfy spin addition rule.")
+
+        if not check_spin_addition_rule(self.j_c, self.l_r, self.k):
+            msgs.append(f"{self.j_c=}, {self.l_r=}, {self.k=} don't satisfy spin addition rule.")
+
+        if not check_spin_addition_rule(self.k, self.s_r, self.j_tot):
+            msgs.append(f"{self.k=}, {self.s_r=}, {self.j_tot=} don't satisfy spin addition rule.")
+
+        if not check_spin_addition_rule(self.i_c, self.j_tot, self.f_tot):
+            msgs.append(f"{self.i_c=}, {self.j_tot=}, {self.f_tot=} don't satisfy spin addition rule.")
+
+        super().sanity_check(msgs)
+
+
 def julia_qn_to_dict(qn: juliacall.AnyValue) -> dict[str, float]:
     """Convert MQDT Julia quantum numbers to dict object."""
     if "fjQuantumNumbers" in str(qn):
@@ -760,6 +875,7 @@ def quantum_numbers_to_angular_ket(
     s_r: float = 0.5,
     l_r: int | None = None,
     j_r: float | None = None,
+    k: float | None = None,
     s_tot: float | None = None,
     l_tot: int | None = None,
     j_tot: float | None = None,
@@ -777,6 +893,7 @@ def quantum_numbers_to_angular_ket(
         s_r: Spin quantum number of the rydberg electron always 0.5)
         l_r: Orbital angular momentum quantum number of the rydberg electron.
         j_r: Total angular momentum quantum number of the rydberg electron.
+        k: Intermediate angular momentum (j_c + l_r).
         s_tot: Total spin quantum number of all electrons.
         l_tot: Total orbital angular momentum quantum number of all electrons.
         j_tot: Total angular momentum quantum number of all electrons.
@@ -785,17 +902,21 @@ def quantum_numbers_to_angular_ket(
           Optional, only needed for concrete angular matrix elements.
 
     """
-    if all(qn is None for qn in [j_c, f_c, j_r]):
+    if all(qn is None for qn in [j_c, f_c, j_r, k]):
         return AngularKetLS(
             s_c=s_c, l_c=l_c, s_r=s_r, l_r=l_r, s_tot=s_tot, l_tot=l_tot, j_tot=j_tot, f_tot=f_tot, m=m, species=species
         )
-    if all(qn is None for qn in [s_tot, l_tot, f_c]):
+    if all(qn is None for qn in [s_tot, l_tot, f_c, k]):
         return AngularKetJJ(
             s_c=s_c, l_c=l_c, j_c=j_c, s_r=s_r, l_r=l_r, j_r=j_r, j_tot=j_tot, f_tot=f_tot, m=m, species=species
         )
-    if all(qn is None for qn in [s_tot, l_tot, j_tot]):
+    if all(qn is None for qn in [s_tot, l_tot, j_tot, k]):
         return AngularKetFJ(
             s_c=s_c, l_c=l_c, j_c=j_c, f_c=f_c, s_r=s_r, l_r=l_r, j_r=j_r, f_tot=f_tot, m=m, species=species
+        )
+    if all(qn is None for qn in [s_tot, l_tot, j_r, f_c]):
+        return AngularKetKS(
+            s_c=s_c, l_c=l_c, j_c=j_c, s_r=s_r, l_r=l_r, k=k, j_tot=j_tot, f_tot=f_tot, m=m, species=species
         )
 
     raise ValueError("Invalid combination of angular quantum numbers provided.")

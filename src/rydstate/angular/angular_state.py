@@ -10,6 +10,7 @@ from rydstate.angular.angular_ket import (
     AngularKetBase,
     AngularKetFJ,
     AngularKetJJ,
+    AngularKetKS,
     AngularKetLS,
 )
 from rydstate.angular.angular_matrix_element import is_angular_momentum_quantum_number
@@ -76,6 +77,9 @@ class AngularState(Generic[_AngularKet]):
     @overload
     def to(self, coupling_scheme: Literal["FJ"]) -> AngularState[AngularKetFJ]: ...
 
+    @overload
+    def to(self, coupling_scheme: Literal["KS"]) -> AngularState[AngularKetKS]: ...
+
     def to(self, coupling_scheme: CouplingScheme) -> AngularState[Any]:
         """Convert to specified coupling scheme.
 
@@ -106,7 +110,7 @@ class AngularState(Generic[_AngularKet]):
 
         """
         if q not in self.kets[0].quantum_number_names:
-            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ]:
+            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ, AngularKetKS]:
                 if q in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_exp_qn(q)
 
@@ -124,7 +128,7 @@ class AngularState(Generic[_AngularKet]):
 
         """
         if q not in self.kets[0].quantum_number_names:
-            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ]:
+            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ, AngularKetKS]:
                 if q in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_std_qn(q)
 
@@ -165,7 +169,7 @@ class AngularState(Generic[_AngularKet]):
         if isinstance(other, AngularKetBase):
             other = other.to_state()
         if is_angular_momentum_quantum_number(operator) and operator not in self.kets[0].quantum_number_names:
-            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ]:
+            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ, AngularKetKS]:
                 if operator in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_reduced_matrix_element(other, operator, kappa)
 

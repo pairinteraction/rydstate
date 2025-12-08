@@ -39,6 +39,7 @@ class RydbergStateSQDT(RydbergStateBase):
         s_r: float = 0.5,
         l_r: int | None = None,
         j_r: float | None = None,
+        k: float | None = None,
         s_tot: float | None = None,
         l_tot: int | None = None,
         j_tot: float | None = None,
@@ -59,6 +60,7 @@ class RydbergStateSQDT(RydbergStateBase):
             s_r: Spin quantum number of the rydberg electron always 0.5)
             l_r: Orbital angular momentum quantum number of the rydberg electron.
             j_r: Total angular momentum quantum number of the rydberg electron.
+            k: Intermediate angular momentum (j_c + l_r).
             s_tot: Total spin quantum number of all electrons.
             l_tot: Total orbital angular momentum quantum number of all electrons.
             j_tot: Total angular momentum quantum number of all electrons.
@@ -79,6 +81,7 @@ class RydbergStateSQDT(RydbergStateBase):
             s_r=s_r,
             l_r=l_r,
             j_r=j_r,
+            k=k,
             s_tot=s_tot,
             l_tot=l_tot,
             j_tot=j_tot,

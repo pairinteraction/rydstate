@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 AngularMomentumQuantumNumbers = Literal[
-    "i_c", "s_c", "l_c", "s_r", "l_r", "s_tot", "l_tot", "j_c", "j_r", "j_tot", "f_c", "f_tot"
+    "i_c", "s_c", "l_c", "s_r", "l_r", "s_tot", "l_tot", "j_c", "j_r", "k", "j_tot", "f_c", "f_tot"
 ]
 IdentityOperators = Literal[
     "identity_i_c",
@@ -34,6 +34,7 @@ IdentityOperators = Literal[
     "identity_j_tot",
     "identity_f_c",
     "identity_f_tot",
+    "identity_k",
 ]
 AngularOperatorType = Literal[
     "spherical",
