@@ -57,6 +57,12 @@ class BasisBase(ABC, Generic[_RydbergState]):
 
         return self
 
+    def sort_states(self, qn: str) -> Self:
+        values = self.calc_exp_qn(qn)
+        sorted_indices = np.argsort(values)
+        self.states = [self.states[i] for i in sorted_indices]
+        return self
+
     def calc_exp_qn(self, qn: str) -> list[float]:
         if is_angular_momentum_quantum_number(qn):
             return [state.angular.calc_exp_qn(qn) for state in self.states]
