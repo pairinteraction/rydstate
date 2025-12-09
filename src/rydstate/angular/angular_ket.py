@@ -282,7 +282,7 @@ class AngularKetBase(ABC):
                         )
                     except InvalidQuantumNumbersError:
                         continue
-                    coeff = self.calc_reduced_overlap(ls_ket)
+                    coeff = ls_ket.calc_reduced_overlap(self)
                     if coeff != 0:
                         kets.append(ls_ket)
                         coefficients.append(coeff)
@@ -317,7 +317,7 @@ class AngularKetBase(ABC):
                         )
                     except InvalidQuantumNumbersError:
                         continue
-                    coeff = self.calc_reduced_overlap(jj_ket)
+                    coeff = jj_ket.calc_reduced_overlap(self)
                     if coeff != 0:
                         kets.append(jj_ket)
                         coefficients.append(coeff)
@@ -352,7 +352,7 @@ class AngularKetBase(ABC):
                         )
                     except InvalidQuantumNumbersError:
                         continue
-                    coeff = self.calc_reduced_overlap(fj_ket)
+                    coeff = fj_ket.calc_reduced_overlap(self)
                     if coeff != 0:
                         kets.append(fj_ket)
                         coefficients.append(coeff)
@@ -387,7 +387,7 @@ class AngularKetBase(ABC):
                         )
                     except InvalidQuantumNumbersError:
                         continue
-                    coeff = self.calc_reduced_overlap(ks_ket)
+                    coeff = ks_ket.calc_reduced_overlap(self)
                     if coeff != 0:
                         kets.append(ks_ket)
                         coefficients.append(coeff)
@@ -396,7 +396,7 @@ class AngularKetBase(ABC):
 
         return AngularState(coefficients, kets)
 
-    def calc_reduced_overlap(self, other: AngularKetBase) -> float:  # noqa: PLR0911
+    def calc_reduced_overlap(self, other: AngularKetBase | AngularState[Any]) -> float:  # noqa: PLR0911
         """Calculate the reduced overlap <self||other> (ignoring the magnetic quantum number m).
 
         If both kets are of the same type (=same coupling scheme), this is just a delta function
@@ -404,56 +404,48 @@ class AngularKetBase(ABC):
         If the kets are of different types, the overlap is calculated using the corresponding
         Clebsch-Gordan coefficients (/ Wigner-j symbols).
         """
+        from rydstate.angular.angular_state import AngularState  # noqa: PLC0415
+
+        if isinstance(other, AngularState):
+            return other.calc_reduced_overlap(self)
+
+        if type(self) is type(other):
+            return 1 if self.quantum_numbers == other.quantum_numbers else 0
+
         for q in set(self.quantum_number_names) & set(other.quantum_number_names):
             if self.get_qn(q) != other.get_qn(q):
                 return 0
 
-        if type(self) is type(other):
-            return 1
-
         kets = [self, other]
 
-        # JJ - FJ overlaps
-        if any(isinstance(s, AngularKetJJ) for s in kets) and any(isinstance(s, AngularKetFJ) for s in kets):
+        # JJ overlaps
+        if any(isinstance(s, AngularKetJJ) for s in kets):
             jj = next(s for s in kets if isinstance(s, AngularKetJJ))
-            fj = next(s for s in kets if isinstance(s, AngularKetFJ))
-            return clebsch_gordan_6j(fj.j_r, fj.j_c, fj.i_c, jj.j_tot, fj.f_c, fj.f_tot)
+            # - FJ
+            if any(isinstance(s, AngularKetFJ) for s in kets):
+                fj = next(s for s in kets if isinstance(s, AngularKetFJ))
+                return clebsch_gordan_6j(fj.j_r, fj.j_c, fj.i_c, jj.j_tot, fj.f_c, fj.f_tot)
 
-        # JJ - LS overlaps
-        if any(isinstance(s, AngularKetJJ) for s in kets) and any(isinstance(s, AngularKetLS) for s in kets):
-            jj = next(s for s in kets if isinstance(s, AngularKetJJ))
-            ls = next(s for s in kets if isinstance(s, AngularKetLS))
-            # NOTE: it matters, whether you first put all 3 l's and then all 3 s's or the other way round
-            # (see symmetry properties of 9j symbol)
-            # this convention is used, such that all matrix elements work out correctly, no matter in which
-            # coupling scheme they are calculated
-            return clebsch_gordan_9j(ls.l_r, ls.l_c, ls.l_tot, ls.s_r, ls.s_c, ls.s_tot, jj.j_r, jj.j_c, jj.j_tot)
+            # - LS
+            if any(isinstance(s, AngularKetLS) for s in kets):
+                ls = next(s for s in kets if isinstance(s, AngularKetLS))
+                # NOTE: it matters, whether you first put all 3 l's and then all 3 s's or the other way round
+                # (see symmetry properties of 9j symbol)
+                # this convention is used, such that all matrix elements work out correctly, no matter in which
+                # coupling scheme they are calculated
+                return clebsch_gordan_9j(ls.l_r, ls.l_c, ls.l_tot, ls.s_r, ls.s_c, ls.s_tot, jj.j_r, jj.j_c, jj.j_tot)
 
-        # FJ - LS overlaps
-        if any(isinstance(s, AngularKetFJ) for s in kets) and any(isinstance(s, AngularKetLS) for s in kets):
-            fj = next(s for s in kets if isinstance(s, AngularKetFJ))
-            ls = next(s for s in kets if isinstance(s, AngularKetLS))
-            ov: float = 0
-            for coeff, jj_ket in fj.to_state("JJ"):
-                ov += coeff * ls.calc_reduced_overlap(jj_ket)
-            return float(ov)
+            # - KS overlaps
+            if any(isinstance(s, AngularKetKS) for s in kets):
+                ks = next(s for s in kets if isinstance(s, AngularKetKS))
+                return clebsch_gordan_6j(ks.s_r, ks.l_r, ks.j_c, jj.j_r, ks.k, ks.j_tot)
 
-        # JJ - KS overlaps
-        if any(isinstance(s, AngularKetJJ) for s in kets) and any(isinstance(s, AngularKetKS) for s in kets):
-            jj = next(s for s in kets if isinstance(s, AngularKetJJ))
-            ks = next(s for s in kets if isinstance(s, AngularKetKS))
-            return clebsch_gordan_6j(ks.s_r, ks.l_r, ks.j_c, jj.j_r, ks.k, ks.j_tot)
+            raise NotImplementedError(f"calc_reduced_overlap not implemented for {kets!r}.")
 
-        if any(isinstance(s, AngularKetKS) for s in kets):
-            ks = next(s for s in kets if isinstance(s, AngularKetKS))
-            other = next(s for s in kets if not isinstance(s, AngularKetJJ))
-            other_jj = other.to_state("JJ")
-            return other_jj.calc_reduced_overlap(ks)
-
-        raise NotImplementedError(f"This method is not yet implemented for {self!r} and {other!r}.")
+        return self.to_state("JJ").calc_reduced_overlap(other)
 
     def calc_reduced_matrix_element(  # noqa: C901
-        self: Self, other: AngularKetBase, operator: AngularOperatorType, kappa: int
+        self: Self, other: AngularKetBase | AngularState[Any], operator: AngularOperatorType, kappa: int
     ) -> float:
         r"""Calculate the reduced angular matrix element.
 
@@ -466,6 +458,11 @@ class AngularKetBase(ABC):
         """
         if not is_angular_operator_type(operator):
             raise NotImplementedError(f"calc_reduced_matrix_element is not implemented for operator {operator}.")
+
+        from rydstate.angular.angular_state import AngularState  # noqa: PLC0415
+
+        if isinstance(other, AngularState):
+            return other.calc_reduced_matrix_element(self, operator, kappa)
 
         if type(self) is not type(other):
             return self.to_state().calc_reduced_matrix_element(other.to_state(), operator, kappa)
@@ -810,7 +807,7 @@ class AngularKetKS(AngularKetBase):
     k: float
     """Intermediate angular momentum (j_c + l_r)."""
     j_tot: float
-    """Total electron angular momentum quantum number (s_tot + l_tot)."""
+    """Total electron angular momentum quantum number (k + s_r)."""
 
     def __init__(
         self,
