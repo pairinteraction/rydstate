@@ -297,8 +297,8 @@ class RydbergStateAlkalineLS(RydbergStateBase):
         return radial_state
 
     def __repr__(self) -> str:
-        species, n, l, s_tot, j_tot, m = self.species, self.n, self.l, self.s_tot, self.j_tot, self.m
-        return f"{self.__class__.__name__}({species.name}, {n=}, {l=}, {s_tot=}, {j_tot=}, {m=})"
+        species, n, l, s_tot, j_tot, f_tot, m = self.species, self.n, self.l, self.s_tot, self.j_tot, self.f_tot, self.m
+        return f"{self.__class__.__name__}({species.name}, {n=}, {l=}, {s_tot=}, {j_tot=}, {f_tot=}, {m=})"
 
     def get_nu(self) -> float:
         return self.species.calc_nu(self.n, self.l, self.j_tot, s_tot=self.s_tot)
@@ -326,7 +326,8 @@ class RydbergStateAlkalineJJ(RydbergStateBase):
             j_r: Total angular momentum quantum number of the Rydberg electron.
             j_tot: Total angular momentum quantum number of all electrons.
             f_tot: Total angular momentum quantum number of the atom (rydberg electron + core)
-              Optional, only needed if the species supports hyperfine structure (i.e. species.i_c is not None or 0).
+              Optional, only needed if the species supports hyperfine structure
+              (i.e. species.i_c is not None and species.i_c != 0).
             m: Total magnetic quantum number.
               Optional, only needed for concrete angular matrix elements.
 
@@ -337,8 +338,6 @@ class RydbergStateAlkalineJJ(RydbergStateBase):
         s_r, s_c = 1 / 2, 1 / 2
         i_c = species.i_c if species.i_c is not None else 0
         self.n = n
-        if l < 5:
-            raise RuntimeError("RydbergStateAlkalineJJ is intended for high-l states only.")
         self.l = l
         self.j_r = try_trivial_spin_addition(l, s_r, j_r, "j_r")
         self.j_tot = try_trivial_spin_addition(self.j_r, s_c, j_tot, "j_tot")
@@ -366,8 +365,8 @@ class RydbergStateAlkalineJJ(RydbergStateBase):
         return radial_state
 
     def __repr__(self) -> str:
-        species, n, l, j_r, j_tot, m = self.species, self.n, self.l, self.j_r, self.j_tot, self.m
-        return f"{self.__class__.__name__}({species.name}, {n=}, {l=}, {j_r=}, {j_tot=}, {m=})"
+        species, n, l, j_r, j_tot, f_tot, m = self.species, self.n, self.l, self.j_r, self.j_tot, self.f_tot, self.m
+        return f"{self.__class__.__name__}({species.name}, {n=}, {l=}, {j_r=}, {j_tot=}, {f_tot=}, {m=})"
 
     def get_nu(self) -> float:
         nu_singlet = self.species.calc_nu(self.n, self.l, self.j_tot, s_tot=0)
