@@ -2,46 +2,132 @@ from __future__ import annotations
 
 import logging
 import math
-from abc import ABC, abstractmethod
 from functools import cached_property
 from typing import TYPE_CHECKING, overload
 
 import numpy as np
 
-from rydstate.angular import AngularKetJJ, AngularKetLS
-from rydstate.angular.utils import try_trivial_spin_addition
-from rydstate.radial import RadialState
-from rydstate.species.species_object import SpeciesObject
+from rydstate.angular.angular_ket import quantum_numbers_to_angular_ket
+from rydstate.radial import RadialKet
+from rydstate.rydberg.rydberg_base import RydbergStateBase
+from rydstate.species import SpeciesObject
 from rydstate.species.utils import calc_energy_from_nu
 from rydstate.units import BaseQuantities, MatrixElementOperatorRanks, ureg
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
-
-    from rydstate.angular.angular_ket import AngularKetBase
+    from rydstate.angular.angular_ket import AngularKetBase, AngularKetJJ, AngularKetLS
     from rydstate.units import MatrixElementOperator, PintFloat
 
 
 logger = logging.getLogger(__name__)
 
 
-class RydbergStateBase(ABC):
+class RydbergStateSQDT(RydbergStateBase):
     species: SpeciesObject
+
+    def __init__(
+        self,
+        species: str | SpeciesObject,
+        n: int | None = None,
+        nu: float | None = None,
+        s_c: float | None = None,
+        l_c: int = 0,
+        j_c: float | None = None,
+        f_c: float | None = None,
+        s_r: float = 0.5,
+        l_r: int | None = None,
+        j_r: float | None = None,
+        s_tot: float | None = None,
+        l_tot: int | None = None,
+        j_tot: float | None = None,
+        f_tot: float | None = None,
+        m: float | None = None,
+    ) -> None:
+        r"""Initialize the Rydberg state.
+
+        Args:
+            species: Atomic species.
+            n: Principal quantum number of the rydberg electron.
+            nu: Effective principal quantum number of the rydberg electron.
+              Optional, if not given it will be calculated from n, l, j_tot, s_tot.
+            s_c: Spin quantum number of the core electron (0 for Alkali, 0.5 for divalent atoms).
+            l_c: Orbital angular momentum quantum number of the core electron.
+            j_c: Total angular momentum quantum number of the core electron.
+            f_c: Total angular momentum quantum number of the core (core electron + nucleus).
+            s_r: Spin quantum number of the rydberg electron always 0.5)
+            l_r: Orbital angular momentum quantum number of the rydberg electron.
+            j_r: Total angular momentum quantum number of the rydberg electron.
+            s_tot: Total spin quantum number of all electrons.
+            l_tot: Total orbital angular momentum quantum number of all electrons.
+            j_tot: Total angular momentum quantum number of all electrons.
+            f_tot: Total angular momentum quantum number of the atom (rydberg electron + core)
+            m: Total magnetic quantum number.
+                Optional, only needed for concrete angular matrix elements.
+
+        """
+        if isinstance(species, str):
+            species = SpeciesObject.from_name(species)
+        self.species = species
+
+        self._qns = dict(  # noqa: C408
+            s_c=s_c,
+            l_c=l_c,
+            j_c=j_c,
+            f_c=f_c,
+            s_r=s_r,
+            l_r=l_r,
+            j_r=j_r,
+            s_tot=s_tot,
+            l_tot=l_tot,
+            j_tot=j_tot,
+            f_tot=f_tot,
+            m=m,
+        )
+
+        self.n = n
+        self._nu = nu
+        if nu is None and n is None:
+            raise ValueError("Either n or nu must be given to initialize the Rydberg state.")
+
+    def __repr__(self) -> str:
+        species, n, nu = self.species.name, self.n, self.nu
+        n_str = f", {n=}" if n is not None else ""
+        return f"{self.__class__.__name__}({species=}{n_str}, {nu=}, {self.angular})"
 
     def __str__(self) -> str:
         return self.__repr__()
 
-    @property
-    @abstractmethod
-    def radial(self) -> RadialState: ...
+    @cached_property
+    def radial(self) -> RadialKet:
+        """The radial part of the Rydberg electron."""
+        radial_ket = RadialKet(self.species, nu=self.nu, l_r=self.angular.l_r)
+        if self.n is not None:
+            radial_ket.set_n_for_sanity_check(self.n)
+            s_tot_list = [self.angular.get_qn("s_tot")] if "s_tot" in self.angular.quantum_number_names else [0, 1]
+            for s_tot in s_tot_list:
+                if not self.species.is_allowed_shell(self.n, self.angular.l_r, s_tot=s_tot):
+                    raise ValueError(
+                        f"The shell (n={self.n}, l_r={self.angular.l_r}, s_tot={s_tot}) "
+                        f"is not allowed for the species {self.species}."
+                    )
+        return radial_ket
 
-    @property
-    @abstractmethod
-    def angular(self) -> AngularKetBase: ...
+    @cached_property
+    def angular(self) -> AngularKetBase:
+        """The angular/spin part of the Rydberg electron."""
+        return quantum_numbers_to_angular_ket(species=self.species, **self._qns)  # type: ignore [arg-type]
 
-    @abstractmethod
-    def get_nu(self) -> float:
-        """Get the effective principal quantum number nu (for alkali atoms also known as n*) for the Rydberg state."""
+    @cached_property
+    def nu(self) -> float:
+        """The effective principal quantum number nu (for alkali atoms also known as n*) for the Rydberg state."""
+        if self._nu is not None:
+            return self._nu
+        assert self.n is not None
+        if any(qn not in self.angular.quantum_number_names for qn in ["j_tot", "s_tot"]):
+            raise ValueError("j_tot and s_tot must be defined to calculate nu from n.")
+        return self.species.calc_nu(
+            self.n, self.angular.l_r, self.angular.get_qn("j_tot"), s_tot=self.angular.get_qn("s_tot")
+        )
 
     @overload
     def get_energy(self, unit: None = None) -> PintFloat: ...
@@ -59,8 +145,7 @@ class RydbergStateBase(ABC):
 
         where `\mu = R_M/R_\infty` is the reduced mass and `\nu` the effective principal quantum number.
         """
-        nu = self.get_nu()
-        energy_au = calc_energy_from_nu(self.species.reduced_mass_au, nu)
+        energy_au = calc_energy_from_nu(self.species.reduced_mass_au, self.nu)
         if unit == "a.u.":
             return energy_au
         energy: PintFloat = energy_au * BaseQuantities["energy"]
@@ -70,20 +155,25 @@ class RydbergStateBase(ABC):
 
     def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
+        if not isinstance(other, RydbergStateSQDT):
+            raise NotImplementedError("Reduced overlap only implemented between RydbergStateSQDT states.")
+
         radial_overlap = self.radial.calc_overlap(other.radial)
         angular_overlap = self.angular.calc_reduced_overlap(other.angular)
         return radial_overlap * angular_overlap
 
-    @overload
+    @overload  # type: ignore [override]
     def calc_reduced_matrix_element(
-        self, other: Self, operator: MatrixElementOperator, unit: None = None
+        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: None = None
     ) -> PintFloat: ...
 
     @overload
-    def calc_reduced_matrix_element(self, other: Self, operator: MatrixElementOperator, unit: str) -> float: ...
+    def calc_reduced_matrix_element(
+        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str
+    ) -> float: ...
 
     def calc_reduced_matrix_element(
-        self, other: Self, operator: MatrixElementOperator, unit: str | None = None
+        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str | None = None
     ) -> PintFloat | float:
         r"""Calculate the reduced matrix element.
 
@@ -106,6 +196,9 @@ class RydbergStateBase(ABC):
             The reduced matrix element for the given operator.
 
         """
+        if not isinstance(other, RydbergStateSQDT):
+            raise NotImplementedError("Reduced matrix element only implemented between RydbergStateSQDT states.")
+
         if operator not in MatrixElementOperatorRanks:
             raise ValueError(
                 f"Operator {operator} not supported, must be one of {list(MatrixElementOperatorRanks.keys())}."
@@ -148,13 +241,15 @@ class RydbergStateBase(ABC):
         return matrix_element.to(unit).magnitude
 
     @overload
-    def calc_matrix_element(self, other: Self, operator: MatrixElementOperator, q: int) -> PintFloat: ...
+    def calc_matrix_element(self, other: RydbergStateSQDT, operator: MatrixElementOperator, q: int) -> PintFloat: ...
 
     @overload
-    def calc_matrix_element(self, other: Self, operator: MatrixElementOperator, q: int, unit: str) -> float: ...
+    def calc_matrix_element(
+        self, other: RydbergStateSQDT, operator: MatrixElementOperator, q: int, unit: str
+    ) -> float: ...
 
     def calc_matrix_element(
-        self, other: Self, operator: MatrixElementOperator, q: int, unit: str | None = None
+        self, other: RydbergStateSQDT, operator: MatrixElementOperator, q: int, unit: str | None = None
     ) -> PintFloat | float:
         r"""Calculate the matrix element.
 
@@ -185,8 +280,10 @@ class RydbergStateBase(ABC):
         return prefactor * reduced_matrix_element
 
 
-class RydbergStateAlkali(RydbergStateBase):
+class RydbergStateSQDTAlkali(RydbergStateSQDT):
     """Create an Alkali Rydberg state, including the radial and angular states."""
+
+    angular: AngularKetLS
 
     def __init__(
         self,
@@ -196,6 +293,7 @@ class RydbergStateAlkali(RydbergStateBase):
         j: float | None = None,
         f: float | None = None,
         m: float | None = None,
+        nu: float | None = None,
     ) -> None:
         r"""Initialize the Rydberg state.
 
@@ -208,45 +306,26 @@ class RydbergStateAlkali(RydbergStateBase):
               Optional, only needed if the species supports hyperfine structure (i.e. species.i_c is not None or 0).
             m: Total magnetic quantum number.
               Optional, only needed for concrete angular matrix elements.
+            nu: Effective principal quantum number of the rydberg electron.
+              Optional, if not given it will be calculated from n, l, j.
 
         """
-        if isinstance(species, str):
-            species = SpeciesObject.from_name(species)
-        self.species = species
-        i_c = species.i_c if species.i_c is not None else 0
-        self.n = n
+        super().__init__(species=species, n=n, nu=nu, l_r=l, j_tot=j, f_tot=f, m=m)
+
         self.l = l
-        self.j = try_trivial_spin_addition(l, 0.5, j, "j")
-        self.f = try_trivial_spin_addition(self.j, i_c, f, "f")
+        self.j = self.angular.j_tot
+        self.f = self.angular.f_tot
         self.m = m
-
-        if species.number_valence_electrons != 1:
-            raise ValueError(f"The species {species.name} is not an alkali atom.")
-        if not species.is_allowed_shell(n, l):
-            raise ValueError(f"The shell ({n=}, {l=}) is not allowed for the species {self.species}.")
-
-    @cached_property
-    def angular(self) -> AngularKetLS:
-        """The angular/spin state of the Rydberg electron."""
-        return AngularKetLS(l_r=self.l, j_tot=self.j, m=self.m, f_tot=self.f, species=self.species)
-
-    @cached_property
-    def radial(self) -> RadialState:
-        """The radial state of the Rydberg electron."""
-        radial_state = RadialState(self.species, nu=self.get_nu(), l_r=self.l)
-        radial_state.set_n_for_sanity_check(self.n)
-        return radial_state
 
     def __repr__(self) -> str:
         species, n, l, j, f, m = self.species, self.n, self.l, self.j, self.f, self.m
         return f"{self.__class__.__name__}({species.name}, {n=}, {l=}, {j=}, {f=}, {m=})"
 
-    def get_nu(self) -> float:
-        return self.species.calc_nu(self.n, self.l, self.j, s_tot=1 / 2)
 
-
-class RydbergStateAlkalineLS(RydbergStateBase):
+class RydbergStateSQDTAlkalineLS(RydbergStateSQDT):
     """Create an Alkaline Rydberg state, including the radial and angular states."""
+
+    angular: AngularKetLS
 
     def __init__(
         self,
@@ -257,6 +336,7 @@ class RydbergStateAlkalineLS(RydbergStateBase):
         j_tot: int | None = None,
         f_tot: float | None = None,
         m: float | None = None,
+        nu: float | None = None,
     ) -> None:
         r"""Initialize the Rydberg state.
 
@@ -270,48 +350,27 @@ class RydbergStateAlkalineLS(RydbergStateBase):
               Optional, only needed if the species supports hyperfine structure (i.e. species.i_c is not None or 0).
             m: Total magnetic quantum number.
               Optional, only needed for concrete angular matrix elements.
+            nu: Effective principal quantum number of the rydberg electron.
+              Optional, if not given it will be calculated from n, l, j_tot, s_tot.
 
         """
-        if isinstance(species, str):
-            species = SpeciesObject.from_name(species)
-        self.species = species
-        i_c = species.i_c if species.i_c is not None else 0
-        self.n = n
+        super().__init__(species=species, n=n, nu=nu, l_r=l, s_tot=s_tot, j_tot=j_tot, f_tot=f_tot, m=m)
+
         self.l = l
-        self.s_tot = s_tot
-        self.j_tot = try_trivial_spin_addition(l, s_tot, j_tot, "j_tot")
-        self.f_tot = try_trivial_spin_addition(self.j_tot, i_c, f_tot, "f_tot")
+        self.s_tot = self.angular.s_tot
+        self.j_tot = self.angular.j_tot
+        self.f_tot = self.angular.f_tot
         self.m = m
-
-        if species.number_valence_electrons != 2:
-            raise ValueError(f"The species {species.name} is not an alkaline atom.")
-        if not species.is_allowed_shell(n, l, s_tot=s_tot):
-            raise ValueError(f"The shell ({n=}, {l=}) is not allowed for the species {self.species}.")
-
-    @cached_property
-    def angular(self) -> AngularKetLS:
-        """The angular/spin state of the Rydberg electron."""
-        return AngularKetLS(
-            l_r=self.l, s_tot=self.s_tot, j_tot=self.j_tot, f_tot=self.f_tot, m=self.m, species=self.species
-        )
-
-    @cached_property
-    def radial(self) -> RadialState:
-        """The radial state of the Rydberg electron."""
-        radial_state = RadialState(self.species, nu=self.get_nu(), l_r=self.l)
-        radial_state.set_n_for_sanity_check(self.n)
-        return radial_state
 
     def __repr__(self) -> str:
         species, n, l, s_tot, j_tot, f_tot, m = self.species, self.n, self.l, self.s_tot, self.j_tot, self.f_tot, self.m
         return f"{self.__class__.__name__}({species.name}, {n=}, {l=}, {s_tot=}, {j_tot=}, {f_tot=}, {m=})"
 
-    def get_nu(self) -> float:
-        return self.species.calc_nu(self.n, self.l, self.j_tot, s_tot=self.s_tot)
 
-
-class RydbergStateAlkalineJJ(RydbergStateBase):
+class RydbergStateSQDTAlkalineJJ(RydbergStateSQDT):
     """Create an Alkaline Rydberg state, including the radial and angular states."""
+
+    angular: AngularKetJJ
 
     def __init__(
         self,
@@ -322,6 +381,7 @@ class RydbergStateAlkalineJJ(RydbergStateBase):
         j_tot: int | None = None,
         f_tot: float | None = None,
         m: float | None = None,
+        nu: float | None = None,
     ) -> None:
         r"""Initialize the Rydberg state.
 
@@ -336,50 +396,32 @@ class RydbergStateAlkalineJJ(RydbergStateBase):
               (i.e. species.i_c is not None and species.i_c != 0).
             m: Total magnetic quantum number.
               Optional, only needed for concrete angular matrix elements.
+            nu: Effective principal quantum number of the rydberg electron.
+              Optional, if not given it will be calculated from n, l, j_tot.
 
         """
-        if isinstance(species, str):
-            species = SpeciesObject.from_name(species)
-        self.species = species
-        s_r, s_c = 1 / 2, 1 / 2
-        i_c = species.i_c if species.i_c is not None else 0
-        self.n = n
-        self.l = l
-        self.j_r = try_trivial_spin_addition(l, s_r, j_r, "j_r")
-        self.j_tot = try_trivial_spin_addition(self.j_r, s_c, j_tot, "j_tot")
-        self.f_tot = try_trivial_spin_addition(self.j_tot, i_c, f_tot, "f_tot")
-        self.m = m
+        super().__init__(species=species, n=n, nu=nu, l_r=l, j_r=j_r, j_tot=j_tot, f_tot=f_tot, m=m)
 
-        if species.number_valence_electrons != 2:
-            raise ValueError(f"The species {species.name} is not an alkaline atom.")
-        for s_tot in [0, 1]:
-            if not species.is_allowed_shell(n, l, s_tot=s_tot):
-                raise ValueError(f"The shell ({n=}, {l=}) is not allowed for the species {self.species}.")
-
-    @cached_property
-    def angular(self) -> AngularKetJJ:
-        """The angular/spin state of the Rydberg electron."""
-        return AngularKetJJ(
-            l_r=self.l, j_r=self.j_r, j_tot=self.j_tot, f_tot=self.f_tot, m=self.m, species=self.species
-        )
-
-    @cached_property
-    def radial(self) -> RadialState:
-        """The radial state of the Rydberg electron."""
-        radial_state = RadialState(self.species, nu=self.get_nu(), l_r=self.l)
-        radial_state.set_n_for_sanity_check(self.n)
-        return radial_state
+        self.l = self.angular.l_r
+        self.j_r = self.angular.j_r
+        self.j_tot = self.angular.j_tot
+        self.f_tot = self.angular.f_tot
+        self.m = self.angular.m
 
     def __repr__(self) -> str:
         species, n, l, j_r, j_tot, f_tot, m = self.species, self.n, self.l, self.j_r, self.j_tot, self.f_tot, self.m
         return f"{self.__class__.__name__}({species.name}, {n=}, {l=}, {j_r=}, {j_tot=}, {f_tot=}, {m=})"
 
-    def get_nu(self) -> float:
+    @cached_property
+    def nu(self) -> float:
+        if self._nu is not None:
+            return self._nu
+        assert self.n is not None
         nu_singlet = self.species.calc_nu(self.n, self.l, self.j_tot, s_tot=0)
         nu_triplet = self.species.calc_nu(self.n, self.l, self.j_tot, s_tot=1)
         if abs(nu_singlet - nu_triplet) > 1e-10:
             raise ValueError(
-                "RydbergStateAlkalineJJ is intended for high-l states only, "
+                "RydbergStateSQDTAlkalineJJ is intended for high-l states only, "
                 "where the quantum defects are the same for singlet and triplet states."
             )
         return nu_singlet
