@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 import numpy as np
 
-from rydstate.angular.angular_state import AngularState
-from rydstate.rydberg_state import RydbergStateBase
+from rydstate.angular import AngularState
+from rydstate.rydberg.rydberg_sqdt import RydbergStateSQDTBase
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-_RydbergState = TypeVar("_RydbergState", bound=RydbergStateBase)
+_RydbergState = TypeVar("_RydbergState", bound=RydbergStateSQDTBase)
 
 
 class MQDTState(Generic[_RydbergState]):
@@ -67,9 +67,9 @@ class MQDTState(Generic[_RydbergState]):
         angular_kets = [ket.angular for ket in self.kets]
         return AngularState(self.coefficients, angular_kets)
 
-    def calc_reduced_overlap(self, other: MQDTState[Any] | RydbergStateBase) -> float:
+    def calc_reduced_overlap(self, other: MQDTState[Any] | RydbergStateSQDTBase) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
-        if isinstance(other, RydbergStateBase):
+        if isinstance(other, RydbergStateSQDTBase):
             other = MQDTState([1.0], [other])
 
         ov = 0
@@ -79,7 +79,7 @@ class MQDTState(Generic[_RydbergState]):
         return ov
 
     def calc_matrix_element(
-        self: Self, other: MQDTState[Any] | RydbergStateBase, operator: MatrixElementOperator, kappa: int
+        self: Self, other: MQDTState[Any] | RydbergStateSQDTBase, operator: MatrixElementOperator, kappa: int
     ) -> float:
         r"""Calculate the reduced angular matrix element.
 
@@ -89,7 +89,7 @@ class MQDTState(Generic[_RydbergState]):
             \left\langle self || \hat{O}^{(\kappa)} || other \right\rangle
 
         """
-        if isinstance(other, RydbergStateBase):
+        if isinstance(other, RydbergStateSQDTBase):
             other = MQDTState([1.0], [other])
 
         value = 0
