@@ -438,7 +438,9 @@ class AngularKetBase(ABC):
             # - KS overlaps
             if any(isinstance(s, AngularKetKS) for s in kets):
                 ks = next(s for s in kets if isinstance(s, AngularKetKS))
-                return clebsch_gordan_6j(ks.s_r, ks.l_r, ks.j_c, jj.j_r, ks.k, ks.j_tot)
+                # we have some gauge degree of freedom, which one must use to get consistent matrix elements
+                prefactor = -1 if (jj.j_r + jj.j_c) % 2 == 0 else 1  # TODO not quite correct yet
+                return prefactor * clebsch_gordan_6j(ks.s_r, ks.l_r, ks.j_c, jj.j_r, ks.k, ks.j_tot)
 
             raise NotImplementedError(f"calc_reduced_overlap not implemented for {kets!r}.")
 
@@ -594,8 +596,12 @@ class AngularKetBase(ABC):
         f1, f2, f_tot = (self.get_qn(qn1), self.get_qn(qn2), self.get_qn(qn_combined))
         i1, i2, i_tot = (other.get_qn(qn1), other.get_qn(qn2), other.get_qn(qn_combined))
 
+        # this should already been taken care of by _kronecker_delta_non_involved_spins
+        # TODO alternatively, remove _kronecker_delta_non_involved_spins,
+        # and check here a descending qns from qn1 or qn2
         if (operator_acts_on == "first" and f2 != i2) or (operator_acts_on == "second" and f1 != i1):
             return 0
+
         prefactor = calc_prefactor_of_operator_in_coupled_scheme(f1, f2, f_tot, i1, i2, i_tot, kappa, operator_acts_on)
         return prefactor * self._calc_prefactor_of_operator_in_coupled_scheme(other, qn_combined, kappa)
 
