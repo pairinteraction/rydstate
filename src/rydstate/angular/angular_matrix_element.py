@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import math
 from functools import lru_cache
-from typing import TYPE_CHECKING, Callable, Literal, TypeVar
+from typing import TYPE_CHECKING, Callable, Literal, TypeVar, get_args
 
 import numpy as np
+from typing_extensions import TypeGuard
 
 from rydstate.angular.utils import calc_wigner_3j, calc_wigner_6j, minus_one_pow
 
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
 
 
 AngularMomentumQuantumNumbers = Literal[
-    "i_c", "s_c", "l_c", "s_r", "l_r", "s_tot", "l_tot", "j_c", "j_r", "j_tot", "f_c", "f_tot"
+    "i_c", "s_c", "l_c", "s_r", "l_r", "s_tot", "l_tot", "j_c", "j_r", "k", "j_tot", "f_c", "f_tot"
 ]
 IdentityOperators = Literal[
     "identity_i_c",
@@ -33,12 +34,23 @@ IdentityOperators = Literal[
     "identity_j_tot",
     "identity_f_c",
     "identity_f_tot",
+    "identity_k",
 ]
 AngularOperatorType = Literal[
     "spherical",
     AngularMomentumQuantumNumbers,
     IdentityOperators,
 ]
+
+
+def is_angular_momentum_quantum_number(qn: str) -> TypeGuard[AngularMomentumQuantumNumbers]:
+    """Check if the given string is an AngularMomentumQuantumNumbers."""
+    return qn in get_args(AngularMomentumQuantumNumbers)
+
+
+def is_angular_operator_type(qn: str) -> TypeGuard[AngularOperatorType]:
+    """Check if the given string is an AngularOperatorType."""
+    return qn in get_args(AngularOperatorType)
 
 
 @lru_cache(maxsize=10_000)

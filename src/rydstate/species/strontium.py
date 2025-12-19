@@ -34,31 +34,7 @@ class _StrontiumAbstract(SpeciesObject):
     # https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025
     model_potential_parameter_fei_2009 = (0.9959, 16.9567, 0.2648, 0.1439)
 
-
-class Strontium87(_StrontiumAbstract):
-    name = "Sr87"
-    i_c = 9 / 2
-
-    # https://physics.nist.gov/PhysRefData/Handbook/Tables/strontiumtable1.htm
-    _isotope_mass_u = 86.908884  # u
-    _corrected_rydberg_constant = (
-        rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass_u),
-        None,
-        str(rydberg_constant.u),
-    )
-
-
-class Strontium88(_StrontiumAbstract):
-    name = "Sr88"
-    i_c = 0
-
-    # https://physics.nist.gov/PhysRefData/Handbook/Tables/strontiumtable1.htm
-    _isotope_mass = 87.905619  # u
-    _corrected_rydberg_constant = (
-        rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass),
-        None,
-        str(rydberg_constant.u),
-    )
+    # TODO add isotope specific quantum defects
 
     # -- [1] Brienza 2023, Phys. Rev. A 108, 022815
     #        Microwave spectroscopy of low-l singlet strontium Rydberg states at intermediate n
@@ -94,3 +70,29 @@ class Strontium88(_StrontiumAbstract):
         (3, 3.0, 1): (0.119, -2.0, 100, 0.0, 0.0),  # [3]
         (3, 4.0, 1): (0.120, -2.4, 120, 0.0, 0.0),  # [3]
     }
+
+
+class Strontium87(_StrontiumAbstract):
+    name = "Sr87"
+    i_c = 9 / 2
+
+    # https://physics.nist.gov/PhysRefData/Handbook/Tables/strontiumtable1.htm
+    _isotope_mass_u = 86.908884  # u
+    _corrected_rydberg_constant = (
+        rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass_u),
+        None,
+        str(rydberg_constant.u),
+    )
+
+
+class Strontium88(_StrontiumAbstract):
+    name = "Sr88"
+    i_c = 0
+
+    # https://physics.nist.gov/PhysRefData/Handbook/Tables/strontiumtable1.htm
+    _isotope_mass = 87.905619  # u
+    _corrected_rydberg_constant = (
+        rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass),
+        None,
+        str(rydberg_constant.u),
+    )

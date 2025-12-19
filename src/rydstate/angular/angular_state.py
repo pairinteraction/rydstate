@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import math
-from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, get_args, overload
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
 
 import numpy as np
 
@@ -10,17 +10,18 @@ from rydstate.angular.angular_ket import (
     AngularKetBase,
     AngularKetFJ,
     AngularKetJJ,
+    AngularKetKS,
     AngularKetLS,
 )
-from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers
+from rydstate.angular.angular_matrix_element import is_angular_momentum_quantum_number
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterator, Sequence
 
     from typing_extensions import Self
 
     from rydstate.angular.angular_ket import CouplingScheme
-    from rydstate.angular.angular_matrix_element import AngularOperatorType
+    from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers, AngularOperatorType
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +31,7 @@ _AngularKet = TypeVar("_AngularKet", bound=AngularKetBase)
 
 class AngularState(Generic[_AngularKet]):
     def __init__(
-        self, coefficients: list[float], kets: list[_AngularKet], *, warn_if_not_normalized: bool = True
+        self, coefficients: Sequence[float], kets: Sequence[_AngularKet], *, warn_if_not_normalized: bool = False
     ) -> None:
         self.coefficients = np.array(coefficients)
         self.kets = kets
@@ -76,6 +77,9 @@ class AngularState(Generic[_AngularKet]):
     @overload
     def to(self, coupling_scheme: Literal["FJ"]) -> AngularState[AngularKetFJ]: ...
 
+    @overload
+    def to(self, coupling_scheme: Literal["KS"]) -> AngularState[AngularKetKS]: ...
+
     def to(self, coupling_scheme: CouplingScheme) -> AngularState[Any]:
         """Convert to specified coupling scheme.
 
@@ -96,7 +100,7 @@ class AngularState(Generic[_AngularKet]):
                 else:
                     kets.append(scheme_ket)
                     coefficients.append(coeff * scheme_coeff)
-        return AngularState(coefficients, kets, warn_if_not_normalized=abs(self.norm - 1) < 1e-10)
+        return AngularState(coefficients, kets, warn_if_not_normalized=False)
 
     def calc_exp_qn(self, q: AngularMomentumQuantumNumbers) -> float:
         """Calculate the expectation value of a quantum number q.
@@ -106,7 +110,7 @@ class AngularState(Generic[_AngularKet]):
 
         """
         if q not in self.kets[0].quantum_number_names:
-            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ]:
+            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ, AngularKetKS]:
                 if q in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_exp_qn(q)
 
@@ -124,7 +128,7 @@ class AngularState(Generic[_AngularKet]):
 
         """
         if q not in self.kets[0].quantum_number_names:
-            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ]:
+            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ, AngularKetKS]:
                 if q in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_std_qn(q)
 
@@ -164,8 +168,8 @@ class AngularState(Generic[_AngularKet]):
         """
         if isinstance(other, AngularKetBase):
             other = other.to_state()
-        if operator in get_args(AngularMomentumQuantumNumbers) and operator not in self.kets[0].quantum_number_names:
-            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ]:
+        if is_angular_momentum_quantum_number(operator) and operator not in self.kets[0].quantum_number_names:
+            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ, AngularKetKS]:
                 if operator in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_reduced_matrix_element(other, operator, kappa)
 

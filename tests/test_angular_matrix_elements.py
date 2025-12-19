@@ -4,24 +4,17 @@ from typing import TYPE_CHECKING, get_args
 
 import numpy as np
 import pytest
-from rydstate.angular import AngularKetFJ, AngularKetJJ, AngularKetLS
+from rydstate.angular import AngularKetFJ, AngularKetJJ, AngularKetKS, AngularKetLS
+from rydstate.angular.angular_ket import CouplingScheme
 from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers
 
 if TYPE_CHECKING:
-    from rydstate.angular.angular_ket import AngularKetBase, CouplingScheme
+    from rydstate.angular.angular_ket import AngularKetBase
     from rydstate.angular.angular_matrix_element import AngularOperatorType
 
-TEST_KET_PAIRS = [
+TEST_KET_PAIRS: list[tuple[AngularKetBase, AngularKetBase]] = [
     (
         AngularKetLS(s_tot=1, l_r=1, j_tot=1, f_tot=1.5, species="Yb173"),
-        AngularKetLS(s_tot=1, l_r=1, j_tot=1, f_tot=1.5, species="Yb173"),
-    ),
-    (
-        AngularKetLS(s_tot=1, l_r=1, j_tot=1, f_tot=1.5, species="Yb173"),
-        AngularKetFJ(f_c=2, l_r=1, j_r=1.5, f_tot=2.5, species="Yb173"),
-    ),
-    (
-        AngularKetFJ(f_c=2, l_r=1, j_r=1.5, f_tot=2.5, species="Yb173"),
         AngularKetFJ(f_c=2, l_r=1, j_r=1.5, f_tot=2.5, species="Yb173"),
     ),
     (
@@ -30,33 +23,35 @@ TEST_KET_PAIRS = [
     ),
 ]
 
-TEST_KETS = [
-    AngularKetLS(s_tot=1, l_r=1, j_tot=1, f_tot=1.5, species="Yb173"),
+TEST_KETS: list[AngularKetBase] = [
     AngularKetLS(s_tot=1, l_r=1, j_tot=1, f_tot=1.5, species="Yb173"),
     AngularKetJJ(l_r=1, j_r=1.5, j_tot=2, f_tot=2.5, species="Yb173"),
     AngularKetFJ(f_c=2, l_r=1, j_r=1.5, f_tot=2.5, species="Yb173"),
-    AngularKetFJ(f_c=2, l_r=1, j_r=1.5, f_tot=2.5, species="Yb173"),
+    AngularKetLS(s_tot=0, l_r=1, j_tot=1, f_tot=1.5, species="Yb173"),
+    AngularKetJJ(l_r=1, j_r=1.5, j_tot=1, f_tot=1.5, species="Yb173"),
+    AngularKetKS(l_r=1, k=1.5, j_tot=1, f_tot=1.5, species="Yb173"),
 ]
+
+TEST_KET_PAIRS += [(ket, ket) for ket in TEST_KETS]
 
 
 @pytest.mark.parametrize("ket", TEST_KETS)
 def test_exp_q_different_coupling_schemes(ket: AngularKetBase) -> None:
     all_qns: tuple[AngularMomentumQuantumNumbers, ...] = get_args(AngularMomentumQuantumNumbers)
+    coupling_schemes: list[CouplingScheme] = get_args(CouplingScheme)  # type: ignore [assignment]
     for q in all_qns:
         exp_q = ket.to_state("LS").calc_exp_qn(q)
-        assert np.isclose(exp_q, ket.to_state("JJ").calc_exp_qn(q))
-        assert np.isclose(exp_q, ket.to_state("FJ").calc_exp_qn(q))
-
         std_q = ket.to_state("LS").calc_std_qn(q)
-        assert np.isclose(std_q, ket.to_state("JJ").calc_std_qn(q))
-        assert np.isclose(std_q, ket.to_state("FJ").calc_std_qn(q))
+        for scheme in coupling_schemes:
+            assert np.isclose(exp_q, ket.to_state(scheme).calc_exp_qn(q))
+            assert np.isclose(std_q, ket.to_state(scheme).calc_std_qn(q))
 
 
 @pytest.mark.parametrize(("ket1", "ket2"), TEST_KET_PAIRS)
 def test_overlap_different_coupling_schemes(ket1: AngularKetBase, ket2: AngularKetBase) -> None:
     ov = ket1.calc_reduced_overlap(ket2)
 
-    coupling_schemes: list[CouplingScheme] = ["LS", "JJ", "FJ"]
+    coupling_schemes: list[CouplingScheme] = get_args(CouplingScheme)  # type: ignore [assignment]
     for scheme in coupling_schemes:
         assert np.isclose(ov, ket1.to_state().calc_reduced_overlap(ket2.to_state(scheme)))
         assert np.isclose(ov, ket1.to_state(scheme).calc_reduced_overlap(ket2))
@@ -69,7 +64,7 @@ def test_reduced_identity(ket: AngularKetBase) -> None:
     reduced_identity = np.sqrt(2 * ket.f_tot + 1)
 
     op: AngularMomentumQuantumNumbers
-    coupling_schemes: list[CouplingScheme] = ["LS", "JJ", "FJ"]
+    coupling_schemes: list[CouplingScheme] = get_args(CouplingScheme)  # type: ignore [assignment]
     for scheme in coupling_schemes:
         state = ket.to_state(scheme)
         for op in state.kets[0].quantum_number_names:
@@ -88,13 +83,14 @@ def test_matrix_elements_in_different_coupling_schemes(ket1: AngularKetBase, ket
         ("i_c", 1),
         ("f_tot", 1),
         ("j_tot", 1),
+        ("k", 1),
     ]
-    coupling_schemes: list[CouplingScheme] = ["LS", "JJ", "FJ"]
+    coupling_schemes: list[CouplingScheme] = get_args(CouplingScheme)  # type: ignore [assignment]
 
-    for scheme in coupling_schemes:
-        for operator, kappa in example_list:
+    for operator, kappa in example_list:
+        val = ket1.calc_reduced_matrix_element(ket2, operator, kappa)
+        for scheme in coupling_schemes:
             msg = f"{operator=}, {kappa=}, {ket1=}, {ket2=}, {scheme=}"
-            val = ket1.calc_reduced_matrix_element(ket2, operator, kappa)
 
             assert np.isclose(
                 val, ket1.to_state().calc_reduced_matrix_element(ket2.to_state(scheme), operator, kappa)
