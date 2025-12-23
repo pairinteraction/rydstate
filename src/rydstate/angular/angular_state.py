@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import math
-from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, get_args, overload
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
 
 import numpy as np
 
@@ -12,15 +12,15 @@ from rydstate.angular.angular_ket import (
     AngularKetJJ,
     AngularKetLS,
 )
-from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers
+from rydstate.angular.angular_matrix_element import is_angular_momentum_quantum_number
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterator, Sequence
 
     from typing_extensions import Self
 
     from rydstate.angular.angular_ket import CouplingScheme
-    from rydstate.angular.angular_matrix_element import AngularOperatorType
+    from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers, AngularOperatorType
 
 logger = logging.getLogger(__name__)
 
@@ -30,13 +30,15 @@ _AngularKet = TypeVar("_AngularKet", bound=AngularKetBase)
 
 class AngularState(Generic[_AngularKet]):
     def __init__(
-        self, coefficients: list[float], kets: list[_AngularKet], *, warn_if_not_normalized: bool = True
+        self, coefficients: Sequence[float], kets: Sequence[_AngularKet], *, warn_if_not_normalized: bool = True
     ) -> None:
         self.coefficients = np.array(coefficients)
         self.kets = kets
 
         if len(coefficients) != len(kets):
             raise ValueError("Length of coefficients and kets must be the same.")
+        if len(kets) == 0:
+            raise ValueError("At least one ket must be provided.")
         if not all(type(ket) is type(kets[0]) for ket in kets):
             raise ValueError("All kets must be of the same type.")
         if len(set(kets)) != len(kets):
@@ -164,7 +166,7 @@ class AngularState(Generic[_AngularKet]):
         """
         if isinstance(other, AngularKetBase):
             other = other.to_state()
-        if operator in get_args(AngularMomentumQuantumNumbers) and operator not in self.kets[0].quantum_number_names:
+        if is_angular_momentum_quantum_number(operator) and operator not in self.kets[0].quantum_number_names:
             for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ]:
                 if operator in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_reduced_matrix_element(other, operator, kappa)
