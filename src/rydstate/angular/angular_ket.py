@@ -3,7 +3,7 @@ from __future__ import annotations
 import contextlib
 import logging
 from abc import ABC
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Never, overload
 
 from rydstate.angular.angular_matrix_element import (
     calc_prefactor_of_operator_in_coupled_scheme,
@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-CouplingScheme = Literal["LS", "JJ", "FJ"]
+CouplingScheme = Literal["LS", "JJ", "FJ", "Dummy"]
 
 
 class InvalidQuantumNumbersError(ValueError):
@@ -227,6 +227,9 @@ class AngularKetBase(ABC):
     def to_state(self, coupling_scheme: Literal["FJ"]) -> AngularState[AngularKetFJ]: ...
 
     @overload
+    def to_state(self, coupling_scheme: Literal["Dummy"]) -> Never: ...
+
+    @overload
     def to_state(self: Self) -> AngularState[Self]: ...
 
     def to_state(self, coupling_scheme: CouplingScheme | None = None) -> AngularState[Any]:
@@ -374,6 +377,10 @@ class AngularKetBase(ABC):
 
         kets = [self, other]
 
+        # Dummy overlaps
+        if any(isinstance(s, AngularKetDummy) for s in kets):
+            return int(self == other)
+
         # JJ - FJ overlaps
         if any(isinstance(s, AngularKetJJ) for s in kets) and any(isinstance(s, AngularKetFJ) for s in kets):
             jj = next(s for s in kets if isinstance(s, AngularKetJJ))
@@ -415,6 +422,10 @@ class AngularKetBase(ABC):
         """
         if not is_angular_operator_type(operator):
             raise NotImplementedError(f"calc_reduced_matrix_element is not implemented for operator {operator}.")
+
+        # Dummy matrix elements
+        if any(isinstance(s, AngularKetDummy) for s in [self, other]):
+            return 0
 
         if type(self) is not type(other):
             return self.to_state().calc_reduced_matrix_element(other.to_state(), operator, kappa)
@@ -739,6 +750,62 @@ class AngularKetFJ(AngularKetBase):
             msgs.append(f"{self.f_c=}, {self.j_r=}, {self.f_tot=} don't satisfy spin addition rule.")
 
         super().sanity_check(msgs)
+
+
+class AngularKetDummy(AngularKetBase):
+    """Dummy spin ket for unknown quantum numbers."""
+
+    __slots__ = ("name",)
+    quantum_number_names: ClassVar = ("f_tot",)
+    coupled_quantum_numbers: ClassVar = {}
+    coupling_scheme = "Dummy"
+
+    name: str
+    """Name of the dummy ket."""
+
+    def __init__(
+        self,
+        name: str,
+        f_tot: float,
+        m: float | None = None,
+    ) -> None:
+        """Initialize the Spin ket."""
+        self.name = name
+
+        self.f_tot = f_tot
+        self.m = m
+
+        super()._post_init()
+
+    def sanity_check(self, msgs: list[str] | None = None) -> None:
+        """Check that the quantum numbers are valid."""
+        msgs = msgs if msgs is not None else []
+
+        if self.m is not None and not -self.f_tot <= self.m <= self.f_tot:
+            msgs.append(f"m must be between -f_tot and f_tot, but {self.f_tot=}, {self.m=}")
+
+        if msgs:
+            msg = "\n  ".join(msgs)
+            raise InvalidQuantumNumbersError(self, msg)
+
+    def __repr__(self) -> str:
+        args = f"{self.name}, f_tot={self.f_tot}"
+        if self.m is not None:
+            args += f", m={self.m}"
+        return f"{self.__class__.__name__}({args})"
+
+    def __str__(self) -> str:
+        return self.__repr__().replace("AngularKet", "")
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, AngularKetBase):
+            raise NotImplementedError(f"Cannot compare {self!r} with {other!r}.")
+        if not isinstance(other, AngularKetDummy):
+            return False
+        return self.name == other.name and self.f_tot == other.f_tot and self.m == other.m
+
+    def __hash__(self) -> int:
+        return hash((self.name, self.f_tot, self.m))
 
 
 def julia_qn_to_dict(qn: juliacall.AnyValue) -> dict[str, float]:

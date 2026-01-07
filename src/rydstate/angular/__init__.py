@@ -1,7 +1,8 @@
-from rydstate.angular.angular_ket import AngularKetFJ, AngularKetJJ, AngularKetLS
+from rydstate.angular.angular_ket import AngularKetDummy, AngularKetFJ, AngularKetJJ, AngularKetLS
 from rydstate.angular.angular_state import AngularState
 
 __all__ = [
+    "AngularKetDummy",
     "AngularKetFJ",
     "AngularKetJJ",
     "AngularKetLS",
