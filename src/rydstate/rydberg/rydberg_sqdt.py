@@ -25,6 +25,10 @@ logger = logging.getLogger(__name__)
 
 class RydbergStateSQDT(RydbergStateBase):
     species: SpeciesObject
+    """The atomic species of the Rydberg state."""
+
+    angular: AngularKetBase
+    """The angular/spin part of the Rydberg electron."""
 
     def __init__(
         self,
@@ -70,7 +74,8 @@ class RydbergStateSQDT(RydbergStateBase):
             species = SpeciesObject.from_name(species)
         self.species = species
 
-        self._qns = dict(  # noqa: C408
+        self.angular = quantum_numbers_to_angular_ket(
+            species=self.species,
             s_c=s_c,
             l_c=l_c,
             j_c=j_c,
@@ -90,6 +95,30 @@ class RydbergStateSQDT(RydbergStateBase):
         if nu is None and n is None:
             raise ValueError("Either n or nu must be given to initialize the Rydberg state.")
 
+    @classmethod
+    def from_angular_ket(
+        cls,
+        species: str | SpeciesObject,
+        angular_ket: AngularKetBase,
+        n: int | None = None,
+        nu: float | None = None,
+    ) -> RydbergStateSQDT:
+        """Initialize the Rydberg state from an angular ket."""
+        obj = cls.__new__(cls)
+
+        if isinstance(species, str):
+            species = SpeciesObject.from_name(species)
+        obj.species = species
+
+        obj.n = n
+        obj._nu = nu  # noqa: SLF001
+        if nu is None and n is None:
+            raise ValueError("Either n or nu must be given to initialize the Rydberg state.")
+
+        obj.angular = angular_ket
+
+        return obj
+
     def __repr__(self) -> str:
         species, n, nu = self.species.name, self.n, self.nu
         n_str = f", {n=}" if n is not None else ""
@@ -101,6 +130,11 @@ class RydbergStateSQDT(RydbergStateBase):
     @cached_property
     def radial(self) -> RadialKet:
         """The radial part of the Rydberg electron."""
+        if "l_r" not in self.angular.quantum_number_names:
+            raise ValueError(
+                f"l_r must be defined in the angular ket to access the radial ket, but angular={self.angular}."
+            )
+
         radial_ket = RadialKet(self.species, nu=self.nu, l_r=self.angular.l_r)
         if self.n is not None:
             radial_ket.set_n_for_sanity_check(self.n)
@@ -112,11 +146,6 @@ class RydbergStateSQDT(RydbergStateBase):
                         f"is not allowed for the species {self.species}."
                     )
         return radial_ket
-
-    @cached_property
-    def angular(self) -> AngularKetBase:
-        """The angular/spin part of the Rydberg electron."""
-        return quantum_numbers_to_angular_ket(species=self.species, **self._qns)  # type: ignore [arg-type]
 
     @cached_property
     def nu(self) -> float:
