@@ -3,11 +3,11 @@ from __future__ import annotations
 import logging
 import math
 from functools import cached_property
-from typing import TYPE_CHECKING, overload
+from typing import TYPE_CHECKING, Any, overload
 
 import numpy as np
 
-from rydstate.angular.angular_ket import quantum_numbers_to_angular_ket
+from rydstate.angular.utils import quantum_numbers_to_angular_ket
 from rydstate.radial import RadialKet
 from rydstate.rydberg.rydberg_base import RydbergStateBase
 from rydstate.species import SpeciesObject
@@ -15,6 +15,7 @@ from rydstate.species.utils import calc_energy_from_nu
 from rydstate.units import BaseQuantities, MatrixElementOperatorRanks, ureg
 
 if TYPE_CHECKING:
+    from rydstate import RydbergStateMQDT
     from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKetJJ, AngularKetLS
     from rydstate.units import MatrixElementOperator, PintFloat
 
@@ -24,6 +25,10 @@ logger = logging.getLogger(__name__)
 
 class RydbergStateSQDT(RydbergStateBase):
     species: SpeciesObject
+    """The atomic species of the Rydberg state."""
+
+    angular: AngularKetBase
+    """The angular/spin part of the Rydberg electron."""
 
     def __init__(
         self,
@@ -69,7 +74,8 @@ class RydbergStateSQDT(RydbergStateBase):
             species = SpeciesObject.from_name(species)
         self.species = species
 
-        self._qns = dict(  # noqa: C408
+        self.angular = quantum_numbers_to_angular_ket(
+            species=self.species,
             s_c=s_c,
             l_c=l_c,
             j_c=j_c,
@@ -89,6 +95,30 @@ class RydbergStateSQDT(RydbergStateBase):
         if nu is None and n is None:
             raise ValueError("Either n or nu must be given to initialize the Rydberg state.")
 
+    @classmethod
+    def from_angular_ket(
+        cls,
+        species: str | SpeciesObject,
+        angular_ket: AngularKetBase,
+        n: int | None = None,
+        nu: float | None = None,
+    ) -> RydbergStateSQDT:
+        """Initialize the Rydberg state from an angular ket."""
+        obj = cls.__new__(cls)
+
+        if isinstance(species, str):
+            species = SpeciesObject.from_name(species)
+        obj.species = species
+
+        obj.n = n
+        obj._nu = nu  # noqa: SLF001
+        if nu is None and n is None:
+            raise ValueError("Either n or nu must be given to initialize the Rydberg state.")
+
+        obj.angular = angular_ket
+
+        return obj
+
     def __repr__(self) -> str:
         species, n, nu = self.species.name, self.n, self.nu
         n_str = f", {n=}" if n is not None else ""
@@ -100,6 +130,11 @@ class RydbergStateSQDT(RydbergStateBase):
     @cached_property
     def radial(self) -> RadialKet:
         """The radial part of the Rydberg electron."""
+        if "l_r" not in self.angular.quantum_number_names:
+            raise ValueError(
+                f"l_r must be defined in the angular ket to access the radial ket, but angular={self.angular}."
+            )
+
         radial_ket = RadialKet(self.species, nu=self.nu, l_r=self.angular.l_r)
         if self.n is not None:
             radial_ket.set_n_for_sanity_check(self.n)
@@ -111,11 +146,6 @@ class RydbergStateSQDT(RydbergStateBase):
                         f"is not allowed for the species {self.species}."
                     )
         return radial_ket
-
-    @cached_property
-    def angular(self) -> AngularKetBase:
-        """The angular/spin part of the Rydberg electron."""
-        return quantum_numbers_to_angular_ket(species=self.species, **self._qns)  # type: ignore [arg-type]
 
     @cached_property
     def nu(self) -> float:
@@ -153,10 +183,16 @@ class RydbergStateSQDT(RydbergStateBase):
             return energy
         return energy.to(unit, "spectroscopy").magnitude
 
+    def to_mqdt(self) -> RydbergStateMQDT[Any]:
+        """Convert to a trivial RydbergMQDT state with only one contribution with coefficient 1."""
+        from rydstate import RydbergStateMQDT  # noqa: PLC0415
+
+        return RydbergStateMQDT([1], [self])
+
     def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
         if not isinstance(other, RydbergStateSQDT):
-            raise NotImplementedError("Reduced overlap only implemented between RydbergStateSQDT states.")
+            return self.to_mqdt().calc_reduced_overlap(other)
 
         radial_overlap = self.radial.calc_overlap(other.radial)
         angular_overlap = self.angular.calc_reduced_overlap(other.angular)
@@ -197,7 +233,7 @@ class RydbergStateSQDT(RydbergStateBase):
 
         """
         if not isinstance(other, RydbergStateSQDT):
-            raise NotImplementedError("Reduced matrix element only implemented between RydbergStateSQDT states.")
+            return self.to_mqdt().calc_reduced_matrix_element(other, operator, unit=unit)
 
         if operator not in MatrixElementOperatorRanks:
             raise ValueError(

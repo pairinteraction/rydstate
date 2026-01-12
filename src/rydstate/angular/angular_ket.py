@@ -13,33 +13,23 @@ from rydstate.angular.angular_matrix_element import (
     is_angular_operator_type,
 )
 from rydstate.angular.utils import (
-    calc_wigner_3j,
+    InvalidQuantumNumbersError,
     check_spin_addition_rule,
-    clebsch_gordan_6j,
-    clebsch_gordan_9j,
     get_possible_quantum_number_values,
     minus_one_pow,
     try_trivial_spin_addition,
 )
+from rydstate.angular.wigner_symbols import calc_wigner_3j, clebsch_gordan_6j, clebsch_gordan_9j
 from rydstate.species import SpeciesObject
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing_extensions import Never, Self
 
     from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers, AngularOperatorType
     from rydstate.angular.angular_state import AngularState
+    from rydstate.angular.utils import CouplingScheme
 
 logger = logging.getLogger(__name__)
-
-CouplingScheme = Literal["LS", "JJ", "FJ"]
-
-
-class InvalidQuantumNumbersError(ValueError):
-    def __init__(self, ket: AngularKetBase, msg: str = "") -> None:
-        _msg = f"Invalid quantum numbers for {ket!r}"
-        if len(msg) > 0:
-            _msg += f"\n  {msg}"
-        super().__init__(_msg)
 
 
 class AngularKetBase(ABC):
@@ -223,6 +213,9 @@ class AngularKetBase(ABC):
 
     @overload
     def to_state(self, coupling_scheme: Literal["FJ"]) -> AngularState[AngularKetFJ]: ...
+
+    @overload
+    def to_state(self, coupling_scheme: Literal["Dummy"]) -> Never: ...
 
     @overload
     def to_state(self: Self) -> AngularState[Self]: ...
@@ -737,53 +730,3 @@ class AngularKetFJ(AngularKetBase):
             msgs.append(f"{self.f_c=}, {self.j_r=}, {self.f_tot=} don't satisfy spin addition rule.")
 
         super().sanity_check(msgs)
-
-
-def quantum_numbers_to_angular_ket(
-    species: str | SpeciesObject,
-    s_c: float | None = None,
-    l_c: int = 0,
-    j_c: float | None = None,
-    f_c: float | None = None,
-    s_r: float = 0.5,
-    l_r: int | None = None,
-    j_r: float | None = None,
-    s_tot: float | None = None,
-    l_tot: int | None = None,
-    j_tot: float | None = None,
-    f_tot: float | None = None,
-    m: float | None = None,
-) -> AngularKetBase:
-    r"""Return an AngularKet object in the corresponding coupling scheme from the given quantum numbers.
-
-    Args:
-        species: Atomic species.
-        s_c: Spin quantum number of the core electron (0 for Alkali, 0.5 for divalent atoms).
-        l_c: Orbital angular momentum quantum number of the core electron.
-        j_c: Total angular momentum quantum number of the core electron.
-        f_c: Total angular momentum quantum number of the core (core electron + nucleus).
-        s_r: Spin quantum number of the rydberg electron always 0.5)
-        l_r: Orbital angular momentum quantum number of the rydberg electron.
-        j_r: Total angular momentum quantum number of the rydberg electron.
-        s_tot: Total spin quantum number of all electrons.
-        l_tot: Total orbital angular momentum quantum number of all electrons.
-        j_tot: Total angular momentum quantum number of all electrons.
-        f_tot: Total angular momentum quantum number of the atom (rydberg electron + core)
-        m: Total magnetic quantum number.
-          Optional, only needed for concrete angular matrix elements.
-
-    """
-    if all(qn is None for qn in [j_c, f_c, j_r]):
-        return AngularKetLS(
-            s_c=s_c, l_c=l_c, s_r=s_r, l_r=l_r, s_tot=s_tot, l_tot=l_tot, j_tot=j_tot, f_tot=f_tot, m=m, species=species
-        )
-    if all(qn is None for qn in [s_tot, l_tot, f_c]):
-        return AngularKetJJ(
-            s_c=s_c, l_c=l_c, j_c=j_c, s_r=s_r, l_r=l_r, j_r=j_r, j_tot=j_tot, f_tot=f_tot, m=m, species=species
-        )
-    if all(qn is None for qn in [s_tot, l_tot, j_tot]):
-        return AngularKetFJ(
-            s_c=s_c, l_c=l_c, j_c=j_c, f_c=f_c, s_r=s_r, l_r=l_r, j_r=j_r, f_tot=f_tot, m=m, species=species
-        )
-
-    raise ValueError("Invalid combination of angular quantum numbers provided.")
