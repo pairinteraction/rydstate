@@ -3,7 +3,7 @@ from __future__ import annotations
 import contextlib
 import logging
 from abc import ABC
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, Never, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, overload
 
 from rydstate.angular.angular_matrix_element import (
     calc_prefactor_of_operator_in_coupled_scheme,
@@ -26,7 +26,7 @@ from rydstate.species import SpeciesObject
 
 if TYPE_CHECKING:
     import juliacall
-    from typing_extensions import Self
+    from typing_extensions import Never, Self
 
     from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers, AngularOperatorType
     from rydstate.angular.angular_state import AngularState

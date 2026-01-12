@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import math
-from typing import TYPE_CHECKING, Any, Generic, Literal, Never, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
 
 import numpy as np
 
@@ -18,7 +18,7 @@ from rydstate.angular.angular_matrix_element import is_angular_momentum_quantum_
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
-    from typing_extensions import Self
+    from typing_extensions import Never, Self
 
     from rydstate.angular.angular_ket import CouplingScheme
     from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers, AngularOperatorType
