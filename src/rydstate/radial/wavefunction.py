@@ -342,9 +342,10 @@ class WavefunctionWhittaker(Wavefunction):
         nu = self.radial_ket.nu
 
         whitw_vectorized = np.vectorize(whitw, otypes=[float])
-        whitw_list = whitw_vectorized(nu, l + 0.5, 2 * self.grid.x_list / nu)
+        m_star = self.radial_ket.species.reduced_mass_au
+        whitw_list = whitw_vectorized(nu, l + 0.5, m_star * 2 * self.grid.x_list / nu)
 
-        u_list: NDArray = whitw_list / np.sqrt(nu**2 * gamma(nu + l + 1) * gamma(nu - l))
+        u_list: NDArray = nu ** (3 / 2) * whitw_list / np.sqrt(nu**2 * gamma(nu + l + 1) * gamma(nu - l))
         w_list: NDArray = u_list / np.sqrt(self.grid.z_list)
 
         self._w_list = w_list
