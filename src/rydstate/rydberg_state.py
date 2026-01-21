@@ -242,7 +242,9 @@ class RydbergStateAlkali(RydbergStateBase):
         return f"{self.__class__.__name__}({species.name}, {n=}, {l=}, {j=}, {f=}, {m=})"
 
     def get_nu(self) -> float:
-        return self.species.calc_nu(self.n, self.l, self.j, s_tot=1 / 2)
+        if not hasattr(self, "_nu"):
+            self._nu = self.species.calc_nu(self.n, self.l, self.j, s_tot=1 / 2)
+        return self._nu
 
 
 class RydbergStateAlkalineLS(RydbergStateBase):
