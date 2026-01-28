@@ -34,9 +34,6 @@ Comparisons
 Some comparisons to old versions of pairinteraction and ARC
 
 .. nbgallery::
-   examples/comparisons/compare_wavefunctions.ipynb
-   examples/comparisons/compare_radial_matrix_element.ipynb
-   examples/comparisons/compare_dipole_matrix_element.ipynb
    examples/comparisons/compare_z_min_cutoff.ipynb
    examples/comparisons/compare_nist_energy_levels_data.ipynb
    examples/comparisons/compare_model_potentials.ipynb

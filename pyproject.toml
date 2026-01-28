@@ -60,10 +60,6 @@ docs = [
   "matplotlib >= 3.7.4",
   "myst-parser >= 3.0",
 ]
-comparison = [
-  "pairinteraction < 1.0",
-  "arc-alkali-rydberg-calculator < 3.9",
-]
 jupyter = [
   "pip",
   "ipykernel",
