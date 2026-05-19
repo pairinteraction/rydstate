@@ -50,7 +50,7 @@ class BasisBase(ABC, Generic[_RydbergState]):
 
         if is_angular_momentum_quantum_number(qn):
             self.states = [state for state in self.states if qn_min <= state.angular.calc_exp_qn(qn) <= qn_max]
-        elif qn in ["n", "nu", "nu_ref"]:
+        elif qn in ["n", "nu"]:
             self.states = [state for state in self.states if qn_min <= getattr(state, qn) <= qn_max]
         else:
             raise ValueError(f"Unknown quantum number {qn}")
@@ -71,14 +71,14 @@ class BasisBase(ABC, Generic[_RydbergState]):
     def calc_exp_qn(self, qn: str) -> NDArray:
         if is_angular_momentum_quantum_number(qn):
             return np.array([state.angular.calc_exp_qn(qn) for state in self.states])
-        if qn in ["n", "nu", "nu_ref"]:
+        if qn in ["n", "nu"]:
             return np.array([getattr(state, qn) for state in self.states])
         raise ValueError(f"Unknown quantum number {qn}")
 
     def calc_std_qn(self, qn: str) -> NDArray:
         if is_angular_momentum_quantum_number(qn):
             return np.array([state.angular.calc_std_qn(qn) for state in self.states])
-        if qn in ["n", "nu", "nu_ref"]:
+        if qn in ["n", "nu"]:
             return np.zeros(len(self.states))
         raise ValueError(f"Unknown quantum number {qn}")
 

@@ -159,16 +159,11 @@ class RydbergStateSQDT(RydbergStateBase):
 
     @cached_property
     def nu(self) -> float:
-        """The effective principal quantum number nu (for alkali atoms also known as n*) for the Rydberg state."""
         if self._nu is not None:
             return self._nu
         assert isinstance(self.species, SpeciesObjectSQDT), "nu must be given if not sqdt"
         assert self.n is not None, "either nu or n must be given"
         return self.species.calc_nu(self.n, self.angular)
-
-    @property
-    def nu_ref(self) -> float:
-        return self.nu
 
     @overload
     def get_energy(self, unit: None = None) -> PintFloat: ...

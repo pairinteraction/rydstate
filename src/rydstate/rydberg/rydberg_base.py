@@ -25,5 +25,9 @@ class RydbergStateBase(ABC):
 
     @property
     @abstractmethod
-    def nu_ref(self) -> float:
-        """The reference effective principal quantum number nu_ref."""
+    def nu(self) -> float:
+        """The effective principal quantum number nu.
+
+        For SQDT states, this is also sometimes called n*.
+        For MQDT nu is given in reference to the lowest ionization threshold.
+        """
