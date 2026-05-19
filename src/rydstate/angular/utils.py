@@ -3,17 +3,51 @@ from __future__ import annotations
 import contextlib
 import typing as t
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, TypeGuard, TypeVar, get_args
 
 import numpy as np
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeIs
+    from collections.abc import Callable
+
+    from typing_extensions import ParamSpec, TypeIs
 
     from rydstate.angular.angular_ket import AngularKetBase
     from rydstate.species.species_object import SpeciesObject
 
+    P = ParamSpec("P")
+    R = TypeVar("R")
+
+    def lru_cache(maxsize: int) -> Callable[[Callable[P, R]], Callable[P, R]]: ...  # type: ignore [no-redef]
+
+
 CouplingScheme = Literal["LS", "JJ", "FJ"]
+
+
+AngularMomentumQuantumNumbers = Literal[
+    "i_c", "s_c", "l_c", "s_r", "l_r", "s_tot", "l_tot", "j_c", "j_r", "j_tot", "f_c", "f_tot"
+]
+
+IdentityOperators = Literal[
+    "identity_i_c",
+    "identity_s_c",
+    "identity_l_c",
+    "identity_s_r",
+    "identity_l_r",
+    "identity_s_tot",
+    "identity_l_tot",
+    "identity_j_c",
+    "identity_j_r",
+    "identity_j_tot",
+    "identity_f_c",
+    "identity_f_tot",
+]
+
+AngularOperatorType = Literal[
+    "spherical",
+    AngularMomentumQuantumNumbers,
+    IdentityOperators,
+]
 
 
 @t.runtime_checkable
@@ -29,17 +63,27 @@ class NotSet(t.Protocol):
     def __not_set() -> None: ...
 
 
-def is_not_set(obj: Any) -> TypeIs[NotSet]:  # noqa: ANN401
-    """Check if the obj is the NotSet singleton."""
-    return obj is NotSet
-
-
 class InvalidQuantumNumbersError(ValueError):
     def __init__(self, ket: AngularKetBase, msg: str = "") -> None:
         _msg = f"Invalid quantum numbers for {ket!r}"
         if len(msg) > 0:
             _msg += f"\n  {msg}"
         super().__init__(_msg)
+
+
+def is_angular_momentum_quantum_number(qn: str) -> TypeGuard[AngularMomentumQuantumNumbers]:
+    """Check if the given string is an AngularMomentumQuantumNumbers."""
+    return qn in get_args(AngularMomentumQuantumNumbers)
+
+
+def is_angular_operator_type(qn: str) -> TypeGuard[AngularOperatorType]:
+    """Check if the given string is an AngularOperatorType."""
+    return qn in get_args(AngularOperatorType)
+
+
+def is_not_set(obj: Any) -> TypeIs[NotSet]:  # noqa: ANN401
+    """Check if the obj is the NotSet singleton."""
+    return obj is NotSet
 
 
 def minus_one_pow(n: float) -> int:

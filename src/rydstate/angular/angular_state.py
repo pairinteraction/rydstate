@@ -12,16 +12,14 @@ from rydstate.angular.angular_ket import (
     AngularKetJJ,
     AngularKetLS,
 )
-from rydstate.angular.angular_matrix_element import is_angular_momentum_quantum_number
-from rydstate.angular.utils import is_not_set
+from rydstate.angular.utils import is_angular_momentum_quantum_number, is_not_set
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
     from typing_extensions import Self
 
-    from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers, AngularOperatorType
-    from rydstate.angular.utils import CouplingScheme
+    from rydstate.angular.utils import AngularMomentumQuantumNumbers, AngularOperatorType, CouplingScheme
     from rydstate.units import NDArray
 
 logger = logging.getLogger(__name__)

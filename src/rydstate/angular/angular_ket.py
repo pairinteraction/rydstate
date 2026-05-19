@@ -9,14 +9,14 @@ from rydstate.angular.angular_matrix_element import (
     calc_reduced_identity_matrix_element,
     calc_reduced_spherical_matrix_element,
     calc_reduced_spin_matrix_element,
-    is_angular_momentum_quantum_number,
-    is_angular_operator_type,
 )
 from rydstate.angular.utils import (
     InvalidQuantumNumbersError,
     NotSet,
     check_spin_addition_rule,
     get_possible_quantum_number_values,
+    is_angular_momentum_quantum_number,
+    is_angular_operator_type,
     is_not_set,
     minus_one_pow,
     try_trivial_spin_addition,
@@ -28,9 +28,8 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers, AngularOperatorType
     from rydstate.angular.angular_state import AngularState
-    from rydstate.angular.utils import CouplingScheme
+    from rydstate.angular.utils import AngularMomentumQuantumNumbers, AngularOperatorType, CouplingScheme
     from rydstate.species import SpeciesObject
 
 logger = logging.getLogger(__name__)

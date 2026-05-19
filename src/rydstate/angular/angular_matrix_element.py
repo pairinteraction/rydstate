@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from functools import lru_cache
-from typing import TYPE_CHECKING, Literal, TypeGuard, TypeVar, get_args
+from typing import TYPE_CHECKING, Literal, TypeVar
 
 import numpy as np
 
@@ -18,40 +18,6 @@ if TYPE_CHECKING:
     R = TypeVar("R")
 
     def lru_cache(maxsize: int) -> Callable[[Callable[P, R]], Callable[P, R]]: ...  # type: ignore [no-redef]
-
-
-AngularMomentumQuantumNumbers = Literal[
-    "i_c", "s_c", "l_c", "s_r", "l_r", "s_tot", "l_tot", "j_c", "j_r", "j_tot", "f_c", "f_tot"
-]
-IdentityOperators = Literal[
-    "identity_i_c",
-    "identity_s_c",
-    "identity_l_c",
-    "identity_s_r",
-    "identity_l_r",
-    "identity_s_tot",
-    "identity_l_tot",
-    "identity_j_c",
-    "identity_j_r",
-    "identity_j_tot",
-    "identity_f_c",
-    "identity_f_tot",
-]
-AngularOperatorType = Literal[
-    "spherical",
-    AngularMomentumQuantumNumbers,
-    IdentityOperators,
-]
-
-
-def is_angular_momentum_quantum_number(qn: str) -> TypeGuard[AngularMomentumQuantumNumbers]:
-    """Check if the given string is an AngularMomentumQuantumNumbers."""
-    return qn in get_args(AngularMomentumQuantumNumbers)
-
-
-def is_angular_operator_type(qn: str) -> TypeGuard[AngularOperatorType]:
-    """Check if the given string is an AngularOperatorType."""
-    return qn in get_args(AngularOperatorType)
 
 
 @lru_cache(maxsize=10_000)

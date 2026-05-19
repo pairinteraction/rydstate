@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
 import numpy as np
 from typing_extensions import Self
 
-from rydstate.angular.angular_matrix_element import is_angular_momentum_quantum_number
+from rydstate.angular.utils import is_angular_momentum_quantum_number
 from rydstate.rydberg.rydberg_base import RydbergStateBase
 from rydstate.species.species_object import SpeciesObject
 from rydstate.units import ureg

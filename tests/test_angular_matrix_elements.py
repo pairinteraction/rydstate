@@ -5,12 +5,11 @@ from typing import TYPE_CHECKING, get_args
 import numpy as np
 import pytest
 from rydstate.angular import AngularKetFJ, AngularKetJJ, AngularKetLS
-from rydstate.angular.angular_matrix_element import AngularMomentumQuantumNumbers
+from rydstate.angular.utils import AngularMomentumQuantumNumbers
 
 if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetBase
-    from rydstate.angular.angular_matrix_element import AngularOperatorType
-    from rydstate.angular.utils import CouplingScheme
+    from rydstate.angular.utils import AngularOperatorType, CouplingScheme
 
 TEST_KET_PAIRS = [
     (
