@@ -32,12 +32,12 @@ class RydbergStateMQDT(RydbergStateBase):
         self,
         coefficients: Sequence[float] | NDArray,
         sqdt_states: Sequence[RydbergStateSQDTAlkalineFJ | RydbergStateSQDTDummy],
-        nu_ref: float,
+        nu: float,
     ) -> None:
         self.coefficients = np.array(coefficients)
         self.sqdt_states = sqdt_states
         self.species = sqdt_states[0].species
-        self._nu_ref = nu_ref
+        self._nu = nu
         self.angular = AngularState(self.coefficients.tolist(), [ket.angular for ket in sqdt_states])
 
         if len(coefficients) != len(sqdt_states):
@@ -71,8 +71,8 @@ class RydbergStateMQDT(RydbergStateBase):
         return f"{', '.join(terms)}"
 
     @property
-    def nu_ref(self) -> float:
-        return self._nu_ref
+    def nu(self) -> float:
+        return self._nu
 
     @property
     def norm(self) -> float:
@@ -160,19 +160,19 @@ def get_mqdt_states_from_fmodel(
     if np.isinf(nu_max):
         raise ValueError("nu_max must be finite to calculate MQDT states.")
 
-    nu_ref_list = model.calc_detm_roots(nu_min, nu_max)
-    if len(nu_ref_list) == 0:
+    nu_list = model.calc_detm_roots(nu_min, nu_max)
+    if len(nu_list) == 0:
         logger.warning(
             "No MQDT states found in the range nu_min=%s, nu_max=%s for model %s", nu_min, nu_max, model.name
         )
         return []
 
     states: list[RydbergStateMQDT] = []
-    for nu_ref in nu_ref_list:
-        nuis = model.calc_channel_nuis(nu_ref)
-        coefficients = calc_nullvector(model.calc_m_matrix(nu_ref))
+    for nu in nu_list:
+        nuis = model.calc_channel_nuis(nu)
+        coefficients = calc_nullvector(model.calc_m_matrix(nu))
         if coefficients is None:
-            logger.warning("Failed to calculate nullvector for nu_ref=%s, skipping this state.", nu_ref)
+            logger.warning("Failed to calculate nullvector for nu=%s, skipping this state.", nu)
             continue
         coefficients = np.array(
             [coeff * (nui ** (3 / 2)) / np.cos(np.pi * nui) for coeff, nui in zip(coefficients, nuis, strict=True)]
@@ -186,6 +186,6 @@ def get_mqdt_states_from_fmodel(
             rydberg_class = RydbergStateSQDTDummy if is_dummy_ket(angular_ket) else RydbergStateSQDTAlkalineFJ
             sqdt_states.append(rydberg_class.from_angular_ket(model.species, angular_ket, nu=float(nui)))
 
-        states.append(RydbergStateMQDT(coefficients, sqdt_states, nu_ref=nu_ref))
+        states.append(RydbergStateMQDT(coefficients, sqdt_states, nu=nu))
 
     return states

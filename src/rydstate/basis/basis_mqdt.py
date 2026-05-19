@@ -67,8 +67,8 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
                 logger.debug(
                     "  model %s: nu_min=%s, nu_max=%s, total states=%d",
                     model.name,
-                    _states[0].nu_ref,
-                    _states[-1].nu_ref,
+                    _states[0].nu,
+                    _states[-1].nu,
                     len(_states),
                 )
             self.states.extend(_states)

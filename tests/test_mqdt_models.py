@@ -145,10 +145,10 @@ def test_inner_outer_unitary(model: FModel) -> None:
     msg = f"{model.species_name} - {model.name}: frame transformation (outer - inner) is not unitary"
     np.testing.assert_allclose(unitary.conj().T @ unitary, np.eye(unitary.shape[0]), atol=1e-10, err_msg=msg)
 
-    rotation = model.calc_frame_transformation_inner_closecoupling(nu_ref=30.5)
+    rotation = model.calc_frame_transformation_inner_closecoupling(nu=30.5)
     msg = f"{model.species_name} - {model.name}: frame transformation (inner - closecoupling) is not unitary"
     np.testing.assert_allclose(rotation.conj().T @ rotation, np.eye(rotation.shape[0]), atol=1e-10, err_msg=msg)
 
-    full = model.calc_frame_transformation(nu_ref=30.5)
+    full = model.calc_frame_transformation(nu=30.5)
     msg = f"{model.species_name} - {model.name}: full frame transformation U=QR is not unitary"
     np.testing.assert_allclose(full.conj().T @ full, np.eye(full.shape[0]), atol=1e-10, err_msg=msg)
