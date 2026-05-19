@@ -35,8 +35,12 @@ class AngularState(Generic[_AngularKet]):
         kets: Sequence[_AngularKet],
         *,
         warn_if_not_normalized: bool = True,
+        normalize: bool = True,
     ) -> None:
-        self.coefficients = np.array(coefficients)
+        if np.isreal(coefficients).all():
+            self.coefficients = np.array(coefficients, dtype=float)
+        else:
+            self.coefficients = np.array(coefficients, dtype=complex)
         self.kets = kets
 
         if len(coefficients) != len(kets):
@@ -49,7 +53,7 @@ class AngularState(Generic[_AngularKet]):
             raise ValueError("AngularState initialized with duplicate kets.")
         if abs(self.norm - 1) > 1e-10 and warn_if_not_normalized:
             logger.warning("AngularState initialized with non-normalized coefficients: %s, %s", coefficients, kets)
-        if self.norm > 1:
+        if normalize:
             self.coefficients /= self.norm
 
     def __iter__(self) -> Iterator[tuple[float, _AngularKet]]:
@@ -102,7 +106,7 @@ class AngularState(Generic[_AngularKet]):
                 else:
                     kets.append(scheme_ket)
                     coefficients.append(coeff * scheme_coeff)
-        return AngularState(coefficients, kets, warn_if_not_normalized=abs(self.norm - 1) < 1e-10)
+        return AngularState(coefficients, kets, warn_if_not_normalized=False, normalize=False)
 
     def calc_exp_qn(self, q: AngularMomentumQuantumNumbers) -> float:
         """Calculate the expectation value of a quantum number q.
@@ -120,7 +124,8 @@ class AngularState(Generic[_AngularKet]):
         if all(q_val == qs[0] for q_val in qs):
             return qs[0]  # type: ignore [no-any-return]
 
-        return np.sum(np.conjugate(self.coefficients) * self.coefficients * qs)  # type: ignore [no-any-return]
+        coefficients2 = np.conjugate(self.coefficients) * self.coefficients / self.norm**2
+        return np.sum(coefficients2 * qs)  # type: ignore [no-any-return]
 
     def calc_std_qn(self, q: AngularMomentumQuantumNumbers) -> float:
         """Calculate the standard deviation of a quantum number q.
@@ -138,7 +143,7 @@ class AngularState(Generic[_AngularKet]):
         if all(q_val == qs[0] for q_val in qs):
             return 0
 
-        coefficients2 = np.conjugate(self.coefficients) * self.coefficients
+        coefficients2 = np.conjugate(self.coefficients) * self.coefficients / self.norm**2
         exp_q = np.sum(coefficients2 * qs)
         exp_q2 = np.sum(coefficients2 * qs * qs)
 
