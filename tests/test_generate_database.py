@@ -1,30 +1,29 @@
+from __future__ import annotations
+
 import sqlite3
-from dataclasses import dataclass
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pytest
 from rydstate import RydbergStateSQDTAlkali
 from rydstate.basis.basis_sqdt import BasisSQDTAlkali
+from rydstate.generate_database.generate_database import DATABASE_SQL_FILE
 from rydstate.generate_database.generate_matrix_elements_table import generate_matrix_elements_tables
 from rydstate.generate_database.generate_misc_table import generate_wigner_table
 from rydstate.generate_database.generate_states_table import generate_states_table, get_state_data
 
-DATABASE_SQL = Path(__file__).parents[1] / "src" / "rydstate" / "generate_database" / "database.sql"
-
-
-@dataclass
-class FakeMatrixElementState:
-    n: int
-    l: int
-    nu: float
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 
 @pytest.fixture
-def conn() -> sqlite3.Connection:
+def conn() -> Generator[sqlite3.Connection, None, None]:
     connection = sqlite3.connect(":memory:")
-    connection.executescript(DATABASE_SQL.read_text(encoding="utf-8"))
-    return connection
+    connection.executescript(DATABASE_SQL_FILE.read_text(encoding="utf-8"))
+    try:
+        yield connection
+    finally:
+        connection.close()
 
 
 def test_generate_wigner_table_returns_and_inserts_rows(conn: sqlite3.Connection) -> None:
