@@ -30,7 +30,7 @@ class BasisBase(ABC, Generic[_RydbergState]):
 
     def copy(self) -> Self:
         new_basis = self.__class__.__new__(self.__class__)
-        new_basis.species = self.species
+        new_basis.__dict__ = self.__dict__.copy()
         new_basis.states = list(self.states)
         return new_basis
 
