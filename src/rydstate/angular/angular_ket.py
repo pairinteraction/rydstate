@@ -177,8 +177,35 @@ class AngularKetBase(ABC):
     def get_qn(self, qn: AngularMomentumQuantumNumbers) -> float:
         """Get the value of a quantum number by name."""
         if qn not in self.quantum_number_names:
-            raise ValueError(f"Quantum number {qn} not found in {self!r}.")
+            trivial_qn = self._try_get_trivial_qn(qn)
+            if trivial_qn is None:
+                raise ValueError(
+                    f"{self!r} does not have a well defined quantum number {qn}. "
+                    "Use calc_exp_qn if you want to calculate the expectation value of this quantum number."
+                )
+            return trivial_qn
         return getattr(self, qn)  # type: ignore [no-any-return]
+
+    def _try_get_trivial_qn(self, qn: AngularMomentumQuantumNumbers) -> float | None:
+        """Try to infer a missing quantum number from a trivial coupling relation."""
+        for coupled_quantum_numbers in (
+            self.coupled_quantum_numbers,
+            AngularKetLS.coupled_quantum_numbers,
+            AngularKetJJ.coupled_quantum_numbers,
+            AngularKetFJ.coupled_quantum_numbers,
+        ):
+            if qn not in coupled_quantum_numbers:
+                continue
+
+            qn_1, qn_2 = coupled_quantum_numbers[qn]
+            try:
+                qn_1_value = self.get_qn(qn_1)
+                qn_2_value = self.get_qn(qn_2)
+                return try_trivial_spin_addition(qn_1_value, qn_2_value, None, qn)
+            except ValueError:
+                continue
+
+        return None
 
     def calc_exp_qn(self, qn: AngularMomentumQuantumNumbers) -> float:
         """Calculate the expectation value of a quantum number qn.

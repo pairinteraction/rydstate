@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from rydstate.angular import AngularKetFJ, AngularKetJJ, AngularKetLS
 
 
@@ -52,3 +53,19 @@ def test_ls_to_fj() -> None:
     assert fj_2 in ls_as_fj.kets
     assert np.isclose(ls_as_fj.coefficients[ls_as_fj.kets.index(fj_1)], ls.calc_reduced_overlap(fj_1))
     assert np.isclose(ls_as_fj.coefficients[ls_as_fj.kets.index(fj_2)], ls.calc_reduced_overlap(fj_2))
+
+
+def test_get_qn_infers_trivial_missing_quantum_numbers() -> None:
+    jj = AngularKetJJ(i_c=0, s_c=0, l_r=1, j_r=1.5, j_tot=1.5)
+    assert jj.get_qn("s_tot") == 0.5
+    assert jj.get_qn("l_tot") == 1
+
+    # and even recursively
+    ls = AngularKetLS(i_c=0, s_c=0, l_c=0, l_r=0, s_tot=0.5, l_tot=0, j_tot=0.5)
+    assert ls.get_qn("f_c") == 0
+
+
+def test_get_qn_fails() -> None:
+    jj = AngularKetJJ(i_c=0, s_c=0.5, l_c=1, l_r=1, j_c=0.5, j_r=1.5, j_tot=1)
+    with pytest.raises(ValueError, match="l_tot"):
+        jj.get_qn("l_tot")
