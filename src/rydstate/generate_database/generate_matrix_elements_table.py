@@ -41,11 +41,12 @@ def generate_matrix_elements_tables(  # noqa: C901
     conn: sqlite3.Connection | None = None,
     max_delta_n: float = np.inf,
     all_n_up_to: float = np.inf,
-    k_angular_max: int = 3,
 ) -> dict[str, list[tuple[int, int, float]]]:
     """Populate matrix element tables for all relevant pairs of states."""
     if basis.coupling_scheme != "LS":
         raise ValueError("Only LS coupling scheme is supported for now.")
+
+    k_angular_max = max(MatrixElementOperatorRanks[op][1] for op in MATRIX_ELEMENTS_OF_INTEREST.values())
 
     basis.sort_states("nu")  # sort by nu == sort by energy
     list_of_id_state = list(enumerate(basis.states))
@@ -53,8 +54,10 @@ def generate_matrix_elements_tables(  # noqa: C901
 
     matrix_elements: dict[str, list[tuple[int, int, float]]] = {tkey: [] for tkey in MATRIX_ELEMENTS_OF_INTEREST}
     for i, (id1, state1) in enumerate(list_of_id_state):
-        list_filtered = filter(lambda x: x[1].angular.l_r - state1.angular.l_r <= k_angular_max, list_of_id_state[i:])
-        for id2, state2 in list_filtered:
+        for id2, state2 in list_of_id_state[i:]:
+            if abs(state1.angular.l_r - state2.angular.l_r) > k_angular_max:
+                # If the difference in l is larger than k_angular_max, no matrix elements have to be calculated
+                continue
             if all(n > all_n_up_to for n in [state1.n, state2.n]) and abs(state1.n - state2.n) > max_delta_n:
                 # If delta_n is larger than max_delta_n, we dont calculate the matrix elements anymore,
                 # since these are so small, that they are usually not relevant for further calculations
