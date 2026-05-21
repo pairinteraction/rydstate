@@ -238,7 +238,7 @@ class WavefunctionNumerov(Wavefunction):
         warning_msgs: list[str] = []
 
         grid = self.grid
-        state = self.radial_ket
+        radial_ket = self.radial_ket
 
         # Check and Correct if divergence of the wavefunction
         w_list_abs = np.abs(self.w_list)
@@ -277,7 +277,7 @@ class WavefunctionNumerov(Wavefunction):
 
         tol = 1e-4
         # for low n the wavefunction converges not as good and still has more weight at the inner boundary
-        n = state.n if state.n is not None else state.nu + 5
+        n = radial_ket.n if radial_ket.n is not None else radial_ket.nu + 5
         if n <= 10:
             tol = 8e-3
         elif n <= 16:
@@ -312,22 +312,24 @@ class WavefunctionNumerov(Wavefunction):
 
         # Check the number of nodes
         nodes = self.nodes
-        if state.n is not None and nodes != state.n - state.l_r - 1:
-            warning_msgs.append(f"The wavefunction has {nodes} nodes, but should have {state.n - state.l_r - 1} nodes.")
+        if radial_ket.n is not None and nodes != radial_ket.n - radial_ket.l_r - 1:
+            warning_msgs.append(
+                f"The wavefunction has {nodes} nodes, but should have {radial_ket.n - radial_ket.l_r - 1} nodes."
+            )
 
         # Check that numerov stopped and did not run until x_stop
-        if state.l_r > 0:
+        if radial_ket.l_r > 0:
             if run_backward and z_stop > grid.z_list[0] - grid.dz / 2 and inner_weight_scaled_to_whole_grid > 1e-6:
                 warning_msgs.append(f"The integration did not stop before z_stop, z={grid.z_list[0]}, z_stop={z_stop}")
             if not run_backward and z_stop < grid.z_list[-1] + grid.dz / 2:
                 warning_msgs.append(f"The integration did not stop before z_stop, z={grid.z_list[-1]}")
-        elif state.l_r == 0 and run_backward:
+        elif radial_ket.l_r == 0 and run_backward:
             z_tol = 0.035 if species.number_valence_electrons == 1 else 0.05
             if grid.z_list[0] > z_tol:  # z_list[0] should run almost to zero for l=0
                 warning_msgs.append(f"The integration for l=0 did stop at {grid.z_list[0]} (should be close to zero).")
 
         if warning_msgs:
-            msg = f"The wavefunction for the state {state} has some issues:"
+            msg = f"The wavefunction for the radial_ket {radial_ket} has some issues:"
             msg += "\n      ".join(["", *warning_msgs])
             logger.warning(msg)
             return False
