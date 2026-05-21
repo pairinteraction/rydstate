@@ -32,6 +32,15 @@ def test_alkali_basis(species_name: str) -> None:
     assert np.count_nonzero(me_matrix) > 0
 
 
+def test_basis_copy() -> None:
+    basis = BasisSQDT("Sr88", n=(30, 30), coupling_scheme="LS")
+    basis_copy = basis.copy()
+    assert basis_copy.coupling_scheme == "LS"
+    assert basis_copy.species is basis.species
+    assert basis_copy.states == basis.states
+    assert basis_copy.states is not basis.states
+
+
 @pytest.mark.parametrize("species_name", ["Sr88", "Sr87", "Yb174", "Yb171"])
 def test_alkaline_basis(species_name: str) -> None:
     """Test alkaline basis creation."""
