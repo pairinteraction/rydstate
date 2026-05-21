@@ -35,6 +35,19 @@ def main() -> None:
         help="The maximum principal quantum number n for the states to be included in the database.",
     )
     parser.add_argument(
+        "--max-delta-n",
+        default=float("inf"),
+        type=float,
+        help="The maximum difference in principal quantum number n for matrix elements to be calculated.",
+    )
+    parser.add_argument(
+        "--all-n-up-to",
+        default=float("inf"),
+        type=float,
+        help="Calculate all matrix elements where at least one state has principal quantum number n "
+        "smaller than or equal to this value.",
+    )
+    parser.add_argument(
         "--f-max",
         default=None,
         type=float,
@@ -65,8 +78,15 @@ def main() -> None:
 
     args = parser.parse_args()
     if args.species == "misc":
-        if args.n_min is not None or args.n_max is not None:
-            parser.error("--n-min and --n-max are only valid when generating a species database.")
+        if (
+            args.n_min is not None
+            or args.n_max is not None
+            or args.max_delta_n != float("inf")
+            or args.all_n_up_to != float("inf")
+        ):
+            parser.error(
+                "--n-min, --n-max, --max-delta-n, and --all-n-up-to are only valid when generating a species database."
+            )
     elif args.f_max is not None:
         parser.error("--f-max is only valid when generating the misc database.")
 
@@ -90,8 +110,8 @@ def main() -> None:
     else:
         n_min = args.n_min if args.n_min is not None else 1
         if args.n_max is None:
-            parser.error("--n-max is required when generating the misc database.")
-        create_tables_for_one_species(args.species, n_min, args.n_max)
+            parser.error("--n-max is required when generating a species database.")
+        create_tables_for_one_species(args.species, n_min, args.n_max, args.max_delta_n, args.all_n_up_to)
     logger.info("Time taken: %.2f seconds", time.perf_counter() - time_start)
 
 
