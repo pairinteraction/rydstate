@@ -5,8 +5,6 @@ import math
 from functools import lru_cache
 from typing import TYPE_CHECKING
 
-import numpy as np
-
 from rydstate.angular import AngularKetLS
 from rydstate.radial.radial_ket import RadialKet
 from rydstate.units import MatrixElementOperatorRanks
@@ -39,8 +37,8 @@ MATRIX_ELEMENTS_OF_INTEREST: dict[str, MatrixElementOperator] = {
 def generate_matrix_elements_tables(  # noqa: C901
     basis: BasisSQDT,
     conn: sqlite3.Connection | None = None,
-    max_delta_n: float = np.inf,
-    all_n_up_to: float = np.inf,
+    max_delta_n: float = float("inf"),
+    all_n_up_to: float = float("inf"),
 ) -> dict[str, list[tuple[int, int, float]]]:
     """Populate matrix element tables for all relevant pairs of states."""
     if basis.coupling_scheme != "LS":
