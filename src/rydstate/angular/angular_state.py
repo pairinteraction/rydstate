@@ -47,8 +47,8 @@ class AngularState(Generic[T_AngularKet]):
             raise ValueError("Length of coefficients and kets must be the same.")
         if len(kets) == 0:
             raise ValueError("At least one ket must be provided.")
-        if not all(type(ket) is type(kets[0]) for ket in kets):
-            raise ValueError("All kets must be of the same type.")
+        if not all(ket.coupling_scheme == self.coupling_scheme for ket in kets):
+            raise ValueError("All kets must have the same coupling scheme.")
         if len(set(kets)) != len(kets):
             raise ValueError("AngularState initialized with duplicate kets.")
         if abs(self.norm - 1) > 1e-10 and warn_if_not_normalized:
@@ -120,12 +120,12 @@ class AngularState(Generic[T_AngularKet]):
                 if q in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_exp_qn(q)
 
-        qs = np.array([ket.get_qn(q) for ket in self.kets])
-        if all(q_val == qs[0] for q_val in qs):
-            return qs[0]  # type: ignore [no-any-return]
+        qns = np.array([ket.get_qn(q) for ket in self.kets])
+        if all(q_val == qns[0] for q_val in qns):
+            return qns[0]  # type: ignore [no-any-return]
 
         coefficients2 = np.conjugate(self.coefficients) * self.coefficients / self.norm**2
-        return np.sum(coefficients2 * qs)  # type: ignore [no-any-return]
+        return np.sum(coefficients2 * qns)  # type: ignore [no-any-return]
 
     def calc_std_qn(self, q: AngularMomentumQuantumNumbers) -> float:
         """Calculate the standard deviation of a quantum number q.
@@ -139,13 +139,13 @@ class AngularState(Generic[T_AngularKet]):
                 if q in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_std_qn(q)
 
-        qs = np.array([ket.get_qn(q) for ket in self.kets])
-        if all(q_val == qs[0] for q_val in qs):
+        qns = np.array([ket.get_qn(q) for ket in self.kets])
+        if all(qn == qns[0] for qn in qns):
             return 0
 
         coefficients2 = np.conjugate(self.coefficients) * self.coefficients / self.norm**2
-        exp_q = np.sum(coefficients2 * qs)
-        exp_q2 = np.sum(coefficients2 * qs * qs)
+        exp_q = np.sum(coefficients2 * qns)
+        exp_q2 = np.sum(coefficients2 * qns * qns)
 
         if abs(exp_q2 - exp_q**2) < 1e-10:
             return 0
