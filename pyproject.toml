@@ -64,6 +64,7 @@ docs = [
 jupyter = [
   "pip",
   "ipykernel",
+  "ipympl"
 ]
 mypy = [
   "mypy >= 2",
