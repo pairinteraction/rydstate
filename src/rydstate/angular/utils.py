@@ -50,8 +50,13 @@ AngularOperatorType = Literal[
 ]
 
 
+class _Meta(type(t.Protocol)):  # type: ignore [misc]
+    def __repr__(cls) -> str:
+        return str(cls.__name__)
+
+
 @t.runtime_checkable
-class NotSet(t.Protocol):
+class NotSet(t.Protocol, metaclass=_Meta):
     """Singleton for a not set value and type at the same time.
 
     See Also:
@@ -61,6 +66,19 @@ class NotSet(t.Protocol):
 
     @staticmethod
     def __not_set() -> None: ...
+
+
+@t.runtime_checkable
+class Unknown(t.Protocol, metaclass=_Meta):
+    """Singleton for a unknown quantum number and type at the same time.
+
+    See Also:
+    https://stackoverflow.com/questions/77571796/how-to-create-singleton-object-which-could-be-used-both-as-type-and-value-simi
+
+    """
+
+    @staticmethod
+    def __unknown() -> None: ...
 
 
 class InvalidQuantumNumbersError(ValueError):
@@ -79,6 +97,11 @@ def is_angular_momentum_quantum_number(qn: str) -> TypeGuard[AngularMomentumQuan
 def is_angular_operator_type(qn: str) -> TypeGuard[AngularOperatorType]:
     """Check if the given string is an AngularOperatorType."""
     return qn in get_args(AngularOperatorType)
+
+
+def is_unknown(obj: float | Unknown | None) -> TypeIs[Unknown]:
+    """Check if obj is Unknown."""
+    return obj is Unknown
 
 
 def is_not_set(obj: Any) -> TypeIs[NotSet]:  # noqa: ANN401
