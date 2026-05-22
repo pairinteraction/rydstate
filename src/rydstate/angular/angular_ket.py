@@ -36,39 +36,22 @@ class AngularKet(AngularKetBase, ABC):
         super().sanity_check(msgs)
 
     def get_qn(self, qn: AngularMomentumQuantumNumbers) -> float:
-        """Get the value of a quantum number by name."""
         qn_value = super().get_qn(qn)
         if is_unknown(qn_value):
             raise ValueError(f"Quantum number {qn} is unknown for {self!r}.")
         return qn_value
 
     def calc_exp_qn(self, qn: AngularMomentumQuantumNumbers) -> float:
-        """Calculate the expectation value of a quantum number qn.
-
-        If the quantum number is a good quantum number simply return it,
-        otherwise calculate it, see also AngularState.calc_exp_qn for more details.
-
-        Args:
-            qn: The quantum number to calculate the expectation value for.
-
-        """
-        if qn in self.quantum_number_names:
-            return self.get_qn(qn)
-        return self.to_state().calc_exp_qn(qn)
+        exp = super().calc_exp_qn(qn)
+        if is_unknown(exp):
+            raise RuntimeError("This should never happen, since all quantum numbers are known for AngularKet.")
+        return exp
 
     def calc_std_qn(self, qn: AngularMomentumQuantumNumbers) -> float:
-        """Calculate the standard deviation of a quantum number qn.
-
-        If the quantum number is a good quantum number return 0,
-        otherwise calculate the std, see also AngularState.calc_std_qn for more details.
-
-        Args:
-            qn: The quantum number to calculate the standard deviation for.
-
-        """
-        if qn in self.quantum_number_names:
-            return 0
-        return self.to_state().calc_std_qn(qn)
+        std = super().calc_std_qn(qn)
+        if is_unknown(std):
+            raise RuntimeError("This should never happen, since all quantum numbers are known for AngularKet.")
+        return std
 
 
 class AngularKetLS(AngularKet, AngularKetBaseLS):
