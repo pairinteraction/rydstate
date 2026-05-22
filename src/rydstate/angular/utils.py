@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 
     from typing_extensions import ParamSpec, TypeIs
 
-    from rydstate.angular.angular_ket import AngularKetBase
+    from rydstate.angular.angular_ket import AngularKet
+    from rydstate.angular.angular_ket_base import AngularKetBase
     from rydstate.species.species_object import SpeciesObject
 
     P = ParamSpec("P")
@@ -156,26 +157,26 @@ def get_possible_quantum_number_values(
     if s_tot is not None and not is_unknown(s_tot):
         return [s_tot]
     if is_unknown(s_1) or is_unknown(s_2):
-        return [Unknown]
+        return [Unknown]  # type: ignore [return-value]
     return [float(s) for s in np.arange(abs(s_1 - s_2), s_1 + s_2 + 1, 1)]
 
 
 @lru_cache(maxsize=1_000)
 def quantum_numbers_to_angular_ket(
     species: str | SpeciesObject,
-    s_c: float | None = None,
-    l_c: int = 0,
-    j_c: float | None = None,
-    f_c: float | None = None,
-    s_r: float = 0.5,
-    l_r: int | None = None,
-    j_r: float | None = None,
-    s_tot: float | None = None,
-    l_tot: int | None = None,
-    j_tot: float | None = None,
-    f_tot: float | None = None,
+    s_c: float | None,
+    l_c: int | None,
+    j_c: float | None,
+    f_c: float | None,
+    s_r: float | None,
+    l_r: int | None,
+    j_r: float | None,
+    s_tot: float | None,
+    l_tot: int | None,
+    j_tot: float | None,
+    f_tot: float | None,
     m: float | NotSet = NotSet,
-) -> AngularKetBase:
+) -> AngularKet:
     r"""Return an AngularKet object in the corresponding coupling scheme from the given quantum numbers.
 
     Args:
