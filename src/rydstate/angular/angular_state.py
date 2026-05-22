@@ -6,13 +6,13 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
 
 import numpy as np
 
-from rydstate.angular.angular_ket import (
+from rydstate.angular.angular_ket_base import (
     AngularKetBase,
-    AngularKetFJ,
-    AngularKetJJ,
-    AngularKetLS,
+    AngularKetBaseFJ,
+    AngularKetBaseJJ,
+    AngularKetBaseLS,
 )
-from rydstate.angular.utils import is_angular_momentum_quantum_number, is_not_set
+from rydstate.angular.utils import is_angular_momentum_quantum_number, is_not_set, is_unknown
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
@@ -78,13 +78,13 @@ class AngularState(Generic[T_AngularKet]):
         return np.linalg.norm(self.coefficients)  # type: ignore [return-value]
 
     @overload
-    def to(self, coupling_scheme: Literal["LS"]) -> AngularState[AngularKetLS]: ...
+    def to(self, coupling_scheme: Literal["LS"]) -> AngularState[AngularKetBaseLS]: ...
 
     @overload
-    def to(self, coupling_scheme: Literal["JJ"]) -> AngularState[AngularKetJJ]: ...
+    def to(self, coupling_scheme: Literal["JJ"]) -> AngularState[AngularKetBaseJJ]: ...
 
     @overload
-    def to(self, coupling_scheme: Literal["FJ"]) -> AngularState[AngularKetFJ]: ...
+    def to(self, coupling_scheme: Literal["FJ"]) -> AngularState[AngularKetBaseFJ]: ...
 
     def to(self, coupling_scheme: CouplingScheme) -> AngularState[Any]:
         """Convert to specified coupling scheme.
@@ -116,13 +116,14 @@ class AngularState(Generic[T_AngularKet]):
 
         """
         if q not in self.kets[0].quantum_number_names:
-            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ]:
+            for ket_class in [AngularKetBaseLS, AngularKetBaseJJ, AngularKetBaseFJ]:
                 if q in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_exp_qn(q)
 
         qns = np.array([ket.get_qn(q) for ket in self.kets])
         if all(q_val == qns[0] for q_val in qns):
             return qns[0]  # type: ignore [no-any-return]
+        qns = np.array([qn if not is_unknown(qn) else 0 for qn in qns])
 
         coefficients2 = np.conjugate(self.coefficients) * self.coefficients / self.norm**2
         return np.sum(coefficients2 * qns)  # type: ignore [no-any-return]
@@ -135,13 +136,14 @@ class AngularState(Generic[T_AngularKet]):
 
         """
         if q not in self.kets[0].quantum_number_names:
-            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ]:
+            for ket_class in [AngularKetBaseLS, AngularKetBaseJJ, AngularKetBaseFJ]:
                 if q in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_std_qn(q)
 
         qns = np.array([ket.get_qn(q) for ket in self.kets])
         if all(qn == qns[0] for qn in qns):
             return 0
+        qns = np.array([qn if not is_unknown(qn) else 0 for qn in qns])
 
         coefficients2 = np.conjugate(self.coefficients) * self.coefficients / self.norm**2
         exp_q = np.sum(coefficients2 * qns)
@@ -176,7 +178,7 @@ class AngularState(Generic[T_AngularKet]):
         if isinstance(other, AngularKetBase):
             other = other.to_state()
         if is_angular_momentum_quantum_number(operator) and operator not in self.kets[0].quantum_number_names:
-            for ket_class in [AngularKetLS, AngularKetJJ, AngularKetFJ]:
+            for ket_class in [AngularKetBaseLS, AngularKetBaseJJ, AngularKetBaseFJ]:
                 if operator in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_reduced_matrix_element(other, operator, kappa)
 
