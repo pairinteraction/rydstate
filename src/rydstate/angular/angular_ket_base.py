@@ -4,6 +4,12 @@ import logging
 from abc import ABC
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, overload
 
+from rydstate.angular.angular_matrix_element import (
+    calc_prefactor_of_operator_in_coupled_scheme,
+    calc_reduced_identity_matrix_element,
+    calc_reduced_spherical_matrix_element,
+    calc_reduced_spin_matrix_element,
+)
 from rydstate.angular.core_ket import CoreKet
 from rydstate.angular.utils import (
     InvalidQuantumNumbersError,
@@ -11,11 +17,14 @@ from rydstate.angular.utils import (
     Unknown,
     check_spin_addition_rule,
     get_possible_quantum_number_values,
+    is_angular_momentum_quantum_number,
+    is_angular_operator_type,
     is_not_set,
     is_unknown,
+    minus_one_pow,
     try_trivial_spin_addition,
 )
-from rydstate.angular.wigner_symbols import clebsch_gordan_6j, clebsch_gordan_9j
+from rydstate.angular.wigner_symbols import calc_wigner_3j, clebsch_gordan_6j, clebsch_gordan_9j
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -23,7 +32,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from rydstate.angular.angular_state import AngularState
-    from rydstate.angular.utils import AngularMomentumQuantumNumbers, CouplingScheme
+    from rydstate.angular.utils import AngularMomentumQuantumNumbers, AngularOperatorType, CouplingScheme
     from rydstate.species import SpeciesObject
 
 logger = logging.getLogger(__name__)
@@ -399,6 +408,172 @@ class AngularKetBase(ABC):
             return float(ov)
 
         raise NotImplementedError(f"This method is not yet implemented for {self!r} and {other!r}.")
+
+    def calc_reduced_matrix_element(  # noqa: C901, PLR0912
+        self: Self, other: AngularKetBase, operator: AngularOperatorType, kappa: int
+    ) -> float:
+        r"""Calculate the reduced angular matrix element.
+
+        We follow equation (7.1.7) from Edmonds 1985 "Angular Momentum in Quantum Mechanics".
+        This means, calculate the following matrix element:
+
+        .. math::
+            \left\langle self || \hat{O}^{(\kappa)} || other \right\rangle
+
+        """
+        if not is_angular_operator_type(operator):
+            raise NotImplementedError(f"calc_reduced_matrix_element is not implemented for operator {operator}.")
+
+        if type(self) is not type(other):
+            return self.to_state().calc_reduced_matrix_element(other.to_state(), operator, kappa)
+        if is_angular_momentum_quantum_number(operator) and operator not in self.quantum_number_names:
+            return self.to_state().calc_reduced_matrix_element(other.to_state(), operator, kappa)
+
+        qn_name: AngularMomentumQuantumNumbers
+        if operator == "spherical":
+            qn_name = "l_r"
+        elif operator in self.quantum_number_names:
+            if kappa != 1:
+                raise ValueError("Only kappa=1 is supported for spin operators.")
+            qn_name = operator
+        elif operator.startswith("identity_"):
+            if kappa != 0:
+                raise ValueError("Only kappa=0 is supported for identity operator.")
+            qn_name = operator.replace("identity_", "")  # type: ignore [assignment]
+        else:
+            raise NotImplementedError(f"calc_reduced_matrix_element is not implemented for operator {operator}.")
+
+        qn_self, qn_other = self.get_qn(qn_name), other.get_qn(qn_name)
+        if is_unknown(qn_self) or is_unknown(qn_other):
+            return 0  # TODO, ignore Unknown contributions for now
+
+        if operator == "spherical":
+            complete_reduced_matrix_element = calc_reduced_spherical_matrix_element(qn_self, qn_other, kappa)
+        elif operator in self.quantum_number_names:
+            complete_reduced_matrix_element = calc_reduced_spin_matrix_element(qn_self, qn_other)
+        elif operator.startswith("identity_"):
+            complete_reduced_matrix_element = calc_reduced_identity_matrix_element(qn_self, qn_other)
+        else:
+            raise NotImplementedError(f"calc_reduced_matrix_element is not implemented for operator {operator}.")
+
+        if complete_reduced_matrix_element == 0:
+            return 0
+        if self._kronecker_delta_non_involved_spins(other, qn_name) == 0:
+            return 0
+        prefactor = self._calc_prefactor_of_operator_in_coupled_scheme(other, qn_name, kappa)
+        return prefactor * complete_reduced_matrix_element
+
+    def calc_matrix_element(self, other: AngularKetBase, operator: AngularOperatorType, kappa: int, q: int) -> float:
+        r"""Calculate the dimensionless angular matrix element.
+
+        Use the Wigner-Eckart theorem to calculate the angular matrix element from the reduced matrix element.
+        We stick to the convention from Edmonds 1985 "Angular Momentum in Quantum Mechanics", see equation (5.4.1).
+        This means, calculate the following matrix element:
+
+        .. math::
+            \left\langle self | \hat{O}^{(\kappa)}_q | other \right\rangle
+            = <\alpha',f_{tot}',m'| \hat{O}^{(\kappa)}_q |\alpha,f_{tot},m>
+            = (-1)^{(f_{tot} - m)} \cdot \mathrm{Wigner3j}(f_{tot}', \kappa, f_{tot}, -m', q, m)
+                \cdot <\alpha',f_{tot}' || \hat{O}^{(\kappa)} || \alpha,f_{tot}>
+
+        where alpha denotes all other quantum numbers
+        and :math:`<\alpha',f_{tot}' || \hat{O}^{(\kappa)} || \alpha,f_{tot}>` is the reduced matrix element
+        (see `calc_reduced_matrix_element`).
+
+        Args:
+            other: The other AngularKet :math:`|other>`.
+            operator: The operator type :math:`\hat{O}_{kq}` for which to calculate the matrix element.
+                E.g. 'spherical', 's_tot', 'l_r', etc.
+            kappa: The rank :math:`\kappa` of the angular momentum operator.
+            q: The component :math:`q` of the angular momentum operator.
+
+        Returns:
+            The dimensionless angular matrix element.
+
+        """
+        if is_not_set(self.m) or is_not_set(other.m):
+            raise RuntimeError("m must be set to calculate the matrix element.")
+
+        prefactor = self._calc_wigner_eckart_prefactor(other, kappa, q)
+        reduced_matrix_element = self.calc_reduced_matrix_element(other, operator, kappa)
+        return prefactor * reduced_matrix_element
+
+    def _kronecker_delta_non_involved_spins(self, other: AngularKetBase, qn: AngularMomentumQuantumNumbers) -> int:
+        """Calculate the Kronecker delta for non involved angular momentum quantum numbers.
+
+        This means return 0 if any of the quantum numbers,
+        that are not qn or a coupled quantum number resulting from qn differ between self and other.
+        """
+        if qn not in self.quantum_number_names:
+            raise ValueError(f"Quantum number {qn} is not a valid angular momentum quantum number for {self!r}.")
+
+        resulting_qns = {qn}
+        last_qn = qn
+        while last_qn != "f_tot":
+            for key, qs in self.coupled_quantum_numbers.items():
+                if last_qn in qs:
+                    resulting_qns.add(key)
+                    last_qn = key
+                    break
+            else:
+                raise ValueError(
+                    f"_kronecker_delta_non_involved_spins: {last_qn} not found in coupled_quantum_numbers."
+                )
+
+        non_involved_qns = set(self.quantum_number_names) - resulting_qns
+        for _qn in non_involved_qns:
+            if self.get_qn(_qn) != other.get_qn(_qn):
+                return 0
+        return 1
+
+    def _calc_prefactor_of_operator_in_coupled_scheme(
+        self, other: AngularKetBase, qn: AngularMomentumQuantumNumbers, kappa: int
+    ) -> float:
+        """Calculate the prefactor for the complete reduced matrix element.
+
+        This approach is only valid if the operator acts only on one of the well defined quantum numbers.
+        """
+        if type(self) is not type(other):
+            raise ValueError(
+                "Both kets must be of the same type to calculate the prefactor of the operator in the coupled scheme."
+            )
+
+        if qn == "f_tot":
+            return 1
+
+        for key, qs in self.coupled_quantum_numbers.items():
+            if qn not in qs:
+                continue
+            qn_combined = key
+            # NOTE: the order does actually matter for the sign of some matrix elements
+            # we use this to convention to stay consistent with the old pairinteraction database signs
+            qn2, qn1 = qs
+            operator_acts_on: Literal["first", "second"] = "first" if qn == qn1 else "second"
+            break
+        else:  # no break
+            raise ValueError(f"Quantum number {qn} not found in coupled_quantum_numbers.")
+
+        f1, f2, f_tot = (self.get_qn(qn1), self.get_qn(qn2), self.get_qn(qn_combined))
+        i1, i2, i_tot = (other.get_qn(qn1), other.get_qn(qn2), other.get_qn(qn_combined))
+
+        if (operator_acts_on == "first" and f2 != i2) or (operator_acts_on == "second" and f1 != i1):
+            return 0
+        if (
+            is_unknown(f1)
+            or is_unknown(f2)
+            or is_unknown(f_tot)
+            or is_unknown(i1)
+            or is_unknown(i2)
+            or is_unknown(i_tot)
+        ):
+            return 0  # TODO, ignore Unknown contributions for now
+        prefactor = calc_prefactor_of_operator_in_coupled_scheme(f1, f2, f_tot, i1, i2, i_tot, kappa, operator_acts_on)
+        return prefactor * self._calc_prefactor_of_operator_in_coupled_scheme(other, qn_combined, kappa)
+
+    def _calc_wigner_eckart_prefactor(self, other: AngularKetBase, kappa: int, q: int) -> float:
+        if is_not_set(self.m) or is_not_set(other.m):
+            raise RuntimeError("m must be set to calculate the Wigner-Eckart prefactor.")
+        return minus_one_pow(self.f_tot - self.m) * calc_wigner_3j(self.f_tot, kappa, other.f_tot, -self.m, q, other.m)
 
 
 class AngularKetBaseLS(AngularKetBase):
