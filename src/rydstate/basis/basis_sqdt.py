@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Generic, Literal, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
 
 import numpy as np
 
 from rydstate.angular import NotSet
-from rydstate.angular.angular_ket import AngularKet, AngularKetFJ, AngularKetJJ, AngularKetLS
+from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKetJJ, AngularKetLS
 from rydstate.angular.utils import is_not_set
 from rydstate.basis.basis_base import BasisBase
 from rydstate.rydberg import (
@@ -15,9 +15,9 @@ from rydstate.rydberg import (
 from rydstate.species import SpeciesObjectSQDT
 
 if TYPE_CHECKING:
-    from rydstate.angular.utils import CouplingScheme
+    from rydstate.angular.utils import AllKnown, CouplingScheme
 
-T_AngularKet = TypeVar("T_AngularKet", bound=AngularKet)
+T_AngularKet = TypeVar("T_AngularKet", bound=AngularKetBase[Any])
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
 
     @overload
     def __init__(
-        self: BasisSQDT[AngularKetLS],
+        self: BasisSQDT[AngularKetLS[AllKnown]],
         species: str | SpeciesObjectSQDT,
         n: tuple[int, int],
         m: tuple[float, float] | None | NotSet = NotSet,
@@ -38,7 +38,7 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
 
     @overload
     def __init__(
-        self: BasisSQDT[AngularKetJJ],
+        self: BasisSQDT[AngularKetJJ[AllKnown]],
         species: str | SpeciesObjectSQDT,
         n: tuple[int, int],
         m: tuple[float, float] | None | NotSet = NotSet,
@@ -48,7 +48,7 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
 
     @overload
     def __init__(
-        self: BasisSQDT[AngularKetFJ],
+        self: BasisSQDT[AngularKetFJ[AllKnown]],
         species: str | SpeciesObjectSQDT,
         n: tuple[int, int],
         m: tuple[float, float] | None | NotSet = NotSet,

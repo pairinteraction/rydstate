@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from functools import cached_property
-from typing import TYPE_CHECKING, ClassVar, overload
+from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
@@ -10,8 +10,8 @@ from rydstate.species.utils import calc_energy_from_nu, calc_nu_from_energy
 from rydstate.utils.linalg import find_roots
 
 if TYPE_CHECKING:
-    from rydstate.angular.angular_ket import AngularKet, AngularKetFJ
-    from rydstate.angular.angular_ket_base import AngularKetBase, AngularKetBaseFJ
+    from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ
+    from rydstate.angular.utils import AllKnown
     from rydstate.species.mqdt.species_object_mqdt import SpeciesObjectMQDT
     from rydstate.species.utils import RydbergRitzParameters
     from rydstate.units import NDArray, PintFloat
@@ -35,10 +35,10 @@ class FModel:
     nu_range: ClassVar[tuple[float, float]]
     """Range of effective principal quantum numbers nu for which the MQDT model is valid."""
 
-    inner_channels: ClassVar[list[AngularKet | AngularKetBase]]
+    inner_channels: ClassVar[list[AngularKetBase[Any]]]
     """List of inner channels in the MQDT model."""
 
-    outer_channels: ClassVar[list[AngularKetFJ | AngularKetBaseFJ]]
+    outer_channels: ClassVar[list[AngularKetFJ[Any]]]
     """List of outer channels in the MQDT model."""
 
     eigen_quantum_defects: ClassVar[list[RydbergRitzParameters]]
@@ -289,7 +289,7 @@ class FModel:
 
 
 class FModelSQDT(FModel):
-    def __init__(self, species_name: str, channel: AngularKetFJ) -> None:
+    def __init__(self, species_name: str, channel: AngularKetFJ[AllKnown]) -> None:
         self.species_name = species_name  # type: ignore [misc]
         self.name = f"SQDT l_r={channel.l_r}, j_r={channel.j_r}, f_tot={channel.f_tot}, nu > {channel.l_r + 1}"  # type: ignore [misc]
         self.f_tot = channel.f_tot  # type: ignore [misc]

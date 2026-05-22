@@ -9,9 +9,8 @@ import numpy as np
 from scipy.special import exprel
 
 from rydstate.angular import NotSet
-from rydstate.angular.angular_ket import AngularKet, AngularKetFJ, AngularKetJJ, AngularKetLS
-from rydstate.angular.angular_ket_base import AngularKetBase
-from rydstate.angular.utils import is_not_set, is_unknown, quantum_numbers_to_angular_ket
+from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKetJJ, AngularKetLS
+from rydstate.angular.utils import AllKnown, Unknown, is_not_set, is_unknown, quantum_numbers_to_angular_ket
 from rydstate.radial import RadialKet
 from rydstate.rydberg.rydberg_base import RydbergStateBase
 from rydstate.species import SpeciesObjectSQDT
@@ -24,18 +23,21 @@ if TYPE_CHECKING:
     from rydstate.angular.utils import CouplingScheme
     from rydstate.units import MatrixElementOperator, NDArray, PintArray, PintFloat
 
-T_AngularKetBase = TypeVar("T_AngularKetBase", bound=AngularKetBase)
-T_AngularKet = TypeVar("T_AngularKet", bound=AngularKet)
+T_AngularKet = TypeVar("T_AngularKet", bound=AngularKetBase[Any])
+T_Unknown = TypeVar("T_Unknown", float, AllKnown, Unknown)
 
 logger = logging.getLogger(__name__)
 
 
-class RydbergStateBaseSQDT(RydbergStateBase, Generic[T_AngularKetBase]):
+class RydbergStateSQDT(RydbergStateBase, Generic[T_AngularKet]):
+    """Create a Rydberg SQDT state, including the radial and angular states."""
+
     species: SpeciesObjectSQDT
     """The atomic species of the Rydberg state."""
 
-    angular: T_AngularKetBase
-    """The angular/spin part of the Rydberg electron."""
+    angular: T_AngularKet
+    """The angular/spin part of the Rydberg elec
+    tron."""
 
     def __init__(
         self,
@@ -104,6 +106,61 @@ class RydbergStateBaseSQDT(RydbergStateBase, Generic[T_AngularKetBase]):
 
         self._set_qn_as_attributes()
 
+    @overload
+    @classmethod
+    def from_angular_ket(
+        cls,
+        species: str | SpeciesObjectSQDT,
+        angular_ket: AngularKetLS[T_Unknown],
+        n: int | None = None,
+        nu: float | None = None,
+    ) -> RydbergStateSQDT[AngularKetLS[T_Unknown]]: ...
+
+    @overload
+    @classmethod
+    def from_angular_ket(
+        cls,
+        species: str | SpeciesObjectSQDT,
+        angular_ket: AngularKetJJ[T_Unknown],
+        n: int | None = None,
+        nu: float | None = None,
+    ) -> RydbergStateSQDT[AngularKetJJ[T_Unknown]]: ...
+
+    @overload
+    @classmethod
+    def from_angular_ket(
+        cls,
+        species: str | SpeciesObjectSQDT,
+        angular_ket: AngularKetFJ[T_Unknown],
+        n: int | None = None,
+        nu: float | None = None,
+    ) -> RydbergStateSQDT[AngularKetFJ[T_Unknown]]: ...
+
+    @classmethod
+    def from_angular_ket(
+        cls,
+        species: str | SpeciesObjectSQDT,
+        angular_ket: AngularKetBase[Any],
+        n: int | None = None,
+        nu: float | None = None,
+    ) -> RydbergStateSQDT[Any]:
+        """Initialize the Rydberg state from an angular ket."""
+        obj = cls.__new__(cls)
+
+        if isinstance(species, str):
+            species = SpeciesObjectSQDT.from_name(species)
+        obj.species = species
+
+        obj._n = n  # noqa: SLF001
+        obj._nu = nu  # noqa: SLF001
+        if nu is None and n is None:
+            raise ValueError("Either n or nu must be given to initialize the Rydberg state.")
+
+        obj.angular = angular_ket  # type: ignore [assignment]
+        obj._set_qn_as_attributes()  # noqa: SLF001
+
+        return obj
+
     def _set_qn_as_attributes(self) -> None:
         pass
 
@@ -153,8 +210,8 @@ class RydbergStateBaseSQDT(RydbergStateBase, Generic[T_AngularKetBase]):
             return self._nu
         if not isinstance(self.species, SpeciesObjectSQDT):
             raise ValueError("nu must be given if not sqdt")  # noqa: TRY004
-        if not isinstance(self.angular, AngularKet):
-            raise ValueError("nu must be given if angular ket contains unknown quantum numbers")  # noqa: TRY004
+        if self.angular.contains_unknown:
+            raise ValueError("nu must be given if angular ket contains unknown quantum numbers")
         return self.species.calc_nu(self.n, self.angular)
 
     @property
@@ -312,65 +369,6 @@ class RydbergStateBaseSQDT(RydbergStateBase, Generic[T_AngularKetBase]):
         prefactor = self.angular._calc_wigner_eckart_prefactor(other.angular, k_angular, q)  # noqa: SLF001
         reduced_matrix_element = self.calc_reduced_matrix_element(other, operator, unit)
         return prefactor * reduced_matrix_element
-
-
-class RydbergStateSQDT(RydbergStateBaseSQDT[T_AngularKet], Generic[T_AngularKet]):
-    """Create a Rydberg SQDT state, including the radial and angular states."""
-
-    @overload
-    @classmethod
-    def from_angular_ket(
-        cls,
-        species: str | SpeciesObjectSQDT,
-        angular_ket: AngularKetLS,
-        n: int | None = None,
-        nu: float | None = None,
-    ) -> RydbergStateSQDT[AngularKetLS]: ...
-
-    @overload
-    @classmethod
-    def from_angular_ket(
-        cls,
-        species: str | SpeciesObjectSQDT,
-        angular_ket: AngularKetJJ,
-        n: int | None = None,
-        nu: float | None = None,
-    ) -> RydbergStateSQDT[AngularKetJJ]: ...
-
-    @overload
-    @classmethod
-    def from_angular_ket(
-        cls,
-        species: str | SpeciesObjectSQDT,
-        angular_ket: AngularKetFJ,
-        n: int | None = None,
-        nu: float | None = None,
-    ) -> RydbergStateSQDT[AngularKetFJ]: ...
-
-    @classmethod
-    def from_angular_ket(
-        cls,
-        species: str | SpeciesObjectSQDT,
-        angular_ket: AngularKet,
-        n: int | None = None,
-        nu: float | None = None,
-    ) -> RydbergStateSQDT[Any]:
-        """Initialize the Rydberg state from an angular ket."""
-        obj = cls.__new__(cls)
-
-        if isinstance(species, str):
-            species = SpeciesObjectSQDT.from_name(species)
-        obj.species = species
-
-        obj._n = n  # noqa: SLF001
-        obj._nu = nu  # noqa: SLF001
-        if nu is None and n is None:
-            raise ValueError("Either n or nu must be given to initialize the Rydberg state.")
-
-        obj.angular = angular_ket  # type: ignore [assignment]
-        obj._set_qn_as_attributes()  # noqa: SLF001
-
-        return obj
 
     @overload
     def get_spontaneous_transition_rates(self: Self, unit: None = None) -> tuple[list[Self], PintArray]: ...
@@ -577,7 +575,7 @@ class RydbergStateSQDT(RydbergStateBaseSQDT[T_AngularKet], Generic[T_AngularKet]
         return lifetime.to(unit).magnitude
 
 
-class RydbergStateSQDTAlkali(RydbergStateSQDT[AngularKetLS]):
+class RydbergStateSQDTAlkali(RydbergStateSQDT[AngularKetLS[AllKnown]]):
     """Create an Alkali Rydberg state, including the radial and angular states."""
 
     def __init__(
@@ -622,7 +620,7 @@ class RydbergStateSQDTAlkali(RydbergStateSQDT[AngularKetLS]):
         return f"{self.__class__.__name__}({species}{n_str}, {nu=}, {l=}, {j=}{f_string}, {m=})"
 
 
-class RydbergStateSQDTAlkalineLS(RydbergStateSQDT[AngularKetLS]):
+class RydbergStateSQDTAlkalineLS(RydbergStateSQDT[AngularKetLS[AllKnown]]):
     """Create an Alkaline Rydberg state, including the radial and angular states."""
 
     def __init__(
@@ -669,7 +667,7 @@ class RydbergStateSQDTAlkalineLS(RydbergStateSQDT[AngularKetLS]):
         return f"{self.__class__.__name__}({species}{n_str}, {nu=}, {l=}, {s_tot=}, {j_tot=}, {f_tot=}, {m=})"
 
 
-class RydbergStateSQDTAlkalineJJ(RydbergStateSQDT[AngularKetJJ]):
+class RydbergStateSQDTAlkalineJJ(RydbergStateSQDT[AngularKetJJ[AllKnown]]):
     """Create an Alkaline Rydberg state, including the radial and angular states."""
 
     def __init__(
@@ -716,7 +714,7 @@ class RydbergStateSQDTAlkalineJJ(RydbergStateSQDT[AngularKetJJ]):
         return f"{self.__class__.__name__}({species}{n_str}, {nu=}, {l=}, {j_r=}, {j_tot=}, {f_tot=}, {m=})"
 
 
-class RydbergStateSQDTAlkalineFJ(RydbergStateSQDT[AngularKetFJ]):
+class RydbergStateSQDTAlkalineFJ(RydbergStateSQDT[AngularKetFJ[AllKnown]]):
     """Create an Alkaline Rydberg state, including the radial and angular states."""
 
     def __init__(

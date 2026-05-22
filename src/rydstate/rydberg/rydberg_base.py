@@ -6,14 +6,14 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from rydstate.angular import AngularState
-    from rydstate.angular.angular_ket_base import AngularKetBase
+    from rydstate.angular.angular_ket import AngularKetBase
     from rydstate.units import MatrixElementOperator, PintFloat
 
 logger = logging.getLogger(__name__)
 
 
 class RydbergStateBase(ABC):
-    angular: AngularState[Any] | AngularKetBase
+    angular: AngularState[Any] | AngularKetBase[Any]
 
     @abstractmethod
     def calc_reduced_overlap(self, other: RydbergStateBase) -> float: ...

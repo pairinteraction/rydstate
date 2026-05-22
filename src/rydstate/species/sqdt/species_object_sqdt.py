@@ -4,7 +4,7 @@ import logging
 import re
 from fractions import Fraction
 from functools import cached_property
-from typing import TYPE_CHECKING, ClassVar, overload
+from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
@@ -16,7 +16,7 @@ from rydstate.units import ureg
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from rydstate.angular.angular_ket import AngularKet
+    from rydstate.angular.angular_ket import AngularKetBase
     from rydstate.species.utils import RydbergRitzParameters
     from rydstate.units import PintFloat
 
@@ -188,7 +188,7 @@ class SpeciesObjectSQDT(SpeciesObject):
     def calc_nu(
         self,
         n: int,
-        angular_ket: AngularKet,
+        angular_ket: AngularKetBase[Any],
         *,
         use_nist_data: bool = True,
         nist_n_max: int = 15,

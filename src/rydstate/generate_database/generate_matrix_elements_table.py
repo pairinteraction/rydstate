@@ -12,7 +12,7 @@ from rydstate.units import MatrixElementOperatorRanks
 if TYPE_CHECKING:
     import sqlite3
 
-    from rydstate.angular.utils import AngularOperatorType
+    from rydstate.angular.utils import AllKnown, AngularOperatorType
     from rydstate.basis.basis_sqdt import BasisSQDT
     from rydstate.rydberg import RydbergStateSQDT
     from rydstate.units import MatrixElementOperator
@@ -35,7 +35,7 @@ MATRIX_ELEMENTS_OF_INTEREST: dict[str, MatrixElementOperator] = {
 
 
 def generate_matrix_elements_tables(  # noqa: C901
-    basis: BasisSQDT[AngularKetLS],
+    basis: BasisSQDT[AngularKetLS[AllKnown]],
     conn: sqlite3.Connection | None = None,
     max_delta_n: float = float("inf"),
     all_n_up_to: float = float("inf"),
@@ -90,8 +90,8 @@ def generate_matrix_elements_tables(  # noqa: C901
 
 
 def calc_matrix_elements_one_pair(
-    state1: RydbergStateSQDT[AngularKetLS],
-    state2: RydbergStateSQDT[AngularKetLS],
+    state1: RydbergStateSQDT[AngularKetLS[AllKnown]],
+    state2: RydbergStateSQDT[AngularKetLS[AllKnown]],
     matrix_elements_of_interest: dict[str, MatrixElementOperator],
 ) -> dict[str, float]:
     matrix_elements: dict[str, float] = {}
@@ -143,8 +143,8 @@ def calc_reduced_angular_matrix_element_cached(
     operator: AngularOperatorType,
     k_angular: int,
 ) -> float:
-    ket1 = AngularKetLS(*qns1)  # type: ignore[arg-type]
-    ket2 = AngularKetLS(*qns2)  # type: ignore[arg-type]
+    ket1: AngularKetLS[AllKnown] = AngularKetLS(*qns1)  # type: ignore[call-overload]
+    ket2: AngularKetLS[AllKnown] = AngularKetLS(*qns2)  # type: ignore[call-overload]
     # ket2 is the final state and ket1 the initial state
     # ket2.calc_reduced_matrix_element(ket1, T, k) gives the reduced matrix element <ket2||T^k||ket1>
     return ket2.calc_reduced_matrix_element(ket1, operator, k_angular)

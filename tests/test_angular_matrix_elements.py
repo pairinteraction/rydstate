@@ -8,8 +8,8 @@ from rydstate.angular import AngularKetFJ, AngularKetJJ, AngularKetLS
 from rydstate.angular.utils import AngularMomentumQuantumNumbers
 
 if TYPE_CHECKING:
-    from rydstate.angular.angular_ket_base import AngularKetBase
-    from rydstate.angular.utils import AngularOperatorType, CouplingScheme
+    from rydstate.angular.angular_ket import AngularKetBase
+    from rydstate.angular.utils import AllKnown, AngularOperatorType, CouplingScheme
 
 TEST_KET_PAIRS = [
     (
@@ -40,7 +40,7 @@ TEST_KETS = [
 
 
 @pytest.mark.parametrize("ket", TEST_KETS)
-def test_exp_q_different_coupling_schemes(ket: AngularKetBase) -> None:
+def test_exp_q_different_coupling_schemes(ket: AngularKetBase[AllKnown]) -> None:
     all_qs: tuple[AngularMomentumQuantumNumbers, ...] = get_args(AngularMomentumQuantumNumbers)
     for q in all_qs:
         exp_q = ket.to_state("LS").calc_exp_qn(q)
@@ -53,7 +53,7 @@ def test_exp_q_different_coupling_schemes(ket: AngularKetBase) -> None:
 
 
 @pytest.mark.parametrize(("ket1", "ket2"), TEST_KET_PAIRS)
-def test_overlap_different_coupling_schemes(ket1: AngularKetBase, ket2: AngularKetBase) -> None:
+def test_overlap_different_coupling_schemes(ket1: AngularKetBase[AllKnown], ket2: AngularKetBase[AllKnown]) -> None:
     ov = ket1.calc_reduced_overlap(ket2)
 
     coupling_schemes: list[CouplingScheme] = ["LS", "JJ", "FJ"]
@@ -65,7 +65,7 @@ def test_overlap_different_coupling_schemes(ket1: AngularKetBase, ket2: AngularK
 
 
 @pytest.mark.parametrize("ket", TEST_KETS)
-def test_reduced_identity(ket: AngularKetBase) -> None:
+def test_reduced_identity(ket: AngularKetBase[AllKnown]) -> None:
     reduced_identity = np.sqrt(2 * ket.f_tot + 1)
 
     op: AngularMomentumQuantumNumbers
@@ -77,7 +77,9 @@ def test_reduced_identity(ket: AngularKetBase) -> None:
 
 
 @pytest.mark.parametrize(("ket1", "ket2"), TEST_KET_PAIRS)
-def test_matrix_elements_in_different_coupling_schemes(ket1: AngularKetBase, ket2: AngularKetBase) -> None:
+def test_matrix_elements_in_different_coupling_schemes(
+    ket1: AngularKetBase[AllKnown], ket2: AngularKetBase[AllKnown]
+) -> None:
     example_list: list[tuple[AngularOperatorType, int]] = [
         ("spherical", 0),
         ("spherical", 1),

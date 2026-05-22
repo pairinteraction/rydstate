@@ -8,6 +8,7 @@ from rydstate.angular.angular_ket import AngularKetLS
 if TYPE_CHECKING:
     import sqlite3
 
+    from rydstate.angular.utils import AllKnown
     from rydstate.basis import BasisSQDT
     from rydstate.rydberg.rydberg_sqdt import RydbergStateSQDT
 
@@ -40,7 +41,7 @@ COLUMNS = [
 
 
 def generate_states_table(
-    basis: BasisSQDT[AngularKetLS],
+    basis: BasisSQDT[AngularKetLS[AllKnown]],
     conn: sqlite3.Connection | None = None,
 ) -> list[tuple[float | int | str | bool, ...]]:
     """Populate the states table for a given species and n-range using BasisSQDT."""
@@ -63,7 +64,7 @@ def generate_states_table(
     return states_data
 
 
-def get_state_data(ids: int, state: RydbergStateSQDT[AngularKetLS]) -> tuple[float | int | str | bool, ...]:
+def get_state_data(ids: int, state: RydbergStateSQDT[AngularKetLS[AllKnown]]) -> tuple[float | int | str | bool, ...]:
     """Get the data for a given state as a tuple."""
     angular_ket = state.angular
     if not isinstance(angular_ket, AngularKetLS):

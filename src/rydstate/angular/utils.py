@@ -3,17 +3,17 @@ from __future__ import annotations
 import contextlib
 import typing as t
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Literal, TypeGuard, TypeVar, get_args
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias, TypeGuard, TypeVar, get_args
 
 import numpy as np
+from typing_extensions import Never
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from typing_extensions import ParamSpec, TypeIs
 
-    from rydstate.angular.angular_ket import AngularKet
-    from rydstate.angular.angular_ket_base import AngularKetBase
+    from rydstate.angular.angular_ket import AngularKetBase
     from rydstate.species.species_object import SpeciesObject
 
     P = ParamSpec("P")
@@ -82,8 +82,11 @@ class Unknown(t.Protocol, metaclass=_Meta):
     def __unknown() -> None: ...
 
 
+AllKnown: TypeAlias = Never
+
+
 class InvalidQuantumNumbersError(ValueError):
-    def __init__(self, ket: AngularKetBase, msg: str = "") -> None:
+    def __init__(self, ket: AngularKetBase[Any], msg: str = "") -> None:
         _msg = f"Invalid quantum numbers for {ket!r}"
         if len(msg) > 0:
             _msg += f"\n  {msg}"
@@ -176,7 +179,7 @@ def quantum_numbers_to_angular_ket(
     j_tot: float | None,
     f_tot: float | None,
     m: float | NotSet = NotSet,
-) -> AngularKet:
+) -> AngularKetBase[Any]:
     r"""Return an AngularKet object in the corresponding coupling scheme from the given quantum numbers.
 
     Args:
@@ -200,17 +203,47 @@ def quantum_numbers_to_angular_ket(
 
     with contextlib.suppress(InvalidQuantumNumbersError, ValueError):
         return AngularKetLS(
-            s_c=s_c, l_c=l_c, s_r=s_r, l_r=l_r, s_tot=s_tot, l_tot=l_tot, j_tot=j_tot, f_tot=f_tot, m=m, species=species
+            s_c=s_c,
+            l_c=l_c,
+            s_r=s_r,
+            l_r=l_r,
+            s_tot=s_tot,
+            l_tot=l_tot,
+            j_tot=j_tot,
+            f_tot=f_tot,
+            m=m,
+            species=species,
+            allow_unknown=True,
         )
 
     with contextlib.suppress(InvalidQuantumNumbersError, ValueError):
         return AngularKetJJ(
-            s_c=s_c, l_c=l_c, j_c=j_c, s_r=s_r, l_r=l_r, j_r=j_r, j_tot=j_tot, f_tot=f_tot, m=m, species=species
+            s_c=s_c,
+            l_c=l_c,
+            j_c=j_c,
+            s_r=s_r,
+            l_r=l_r,
+            j_r=j_r,
+            j_tot=j_tot,
+            f_tot=f_tot,
+            m=m,
+            species=species,
+            allow_unknown=True,
         )
 
     with contextlib.suppress(InvalidQuantumNumbersError, ValueError):
         return AngularKetFJ(
-            s_c=s_c, l_c=l_c, j_c=j_c, f_c=f_c, s_r=s_r, l_r=l_r, j_r=j_r, f_tot=f_tot, m=m, species=species
+            s_c=s_c,
+            l_c=l_c,
+            j_c=j_c,
+            f_c=f_c,
+            s_r=s_r,
+            l_r=l_r,
+            j_r=j_r,
+            f_tot=f_tot,
+            m=m,
+            species=species,
+            allow_unknown=True,
         )
 
     raise ValueError("Invalid combination of angular quantum numbers provided.")

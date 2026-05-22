@@ -4,7 +4,6 @@ import re
 
 import numpy as np
 import pytest
-from rydstate.angular.angular_ket import AngularKet
 from rydstate.species.mqdt.fmodel import FModel
 
 
@@ -56,8 +55,8 @@ def test_f_tot_consistency(model: FModel) -> None:
 
 def test_parity_consistency(model: FModel) -> None:
     """All non-dummy channels must have the same parity (-1)^(l_c+l_r)."""
-    parities: list[int] = [(-1) ** (ch.l_c + ch.l_r) for ch in model.inner_channels if isinstance(ch, AngularKet)]
-    parities.extend((-1) ** (och.l_c + och.l_r) for och in model.outer_channels if isinstance(och, AngularKet))
+    parities: list[int] = [(-1) ** (ch.l_c + ch.l_r) for ch in model.inner_channels if not ch.contains_unknown]
+    parities.extend((-1) ** (och.l_c + och.l_r) for och in model.outer_channels if not och.contains_unknown)
     assert len(set(parities)) <= 1, f"{model.full_name}: channels have inconsistent parity"
 
 
@@ -112,7 +111,7 @@ def test_eigen_quantum_defects_format(model: FModel) -> None:
 
 def test_at_least_one_real_channel(model: FModel) -> None:
     """Every model must have at least one non-dummy channel."""
-    real_channels = [ch for ch in model.inner_channels if isinstance(ch, AngularKet)]
+    real_channels = [ch for ch in model.inner_channels if not ch.contains_unknown]
     assert len(real_channels) >= 1, f"{model.full_name}: no real (non-dummy) channels"
 
 

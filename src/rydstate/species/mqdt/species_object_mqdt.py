@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import TYPE_CHECKING, ClassVar, overload
+from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 from rydstate.angular.core_ket import CoreKet
 from rydstate.angular.utils import Unknown
@@ -72,7 +72,7 @@ class SpeciesObjectMQDT(SpeciesObject):
         """Ionization energy in atomic units (Hartree)."""
         return self.get_ionization_threshold(self.core_ground_state, unit="hartree")
 
-    def get_mqdt_models(self, outer_channel: AngularKetFJ) -> list[FModel]:
+    def get_mqdt_models(self, outer_channel: AngularKetFJ[Any]) -> list[FModel]:
         """Return a list of MQDT models for the outer_channel."""
         models = [model for model in self.models if any(ket == outer_channel for ket in model.outer_channels)]
         if len(models) == 0:

@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
 
 import numpy as np
 
-from rydstate.angular.angular_ket_base import (
+from rydstate.angular.angular_ket import (
     AngularKetBase,
-    AngularKetBaseFJ,
-    AngularKetBaseJJ,
-    AngularKetBaseLS,
+    AngularKetFJ,
+    AngularKetJJ,
+    AngularKetLS,
 )
 from rydstate.angular.utils import is_angular_momentum_quantum_number, is_not_set, is_unknown
 
@@ -25,14 +25,14 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-T_AngularKet = TypeVar("T_AngularKet", bound=AngularKetBase)
+GenericT_AngularKet = TypeVar("GenericT_AngularKet", bound=AngularKetBase[Any])
 
 
-class AngularState(Generic[T_AngularKet]):
+class AngularState(Generic[GenericT_AngularKet]):
     def __init__(
         self,
         coefficients: Sequence[float] | NDArray,
-        kets: Sequence[T_AngularKet],
+        kets: Sequence[GenericT_AngularKet],
         *,
         warn_if_not_normalized: bool = True,
         normalize: bool = True,
@@ -56,7 +56,7 @@ class AngularState(Generic[T_AngularKet]):
         if normalize:
             self.coefficients /= self.norm
 
-    def __iter__(self) -> Iterator[tuple[float, T_AngularKet]]:
+    def __iter__(self) -> Iterator[tuple[float, GenericT_AngularKet]]:
         return zip(self.coefficients, self.kets, strict=True).__iter__()
 
     def __repr__(self) -> str:
@@ -78,15 +78,15 @@ class AngularState(Generic[T_AngularKet]):
         return np.linalg.norm(self.coefficients)  # type: ignore [return-value]
 
     @overload
-    def to(self, coupling_scheme: Literal["LS"]) -> AngularState[AngularKetBaseLS]: ...
+    def to(self, coupling_scheme: Literal["LS"]) -> AngularState[AngularKetLS[Any]]: ...
 
     @overload
-    def to(self, coupling_scheme: Literal["JJ"]) -> AngularState[AngularKetBaseJJ]: ...
+    def to(self, coupling_scheme: Literal["JJ"]) -> AngularState[AngularKetJJ[Any]]: ...
 
     @overload
-    def to(self, coupling_scheme: Literal["FJ"]) -> AngularState[AngularKetBaseFJ]: ...
+    def to(self, coupling_scheme: Literal["FJ"]) -> AngularState[AngularKetFJ[Any]]: ...
 
-    def to(self, coupling_scheme: CouplingScheme) -> AngularState[Any]:
+    def to(self: AngularState[Any], coupling_scheme: CouplingScheme) -> AngularState[Any]:
         """Convert to specified coupling scheme.
 
         Args:
@@ -96,7 +96,7 @@ class AngularState(Generic[T_AngularKet]):
             The angular state in the specified coupling scheme.
 
         """
-        kets: list[AngularKetBase] = []
+        kets: list[AngularKetBase[Any]] = []
         coefficients: list[float] = []
         for coeff, ket in self:
             for scheme_coeff, scheme_ket in ket.to_state(coupling_scheme):
@@ -116,7 +116,7 @@ class AngularState(Generic[T_AngularKet]):
 
         """
         if q not in self.kets[0].quantum_number_names:
-            for ket_class in [AngularKetBaseLS, AngularKetBaseJJ, AngularKetBaseFJ]:
+            for ket_class in (AngularKetLS, AngularKetJJ, AngularKetFJ):
                 if q in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_exp_qn(q)
 
@@ -136,7 +136,7 @@ class AngularState(Generic[T_AngularKet]):
 
         """
         if q not in self.kets[0].quantum_number_names:
-            for ket_class in [AngularKetBaseLS, AngularKetBaseJJ, AngularKetBaseFJ]:
+            for ket_class in (AngularKetLS, AngularKetJJ, AngularKetFJ):
                 if q in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_std_qn(q)
 
@@ -153,7 +153,7 @@ class AngularState(Generic[T_AngularKet]):
             return 0
         return math.sqrt(exp_q2 - exp_q**2)
 
-    def calc_reduced_overlap(self, other: AngularState[Any] | AngularKetBase) -> float:
+    def calc_reduced_overlap(self, other: AngularState[Any] | AngularKetBase[Any]) -> float:
         """Calculate the reduced overlap <self||other> (ignoring the magnetic quantum number m)."""
         if isinstance(other, AngularKetBase):
             other = other.to_state()
@@ -165,7 +165,7 @@ class AngularState(Generic[T_AngularKet]):
         return ov
 
     def calc_reduced_matrix_element(
-        self: Self, other: AngularState[Any] | AngularKetBase, operator: AngularOperatorType, kappa: int
+        self: Self, other: AngularState[Any] | AngularKetBase[Any], operator: AngularOperatorType, kappa: int
     ) -> float:
         r"""Calculate the reduced angular matrix element.
 
@@ -178,7 +178,7 @@ class AngularState(Generic[T_AngularKet]):
         if isinstance(other, AngularKetBase):
             other = other.to_state()
         if is_angular_momentum_quantum_number(operator) and operator not in self.kets[0].quantum_number_names:
-            for ket_class in [AngularKetBaseLS, AngularKetBaseJJ, AngularKetBaseFJ]:
+            for ket_class in (AngularKetLS, AngularKetJJ, AngularKetFJ):
                 if operator in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_reduced_matrix_element(other, operator, kappa)
 
@@ -192,7 +192,7 @@ class AngularState(Generic[T_AngularKet]):
         return value
 
     def calc_matrix_element(
-        self: Self, other: AngularState[Any] | AngularKetBase, operator: AngularOperatorType, kappa: int, q: int
+        self: Self, other: AngularState[Any] | AngularKetBase[Any], operator: AngularOperatorType, kappa: int, q: int
     ) -> float:
         r"""Calculate the dimensionless angular matrix element.
 
