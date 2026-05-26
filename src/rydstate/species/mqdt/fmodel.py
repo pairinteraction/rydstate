@@ -124,6 +124,23 @@ class FModel:
         ]
         return np.array(nuis)
 
+    def calc_eigen_quantum_defects(self, nu: float) -> NDArray:
+        r"""Return the eigen quantum defects evaluated at the channel-dependent effective principal quantum numbers nui.
+
+        Args:
+            nu: Effective principal quantum number with reference to the lowest ionization threshold.
+
+        Returns:
+            Array of eigen quantum defects.
+
+        """
+        nuis = self.calc_channel_nuis(nu)
+        eigen_quantum_defects = [
+            calc_modified_ritz_formula_in_nu(nu, params)
+            for nu, params in zip(nuis, self.eigen_quantum_defects, strict=True)
+        ]
+        return np.array(eigen_quantum_defects)
+
     def calc_k_matrix_closecoupling(self, nu: float) -> NDArray:
         r"""Return diagonal K-matrix in the close-coupling frame.
 
@@ -137,12 +154,7 @@ class FModel:
             Diagonal K-matrix in the close-coupling frame.
 
         """
-        nuis = self.calc_channel_nuis(nu)
-        defects = [
-            calc_modified_ritz_formula_in_nu(nu, params)
-            for nu, params in zip(nuis, self.eigen_quantum_defects, strict=True)
-        ]
-        return np.diag(np.tan(np.pi * np.array(defects)))
+        return np.diag(np.tan(np.pi * np.array(self.calc_eigen_quantum_defects(nu))))
 
     def calc_frame_transformation_outer_inner(self) -> NDArray:
         """Return the frame transformation matrix Q mapping inner to outer channels.
