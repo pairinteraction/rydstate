@@ -10,7 +10,7 @@ from scipy.special import exprel
 
 from rydstate.angular import NotSet
 from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKetJJ, AngularKetLS
-from rydstate.angular.utils import AllKnown, Unknown, is_not_set, is_unknown, quantum_numbers_to_angular_ket
+from rydstate.angular.utils import AllKnown, is_not_set, is_unknown, quantum_numbers_to_angular_ket
 from rydstate.radial import RadialKet
 from rydstate.rydberg.rydberg_base import RydbergStateBase
 from rydstate.species import SpeciesObjectSQDT
@@ -23,21 +23,20 @@ if TYPE_CHECKING:
     from rydstate.angular.utils import CouplingScheme
     from rydstate.units import MatrixElementOperator, NDArray, PintArray, PintFloat
 
+GenericT_AngularKet = TypeVar("GenericT_AngularKet", bound=AngularKetBase[Any])
 T_AngularKet = TypeVar("T_AngularKet", bound=AngularKetBase[Any])
-T_Unknown = TypeVar("T_Unknown", float, AllKnown, Unknown)
 
 logger = logging.getLogger(__name__)
 
 
-class RydbergStateSQDT(RydbergStateBase, Generic[T_AngularKet]):
+class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
     """Create a Rydberg SQDT state, including the radial and angular states."""
 
     species: SpeciesObjectSQDT
     """The atomic species of the Rydberg state."""
 
-    angular: T_AngularKet
-    """The angular/spin part of the Rydberg elec
-    tron."""
+    angular: GenericT_AngularKet
+    """The angular/spin part of the Rydberg electron."""
 
     def __init__(
         self,
@@ -104,44 +103,14 @@ class RydbergStateSQDT(RydbergStateBase, Generic[T_AngularKet]):
 
         self._set_qn_as_attributes()
 
-    @overload
     @classmethod
     def from_angular_ket(
         cls,
         species: str | SpeciesObjectSQDT,
-        angular_ket: AngularKetLS[T_Unknown],
+        angular_ket: T_AngularKet,
         n: int | None = None,
         nu: float | None = None,
-    ) -> RydbergStateSQDT[AngularKetLS[T_Unknown]]: ...
-
-    @overload
-    @classmethod
-    def from_angular_ket(
-        cls,
-        species: str | SpeciesObjectSQDT,
-        angular_ket: AngularKetJJ[T_Unknown],
-        n: int | None = None,
-        nu: float | None = None,
-    ) -> RydbergStateSQDT[AngularKetJJ[T_Unknown]]: ...
-
-    @overload
-    @classmethod
-    def from_angular_ket(
-        cls,
-        species: str | SpeciesObjectSQDT,
-        angular_ket: AngularKetFJ[T_Unknown],
-        n: int | None = None,
-        nu: float | None = None,
-    ) -> RydbergStateSQDT[AngularKetFJ[T_Unknown]]: ...
-
-    @classmethod
-    def from_angular_ket(
-        cls,
-        species: str | SpeciesObjectSQDT,
-        angular_ket: AngularKetBase[Any],
-        n: int | None = None,
-        nu: float | None = None,
-    ) -> RydbergStateSQDT[Any]:
+    ) -> RydbergStateSQDT[T_AngularKet]:
         """Initialize the Rydberg state from an angular ket."""
         obj = cls.__new__(cls)
 
@@ -157,7 +126,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[T_AngularKet]):
         obj.angular = angular_ket  # type: ignore [assignment]
         obj._set_qn_as_attributes()  # noqa: SLF001
 
-        return obj
+        return obj  # type: ignore [return-value]
 
     def _set_qn_as_attributes(self) -> None:
         pass
