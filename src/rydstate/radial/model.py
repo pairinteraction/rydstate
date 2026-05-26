@@ -36,9 +36,7 @@ class Model:
             potential_type: Which potential to use for the model.
 
         """
-        if isinstance(species, str):
-            species = SpeciesObject.from_name(species)
-        self.species = species
+        self.species = SpeciesObject.from_name(species) if isinstance(species, str) else species
         self.l = l
 
         if potential_type is None:

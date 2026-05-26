@@ -39,9 +39,7 @@ class RadialKet:
             l_r: Orbital angular momentum quantum number of the rydberg electron.
 
         """
-        if isinstance(species, str):
-            species = SpeciesObject.from_name(species)
-        self.species = species
+        self.species = SpeciesObject.from_name(species) if isinstance(species, str) else species
 
         self.n: int | None = None
         if not nu > 0:

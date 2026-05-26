@@ -21,9 +21,7 @@ class BasisBase(ABC, Generic[_RydbergState]):
     states: list[_RydbergState]
 
     def __init__(self, species: str | SpeciesObject) -> None:
-        if isinstance(species, str):
-            species = SpeciesObject.from_name(species)
-        self.species = species
+        self.species = SpeciesObject.from_name(species) if isinstance(species, str) else species
 
     def __len__(self) -> int:
         return len(self.states)

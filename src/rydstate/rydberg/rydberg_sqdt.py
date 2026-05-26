@@ -79,9 +79,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[T_AngularKet]):
                 Optional, only needed for concrete angular matrix elements.
 
         """
-        if isinstance(species, str):
-            species = SpeciesObjectSQDT.from_name(species)
-        self.species = species
+        self.species = SpeciesObjectSQDT.from_name(species) if isinstance(species, str) else species
 
         self.angular = quantum_numbers_to_angular_ket(  # type: ignore [assignment]
             species=self.species,

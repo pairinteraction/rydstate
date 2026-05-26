@@ -30,9 +30,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         skip_high_l: bool = True,
         n_min_high_l: int = 0,
     ) -> None:
-        if isinstance(species, str):
-            species = SpeciesObjectMQDT.from_name(species)
-        self.species = species
+        self.species = SpeciesObjectMQDT.from_name(species) if isinstance(species, str) else species
 
         self.models: list[FModel] = []
         i_c, j_c, s_r = self.species.i_c, 0.5, 0.5
@@ -47,9 +45,9 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
                             elif _f_tot != f_tot:
                                 continue
                         channel = AngularKetFJ(
-                            l_r=l_r, j_r=float(j_r), f_c=float(f_c), f_tot=float(_f_tot), species=species
+                            l_r=l_r, j_r=float(j_r), f_c=float(f_c), f_tot=float(_f_tot), species=self.species
                         )
-                        self.models.extend(species.get_mqdt_models(channel))
+                        self.models.extend(self.species.get_mqdt_models(channel))
         self.models = list(set(self.models))  # remove duplicates
 
         logger.debug("Calculating MQDT states...")

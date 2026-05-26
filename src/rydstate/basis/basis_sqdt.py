@@ -64,9 +64,7 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
         *,
         coupling_scheme: CouplingScheme = "LS",
     ) -> None:
-        if isinstance(species, str):
-            species = SpeciesObjectSQDT.from_name(species)
-        self.species = species
+        self.species = SpeciesObjectSQDT.from_name(species) if isinstance(species, str) else species
 
         self._init_states(n, m, coupling_scheme)
 
