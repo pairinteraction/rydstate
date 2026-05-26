@@ -60,7 +60,12 @@ class CoreKet:
         return self.quantum_numbers == other.quantum_numbers
 
     def __hash__(self) -> int:
-        return hash((str(type(self)), self.i_c, self.s_c, self.l_c, self.j_c, self.f_c, self.label))
+        return hash((str(type(self)), self.quantum_numbers, self.label))
+
+    @property
+    def contains_unknown(self) -> bool:
+        """Return True if any of the quantum numbers is Unknown."""
+        return any(is_unknown(qn) for qn in self.quantum_numbers)
 
     def find_matching_core_ket(self, matching_core_ket_list: Iterable[CoreKet]) -> CoreKet:  # noqa: C901, PLR0912
         """Find the matching core ket in the given list of core kets.
