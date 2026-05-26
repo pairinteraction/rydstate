@@ -88,14 +88,14 @@ def test_model_name_contains_quantum_number(model: FModel) -> None:
     """Model name must contain F=X/Y or J=X matching the model's f_tot."""
     assert model.name is not None
     # Match F=X/Y or J=X patterns (integers and fractions)
-    match = re.search(r"[FJ]=(\d+/?\.?\d*)", model.name)
+    match = re.search(r"[FJ]=(\d+/?\d*)", model.name)
     assert match is not None, f"{model.full_name}: name '{model.name}' does not contain F=... or J=..."
     s = match.group(1)
     if "/" in s:
         num, den = s.split("/")
-        f_val = float(num) / float(den)
+        f_val = int(num) / int(den)
     else:
-        f_val = float(s)
+        f_val = int(s)
     assert f_val == model.f_tot, f"{model.full_name}: name says F/J={f_val} but f_tot={model.f_tot}"
 
 
