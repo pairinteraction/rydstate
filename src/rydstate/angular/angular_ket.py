@@ -315,6 +315,26 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
 
     def _to_state_ls(self: AngularKetBase[T_Unknown]) -> AngularState[AngularKetLS[T_Unknown]]:
         """Convert a single ket to state in LS coupling."""
+        if self.contains_unknown:
+            s_tot = try_trivial_spin_addition(self.s_c, self.s_r, None)
+            l_tot = try_trivial_spin_addition(self.l_c, self.l_r, None)
+            j_tot = try_trivial_spin_addition(s_tot, l_tot, None)
+            ket = AngularKetLS(  # type: ignore [call-overload,misc]
+                i_c=self.i_c,
+                s_c=self.s_c,
+                l_c=self.l_c,
+                s_r=self.s_r,
+                l_r=self.l_r,
+                s_tot=s_tot,
+                l_tot=l_tot,
+                j_tot=j_tot,
+                f_tot=self.f_tot,
+                m=self.m,
+                name=self.name,
+                allow_unknown=True,
+            )
+            return self._create_angular_state([1], [ket])
+
         kets: list[AngularKetLS[T_Unknown]] = []
         coefficients: list[float] = []
 
@@ -350,6 +370,26 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
 
     def _to_state_jj(self: AngularKetBase[T_Unknown]) -> AngularState[AngularKetJJ[T_Unknown]]:
         """Convert a single ket to state in JJ coupling."""
+        if self.contains_unknown:
+            j_c = try_trivial_spin_addition(self.s_c, self.l_c, None)
+            j_r = try_trivial_spin_addition(self.s_r, self.l_r, None)
+            j_tot = try_trivial_spin_addition(j_c, j_r, None)
+            ket = AngularKetJJ(  # type: ignore [call-overload,misc]
+                i_c=self.i_c,
+                s_c=self.s_c,
+                l_c=self.l_c,
+                s_r=self.s_r,
+                l_r=self.l_r,
+                j_c=j_c,
+                j_r=j_r,
+                j_tot=j_tot,
+                f_tot=self.f_tot,
+                m=self.m,
+                name=self.name,
+                allow_unknown=self._allow_unknown,
+            )
+            return self._create_angular_state([1], [ket])
+
         kets: list[AngularKetJJ[T_Unknown]] = []
         coefficients: list[float] = []
 
@@ -385,6 +425,26 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
 
     def _to_state_fj(self: AngularKetBase[T_Unknown]) -> AngularState[AngularKetFJ[T_Unknown]]:
         """Convert a single ket to state in FJ coupling."""
+        if self.contains_unknown:
+            j_c = try_trivial_spin_addition(self.s_c, self.l_c, None)
+            j_r = try_trivial_spin_addition(self.s_r, self.l_r, None)
+            f_c = try_trivial_spin_addition(j_c, self.i_c, None)
+            ket = AngularKetFJ(  # type: ignore [call-overload,misc]
+                i_c=self.i_c,
+                s_c=self.s_c,
+                l_c=self.l_c,
+                s_r=self.s_r,
+                l_r=self.l_r,
+                j_c=j_c,
+                f_c=f_c,
+                j_r=j_r,
+                f_tot=self.f_tot,
+                m=self.m,
+                name=self.name,
+                allow_unknown=self._allow_unknown,
+            )
+            return self._create_angular_state([1], [ket])
+
         kets: list[AngularKetFJ[T_Unknown]] = []
         coefficients: list[float] = []
 
