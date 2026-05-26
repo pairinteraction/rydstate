@@ -28,6 +28,13 @@ Some examples demonstrating the usage of the RydbergState class.
    examples/dipole_matrix_elements
    examples/lifetimes
 
+MQDT
+----
+
+Some MQDT related examples.
+
+.. nbgallery::
+   examples/mqdt/mqdt_exp_qn.ipynb
 
 Comparisons
 -----------
