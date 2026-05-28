@@ -10,7 +10,7 @@ import numpy as np
 
 from rydstate.angular.angular_ket import AngularKetLS
 from rydstate.species.species_object import SpeciesObject
-from rydstate.species.utils import calc_nu_from_energy, convert_electron_configuration
+from rydstate.species.utils import calc_modified_ritz_formula, calc_nu_from_energy, convert_electron_configuration
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
@@ -240,10 +240,8 @@ class SpeciesObjectSQDT(SpeciesObject):
 
         if self._quantum_defects is None:
             raise ValueError(f"No quantum defect data available for species {self.name}.")
-        quantum_defects = self._quantum_defects.get((l, j_tot, s_tot), [])
-        if isinstance(quantum_defects, float) or np.isscalar(quantum_defects) or len(quantum_defects) > 5:
-            raise ValueError(f"Quantum defects for {self.name} must be a list with up to 5 elements.")
 
-        d0, d2, d4, d6, d8 = list(quantum_defects) + [0] * (5 - len(quantum_defects))
-        delta_nlj = d0 + d2 / (n - d0) ** 2 + d4 / (n - d0) ** 4 + d6 / (n - d0) ** 6 + d8 / (n - d0) ** 8
+        quantum_defects = self._quantum_defects.get((l, j_tot, s_tot), 0)
+        delta_nlj = calc_modified_ritz_formula(n, quantum_defects)
+
         return n - delta_nlj

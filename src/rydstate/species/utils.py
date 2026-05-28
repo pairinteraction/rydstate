@@ -4,7 +4,9 @@ import math
 import re
 from typing import TypeAlias
 
-RydbergRitzParameters: TypeAlias = tuple[float, float, float, float, float] | list[float] | float
+import numpy as np
+
+RydbergRitzParameters: TypeAlias = tuple[float, ...] | list[float] | float
 
 
 def calc_nu_from_energy(reduced_mass_au: float, energy_au: float) -> float:
@@ -75,3 +77,55 @@ def convert_electron_configuration(config: str) -> list[tuple[int, int, int]]:
         converted_parts.append((n, l, number))
 
     return converted_parts
+
+
+def calc_modified_ritz_formula(n: int, parameters: RydbergRitzParameters) -> float:
+    """Calculate the modified Ritz formula: p₀ + p₁/(n - p₀)² + p₂/(n - p₀)⁴ + ...
+
+    The parameters are given as a list [p₀, p₁, p₂, ...] or a single float (= p₀ and all other coefficients are zero).
+    Note usually, for quantum defects, the formula is written with p₀ = δ₀, p₁ = δ₂, p₂ = δ₄, ...
+
+    Args:
+        n: The principal quantum number.
+        parameters: Rydberg-Ritz parameters.
+            A single float is a constant value; a list gives polynomial coefficients [p₀, p₁, p₂, ...].
+
+    Returns:
+        The value of the quantity at the given n.
+
+    """
+    if isinstance(parameters, (int, float)) or np.isscalar(parameters):
+        return float(parameters)  # type: ignore [arg-type]
+    if len(parameters) == 0:
+        raise ValueError("Rydberg-Ritz parameters list cannot be empty.")
+
+    p0 = parameters[0]
+    result = p0
+    for i, param in enumerate(parameters[1:], 1):
+        result += param * 1.0 / (n - p0) ** (2 * i)
+    return result
+
+
+def calc_modified_ritz_formula_in_nu(nui: float, parameters: RydbergRitzParameters) -> float:
+    """Calculate the modified Ritz formula for the effective principal quantum number nu: p₀ + p₁/ν² + p₂/ν⁴ + ...
+
+    The parameters are given as a list [p₀, p₁, p₂, ...] or a single float (= p₀ and all other coefficients are zero).
+
+    Args:
+        nui: Channel-dependent effective principal quantum number.
+        parameters: Rydberg-Ritz parameters.
+            A single float is a constant value; a list gives polynomial coefficients [p₀, p₁, p₂, ...].
+
+    Returns:
+        The value of the quantity at the given nui.
+
+    """
+    if isinstance(parameters, (int, float)) or np.isscalar(parameters):
+        return float(parameters)  # type: ignore [arg-type]
+    if len(parameters) == 0:
+        raise ValueError("Rydberg-Ritz parameters list cannot be empty.")
+
+    result = 0.0
+    for i, param in enumerate(parameters):
+        result += param * 1.0 / nui ** (2 * i)
+    return result

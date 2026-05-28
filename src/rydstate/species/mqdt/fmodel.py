@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
-from rydstate.species.utils import calc_energy_from_nu, calc_nu_from_energy
+from rydstate.species.utils import calc_energy_from_nu, calc_modified_ritz_formula_in_nu, calc_nu_from_energy
 from rydstate.utils.linalg import find_roots
 
 if TYPE_CHECKING:
@@ -140,7 +140,7 @@ class FModel:
         """
         nuis = self.calc_channel_nuis(nu)
         defects = [
-            calc_energy_dependent_quantity(nu, params)
+            calc_modified_ritz_formula_in_nu(nu, params)
             for nu, params in zip(nuis, self.eigen_quantum_defects, strict=True)
         ]
         return np.diag(np.tan(np.pi * np.array(defects)))
@@ -199,7 +199,7 @@ class FModel:
             ref_nu = 0.0  # unused; angles are constant
         rot = np.eye(n)
         for i_idx, j_idx, params in self.mixing_angles:
-            angle = calc_energy_dependent_quantity(ref_nu, params)
+            angle = calc_modified_ritz_formula_in_nu(ref_nu, params)
             r = np.eye(n)
             r[i_idx, i_idx] = np.cos(angle)
             r[i_idx, j_idx] = -np.sin(angle)
@@ -298,23 +298,3 @@ class FModelSQDT(FModel):
         self.outer_channels = [channel]  # type: ignore [misc]
         self.eigen_quantum_defects = [0]  # type: ignore [misc]
         self.mixing_angles = []  # type: ignore [misc]
-
-
-def calc_energy_dependent_quantity(nui: float, quantity: RydbergRitzParameters) -> float:
-    """Evaluate a quantity at channel nu using polynomial convention: q₀ + q₁/ν² + q₂/ν⁴ + ...
-
-    Args:
-        nui: Channel-dependent effective principal quantum number.
-        quantity: Quantity parameters. A single float is a constant value; a list gives
-            polynomial coefficients [q₀, q₁, q₂, ...].
-
-    Returns:
-        Quantity value at the given nu.
-
-    """
-    if isinstance(quantity, (int, float)):
-        return float(quantity)
-    result = 0.0
-    for i, coeff in enumerate(quantity):
-        result += float(coeff) * (1.0 / nui**2) ** i
-    return result
