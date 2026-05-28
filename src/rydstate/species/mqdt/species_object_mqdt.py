@@ -52,9 +52,11 @@ class SpeciesObjectMQDT(SpeciesObject):
 
         """
         if core_ket not in self._ionization_threshold_dict:
-            core_ket = CoreKet(i_c=self.i_c, s_c=core_ket.s_c, l_c=core_ket.l_c, j_c=core_ket.j_c, f_c=Unknown, name="")
+            core_ket = CoreKet(
+                i_c=self.i_c, s_c=core_ket.s_c, l_c=core_ket.l_c, j_c=core_ket.j_c, f_c=Unknown, label=""
+            )
             if core_ket not in self._ionization_threshold_dict:
-                core_ket = CoreKet(i_c=self.i_c, s_c=core_ket.s_c, l_c=core_ket.l_c, j_c=Unknown, f_c=Unknown, name="")
+                core_ket = CoreKet(i_c=self.i_c, s_c=core_ket.s_c, l_c=core_ket.l_c, j_c=Unknown, f_c=Unknown, label="")
             if core_ket not in self._ionization_threshold_dict:  # all fallbacks exhausted
                 raise ValueError(f"Ionization energy for core ket {core_ket} is not defined.")
 

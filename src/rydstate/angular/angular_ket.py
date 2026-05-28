@@ -54,7 +54,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
         "l_r",
         "f_tot",
         "m",
-        "name",
+        "label",
         "quantum_numbers",
         "_allow_unknown",
         "_initialized",
@@ -92,8 +92,8 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
     If NotSet, only reduced matrix elements can be calculated.
     """
 
-    name: str | None
-    """Optional name for this ket, should only be used, if the ket has Unknown quantum numbers."""
+    label: str | None
+    """Optional label for this ket, should only be used, if the ket has Unknown quantum numbers."""
 
     def __init__(
         self,
@@ -105,7 +105,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
         f_tot: float | None,  # noqa: ARG002
         m: float | NotSet,
         *,
-        name: str | None = None,
+        label: str | None = None,
         species: str | SpeciesObject | None,
         allow_unknown: bool = False,
     ) -> None:
@@ -143,7 +143,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
         # f_tot is set in the child classes
         self.m = NotSet if is_not_set(m) else float(m)
 
-        self.name = name
+        self.label = label
 
         self._allow_unknown = allow_unknown
 
@@ -186,6 +186,8 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
         args = ", ".join(f"{qn}={val}" for qn, val in zip(self.quantum_number_names, self.quantum_numbers, strict=True))
         if not is_not_set(self.m):
             args += f", m={self.m}"
+        if self.label is not None:
+            args += f", label={self.label}"
         return f"{self.__class__.__name__}({args})"
 
     def __str__(self) -> str:
@@ -201,7 +203,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
     def _equal_up_to_m(self, other: AngularKetBase[Any]) -> bool:
         if type(self) is not type(other):
             return False
-        if self.name != other.name:
+        if self.label != other.label:
             return False
         return self.quantum_numbers == other.quantum_numbers
 
@@ -211,7 +213,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
                 self.quantum_number_names,
                 self.quantum_numbers,
                 self.m,
-                self.name,
+                self.label,
             )
         )
 
@@ -333,7 +335,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
                 j_tot=j_tot,
                 f_tot=self.f_tot,
                 m=self.m,
-                name=self.name,
+                label=self.label,
                 allow_unknown=True,
             )
             return self._create_angular_state([1], [ket])
@@ -359,7 +361,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
                             j_tot=j_tot,
                             f_tot=self.f_tot,
                             m=self.m,
-                            name=self.name,
+                            label=self.label,
                             allow_unknown=self._allow_unknown,
                         )
                     except InvalidQuantumNumbersError:
@@ -388,7 +390,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
                 j_tot=j_tot,
                 f_tot=self.f_tot,
                 m=self.m,
-                name=self.name,
+                label=self.label,
                 allow_unknown=self._allow_unknown,
             )
             return self._create_angular_state([1], [ket])
@@ -414,7 +416,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
                             j_tot=j_tot,
                             f_tot=self.f_tot,
                             m=self.m,
-                            name=self.name,
+                            label=self.label,
                             allow_unknown=self._allow_unknown,
                         )
                     except InvalidQuantumNumbersError:
@@ -443,7 +445,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
                 j_r=j_r,
                 f_tot=self.f_tot,
                 m=self.m,
-                name=self.name,
+                label=self.label,
                 allow_unknown=self._allow_unknown,
             )
             return self._create_angular_state([1], [ket])
@@ -469,7 +471,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
                             j_r=j_r,
                             f_tot=self.f_tot,
                             m=self.m,
-                            name=self.name,
+                            label=self.label,
                             allow_unknown=self._allow_unknown,
                         )
                     except InvalidQuantumNumbersError:
@@ -748,7 +750,7 @@ class AngularKetLS(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
         *,
-        name: str | None = None,
+        label: str | None = None,
         species: str | SpeciesObject | None = None,
         allow_unknown: Literal[False] = False,
     ) -> None: ...
@@ -767,7 +769,7 @@ class AngularKetLS(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
         *,
-        name: str | None = None,
+        label: str | None = None,
         species: str | SpeciesObject | None = None,
         allow_unknown: Literal[True],
     ) -> None: ...
@@ -785,12 +787,12 @@ class AngularKetLS(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
         *,
-        name: str | None = None,
+        label: str | None = None,
         species: str | SpeciesObject | None = None,
         allow_unknown: bool = False,
     ) -> None:
         """Initialize the Spin ket."""
-        super().__init__(i_c, s_c, l_c, s_r, l_r, f_tot, m, name=name, species=species, allow_unknown=allow_unknown)
+        super().__init__(i_c, s_c, l_c, s_r, l_r, f_tot, m, label=label, species=species, allow_unknown=allow_unknown)
 
         self.s_tot = try_trivial_spin_addition(self.s_c, self.s_r, s_tot)  # type: ignore [assignment]
         self.l_tot = try_trivial_spin_addition(self.l_c, self.l_r, l_tot)  # type: ignore [assignment]
@@ -854,7 +856,7 @@ class AngularKetJJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
         *,
-        name: str | None = None,
+        label: str | None = None,
         species: str | SpeciesObject | None = None,
         allow_unknown: Literal[False] = False,
     ) -> None: ...
@@ -873,7 +875,7 @@ class AngularKetJJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
         *,
-        name: str | None = None,
+        label: str | None = None,
         species: str | SpeciesObject | None = None,
         allow_unknown: Literal[True],
     ) -> None: ...
@@ -891,12 +893,12 @@ class AngularKetJJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
         *,
-        name: str | None = None,
+        label: str | None = None,
         species: str | SpeciesObject | None = None,
         allow_unknown: bool = False,
     ) -> None:
         """Initialize the Spin ket."""
-        super().__init__(i_c, s_c, l_c, s_r, l_r, f_tot, m, name=name, species=species, allow_unknown=allow_unknown)
+        super().__init__(i_c, s_c, l_c, s_r, l_r, f_tot, m, label=label, species=species, allow_unknown=allow_unknown)
 
         self.j_c = try_trivial_spin_addition(self.l_c, self.s_c, j_c)  # type: ignore [assignment]
         self.j_r = try_trivial_spin_addition(self.l_r, self.s_r, j_r)  # type: ignore [assignment]
@@ -958,7 +960,7 @@ class AngularKetFJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
         *,
-        name: str | None = None,
+        label: str | None = None,
         species: str | SpeciesObject | None = None,
         allow_unknown: Literal[False] = False,
     ) -> None: ...
@@ -977,7 +979,7 @@ class AngularKetFJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
         *,
-        name: str | None = None,
+        label: str | None = None,
         species: str | SpeciesObject | None = None,
         allow_unknown: Literal[True],
     ) -> None: ...
@@ -995,12 +997,12 @@ class AngularKetFJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
         *,
-        name: str | None = None,
+        label: str | None = None,
         species: str | SpeciesObject | None = None,
         allow_unknown: bool = False,
     ) -> None:
         """Initialize the Spin ket."""
-        super().__init__(i_c, s_c, l_c, s_r, l_r, f_tot, m, name=name, species=species, allow_unknown=allow_unknown)
+        super().__init__(i_c, s_c, l_c, s_r, l_r, f_tot, m, label=label, species=species, allow_unknown=allow_unknown)
 
         self.j_c = try_trivial_spin_addition(self.l_c, self.s_c, j_c)  # type: ignore [assignment]
         self.j_r = try_trivial_spin_addition(self.l_r, self.s_r, j_r)  # type: ignore [assignment]
@@ -1029,7 +1031,4 @@ class AngularKetFJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
 
     def get_core_ket(self) -> CoreKet:
         """Get the core ket corresponding to this FJ ket."""
-        name = None
-        if is_unknown(self.l_c) or is_unknown(self.j_c) or is_unknown(self.f_c):
-            name = ""
-        return CoreKet(i_c=self.i_c, s_c=self.s_c, l_c=self.l_c, j_c=self.j_c, f_c=self.f_c, name=name)  # type: ignore [arg-type]
+        return CoreKet(i_c=self.i_c, s_c=self.s_c, l_c=self.l_c, j_c=self.j_c, f_c=self.f_c, label=self.label)  # type: ignore [arg-type]

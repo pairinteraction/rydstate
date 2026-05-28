@@ -33,8 +33,8 @@ class Ytterbium174MQDT(SpeciesObjectMQDT):
         CoreKet(i_c, 0.5, 0, 0.5): (50443.070393, None, "1/cm"),
         CoreKet(i_c, 0.5, 1, 0.5): (77504.98, None, "1/cm"),
         CoreKet(i_c, 0.5, 1, 1.5): (80835.39, None, "1/cm"),
-        CoreKet(i_c, 0.5, 1, Unknown, name=""): (79725.35, None, "1/cm"),
-        CoreKet(i_c, 0.5, Unknown, Unknown, name=""): (83967.7, None, "1/cm"),  # name="4f13 5d 6s"
+        CoreKet(i_c, 0.5, 1, Unknown, label=""): (79725.35, None, "1/cm"),
+        CoreKet(i_c, 0.5, Unknown, Unknown, label=""): (83967.7, None, "1/cm"),  # core label="4f13 5d 6s"
     }
     core_ground_state = CoreKet(i_c, 0.5, 0, 0.5)
     nuclear_dipole = 2.1
@@ -54,19 +54,19 @@ class Yb174_S0_HighN(FModel):
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=0, j_tot=0, species="Yb174"),  # "6sns 1S0"
-        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl a", species="Yb174"),
+        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl a", species="Yb174"),
         AngularKetLS(l_c=1, l_r=1, l_tot=0, s_tot=0, j_tot=0, species="Yb174"),  # "6pnp 1S0"
-        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl b", species="Yb174"),
+        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl b", species="Yb174"),
         AngularKetLS(l_c=1, l_r=1, l_tot=1, s_tot=1, j_tot=0, species="Yb174"),  # "6pnp 3P0"
-        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl c", species="Yb174"),
+        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl c", species="Yb174"),
     ]
     outer_channels = [
         AngularKetFJ(l_c=0, l_r=0, j_c=0.5, j_r=0.5, f_tot=0, species="Yb174"),
-        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl a", species="Yb174"),
+        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl a", species="Yb174"),
         AngularKetFJ(l_c=1, l_r=1, j_c=1.5, j_r=1.5, f_tot=0, species="Yb174"),
-        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl b", species="Yb174"),
+        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl b", species="Yb174"),
         AngularKetFJ(l_c=1, l_r=1, j_c=0.5, j_r=0.5, f_tot=0, species="Yb174"),
-        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl c", species="Yb174"),
+        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl c", species="Yb174"),
     ]
 
     eigen_quantum_defects = [
@@ -116,11 +116,11 @@ class Yb174_P0_HighN(FModel):
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=0, species="Yb174"),  # "6snp 3P0"
-        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snd", species="Yb174"),
+        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snd", species="Yb174"),
     ]
     outer_channels = [
         AngularKetFJ(l_c=0, l_r=1, j_c=0.5, j_r=0.5, f_tot=0, species="Yb174"),
-        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snd", species="Yb174"),
+        AngularKetFJ(f_tot=0, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snd", species="Yb174"),
     ]
 
     eigen_quantum_defects = [
@@ -142,18 +142,18 @@ class Yb174_P1_HighN(FModel):
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, species="Yb174"),  # "6snp 1P1"
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=1, species="Yb174"),  # "6snp 3P1"
-        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl a", species="Yb174"),
-        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl b", species="Yb174"),
-        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl c", species="Yb174"),
-        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl d", species="Yb174"),
+        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl a", species="Yb174"),
+        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl b", species="Yb174"),
+        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl c", species="Yb174"),
+        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl d", species="Yb174"),
     ]
     outer_channels = [
         AngularKetFJ(l_c=0, l_r=1, j_c=0.5, j_r=1.5, f_tot=1, species="Yb174"),
         AngularKetFJ(l_c=0, l_r=1, j_c=0.5, j_r=0.5, f_tot=1, species="Yb174"),
-        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl a", species="Yb174"),
-        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl b", species="Yb174"),
-        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl c", species="Yb174"),
-        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl d", species="Yb174"),
+        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl a", species="Yb174"),
+        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl b", species="Yb174"),
+        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl c", species="Yb174"),
+        AngularKetFJ(f_tot=1, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl d", species="Yb174"),
     ]
 
     eigen_quantum_defects = [
@@ -186,15 +186,15 @@ class Yb174_P2_HighN(FModel):
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=2, species="Yb174"),  # "6snp 3P2"
-        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl a", species="Yb174"),
-        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl b", species="Yb174"),
-        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl c", species="Yb174"),
+        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl a", species="Yb174"),
+        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl b", species="Yb174"),
+        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl c", species="Yb174"),
     ]
     outer_channels = [
         AngularKetFJ(l_c=0, l_r=1, j_c=0.5, j_r=1.5, f_tot=2, species="Yb174"),
-        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl a", species="Yb174"),
-        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl b", species="Yb174"),
-        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl c", species="Yb174"),
+        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl a", species="Yb174"),
+        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl b", species="Yb174"),
+        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl c", species="Yb174"),
     ]
 
     eigen_quantum_defects = [
@@ -240,17 +240,17 @@ class Yb174_D2_HighN(FModel):
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=0, j_tot=2, species="Yb174"),  # "6snd 1D2"
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=1, j_tot=2, species="Yb174"),  # "6snd 3D2"
-        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl a", species="Yb174"),
-        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl b", species="Yb174"),
+        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl a", species="Yb174"),
+        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl b", species="Yb174"),
         AngularKetLS(l_c=1, l_r=1, l_tot=2, s_tot=0, j_tot=2, species="Yb174"),  # "6pnp 1D2"
     ]
     outer_channels = [
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, j_r=2.5, f_tot=2, species="Yb174"),
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, j_r=1.5, f_tot=2, species="Yb174"),
-        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl a", species="Yb174"),
-        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl b", species="Yb174"),
+        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl a", species="Yb174"),
+        AngularKetFJ(f_tot=2, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl b", species="Yb174"),
         AngularKetFJ(
-            l_c=1, l_r=1, f_tot=2, allow_unknown=True, name="j_c and j_r unknown", species="Yb174"
+            l_c=1, l_r=1, f_tot=2, allow_unknown=True, label="j_c and j_r unknown", species="Yb174"
         ),  # Jc could be either 1/2 or 3/2
     ]
     manual_frame_transformation_outer_inner = np.array(
@@ -330,20 +330,20 @@ class Yb174_F3_HighN(FModel):
     inner_channels = [
         AngularKetLS(l_c=0, l_r=3, l_tot=3, s_tot=0, j_tot=3, species="Yb174"),  # "6snf 1F3"
         AngularKetLS(l_c=0, l_r=3, l_tot=3, s_tot=1, j_tot=3, species="Yb174"),  # "6snf 3F3"
-        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl a", species="Yb174"),
-        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl b", species="Yb174"),
-        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl c", species="Yb174"),
-        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl d", species="Yb174"),
-        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl e", species="Yb174"),
+        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl a", species="Yb174"),
+        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl b", species="Yb174"),
+        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl c", species="Yb174"),
+        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl d", species="Yb174"),
+        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl e", species="Yb174"),
     ]
     outer_channels = [
         AngularKetFJ(l_c=0, l_r=3, j_c=0.5, j_r=3.5, f_tot=3, species="Yb174"),
         AngularKetFJ(l_c=0, l_r=3, j_c=0.5, j_r=2.5, f_tot=3, species="Yb174"),
-        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl a", species="Yb174"),
-        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl b", species="Yb174"),
-        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl c", species="Yb174"),
-        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl d", species="Yb174"),
-        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, name="4f13 5d 6snl e", species="Yb174"),
+        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl a", species="Yb174"),
+        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl b", species="Yb174"),
+        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl c", species="Yb174"),
+        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl d", species="Yb174"),
+        AngularKetFJ(f_tot=3, l_c=Unknown, allow_unknown=True, label="4f13 5d 6snl e", species="Yb174"),
     ]
 
     eigen_quantum_defects = [

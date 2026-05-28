@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class CoreKet:
-    __slots__ = ("i_c", "s_c", "l_c", "j_c", "f_c", "name")
+    __slots__ = ("i_c", "s_c", "l_c", "j_c", "f_c", "label")
 
     def __init__(
         self,
@@ -18,7 +18,7 @@ class CoreKet:
         l_c: Unknown | int | None = None,
         j_c: Unknown | float | None = None,
         f_c: Unknown | float | None = None,
-        name: str | None = None,
+        label: str | None = None,
     ) -> None:
         """Initialize the core angular ket."""
         if i_c is None:
@@ -36,14 +36,16 @@ class CoreKet:
         self.j_c = try_trivial_spin_addition(self.l_c, self.s_c, j_c)
         self.f_c = try_trivial_spin_addition(self.j_c, self.i_c, f_c)
 
-        self.name = name
+        self.label = label
 
-        if any(is_unknown(x) for x in (self.l_c, self.j_c, self.f_c)) and name is None:
-            raise ValueError("Name must be set if any of l_c, j_c, or f_c is unknown.")
+        if any(is_unknown(x) for x in (self.l_c, self.j_c, self.f_c)) and label is None:
+            raise ValueError("Label must be set if any of l_c, j_c, or f_c is unknown.")
 
     def __repr__(self) -> str:
-        name_str = f", name={self.name!r}" if self.name is not None else ""
-        return f"CoreKet(i_c={self.i_c}, s_c={self.s_c}, l_c={self.l_c}, j_c={self.j_c}, f_c={self.f_c}{name_str})"
+        args = f"i_c={self.i_c}, s_c={self.s_c}, l_c={self.l_c}, j_c={self.j_c}, f_c={self.f_c}"
+        if self.label is not None:
+            args += f", label={self.label}"
+        return f"{self.__class__.__name__}({args})"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, CoreKet):
@@ -54,8 +56,8 @@ class CoreKet:
             and self.l_c == other.l_c
             and self.j_c == other.j_c
             and self.f_c == other.f_c
-            and self.name == other.name
+            and self.label == other.label
         )
 
     def __hash__(self) -> int:
-        return hash((str(type(self)), self.i_c, self.s_c, self.l_c, self.j_c, self.f_c, self.name))
+        return hash((str(type(self)), self.i_c, self.s_c, self.l_c, self.j_c, self.f_c, self.label))
