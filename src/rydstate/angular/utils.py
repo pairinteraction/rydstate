@@ -103,7 +103,7 @@ def is_angular_operator_type(qn: str) -> TypeIs[AngularOperatorType]:
     return qn in get_args(AngularOperatorType)
 
 
-def is_unknown(obj: float | Unknown | None) -> TypeIs[Unknown]:
+def is_unknown(obj: Any) -> TypeIs[Unknown]:  # noqa: ANN401
     """Check if obj is Unknown."""
     return obj is Unknown
 

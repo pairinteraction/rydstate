@@ -3,14 +3,13 @@ from __future__ import annotations
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, ClassVar, overload
 
-from rydstate.angular.core_ket import CoreKet
-from rydstate.angular.utils import Unknown
 from rydstate.species.mqdt.fmodel import FModel, FModelSQDT
 from rydstate.species.species_object import SpeciesObject
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetFJ
+    from rydstate.angular.core_ket import CoreKet
     from rydstate.units import PintFloat
 
 
@@ -51,16 +50,12 @@ class SpeciesObjectMQDT(SpeciesObject):
             Ionization energy in the desired unit.
 
         """
-        if core_ket not in self._ionization_threshold_dict:
-            core_ket = CoreKet(
-                i_c=self.i_c, s_c=core_ket.s_c, l_c=core_ket.l_c, j_c=core_ket.j_c, f_c=Unknown, label=""
-            )
-            if core_ket not in self._ionization_threshold_dict:
-                core_ket = CoreKet(i_c=self.i_c, s_c=core_ket.s_c, l_c=core_ket.l_c, j_c=Unknown, f_c=Unknown, label="")
-            if core_ket not in self._ionization_threshold_dict:  # all fallbacks exhausted
-                raise ValueError(f"Ionization energy for core ket {core_ket} is not defined.")
+        try:
+            matching_core_ket = core_ket.find_matching_core_ket(self._ionization_threshold_dict.keys())
+        except ValueError as e:
+            raise ValueError(f"Ionization energy for core ket {core_ket} is not defined.") from e
 
-        ionization_energy_tuple = self._ionization_threshold_dict[core_ket]
+        ionization_energy_tuple = self._ionization_threshold_dict[matching_core_ket]
         ionization_energy: PintFloat = ureg.Quantity(ionization_energy_tuple[0], ionization_energy_tuple[2])
         ionization_energy = ionization_energy.to("hartree", "spectroscopy")
         if unit is None:

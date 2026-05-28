@@ -32,10 +32,10 @@ class Ytterbium171MQDT(SpeciesObjectMQDT):
     _ionization_threshold_dict = {
         CoreKet(i_c, 0.5, 0, 0.5, 0): (50442.795744, None, "1/cm"),
         CoreKet(i_c, 0.5, 0, 0.5, 1): (50443.217463, None, "1/cm"),
-        CoreKet(i_c, 0.5, 1, 0.5, Unknown, label=""): (77504.98, None, "1/cm"),
-        CoreKet(i_c, 0.5, 1, Unknown, Unknown, label=""): (79725.35, None, "1/cm"),
-        CoreKet(i_c, 0.5, 1, 1.5, Unknown, label=""): (80835.39, None, "1/cm"),
-        CoreKet(i_c, 0.5, Unknown, Unknown, Unknown, label=""): (83967.7, None, "1/cm"),  # core label="4f13 5d 6s"
+        CoreKet(i_c, 0.5, 1, 0.5, Unknown, label=Unknown): (77504.98, None, "1/cm"),
+        CoreKet(i_c, 0.5, 1, Unknown, Unknown, label=Unknown): (79725.35, None, "1/cm"),
+        CoreKet(i_c, 0.5, 1, 1.5, Unknown, label=Unknown): (80835.39, None, "1/cm"),
+        CoreKet(i_c, 0.5, Unknown, Unknown, Unknown, label="4f13 5d 6s"): (83967.7, None, "1/cm"),
     }
     core_ground_state = CoreKet(i_c, 0.5, 0, 0.5, 1)
     nuclear_dipole = 0.49367

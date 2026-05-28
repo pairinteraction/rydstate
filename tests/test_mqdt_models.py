@@ -5,6 +5,7 @@ import re
 import numpy as np
 import pytest
 from rydstate.species.mqdt.fmodel import FModel
+from rydstate.species.mqdt.species_object_mqdt import SpeciesObjectMQDT
 
 
 def _all_fmodels() -> list[FModel]:
@@ -58,6 +59,19 @@ def test_parity_consistency(model: FModel) -> None:
     parities: list[int] = [(-1) ** (ch.l_c + ch.l_r) for ch in model.inner_channels if not ch.contains_unknown]
     parities.extend((-1) ** (och.l_c + och.l_r) for och in model.outer_channels if not och.contains_unknown)
     assert len(set(parities)) <= 1, f"{model.full_name}: channels have inconsistent parity"
+
+
+def test_all_channels_have_ionization_threshold(model: FModel) -> None:
+    """All channels must have ionization thresholds."""
+    species = SpeciesObjectMQDT.from_name(model.species_name)
+    try:
+        for _i, ch in enumerate(model.outer_channels):
+            species.get_ionization_threshold(ch.get_core_ket())
+    except ValueError:
+        pytest.fail(
+            f"{model.full_name}: outer_channels[{_i}] with core ket {ch.get_core_ket()} "
+            "has no ionization threshold defined"
+        )
 
 
 def test_mixing_angles_indices_valid(model: FModel) -> None:

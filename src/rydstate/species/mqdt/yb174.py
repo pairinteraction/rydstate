@@ -33,8 +33,8 @@ class Ytterbium174MQDT(SpeciesObjectMQDT):
         CoreKet(i_c, 0.5, 0, 0.5): (50443.070393, None, "1/cm"),
         CoreKet(i_c, 0.5, 1, 0.5): (77504.98, None, "1/cm"),
         CoreKet(i_c, 0.5, 1, 1.5): (80835.39, None, "1/cm"),
-        CoreKet(i_c, 0.5, 1, Unknown, label=""): (79725.35, None, "1/cm"),
-        CoreKet(i_c, 0.5, Unknown, Unknown, label=""): (83967.7, None, "1/cm"),  # core label="4f13 5d 6s"
+        CoreKet(i_c, 0.5, 1, Unknown, label=Unknown): (79725.35, None, "1/cm"),
+        CoreKet(i_c, 0.5, Unknown, Unknown, label="4f13 5d 6s"): (83967.7, None, "1/cm"),
     }
     core_ground_state = CoreKet(i_c, 0.5, 0, 0.5)
     nuclear_dipole = 2.1
