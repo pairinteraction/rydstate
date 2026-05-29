@@ -1,0 +1,106 @@
+from __future__ import annotations
+
+import logging
+from functools import cached_property
+from typing import TYPE_CHECKING, ClassVar, overload
+
+from rydstate.species.registry_singleton_meta import RegistrySingletonMeta
+from rydstate.units import rydberg_constant, ureg
+
+if TYPE_CHECKING:
+    from rydstate.units import PintFloat
+
+
+logger = logging.getLogger(__name__)
+
+
+class ElementProperties(metaclass=RegistrySingletonMeta):
+    """Base class for all element properties classes.
+
+    For the electronic ground state configurations and sorted shells,
+    see e.g. https://www.webelements.com/atoms.html
+
+    """
+
+    species: ClassVar[str]
+    """The short name of the atomic species."""
+    Z: ClassVar[int]
+    """Atomic number of the species."""
+    i_c: ClassVar[float]
+    """Nuclear spin."""
+    number_valence_electrons: ClassVar[int]
+    """Number of valence electrons (i.e. 1 for alkali atoms and 2 for alkaline earth atoms)."""
+
+    _corrected_rydberg_constant: tuple[float, str]
+    r"""Corrected Rydberg constant stored as a tuple of the form (value, unit) for lazy unit conversion."""
+
+    def __init__(self, species: str | None = None) -> None:
+        pass
+
+    def __repr__(self) -> str:
+        return f"ElementProperties({self.species})"
+
+    def __str__(self) -> str:
+        return self.species
+
+    @classmethod
+    def get_available_species(cls) -> list[str]:
+        """Get a list of all available species names in the library.
+
+        Returns:
+            List of species names.
+
+        """
+        return sorted([subclass.species for subclass in ElementProperties._instances.values()])
+
+    @overload
+    def get_corrected_rydberg_constant(self, unit: None = None) -> PintFloat: ...
+
+    @overload
+    def get_corrected_rydberg_constant(self, unit: str) -> float: ...
+
+    def get_corrected_rydberg_constant(self, unit: str | None = None) -> PintFloat | float:
+        r"""Return the corrected Rydberg constant in the desired unit.
+
+        The corrected Rydberg constant is defined as
+
+        .. math::
+            R_M = R_\infty \frac{m_{Core}}{m_{Core} + m_e}
+
+        where :math:`R_\infty` is the Rydberg constant for infinite nuclear mass,
+        :math:`m_{Core}` is the mass of the core,
+        and :math:`m_e` is the mass of the electron.
+
+        Args:
+            unit: Desired unit for the corrected Rydberg constant. Default is atomic units "hartree".
+
+        Returns:
+            Corrected Rydberg constant in the desired unit.
+
+        """
+        corrected_rydberg_constant: PintFloat = ureg.Quantity(
+            self._corrected_rydberg_constant[0], self._corrected_rydberg_constant[1]
+        )
+        corrected_rydberg_constant = corrected_rydberg_constant.to("hartree", "spectroscopy")
+        if unit is None:
+            return corrected_rydberg_constant
+        if unit == "a.u.":
+            return corrected_rydberg_constant.magnitude
+        return corrected_rydberg_constant.to(unit, "spectroscopy").magnitude
+
+    @cached_property  # don't remove this caching without benchmarking it!!!
+    def reduced_mass_au(self) -> float:
+        r"""The reduced mass mu in atomic units.
+
+        The reduced mass in atomic units :math:`\mu / m_e` is given by
+
+        .. math::
+            \frac{\mu}{m_e} = \frac{m_{Core}}{m_{Core} + m_e}
+
+        We calculate the reduced mass via the corrected Rydberg constant
+
+        .. math::
+            \frac{\mu}{m_e} = \frac{R_M}{R_\infty}
+
+        """
+        return self.get_corrected_rydberg_constant("hartree") / rydberg_constant.to("hartree").m
