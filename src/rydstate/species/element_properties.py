@@ -27,14 +27,14 @@ class ElementProperties(metaclass=RegistrySingletonMeta):
     number_valence_electrons: ClassVar[int]
     """Number of valence electrons (i.e. 1 for alkali atoms and 2 for alkaline earth atoms)."""
 
-    _corrected_rydberg_constant: tuple[float, str]
+    corrected_rydberg_constant: tuple[float, str]
     r"""Corrected Rydberg constant stored as a tuple of the form (value, unit) for lazy unit conversion."""
 
     ground_state_shell: ClassVar[tuple[int, int]]
     """Shell (n, l) describing the electronic ground state configuration."""
-    _additional_allowed_shells: ClassVar[list[tuple[int, int]]] = []
+    additional_allowed_shells: ClassVar[list[tuple[int, int]]] = []
     """Additional allowed shells (n, l), which (n, l) is smaller than the ground state shell."""
-    _core_electron_configuration: ClassVar[str]
+    core_electron_configuration: ClassVar[str]
     """Electron configuration of the core electrons, e.g. 4p6 for Rb or 5s for Sr."""
 
     def __init__(self, species: str | None = None) -> None:
@@ -82,7 +82,7 @@ class ElementProperties(metaclass=RegistrySingletonMeta):
 
         """
         corrected_rydberg_constant: PintFloat = ureg.Quantity(
-            self._corrected_rydberg_constant[0], self._corrected_rydberg_constant[1]
+            self.corrected_rydberg_constant[0], self.corrected_rydberg_constant[1]
         )
         corrected_rydberg_constant = corrected_rydberg_constant.to("hartree", "spectroscopy")
         if unit is None:

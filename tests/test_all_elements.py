@@ -21,7 +21,7 @@ def test_sqdt_species(species_name: str) -> None:
         state.radial.create_wavefunction()
         with pytest.raises(ValueError, match="Invalid combination of angular quantum numbers provided"):
             RydbergStateSQDTAlkali(species, n=50, l=1)
-    elif species.number_valence_electrons == 2 and species._quantum_defects is not None:  # noqa: SLF001
+    elif species.number_valence_electrons == 2 and species.quantum_defects is not None:
         for s_tot in [0, 1]:
             state = RydbergStateSQDTAlkalineLS(species, n=50, l=1, s_tot=s_tot, j_tot=1 + s_tot, f_tot=s_tot + 1 + i_c)
             state.radial.create_wavefunction()
