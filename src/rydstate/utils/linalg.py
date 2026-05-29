@@ -23,21 +23,24 @@ def find_roots(
     func: Callable[[float], float],
     x_min: float,
     x_max: float,
-    n_grid: int | None = None,
-    atol: float = 1e-8,
+    atol: float = 1e-9,
+    min_dx: float = 1e-2,
 ) -> list[float]:
     """Find all roots of func in [x_min, x_max].
 
     Uses a dense uniform grid to detect sign changes, then refines each bracket
     with Brent's method. Validates roots via |func(root)| < atol, which naturally
     filters out false sign changes caused by poles (discontinuities of tan).
+    Finally, we also check if we missed roots that exactly hit zero at a grid point.
 
     Args:
         func: 1D scalar function to find roots of.
         x_min: Left endpoint of search interval.
         x_max: Right endpoint of search interval (must be > x_min).
-        n_grid: Number of grid points. Defaults to 50 * ceil(x_max - x_min), minimum 500.
         atol: Absolute tolerance for root validation.
+        min_dx: Minimum spacing between roots.
+            We use this to determine a grid spacing that is fine enough to detect all roots.
+            If roots are closer than min_dx, we might miss them.
 
     Returns:
         Sorted list of x values where func(x) ≈ 0.
@@ -46,8 +49,7 @@ def find_roots(
     if x_min >= x_max:
         return []
 
-    if n_grid is None:
-        n_grid = max(50 * math.ceil(x_max - x_min), 500)
+    n_grid = math.ceil((x_max - x_min) / min_dx) + 1
 
     xs = np.linspace(x_min, x_max, n_grid)
     fs = np.array([func(x) for x in xs])
@@ -78,6 +80,13 @@ def find_roots(
             continue
 
         roots.append(root)
+
+    # Check if we missed roots, that exactly hit zero at a grid point
+    sampled_roots = xs[finite & (np.abs(fs) <= 1e-13)]
+    for root in sampled_roots:
+        if len(roots) == 0 or np.min(np.abs(np.array(roots) - root)) > min_dx * (1 - 1e-10):
+            roots.append(root)
+    roots.sort()
 
     return roots
 
