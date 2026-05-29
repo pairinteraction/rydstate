@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from functools import cached_property
 from typing import TYPE_CHECKING, ClassVar, overload
 
@@ -9,9 +8,6 @@ from rydstate.units import rydberg_constant, ureg
 
 if TYPE_CHECKING:
     from rydstate.units import PintFloat
-
-
-logger = logging.getLogger(__name__)
 
 
 class ElementProperties(metaclass=RegistrySingletonMeta):
@@ -33,6 +29,13 @@ class ElementProperties(metaclass=RegistrySingletonMeta):
 
     _corrected_rydberg_constant: tuple[float, str]
     r"""Corrected Rydberg constant stored as a tuple of the form (value, unit) for lazy unit conversion."""
+
+    ground_state_shell: ClassVar[tuple[int, int]]
+    """Shell (n, l) describing the electronic ground state configuration."""
+    _additional_allowed_shells: ClassVar[list[tuple[int, int]]] = []
+    """Additional allowed shells (n, l), which (n, l) is smaller than the ground state shell."""
+    _core_electron_configuration: ClassVar[str]
+    """Electron configuration of the core electrons, e.g. 4p6 for Rb or 5s for Sr."""
 
     def __init__(self, species: str | None = None) -> None:
         pass
