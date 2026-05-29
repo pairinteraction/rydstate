@@ -41,11 +41,17 @@ class RegistrySingletonMeta(type):
             raise TypeError(f"{name} must define class attribute 'species'") from None
 
         identifier = get_identifier(species, namespace.get("tag"))
-
         if identifier in registry_owner._registry:  # noqa: SLF001
             raise TypeError(f"Duplicate identifier name: {identifier!r}")
-
         registry_owner._registry[identifier] = cls  # noqa: SLF001
+
+        is_default = namespace.get("is_default", False)
+        if is_default:
+            default_identifier = get_identifier(species, "default")
+            if default_identifier in registry_owner._registry:  # noqa: SLF001
+                raise TypeError(f"Cannot have multiple default identifiers for the same species: {species!r}")
+            registry_owner._registry[default_identifier] = cls  # noqa: SLF001
+
         return cls
 
     def __call__(cls: type[T], species: str | None = None, tag: str | None = None) -> T:
