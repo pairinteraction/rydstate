@@ -5,6 +5,7 @@ from rydstate.species.potential import PotentialFei2009, PotentialMarinescu1993
 
 class PotentialMarinescu1993Rubidium(PotentialMarinescu1993):
     species = "Rb"
+    is_default = True
 
     alpha_c_marinescu_1993 = 9.076
     r_c_dict_marinescu_1993: ClassVar = {0: 1.66242117, 1: 1.50195124, 2: 4.86851938, 3: 4.79831327}
