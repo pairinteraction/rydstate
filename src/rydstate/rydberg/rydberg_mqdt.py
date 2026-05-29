@@ -33,10 +33,10 @@ class RydbergStateMQDT(RydbergStateBase):
     ) -> None:
         self.coefficients = np.array(coefficients)
         self.sqdt_states = sqdt_states
-        self.species = sqdt_states[0].species
         self._nu = nu
-        self.angular = AngularState(self.coefficients.tolist(), [ket.angular for ket in sqdt_states])
 
+        if len(sqdt_states) == 0:
+            raise ValueError("RydbergStateMQDT must be initialized with at least one state.")
         if len(coefficients) != len(sqdt_states):
             raise ValueError("Length of coefficients and sqdt_states must be the same.")
         if not all(isinstance(sqdt_state.angular, AngularKetFJ) for sqdt_state in sqdt_states):
@@ -52,6 +52,14 @@ class RydbergStateMQDT(RydbergStateBase):
             )
         if normalize:
             self.coefficients /= self.norm
+
+        self.species = sqdt_states[0].species
+        self.angular = AngularState(
+            self.coefficients.tolist(),
+            [ket.angular for ket in sqdt_states],
+            normalize=False,
+            warn_if_not_normalized=False,
+        )
 
     def __iter__(self) -> Iterator[tuple[float, RydbergStateSQDT[AngularKetFJ[Any]]]]:
         return zip(self.coefficients, self.sqdt_states, strict=True).__iter__()
