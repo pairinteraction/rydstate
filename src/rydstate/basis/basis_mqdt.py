@@ -7,10 +7,10 @@ import numpy as np
 
 from rydstate.angular import AngularKetFJ
 from rydstate.basis.basis_base import BasisBase
+from rydstate.linalg import calc_nullvector, find_roots
 from rydstate.rydberg import RydbergStateMQDT
 from rydstate.rydberg.rydberg_sqdt import RydbergStateSQDT
 from rydstate.species import FModel, FModelSQDT, SpeciesObjectMQDT
-from rydstate.utils.linalg import calc_nullvector, find_roots
 
 if TYPE_CHECKING:
     from rydstate.species import FModel
