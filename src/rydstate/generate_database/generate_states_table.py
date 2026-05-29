@@ -79,7 +79,7 @@ def get_state_data(ids: int, state: RydbergStateSQDT[AngularKetLS[AllKnown]]) ->
 
     return (
         ids,  # id
-        state.species.get_ionization_energy("a.u.") + state.get_energy("a.u."),  # energy
+        state.get_energy("a.u."),  # energy
         parity,  # parity = (-1)^l_tot
         state.n,  # n: quantum number
         state.nu,  # nu = NStar for sqdt
