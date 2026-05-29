@@ -36,15 +36,20 @@ This package relies on quantum defects provided by the community. Consider citin
 <p><details>
 <summary><b>Click to expand for quantum defect references</b></summary>
 
-| Element   | Model | Identifier     | References                                                                                                                                                   |
-|-----------|-------|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| H         | SQDT  | `H`            | Schrödinger equation for hydrogen                                                                                                                            |
-| Li        | SQDT  | `Li`           | [10.1017/CBO9780511524530] (1994)<br>[10.1103/PhysRevA.34.2889] (1986)                                                                                       |
-| Na        | SQDT  | `Na`           | [10.1088/0953-4075/30/10/009] (1997)<br>[10.1070/QE1995v025n09ABEH000501] (1995)<br>[10.1103/PhysRevA.45.4720] (1992)                                        |
-| K         | SQDT  | `K`            | [10.1088/0031-8949/27/4/012] (1983)<br>[10.1016/0030-4018(81)90225-X] (1981)                                                                                 |
-| Rb        | SQDT  | `Rb`           | [10.1103/PhysRevA.83.052515] (2011)<br>[10.1103/PhysRevA.74.054502] (2006)<br>[10.1103/PhysRevA.74.062712] (2006)<br>[10.1103/PhysRevA.67.052502] (2003)     |
-| Cs        | SQDT  | `Cs`           | [10.1103/PhysRevA.93.013424] (2016)<br>[10.1103/PhysRevA.35.4650] (1987)<br>[10.1103/PhysRevA.26.2733] (1982)                                                |
-| Sr88      | SQDT  | `Sr88_sqdt`    | [10.1103/PhysRevA.108.022815] (2023)<br>[10.17169/refubium-34581] (2022)<br>[10.1016/j.cpc.2020.107814] (2021)                                               |
+| Element | Model | Identifier     | References                                                                                                                                                   |
+|---------|-------|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| H       | SQDT  | `H`            | Schrödinger equation for hydrogen                                                                                                                            |
+| Li      | SQDT  | `Li`           | [10.1017/CBO9780511524530] (1994)<br>[10.1103/PhysRevA.34.2889] (1986)                                                                                       |
+| Na      | SQDT  | `Na`           | [10.1088/0953-4075/30/10/009] (1997)<br>[10.1070/QE1995v025n09ABEH000501] (1995)<br>[10.1103/PhysRevA.45.4720] (1992)                                        |
+| K       | SQDT  | `K`            | [10.1088/0031-8949/27/4/012] (1983)<br>[10.1016/0030-4018(81)90225-X] (1981)                                                                                 |
+| Rb      | SQDT  | `Rb`           | [10.1103/PhysRevA.83.052515] (2011)<br>[10.1103/PhysRevA.74.054502] (2006)<br>[10.1103/PhysRevA.74.062712] (2006)<br>[10.1103/PhysRevA.67.052502] (2003)     |
+| Cs      | SQDT  | `Cs`           | [10.1103/PhysRevA.93.013424] (2016)<br>[10.1103/PhysRevA.35.4650] (1987)<br>[10.1103/PhysRevA.26.2733] (1982)                                                |
+| Sr88    | SQDT  | `Sr88_sqdt`    | [10.1103/PhysRevA.108.022815] (2023)<br>[10.17169/refubium-34581] (2022)<br>[10.1016/j.cpc.2020.107814] (2021)                                               |
+| Sr87    | MQDT  | `Sr87_mqdt`    | [10.1088/1361-6455/ab4c22] (2019)                                                                                                                            |
+| Sr88    | MQDT  | `Sr88_mqdt`    | [10.1088/1361-6455/ab4c22] (2019)                                                                                                                            |
+| Yb171   | MQDT  | `Yb171_mqdt`   | [10.1103/PhysRevX.15.011009] (2025)<br>[10.1103/mzsv-rckx] (2025)                                                                                            |
+| Yb173   | MQDT  | `Yb173_mqdt`   | MQDT model formulated by [Frederic Hummel]                                                                                                                   |
+| Yb174   | MQDT  | `Yb174_mqdt`   | [10.1103/PhysRevX.15.011009] (2025)<br>[10.1103/mzsv-rckx] (2025)                                                                                            |
 </details></p>
 
 [10.1103/PhysRevA.34.2889]: https://doi.org/10.1103/PhysRevA.34.2889
@@ -64,7 +69,9 @@ This package relies on quantum defects provided by the community. Consider citin
 [10.1103/PhysRevA.108.022815]: https://doi.org/10.1103/PhysRevA.108.022815
 [10.17169/refubium-34581]: https://doi.org/10.17169/refubium-34581
 [10.1016/j.cpc.2020.107814]: https://doi.org/10.1016/j.cpc.2020.107814
-
+[10.1088/1361-6455/ab4c22]: https://doi.org/10.1088/1361-6455/ab4c22
+[10.1103/PhysRevX.15.011009]: https://doi.org/10.1103/PhysRevX.15.011009
+[10.1103/mzsv-rckx]: https://doi.org/10.1103/mzsv-rckx
 
 ## Documentation
 
@@ -87,18 +94,20 @@ Finally, you can use the custom species by simply calling `rydstate.RydbergState
 
 ## Contributors
 
-The software is currently maintained by:
+This software is currently maintained by:
 * [Johannes Mögerle]
 
-In addition, the following people contributed significantly to this software:
-* [Frederic Hummel] - Author of the MQDT.jl Julia package, which the python implementation of the MQDT calculations in this package are based on, and from where the FModel parameters were taken.
-* [Sebastian Weber] - Input about the code structure and the Numerov implementation.
+The following people have made significant contributions:
+* [Frederic Hummel] - Supported the development of the MQDT implementation. Author of the [MQDT.jl] Julia package, on which this package’s Python implementation of the MQDT calculations is based.
+* [Sebastian Weber] - Provided substantial input on the physics and software architecture of this package.
 
 We warmly welcome new contributions!
 
 [Johannes Mögerle]: https://github.com/johannes-moegerle
 [Frederic Hummel]: https://github.com/frederic-atom
 [Sebastian Weber]: https://github.com/seweber
+
+[MQDT.jl]: https://github.com/pairinteraction/MQDT.jl
 
 
 ## License
