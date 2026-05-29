@@ -12,7 +12,7 @@ from rydstate.angular import NotSet
 from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKetJJ, AngularKetLS
 from rydstate.angular.utils import AllKnown, is_not_set, is_unknown, quantum_numbers_to_angular_ket
 from rydstate.radial import RadialKet
-from rydstate.rydberg.rydberg_base import RydbergStateBase
+from rydstate.rydberg_state.rydberg_base import RydbergStateBase
 from rydstate.species import SpeciesObjectSQDT
 from rydstate.species.utils import calc_energy_from_nu
 from rydstate.units import BaseQuantities, MatrixElementOperatorRanks, ureg

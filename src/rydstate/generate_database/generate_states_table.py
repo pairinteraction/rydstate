@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
     from rydstate.angular.utils import AllKnown
     from rydstate.basis import BasisSQDT
-    from rydstate.rydberg.rydberg_sqdt import RydbergStateSQDT
+    from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT
 
 
 logger = logging.getLogger(__name__)
