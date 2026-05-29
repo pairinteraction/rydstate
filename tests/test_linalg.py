@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from rydstate.utils.linalg import find_roots
+from rydstate.linalg import find_roots
 
 
 def test_find_roots_detects_roots_on_grid_samples() -> None:
