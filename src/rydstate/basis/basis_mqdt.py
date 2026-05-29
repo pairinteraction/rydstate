@@ -151,7 +151,7 @@ def get_mqdt_states_from_fmodel(
         sqdt_states: list[RydbergStateSQDT[AngularKetFJ[Any]]] = []
         for nui, angular_ket in zip(nuis, model.outer_channels, strict=True):
             sqdt_species = model.species_name.replace("_mqdt", "")
-            sqdt_states.append(RydbergStateSQDT.from_angular_ket(sqdt_species, angular_ket, nu=float(nui)))
+            sqdt_states.append(RydbergStateSQDT.from_angular_ket(sqdt_species, angular_ket, nui=float(nui)))
 
         states.append(RydbergStateMQDT(coefficients, sqdt_states, nu=nu))
 

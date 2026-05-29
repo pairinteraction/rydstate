@@ -7,12 +7,20 @@ import numpy as np
 
 from rydstate.angular import NotSet
 from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKetJJ, AngularKetLS
-from rydstate.angular.utils import is_not_set
+from rydstate.angular.utils import (
+    InvalidQuantumNumbersError,
+    Unknown,
+    get_possible_quantum_number_values,
+    is_not_set,
+    is_unknown,
+    try_trivial_spin_addition,
+)
 from rydstate.basis.basis_base import BasisBase
 from rydstate.rydberg import (
     RydbergStateSQDT,
 )
 from rydstate.species import SpeciesObjectSQDT
+from rydstate.species.mqdt.species_object_mqdt import SpeciesObjectMQDT
 
 if TYPE_CHECKING:
     from rydstate.angular.utils import AllKnown, CouplingScheme
@@ -131,10 +139,22 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
                         state = RydbergStateSQDT.from_angular_ket(self.species, angular_ket, n=n)
                         self.states.append(state)  # type: ignore [arg-type]
 
-    def _add_states_fj(self, n: int, l_r: int, m_range: tuple[float, float] | None | NotSet = NotSet) -> None:
+    def _add_states_fj(
+        self,
+        n: int,
+        l_r: int,
+        m_range: tuple[float, float] | None | NotSet = NotSet,
+        l_c: int | Unknown = 0,
+        j_c: float | Unknown = Unknown,
+        f_c: float | Unknown = Unknown,
+        f_tot: float | Unknown = Unknown,
+        allow_unknown: bool = False,
+    ) -> None:
         i_c = self.species.i_c_number
         s_r = 0.5
-        s_c = j_c = 0 if self.species.number_valence_electrons == 1 else 0.5
+        s_c = 0 if self.species.number_valence_electrons == 1 else 0.5
+        j_c = try_trivial_spin_addition(l_c, s_c, j_c)
+        f_c = try_trivial_spin_addition(j_c, i_c, f_c)
         s_tot_list = np.arange(s_r - s_c, s_r + s_c + 1)
 
         allowed = [self.species.is_allowed_shell(n, l_r, s) for s in s_tot_list]
@@ -147,13 +167,28 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
                 )
             return
 
-        for j_r in np.arange(abs(l_r - s_r), l_r + s_r + 1):
-            for f_c in np.arange(abs(j_c - i_c), j_c + i_c + 1):
-                for f_tot in np.arange(abs(f_c - j_r), f_c + j_r + 1):
-                    for m in self._get_m_range(m_range, f_tot):
-                        angular_ket = AngularKetFJ(l_r=l_r, j_r=j_r, f_c=f_c, f_tot=f_tot, m=m, species=self.species)
+        for j_r in get_possible_quantum_number_values(l_r, s_r, Unknown):
+            for _f_c in get_possible_quantum_number_values(j_c, i_c, f_c):
+                for _f_tot in get_possible_quantum_number_values(_f_c, j_r, f_tot):
+                    if is_unknown(_f_tot):
+                        raise ValueError(
+                            "Cannot determine f_tot for FJ coupling. Please provide more specific MQDT parameters."
+                        )
+                    for m in self._get_m_range(m_range, _f_tot):
+                        try:
+                            angular_ket = AngularKetFJ(  # type: ignore [call-overload]
+                                l_r=l_r,
+                                j_r=j_r,
+                                f_c=_f_c,
+                                f_tot=_f_tot,
+                                m=m,
+                                species=self.species,
+                                allow_unknown=allow_unknown,
+                            )
+                        except InvalidQuantumNumbersError:
+                            continue
                         state = RydbergStateSQDT.from_angular_ket(self.species, angular_ket, n=n)
-                        self.states.append(state)  # type: ignore [arg-type]
+                        self.states.append(state)
 
     def _get_m_range(self, m_range: tuple[float, float] | None | NotSet, f_tot: float) -> list[NotSet | float]:
         if is_not_set(m_range):
@@ -164,3 +199,57 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
         m_min = max(-f_tot, m_range[0])
         m_max = min(f_tot, m_range[1])
         return [float(_m) for _m in np.arange(m_min, m_max + 1)]
+
+
+class BasisSQDTMultiChannels(BasisSQDT[AngularKetFJ[Any]]):
+    species: SpeciesObjectMQDT
+
+    def __init__(
+        self,
+        species: str | SpeciesObjectMQDT,
+        n: tuple[int, int],
+        m: tuple[float, float] | None | NotSet = NotSet,
+        *,
+        coupling_scheme: CouplingScheme = "FJ",
+    ) -> None:
+        self.species = SpeciesObjectMQDT.from_name(species) if isinstance(species, str) else species
+
+        self._init_states(n, m, coupling_scheme)
+
+    def _init_states(
+        self, n_range: tuple[int, int], m_range: tuple[float, float] | None | NotSet, coupling_scheme: CouplingScheme
+    ) -> None:
+        if coupling_scheme != "FJ":
+            raise NotImplementedError("Only FJ coupling is implemented for multi-channel SQDT basis")
+        self.coupling_scheme = coupling_scheme
+        self.states = []
+
+        for core_ket in self.species._ionization_threshold_dict:  # noqa: SLF001
+            if core_ket.contains_unknown:
+                # we will handle these below
+                continue
+            logger.info("Generating states for core ket: %s", core_ket)
+
+            for n in range(n_range[0], n_range[1] + 1):
+                for l_r in range(n):
+                    self._add_states_fj(
+                        n, l_r, m_range, l_c=core_ket.l_c, j_c=core_ket.j_c, f_c=core_ket.f_c, allow_unknown=True
+                    )
+
+        # add all addition series, which are defined in the mqdt parameters but have dummy core kets
+        for fmodel in self.species.models:
+            for angular_ket in fmodel.outer_channels:
+                if not angular_ket.contains_unknown:
+                    # handled above
+                    continue
+                for n in range(n_range[0], n_range[1] + 1):
+                    self._add_states_fj(
+                        n,
+                        angular_ket.l_r,
+                        m_range,
+                        l_c=angular_ket.l_c,
+                        j_c=angular_ket.j_c,
+                        f_c=angular_ket.f_c,
+                        f_tot=angular_ket.f_tot,
+                        allow_unknown=True,
+                    )
