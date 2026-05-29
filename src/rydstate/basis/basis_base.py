@@ -7,7 +7,7 @@ import numpy as np
 from typing_extensions import Self
 
 from rydstate.angular.utils import is_angular_momentum_quantum_number, is_unknown
-from rydstate.rydberg.rydberg_base import RydbergStateBase
+from rydstate.rydberg_state.rydberg_base import RydbergStateBase
 from rydstate.species.species_object import SpeciesObject
 from rydstate.units import ureg
 

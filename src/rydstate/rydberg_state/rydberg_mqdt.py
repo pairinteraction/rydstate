@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Any, overload
 import numpy as np
 
 from rydstate.angular import AngularKetFJ, AngularState
-from rydstate.rydberg.rydberg_base import RydbergStateBase
-from rydstate.rydberg.rydberg_sqdt import RydbergStateSQDT
+from rydstate.rydberg_state.rydberg_base import RydbergStateBase
+from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence

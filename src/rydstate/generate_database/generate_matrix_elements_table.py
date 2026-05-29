@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
     from rydstate.angular.utils import AllKnown, AngularOperatorType
     from rydstate.basis.basis_sqdt import BasisSQDT
-    from rydstate.rydberg import RydbergStateSQDT
+    from rydstate.rydberg_state import RydbergStateSQDT
     from rydstate.units import MatrixElementOperator
 
 logger = logging.getLogger(__name__)
