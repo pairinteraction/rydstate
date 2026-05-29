@@ -21,11 +21,12 @@ logger = logging.getLogger(__name__)
 class BasisMQDT(BasisBase[RydbergStateMQDT]):
     """Basis set of MQDT Rydberg states for a given species over a range of effective principal quantum numbers."""
 
-    def __init__(  # noqa: C901, PLR0912
+    def __init__(  # noqa: C901
         self,
         species: str | SpeciesObjectMQDT,
         nu: tuple[float, float],
         f_tot: float | tuple[float, float] | None = None,
+        l_r: int | tuple[int, int] | None = None,
         *,
         skip_high_l: bool = True,
         n_min_high_l: int = 0,
@@ -34,18 +35,16 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
 
         self.models: list[FModel] = []
         i_c, j_c, s_r = self.species.i_c, 0.5, 0.5
-        for l_r in range(int(nu[1]) + 1):
-            for j_r in np.arange(abs(l_r - s_r), l_r + s_r + 1):
+        for _l_r in range(int(nu[1]) + 1):
+            if not is_allowed_qn(l_r, _l_r):
+                continue
+            for j_r in np.arange(abs(_l_r - s_r), _l_r + s_r + 1):
                 for f_c in np.arange(abs(j_c - i_c), j_c + i_c + 1):
                     for _f_tot in np.arange(abs(f_c - j_r), f_c + j_r + 1):
-                        if f_tot is not None:
-                            if isinstance(f_tot, tuple):
-                                if not (f_tot[0] <= _f_tot <= f_tot[1]):
-                                    continue
-                            elif _f_tot != f_tot:
-                                continue
+                        if not is_allowed_qn(f_tot, _f_tot):
+                            continue
                         channel = AngularKetFJ(
-                            l_r=l_r, j_r=float(j_r), f_c=float(f_c), f_tot=float(_f_tot), species=self.species
+                            l_r=_l_r, j_r=float(j_r), f_c=float(f_c), f_tot=float(_f_tot), species=self.species
                         )
                         self.models.extend(self.species.get_mqdt_models(channel))
         self.models = list(set(self.models))  # remove duplicates
@@ -71,6 +70,16 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
                     len(_states),
                 )
             self.states.extend(_states)
+
+
+def is_allowed_qn(qn_range: float | tuple[float, float] | None, qn: float, delta: float = 1e-6) -> bool:
+    if qn_range is None:
+        return True
+    if isinstance(qn_range, (int, float)) or np.isscalar(qn_range):
+        return abs(qn - qn_range) <= delta  # type: ignore [operator]
+    if isinstance(qn_range, tuple) or (isinstance(qn_range, list) and len(qn_range) == 2):
+        return qn_range[0] - delta <= qn <= qn_range[1] + delta
+    raise ValueError(f"Invalid qn_range: {qn_range}. Must be a float or a tuple of two floats.")
 
 
 def get_mqdt_states_from_fmodel(
