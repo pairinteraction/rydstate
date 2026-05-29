@@ -1,0 +1,671 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FModelSQDT &mdash; RydState 0.11.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f3b36f1a"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Strontium 87" href="../api/mqdt/sr87.html" />
+    <link rel="prev" title="FModel" href="rydstate.species.FModel.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            RydState
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#radialket">RadialKet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/radial/hydrogen_wavefunction.html">Hydrogen radial wavefunction via numerov and from sympy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/radial/rubidium_wavefunction.html">Rubidium wavefunction and potential</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#angularstate">AngularState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/angular/angular_state.html">Using AngularKets and AngularStates in different spin coupling schemes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#rydbergstate">RydbergState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/dipole_matrix_elements.html">Calculating dipole matrix elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/lifetimes.html">Lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#mqdt">MQDT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/mqdt/mqdt_exp_qn.html">Labeling the angular character of Yb 171</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#comparisons">Comparisons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_z_min_cutoff.html">Comparison of the z_min values for circular states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_nist_energy_levels_data.html">Compare NIST energy levels data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_model_potentials.html">Compare different effective model potentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_whittaker.html">Comparison: Numerov - Whittaker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/benchmark/benchmark_njit.html">Benchmark of Numerov integration with and without using numba.njit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api/rydberg_states.html">Rydberg States</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.RydbergStateSQDT.html">RydbergStateSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.RydbergStateSQDTAlkali.html">RydbergStateSQDTAlkali</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.RydbergStateSQDTAlkalineLS.html">RydbergStateSQDTAlkalineLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.RydbergStateSQDTAlkalineJJ.html">RydbergStateSQDTAlkalineJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.RydbergStateSQDTAlkalineFJ.html">RydbergStateSQDTAlkalineFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.RydbergStateMQDT.html">RydbergStateMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/basis.html">Rydberg Basis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.BasisSQDT.html">BasisSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.BasisMQDT.html">BasisMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/angular.html">Angular module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.angular.AngularKetLS.html">AngularKetLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.angular.AngularKetJJ.html">AngularKetJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.angular.AngularKetFJ.html">AngularKetFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.angular.AngularState.html">AngularState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.angular.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/radial.html">Radial module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.radial.RadialKet.html">RadialKet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.radial.Wavefunction.html">Wavefunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.radial.Model.html">Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.radial.numerov.html">numerov</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/species_sqdt.html">SQDT Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.SpeciesObjectSQDT.html">SpeciesObjectSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.HydrogenTextBook.html">HydrogenTextBook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.Hydrogen.html">Hydrogen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.Lithium.html">Lithium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.Sodium.html">Sodium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.Potassium.html">Potassium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.Rubidium.html">Rubidium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.Cesium.html">Cesium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.Strontium87.html">Strontium87</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.Strontium88.html">Strontium88</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.Ytterbium171.html">Ytterbium171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.Ytterbium173.html">Ytterbium173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.Ytterbium174.html">Ytterbium174</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api/species_mqdt.html">MQDT Parameters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.SpeciesObjectMQDT.html">SpeciesObjectMQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.FModel.html">FModel</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">FModelSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/mqdt/sr87.html">Strontium 87</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/mqdt/sr88.html">Strontium 88</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/mqdt/yb171.html">Ytterbium 171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/mqdt/yb173.html">Ytterbium 173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/mqdt/yb174.html">Ytterbium 174</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style>
+a.gitbutton {
+  display: block;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #fff;
+  padding-top: 10px;
+  padding-left: 85px;
+  padding-right: 0px;
+  margin: 22px;
+  width: 240px;
+  height: 60px;
+  background: transparent url("../_static/buttons/github.svg") 0 0 no-repeat;
+}
+a.gitbutton small {
+  display: block;
+  font-size: 11px;
+}
+button.toctree-expand {
+  display: none;
+}
+</style>
+<a href="https://github.com/pairinteraction/rydstate" class="gitbutton">Explore<small>the GitHub repository</small></a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">RydState</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../api/species_mqdt.html">MQDT Parameters</a></li>
+      <li class="breadcrumb-item active">FModelSQDT</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/rydstate.species.FModelSQDT.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="fmodelsqdt">
+<h1>FModelSQDT<a class="headerlink" href="#fmodelsqdt" title="Link to this heading"></a></h1>
+<p class="rubric">Class Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(species_name, channel)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.calc_channel_nuis" title="rydstate.species.FModelSQDT.calc_channel_nuis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_channel_nuis</span></code></a>(nu)</p></td>
+<td><p>Return the channel-dependent effective principal quantum numbers nui.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.calc_det_m_matrix" title="rydstate.species.FModelSQDT.calc_det_m_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_det_m_matrix</span></code></a>(nu)</p></td>
+<td><p>Calculate the determinant of the M-matrix at a given nu value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.calc_det_scaled_m_matrix" title="rydstate.species.FModelSQDT.calc_det_scaled_m_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_det_scaled_m_matrix</span></code></a>(nu)</p></td>
+<td><p>Calculate the determinant of the scaled M-matrix at a given nu value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.calc_eigen_quantum_defects" title="rydstate.species.FModelSQDT.calc_eigen_quantum_defects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_eigen_quantum_defects</span></code></a>(nu)</p></td>
+<td><p>Return the eigen quantum defects evaluated at the channel-dependent effective principal quantum numbers nui.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.calc_frame_transformation" title="rydstate.species.FModelSQDT.calc_frame_transformation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_frame_transformation</span></code></a>(nu)</p></td>
+<td><p>Return the full frame transformation U from close-coupling to outer channel frame.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.calc_frame_transformation_inner_closecoupling" title="rydstate.species.FModelSQDT.calc_frame_transformation_inner_closecoupling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_frame_transformation_inner_closecoupling</span></code></a>(nu)</p></td>
+<td><p>Return the frame transformation matrix R mapping close-coupling to inner channels.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.calc_frame_transformation_outer_inner" title="rydstate.species.FModelSQDT.calc_frame_transformation_outer_inner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_frame_transformation_outer_inner</span></code></a>()</p></td>
+<td><p>Return the frame transformation matrix Q mapping inner to outer channels.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.calc_k_matrix" title="rydstate.species.FModelSQDT.calc_k_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_k_matrix</span></code></a>(nu)</p></td>
+<td><p>Return the K-matrix in the collision (outer) channel frame.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.calc_k_matrix_closecoupling" title="rydstate.species.FModelSQDT.calc_k_matrix_closecoupling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_k_matrix_closecoupling</span></code></a>(nu)</p></td>
+<td><p>Return diagonal K-matrix in the close-coupling frame.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.calc_m_matrix" title="rydstate.species.FModelSQDT.calc_m_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_m_matrix</span></code></a>(nu)</p></td>
+<td><p>Return the M-matrix in the collision (outer) channel frame.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.calc_scaled_m_matrix" title="rydstate.species.FModelSQDT.calc_scaled_m_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_scaled_m_matrix</span></code></a>(nu)</p></td>
+<td><p>Return the scaled M-matrix in the collision (outer) channel frame.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.get_ionization_thresholds" title="rydstate.species.FModelSQDT.get_ionization_thresholds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_ionization_thresholds</span></code></a>([unit])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Class Attributes and Properties</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.frame_transformation_outer_inner" title="rydstate.species.FModelSQDT.frame_transformation_outer_inner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">frame_transformation_outer_inner</span></code></a></p></td>
+<td><p>Cached version of calc_frame_transformation_outer_inner.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.full_name" title="rydstate.species.FModelSQDT.full_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_name</span></code></a></p></td>
+<td><p>Return the full name of the model, combining species and model name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.ionization_thresholds_au" title="rydstate.species.FModelSQDT.ionization_thresholds_au"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ionization_thresholds_au</span></code></a></p></td>
+<td><p>Return the ionization thresholds for all channels in atomic units.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.manual_frame_transformation_outer_inner" title="rydstate.species.FModelSQDT.manual_frame_transformation_outer_inner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">manual_frame_transformation_outer_inner</span></code></a></p></td>
+<td><p>Optional manually specified frame transformation matrix Q mapping inner to outer channels.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.nu_max" title="rydstate.species.FModelSQDT.nu_max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nu_max</span></code></a></p></td>
+<td><p>Maximum nu for which the model is valid.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.nu_min" title="rydstate.species.FModelSQDT.nu_min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nu_min</span></code></a></p></td>
+<td><p>Minimum nu for which the model is valid.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.reference" title="rydstate.species.FModelSQDT.reference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reference</span></code></a></p></td>
+<td><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.species" title="rydstate.species.FModelSQDT.species"><code class="xref py py-obj docutils literal notranslate"><span class="pre">species</span></code></a></p></td>
+<td><p>Return the SpeciesObjectMQDT associated with this model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.name" title="rydstate.species.FModelSQDT.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<td><p>The name of the atomic species.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.species_name" title="rydstate.species.FModelSQDT.species_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">species_name</span></code></a></p></td>
+<td><p>The species for which the MQDT model is defined.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.f_tot" title="rydstate.species.FModelSQDT.f_tot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">f_tot</span></code></a></p></td>
+<td><p>Total angular momentum f_tot of the Rydberg state.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.nu_range" title="rydstate.species.FModelSQDT.nu_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nu_range</span></code></a></p></td>
+<td><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.inner_channels" title="rydstate.species.FModelSQDT.inner_channels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inner_channels</span></code></a></p></td>
+<td><p>List of inner channels in the MQDT model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.outer_channels" title="rydstate.species.FModelSQDT.outer_channels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outer_channels</span></code></a></p></td>
+<td><p>List of outer channels in the MQDT model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.eigen_quantum_defects" title="rydstate.species.FModelSQDT.eigen_quantum_defects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eigen_quantum_defects</span></code></a></p></td>
+<td><p>List of eigen quantum defects for the close-coupling channels.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#rydstate.species.FModelSQDT.mixing_angles" title="rydstate.species.FModelSQDT.mixing_angles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mixing_angles</span></code></a></p></td>
+<td><p>List of mixing angles between close-coupling channels.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.</span></span><span class="sig-name descname"><span class="pre">FModelSQDT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">species_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rydstate/species/mqdt/fmodel.html#FModelSQDT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.FModelSQDT" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>species_name</strong> (<em>ClassVar</em><em>[</em><em>str</em><em>]</em>)</p></li>
+<li><p><strong>channel</strong> (<a class="reference internal" href="rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.AngularKetFJ"><em>AngularKetFJ</em></a><em>[</em><em>AllKnown</em><em>]</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.calc_channel_nuis">
+<span class="sig-name descname"><span class="pre">calc_channel_nuis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rydstate.species.FModelSQDT.calc_channel_nuis" title="Link to this definition"></a></dt>
+<dd><p>Return the channel-dependent effective principal quantum numbers nui.</p>
+<p>The channel dependent effective principal quantum numbers nui are defined via</p>
+<div class="math notranslate nohighlight">
+\[E = I_i - \frac{Ry}{2 \nu_i^2} = I_{\text{ref}} - \frac{Ry}{nu^2}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nu</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Effective principal quantum number with reference to the lowest ionization threshold.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of channel nui values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.calc_det_m_matrix">
+<span class="sig-name descname"><span class="pre">calc_det_m_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rydstate.species.FModelSQDT.calc_det_m_matrix" title="Link to this definition"></a></dt>
+<dd><p>Calculate the determinant of the M-matrix at a given nu value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nu</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Effective principal quantum number with reference to the lowest ionization threshold.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Determinant of the M-matrix at the given nu value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.calc_det_scaled_m_matrix">
+<span class="sig-name descname"><span class="pre">calc_det_scaled_m_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rydstate.species.FModelSQDT.calc_det_scaled_m_matrix" title="Link to this definition"></a></dt>
+<dd><p>Calculate the determinant of the scaled M-matrix at a given nu value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nu</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Effective principal quantum number with reference to the lowest ionization threshold.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Determinant of the scaled M-matrix at the given nu value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.calc_eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">calc_eigen_quantum_defects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rydstate.species.FModelSQDT.calc_eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>Return the eigen quantum defects evaluated at the channel-dependent effective principal quantum numbers nui.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nu</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Effective principal quantum number with reference to the lowest ionization threshold.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Array of eigen quantum defects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.calc_frame_transformation">
+<span class="sig-name descname"><span class="pre">calc_frame_transformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rydstate.species.FModelSQDT.calc_frame_transformation" title="Link to this definition"></a></dt>
+<dd><p>Return the full frame transformation U from close-coupling to outer channel frame.</p>
+<p>Combines the unitary frame transformation Q with the rotation matrix R.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nu</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Effective principal quantum number with reference to the lowest ionization threshold.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Frame transformation matrix U = Q R (n_outer, n_closecoupling).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.calc_frame_transformation_inner_closecoupling">
+<span class="sig-name descname"><span class="pre">calc_frame_transformation_inner_closecoupling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rydstate.species.FModelSQDT.calc_frame_transformation_inner_closecoupling" title="Link to this definition"></a></dt>
+<dd><p>Return the frame transformation matrix R mapping close-coupling to inner channels.</p>
+<p>Computed as rotation matrix from the mixing angles.
+Applies successive 2x2 rotations between the channels specified by mixing_angles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nu</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Effective principal quantum number with reference to the lowest ionization threshold.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unitary transformation matrix R (n_inner, n_closecoupling).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.calc_frame_transformation_outer_inner">
+<span class="sig-name descname"><span class="pre">calc_frame_transformation_outer_inner</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rydstate.species.FModelSQDT.calc_frame_transformation_outer_inner" title="Link to this definition"></a></dt>
+<dd><p>Return the frame transformation matrix Q mapping inner to outer channels.</p>
+<p>Computed from the overlaps (Wigner coefficients) between inner_channels and outer_channels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Unitary transformation matrix Q (n_outer, n_inner).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.calc_k_matrix">
+<span class="sig-name descname"><span class="pre">calc_k_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rydstate.species.FModelSQDT.calc_k_matrix" title="Link to this definition"></a></dt>
+<dd><p>Return the K-matrix in the collision (outer) channel frame.</p>
+<p>The K-matrix is defined as</p>
+<div class="math notranslate nohighlight">
+\[K = tan(\pi \mu) = U tan(\pi \mu_{\alpha}) U^T\]</div>
+<p>where U is the frame transformation matrix and mu_{alpha} are the eigen quantum defects.
+The transpose <span class="math notranslate nohighlight">\(U^T = U^{-1}\)</span> holds because U is real and orthogonal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nu</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Effective principal quantum number with reference to the lowest ionization threshold.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>K-matrix in the collision (outer) channel frame, K = tan(pi mu).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.calc_k_matrix_closecoupling">
+<span class="sig-name descname"><span class="pre">calc_k_matrix_closecoupling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rydstate.species.FModelSQDT.calc_k_matrix_closecoupling" title="Link to this definition"></a></dt>
+<dd><p>Return diagonal K-matrix in the close-coupling frame.</p>
+<p>Diagonal entries are tan(pi * mu_alpha) where mu_alpha are the eigen quantum defects
+evaluated at the channel-dependent effective principal quantum numbers nui.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nu</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Effective principal quantum number with reference to the lowest ionization threshold.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Diagonal K-matrix in the close-coupling frame.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.calc_m_matrix">
+<span class="sig-name descname"><span class="pre">calc_m_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rydstate.species.FModelSQDT.calc_m_matrix" title="Link to this definition"></a></dt>
+<dd><p>Return the M-matrix in the collision (outer) channel frame.</p>
+<p>The M-matrix is defined as</p>
+<div class="math notranslate nohighlight">
+\[M = tan(β) + K = tan(\pi \nu) + tan(\pi \mu)\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nu</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Effective principal quantum number with reference to the lowest ionization threshold.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>M-matrix in the collision (outer) channel frame, M = tan(β) + K.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.calc_scaled_m_matrix">
+<span class="sig-name descname"><span class="pre">calc_scaled_m_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rydstate.species.FModelSQDT.calc_scaled_m_matrix" title="Link to this definition"></a></dt>
+<dd><p>Return the scaled M-matrix in the collision (outer) channel frame.</p>
+<p>The scaled M-matrix is defined as</p>
+<div class="math notranslate nohighlight">
+\[M_{\text{scaled}} = \cos(\pi \nu) M = \sin(\pi \nu) + \cos(\pi \nu) K\]</div>
+<p>We use this to improve numerical stability when finding roots of det(M) = 0.
+This is especially important for states with nu close to half integer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>nu</strong> (<em>float</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.frame_transformation_outer_inner">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">frame_transformation_outer_inner</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.frame_transformation_outer_inner" title="Link to this definition"></a></dt>
+<dd><p>Cached version of calc_frame_transformation_outer_inner.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.full_name">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">full_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.full_name" title="Link to this definition"></a></dt>
+<dd><p>Return the full name of the model, combining species and model name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.get_ionization_thresholds">
+<span class="sig-name descname"><span class="pre">get_ionization_thresholds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hartree'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#rydstate.species.FModelSQDT.get_ionization_thresholds" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Overloads<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong>, <strong>unit</strong> (<span class="sphinx_autodoc_typehints-type">None</span>) → <span class="sphinx_autodoc_typehints-type">list[PintFloat]</span></p></li>
+<li><p><strong>self</strong>, <strong>unit</strong> (<span class="sphinx_autodoc_typehints-type">str</span>) → <span class="sphinx_autodoc_typehints-type">list[float]</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>unit</strong> (<em>str</em><em> | </em><em>None</em>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<em>PlainQuantity</em>[float]] | list[float]</p>
+</dd>
+</dl>
+<p>Return the ionization thresholds for all channels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Desired unit for the ionization thresholds. Default is atomic units “hartree”.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of ionization thresholds in the desired unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<em>PlainQuantity</em>[float]] | list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.ionization_thresholds_au">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ionization_thresholds_au</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.ionization_thresholds_au" title="Link to this definition"></a></dt>
+<dd><p>Return the ionization thresholds for all channels in atomic units.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.manual_frame_transformation_outer_inner">
+<span class="sig-name descname"><span class="pre">manual_frame_transformation_outer_inner</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.manual_frame_transformation_outer_inner" title="Link to this definition"></a></dt>
+<dd><p>Optional manually specified frame transformation matrix Q mapping inner to outer channels.
+This is mainly needed for models with unknown quantum numbers,
+where the frame transformation cannot (yet) be computed from Wigner coefficients.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.nu_max">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nu_max</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.nu_max" title="Link to this definition"></a></dt>
+<dd><p>Maximum nu for which the model is valid.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.nu_min">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nu_min</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.nu_min" title="Link to this definition"></a></dt>
+<dd><p>Minimum nu for which the model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.species">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">species</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="rydstate.species.SpeciesObjectMQDT.html#rydstate.species.SpeciesObjectMQDT" title="rydstate.species.mqdt.species_object_mqdt.SpeciesObjectMQDT"><span class="pre">SpeciesObjectMQDT</span></a></span><a class="headerlink" href="#rydstate.species.FModelSQDT.species" title="Link to this definition"></a></dt>
+<dd><p>Return the SpeciesObjectMQDT associated with this model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.FModelSQDT.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#rydstate.species.FModelSQDT.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rydstate.species.FModel.html" class="btn btn-neutral float-left" title="FModel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api/mqdt/sr87.html" class="btn btn-neutral float-right" title="Strontium 87" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, RydState Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

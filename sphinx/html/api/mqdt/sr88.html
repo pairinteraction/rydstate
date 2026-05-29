@@ -1,0 +1,1016 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Strontium 88 &mdash; RydState 0.11.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=f3b36f1a"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Ytterbium 171" href="yb171.html" />
+    <link rel="prev" title="Strontium 87" href="sr87.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            RydState
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#radialket">RadialKet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/radial/hydrogen_wavefunction.html">Hydrogen radial wavefunction via numerov and from sympy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/radial/rubidium_wavefunction.html">Rubidium wavefunction and potential</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#angularstate">AngularState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/angular/angular_state.html">Using AngularKets and AngularStates in different spin coupling schemes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#rydbergstate">RydbergState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/dipole_matrix_elements.html">Calculating dipole matrix elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/lifetimes.html">Lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#mqdt">MQDT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/mqdt/mqdt_exp_qn.html">Labeling the angular character of Yb 171</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#comparisons">Comparisons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/comparisons/compare_z_min_cutoff.html">Comparison of the z_min values for circular states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/comparisons/compare_nist_energy_levels_data.html">Compare NIST energy levels data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/comparisons/compare_model_potentials.html">Compare different effective model potentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/comparisons/compare_whittaker.html">Comparison: Numerov - Whittaker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/benchmark/benchmark_njit.html">Benchmark of Numerov integration with and without using numba.njit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../rydberg_states.html">Rydberg States</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.RydbergStateSQDT.html">RydbergStateSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.RydbergStateSQDTAlkali.html">RydbergStateSQDTAlkali</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.RydbergStateSQDTAlkalineLS.html">RydbergStateSQDTAlkalineLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.RydbergStateSQDTAlkalineJJ.html">RydbergStateSQDTAlkalineJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.RydbergStateSQDTAlkalineFJ.html">RydbergStateSQDTAlkalineFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.RydbergStateMQDT.html">RydbergStateMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../basis.html">Rydberg Basis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.BasisSQDT.html">BasisSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.BasisMQDT.html">BasisMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../angular.html">Angular module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetLS.html">AngularKetLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetJJ.html">AngularKetJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html">AngularKetFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularState.html">AngularState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.angular.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../radial.html">Radial module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.radial.RadialKet.html">RadialKet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.radial.Wavefunction.html">Wavefunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.radial.Model.html">Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.radial.numerov.html">numerov</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../species_sqdt.html">SQDT Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.SpeciesObjectSQDT.html">SpeciesObjectSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.HydrogenTextBook.html">HydrogenTextBook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.Hydrogen.html">Hydrogen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.Lithium.html">Lithium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.Sodium.html">Sodium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.Potassium.html">Potassium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.Rubidium.html">Rubidium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.Cesium.html">Cesium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.Strontium87.html">Strontium87</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.Strontium88.html">Strontium88</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.Ytterbium171.html">Ytterbium171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.Ytterbium173.html">Ytterbium173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.Ytterbium174.html">Ytterbium174</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../species_mqdt.html">MQDT Parameters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.SpeciesObjectMQDT.html">SpeciesObjectMQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.FModel.html">FModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.FModelSQDT.html">FModelSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sr87.html">Strontium 87</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Strontium 88</a></li>
+<li class="toctree-l3"><a class="reference internal" href="yb171.html">Ytterbium 171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="yb173.html">Ytterbium 173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="yb174.html">Ytterbium 174</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style>
+a.gitbutton {
+  display: block;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #fff;
+  padding-top: 10px;
+  padding-left: 85px;
+  padding-right: 0px;
+  margin: 22px;
+  width: 240px;
+  height: 60px;
+  background: transparent url("../../_static/buttons/github.svg") 0 0 no-repeat;
+}
+a.gitbutton small {
+  display: block;
+  font-size: 11px;
+}
+button.toctree-expand {
+  display: none;
+}
+</style>
+<a href="https://github.com/pairinteraction/rydstate" class="gitbutton">Explore<small>the GitHub repository</small></a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">RydState</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../api_reference.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../species_mqdt.html">MQDT Parameters</a></li>
+      <li class="breadcrumb-item active">Strontium 88</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/api/mqdt/sr88.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-rydstate.species.mqdt.sr88">
+<span id="strontium-88"></span><h1>Strontium 88<a class="headerlink" href="#module-rydstate.species.mqdt.sr88" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Strontium88MQDT">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Strontium88MQDT</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Strontium88MQDT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Strontium88MQDT" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Strontium88MQDT.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Strontium88MQDT.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Strontium88MQDT.Z">
+<span class="sig-name descname"><span class="pre">Z</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">38</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Strontium88MQDT.Z" title="Link to this definition"></a></dt>
+<dd><p>Atomic number of the species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Strontium88MQDT.i_c">
+<span class="sig-name descname"><span class="pre">i_c</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Strontium88MQDT.i_c" title="Link to this definition"></a></dt>
+<dd><p>Nuclear spin, (default None to ignore hyperfine structure, will be treated like i_c = 0).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Strontium88MQDT.number_valence_electrons">
+<span class="sig-name descname"><span class="pre">number_valence_electrons</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Strontium88MQDT.number_valence_electrons" title="Link to this definition"></a></dt>
+<dd><p>Number of valence electrons (i.e. 1 for alkali atoms and 2 for alkaline earth atoms).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Strontium88MQDT.potential_type_default">
+<span class="sig-name descname"><span class="pre">potential_type_default</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'coulomb'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'model_potential_marinescu_1993'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'model_potential_fei_2009'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'model_potential_fei_2009'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Strontium88MQDT.potential_type_default" title="Link to this definition"></a></dt>
+<dd><p>Default potential type to use for this species. If None, the potential type must be specified explicitly.
+In general, it looks like marinescu_1993 is better for alkali atoms, and fei_2009 is better for alkaline earth atoms</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Strontium88MQDT.core_ground_state">
+<span class="sig-name descname"><span class="pre">core_ground_state</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">CoreKet</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">CoreKet(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Strontium88MQDT.core_ground_state" title="Link to this definition"></a></dt>
+<dd><p>The ground state configuration of the atomic core.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Strontium88MQDT.nuclear_dipole">
+<span class="sig-name descname"><span class="pre">nuclear_dipole</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2.3</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Strontium88MQDT.nuclear_dipole" title="Link to this definition"></a></dt>
+<dd><p>Nuclear dipole moment of the species.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S0_HighN">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Sr88_S0_HighN</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Sr88_S0_HighN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S0_HighN" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S0_HighN.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S0_HighN.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S0_HighN.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'S</span> <span class="pre">J=0,</span> <span class="pre">nu</span> <span class="pre">&gt;</span> <span class="pre">10'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S0_HighN.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S0_HighN.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S0_HighN.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S0_HighN.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(10.0,</span> <span class="pre">inf)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S0_HighN.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S0_HighN.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1088/1361-6455/ab3c26'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S0_HighN.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S0_HighN.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=0,</span> <span class="pre">s_tot=0.0,</span> <span class="pre">l_tot=0,</span> <span class="pre">j_tot=0.0,</span> <span class="pre">f_tot=0.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S0_HighN.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S0_HighN.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=0,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=0.5,</span> <span class="pre">f_tot=0.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S0_HighN.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S0_HighN.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[3.26896,</span> <span class="pre">-0.138,</span> <span class="pre">0.9]]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S0_HighN.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S0_HighN.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S0_HighN.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S1_HighN">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Sr88_S1_HighN</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Sr88_S1_HighN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S1_HighN" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S1_HighN.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S1_HighN.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S1_HighN.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'S</span> <span class="pre">J=1,</span> <span class="pre">nu</span> <span class="pre">&gt;</span> <span class="pre">11'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S1_HighN.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S1_HighN.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S1_HighN.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S1_HighN.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(11.0,</span> <span class="pre">inf)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S1_HighN.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S1_HighN.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1088/1361-6455/ab3c26'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S1_HighN.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S1_HighN.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=0,</span> <span class="pre">s_tot=1.0,</span> <span class="pre">l_tot=0,</span> <span class="pre">j_tot=1.0,</span> <span class="pre">f_tot=1.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S1_HighN.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S1_HighN.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=0,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=0.5,</span> <span class="pre">f_tot=1.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S1_HighN.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S1_HighN.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[3.370778,</span> <span class="pre">0.418,</span> <span class="pre">-0.3]]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S1_HighN.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_S1_HighN.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_S1_HighN.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_LowN">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Sr88_P1_LowN</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Sr88_P1_LowN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_LowN" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_LowN.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_LowN.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_LowN.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'P</span> <span class="pre">J=1</span> <span class="pre">(recombination),</span> <span class="pre">1.8</span> <span class="pre">&lt;</span> <span class="pre">nu</span> <span class="pre">&lt;</span> <span class="pre">2.2'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_LowN.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_LowN.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_LowN.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_LowN.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(1.8,</span> <span class="pre">2.2)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_LowN.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_LowN.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1088/1361-6455/ab3c26'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_LowN.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_LowN.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=1,</span> <span class="pre">s_tot=0.0,</span> <span class="pre">l_tot=1,</span> <span class="pre">j_tot=1.0,</span> <span class="pre">f_tot=1.0),</span> <span class="pre">AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=1,</span> <span class="pre">s_tot=1.0,</span> <span class="pre">l_tot=1,</span> <span class="pre">j_tot=1.0,</span> <span class="pre">f_tot=1.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_LowN.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_LowN.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=1,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=0.5,</span> <span class="pre">f_tot=1.0),</span> <span class="pre">AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=1,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=1.5,</span> <span class="pre">f_tot=1.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_LowN.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_LowN.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[0.87199081,</span> <span class="pre">0],</span> <span class="pre">[0.13140955,</span> <span class="pre">0]]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_LowN.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_LowN.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(0,</span> <span class="pre">1,</span> <span class="pre">[1.31169947,</span> <span class="pre">-4.48280597])]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_LowN.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P0_HighN">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Sr88_P0_HighN</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Sr88_P0_HighN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P0_HighN" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P0_HighN.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P0_HighN.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P0_HighN.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'P</span> <span class="pre">J=0,</span> <span class="pre">nu</span> <span class="pre">&gt;</span> <span class="pre">7'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P0_HighN.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P0_HighN.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P0_HighN.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P0_HighN.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(7.0,</span> <span class="pre">inf)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P0_HighN.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P0_HighN.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1088/1361-6455/ab3c26'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P0_HighN.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P0_HighN.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=1,</span> <span class="pre">s_tot=1.0,</span> <span class="pre">l_tot=1,</span> <span class="pre">j_tot=0.0,</span> <span class="pre">f_tot=0.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P0_HighN.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P0_HighN.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=1,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=0.5,</span> <span class="pre">f_tot=0.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P0_HighN.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P0_HighN.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[2.8867,</span> <span class="pre">0.44,</span> <span class="pre">-1.9]]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P0_HighN.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P0_HighN.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P0_HighN.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_HighN">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Sr88_P1_HighN</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Sr88_P1_HighN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_HighN" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_HighN.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_HighN.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_HighN.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'P</span> <span class="pre">J=1,</span> <span class="pre">nu</span> <span class="pre">&gt;</span> <span class="pre">5'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_HighN.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_HighN.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_HighN.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_HighN.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(5.0,</span> <span class="pre">inf)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_HighN.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_HighN.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1088/1361-6455/ab3c26'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_HighN.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_HighN.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=1,</span> <span class="pre">s_tot=0.0,</span> <span class="pre">l_tot=1,</span> <span class="pre">j_tot=1.0,</span> <span class="pre">f_tot=1.0),</span> <span class="pre">AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=1,</span> <span class="pre">s_tot=1.0,</span> <span class="pre">l_tot=1,</span> <span class="pre">j_tot=1.0,</span> <span class="pre">f_tot=1.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_HighN.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_HighN.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=1,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=0.5,</span> <span class="pre">f_tot=1.0),</span> <span class="pre">AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=1,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=1.5,</span> <span class="pre">f_tot=1.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_HighN.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_HighN.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[2.724,</span> <span class="pre">-4.67,</span> <span class="pre">-157],</span> <span class="pre">[2.8826,</span> <span class="pre">0.407,</span> <span class="pre">-1.3]]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_HighN.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P1_HighN.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P1_HighN.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P2_HighN">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Sr88_P2_HighN</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Sr88_P2_HighN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P2_HighN" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P2_HighN.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P2_HighN.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P2_HighN.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'P</span> <span class="pre">J=2,</span> <span class="pre">nu</span> <span class="pre">&gt;</span> <span class="pre">5'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P2_HighN.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P2_HighN.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P2_HighN.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P2_HighN.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(5.0,</span> <span class="pre">inf)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P2_HighN.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P2_HighN.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1088/1361-6455/ab3c26'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P2_HighN.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P2_HighN.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=1,</span> <span class="pre">s_tot=1.0,</span> <span class="pre">l_tot=1,</span> <span class="pre">j_tot=2.0,</span> <span class="pre">f_tot=2.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P2_HighN.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P2_HighN.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=1,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=1.5,</span> <span class="pre">f_tot=2.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P2_HighN.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P2_HighN.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[2.882,</span> <span class="pre">0.446,</span> <span class="pre">-1.9]]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P2_HighN.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_P2_HighN.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_P2_HighN.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D1_HighN">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Sr88_D1_HighN</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Sr88_D1_HighN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D1_HighN" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D1_HighN.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D1_HighN.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D1_HighN.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'D</span> <span class="pre">J=1,</span> <span class="pre">nu</span> <span class="pre">&gt;</span> <span class="pre">17'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D1_HighN.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D1_HighN.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D1_HighN.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D1_HighN.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(17.0,</span> <span class="pre">inf)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D1_HighN.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D1_HighN.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1088/1361-6455/ab3c26'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D1_HighN.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D1_HighN.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=2,</span> <span class="pre">s_tot=1.0,</span> <span class="pre">l_tot=2,</span> <span class="pre">j_tot=1.0,</span> <span class="pre">f_tot=1.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D1_HighN.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D1_HighN.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=2,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=1.5,</span> <span class="pre">f_tot=1.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D1_HighN.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D1_HighN.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[2.67524,</span> <span class="pre">-13.15,</span> <span class="pre">-4444]]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D1_HighN.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D1_HighN.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D1_HighN.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D2_HighN">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Sr88_D2_HighN</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Sr88_D2_HighN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D2_HighN" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D2_HighN.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D2_HighN.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D2_HighN.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'D</span> <span class="pre">J=2,</span> <span class="pre">nu</span> <span class="pre">&gt;</span> <span class="pre">25'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D2_HighN.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D2_HighN.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D2_HighN.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D2_HighN.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(25.0,</span> <span class="pre">inf)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D2_HighN.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D2_HighN.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1088/1361-6455/ab3c26'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D2_HighN.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D2_HighN.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=2,</span> <span class="pre">s_tot=0.0,</span> <span class="pre">l_tot=2,</span> <span class="pre">j_tot=2.0,</span> <span class="pre">f_tot=2.0),</span> <span class="pre">AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=2,</span> <span class="pre">s_tot=1.0,</span> <span class="pre">l_tot=2,</span> <span class="pre">j_tot=2.0,</span> <span class="pre">f_tot=2.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D2_HighN.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D2_HighN.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=2,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=1.5,</span> <span class="pre">f_tot=2.0),</span> <span class="pre">AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=2,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=2.5,</span> <span class="pre">f_tot=2.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D2_HighN.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D2_HighN.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[2.3847,</span> <span class="pre">-39.41,</span> <span class="pre">-1090],</span> <span class="pre">[2.66149,</span> <span class="pre">-16.77,</span> <span class="pre">-6656]]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D2_HighN.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D2_HighN.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(0,</span> <span class="pre">1,</span> <span class="pre">-0.14)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D2_HighN.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D3_HighN">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Sr88_D3_HighN</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Sr88_D3_HighN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D3_HighN" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D3_HighN.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D3_HighN.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D3_HighN.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'D</span> <span class="pre">J=3,</span> <span class="pre">nu</span> <span class="pre">&gt;</span> <span class="pre">25'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D3_HighN.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D3_HighN.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D3_HighN.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D3_HighN.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(25.0,</span> <span class="pre">inf)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D3_HighN.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D3_HighN.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1088/1361-6455/ab3c26'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D3_HighN.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D3_HighN.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=2,</span> <span class="pre">s_tot=1.0,</span> <span class="pre">l_tot=2,</span> <span class="pre">j_tot=3.0,</span> <span class="pre">f_tot=3.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D3_HighN.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D3_HighN.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=2,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=2.5,</span> <span class="pre">f_tot=3.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D3_HighN.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D3_HighN.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[2.655,</span> <span class="pre">-41.4,</span> <span class="pre">-15363]]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D3_HighN.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_D3_HighN.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_D3_HighN.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F2_HighN">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Sr88_F2_HighN</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Sr88_F2_HighN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F2_HighN" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F2_HighN.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F2_HighN.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F2_HighN.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F</span> <span class="pre">J=2,</span> <span class="pre">nu</span> <span class="pre">&gt;</span> <span class="pre">9'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F2_HighN.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F2_HighN.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F2_HighN.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F2_HighN.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(9.0,</span> <span class="pre">inf)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F2_HighN.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F2_HighN.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1088/1361-6455/ab3c26'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F2_HighN.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F2_HighN.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=3,</span> <span class="pre">s_tot=1.0,</span> <span class="pre">l_tot=3,</span> <span class="pre">j_tot=2.0,</span> <span class="pre">f_tot=2.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F2_HighN.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F2_HighN.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=3,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=2.5,</span> <span class="pre">f_tot=2.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F2_HighN.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F2_HighN.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[0.12,</span> <span class="pre">-2.2,</span> <span class="pre">120]]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F2_HighN.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F2_HighN.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F2_HighN.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F3_HighN">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Sr88_F3_HighN</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Sr88_F3_HighN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F3_HighN" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F3_HighN.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F3_HighN.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F3_HighN.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F</span> <span class="pre">J=3,</span> <span class="pre">nu</span> <span class="pre">&gt;</span> <span class="pre">9'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F3_HighN.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F3_HighN.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F3_HighN.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F3_HighN.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(9.0,</span> <span class="pre">inf)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F3_HighN.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F3_HighN.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1088/1361-6455/ab3c26'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F3_HighN.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F3_HighN.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=3,</span> <span class="pre">s_tot=0.0,</span> <span class="pre">l_tot=3,</span> <span class="pre">j_tot=3.0,</span> <span class="pre">f_tot=3.0),</span> <span class="pre">AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=3,</span> <span class="pre">s_tot=1.0,</span> <span class="pre">l_tot=3,</span> <span class="pre">j_tot=3.0,</span> <span class="pre">f_tot=3.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F3_HighN.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F3_HighN.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=3,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=2.5,</span> <span class="pre">f_tot=3.0),</span> <span class="pre">AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=3,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=3.5,</span> <span class="pre">f_tot=3.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F3_HighN.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F3_HighN.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[0.089,</span> <span class="pre">-2,</span> <span class="pre">30],</span> <span class="pre">[0.12,</span> <span class="pre">-2.2,</span> <span class="pre">120]]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F3_HighN.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F3_HighN.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F3_HighN.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F4_HighN">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">rydstate.species.mqdt.sr88.</span></span><span class="sig-name descname"><span class="pre">Sr88_F4_HighN</span></span><a class="reference internal" href="../../_modules/rydstate/species/mqdt/sr88.html#Sr88_F4_HighN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F4_HighN" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F4_HighN.species_name">
+<span class="sig-name descname"><span class="pre">species_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sr88_mqdt'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F4_HighN.species_name" title="Link to this definition"></a></dt>
+<dd><p>The species for which the MQDT model is defined.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F4_HighN.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'F</span> <span class="pre">J=4,</span> <span class="pre">nu</span> <span class="pre">&gt;</span> <span class="pre">9'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F4_HighN.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atomic species.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F4_HighN.f_tot">
+<span class="sig-name descname"><span class="pre">f_tot</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F4_HighN.f_tot" title="Link to this definition"></a></dt>
+<dd><p>Total angular momentum f_tot of the Rydberg state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F4_HighN.nu_range">
+<span class="sig-name descname"><span class="pre">nu_range</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(9.0,</span> <span class="pre">inf)</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F4_HighN.nu_range" title="Link to this definition"></a></dt>
+<dd><p>Range of effective principal quantum numbers nu for which the MQDT model is valid.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F4_HighN.reference">
+<span class="sig-name descname"><span class="pre">reference</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1088/1361-6455/ab3c26'</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F4_HighN.reference" title="Link to this definition"></a></dt>
+<dd><p>Reference for the MQDT model, e.g., a publication doi where the model is described.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F4_HighN.inner_channels">
+<span class="sig-name descname"><span class="pre">inner_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">AngularKetBase</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetLS(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=3,</span> <span class="pre">s_tot=1.0,</span> <span class="pre">l_tot=3,</span> <span class="pre">j_tot=4.0,</span> <span class="pre">f_tot=4.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F4_HighN.inner_channels" title="Link to this definition"></a></dt>
+<dd><p>List of inner channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F4_HighN.outer_channels">
+<span class="sig-name descname"><span class="pre">outer_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html#rydstate.angular.AngularKetFJ" title="rydstate.angular.angular_ket.AngularKetFJ"><span class="pre">AngularKetFJ</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[AngularKetFJ(i_c=0.0,</span> <span class="pre">s_c=0.5,</span> <span class="pre">l_c=0,</span> <span class="pre">s_r=0.5,</span> <span class="pre">l_r=3,</span> <span class="pre">j_c=0.5,</span> <span class="pre">f_c=0.5,</span> <span class="pre">j_r=3.5,</span> <span class="pre">f_tot=4.0)]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F4_HighN.outer_channels" title="Link to this definition"></a></dt>
+<dd><p>List of outer channels in the MQDT model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F4_HighN.eigen_quantum_defects">
+<span class="sig-name descname"><span class="pre">eigen_quantum_defects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[0.12,</span> <span class="pre">-2.2,</span> <span class="pre">120]]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F4_HighN.eigen_quantum_defects" title="Link to this definition"></a></dt>
+<dd><p>List of eigen quantum defects for the close-coupling channels.
+Each entry can be a constant or a list of polynomial coefficients.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="rydstate.species.mqdt.sr88.Sr88_F4_HighN.mixing_angles">
+<span class="sig-name descname"><span class="pre">mixing_angles</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="headerlink" href="#rydstate.species.mqdt.sr88.Sr88_F4_HighN.mixing_angles" title="Link to this definition"></a></dt>
+<dd><p>List of mixing angles between close-coupling channels.
+Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
+and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sr87.html" class="btn btn-neutral float-left" title="Strontium 87" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="yb171.html" class="btn btn-neutral float-right" title="Ytterbium 171" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, RydState Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

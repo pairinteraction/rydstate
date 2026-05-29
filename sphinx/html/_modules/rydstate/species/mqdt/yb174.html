@@ -1,0 +1,939 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rydstate.species.mqdt.yb174 &mdash; RydState 0.11.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=f3b36f1a"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            RydState
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#radialket">RadialKet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/radial/hydrogen_wavefunction.html">Hydrogen radial wavefunction via numerov and from sympy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/radial/rubidium_wavefunction.html">Rubidium wavefunction and potential</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#angularstate">AngularState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/angular/angular_state.html">Using AngularKets and AngularStates in different spin coupling schemes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#rydbergstate">RydbergState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/dipole_matrix_elements.html">Calculating dipole matrix elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/lifetimes.html">Lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#mqdt">MQDT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/mqdt/mqdt_exp_qn.html">Labeling the angular character of Yb 171</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#comparisons">Comparisons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_z_min_cutoff.html">Comparison of the z_min values for circular states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_nist_energy_levels_data.html">Compare NIST energy levels data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_model_potentials.html">Compare different effective model potentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_whittaker.html">Comparison: Numerov - Whittaker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/benchmark/benchmark_njit.html">Benchmark of Numerov integration with and without using numba.njit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/rydberg_states.html">Rydberg States</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.RydbergStateSQDT.html">RydbergStateSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.RydbergStateSQDTAlkali.html">RydbergStateSQDTAlkali</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.RydbergStateSQDTAlkalineLS.html">RydbergStateSQDTAlkalineLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.RydbergStateSQDTAlkalineJJ.html">RydbergStateSQDTAlkalineJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.RydbergStateSQDTAlkalineFJ.html">RydbergStateSQDTAlkalineFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.RydbergStateMQDT.html">RydbergStateMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/basis.html">Rydberg Basis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.BasisSQDT.html">BasisSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.BasisMQDT.html">BasisMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/angular.html">Angular module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.AngularKetLS.html">AngularKetLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.AngularKetJJ.html">AngularKetJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.AngularKetFJ.html">AngularKetFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.AngularState.html">AngularState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/radial.html">Radial module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.radial.RadialKet.html">RadialKet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.radial.Wavefunction.html">Wavefunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.radial.Model.html">Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.radial.numerov.html">numerov</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/species_sqdt.html">SQDT Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.SpeciesObjectSQDT.html">SpeciesObjectSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.HydrogenTextBook.html">HydrogenTextBook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Hydrogen.html">Hydrogen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Lithium.html">Lithium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Sodium.html">Sodium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Potassium.html">Potassium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Rubidium.html">Rubidium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Cesium.html">Cesium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Strontium87.html">Strontium87</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Strontium88.html">Strontium88</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Ytterbium171.html">Ytterbium171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Ytterbium173.html">Ytterbium173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Ytterbium174.html">Ytterbium174</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/species_mqdt.html">MQDT Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.SpeciesObjectMQDT.html">SpeciesObjectMQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.FModel.html">FModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.FModelSQDT.html">FModelSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/mqdt/sr87.html">Strontium 87</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/mqdt/sr88.html">Strontium 88</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/mqdt/yb171.html">Ytterbium 171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/mqdt/yb173.html">Ytterbium 173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/mqdt/yb174.html">Ytterbium 174</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style>
+a.gitbutton {
+  display: block;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #fff;
+  padding-top: 10px;
+  padding-left: 85px;
+  padding-right: 0px;
+  margin: 22px;
+  width: 240px;
+  height: 60px;
+  background: transparent url("../../../../_static/buttons/github.svg") 0 0 no-repeat;
+}
+a.gitbutton small {
+  display: block;
+  font-size: 11px;
+}
+button.toctree-expand {
+  display: none;
+}
+</style>
+<a href="https://github.com/pairinteraction/rydstate" class="gitbutton">Explore<small>the GitHub repository</small></a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">RydState</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rydstate.species.mqdt.yb174</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rydstate.species.mqdt.yb174</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.angular.angular_ket</span><span class="w"> </span><span class="kn">import</span> <span class="n">AngularKetFJ</span><span class="p">,</span> <span class="n">AngularKetJJ</span><span class="p">,</span> <span class="n">AngularKetLS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.angular.core_ket</span><span class="w"> </span><span class="kn">import</span> <span class="n">CoreKet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.angular.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Unknown</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.species.mqdt.fmodel</span><span class="w"> </span><span class="kn">import</span> <span class="n">FModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.species.mqdt.species_object_mqdt</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpeciesObjectMQDT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">electron_mass</span><span class="p">,</span> <span class="n">rydberg_constant</span>
+
+
+<div class="viewcode-block" id="Ytterbium174MQDT">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Ytterbium174MQDT">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Ytterbium174MQDT</span><span class="p">(</span><span class="n">SpeciesObjectMQDT</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="mi">70</span>
+    <span class="n">i_c</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">number_valence_electrons</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="n">potential_type_default</span> <span class="o">=</span> <span class="s2">&quot;model_potential_fei_2009&quot;</span>
+
+    <span class="c1"># https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025</span>
+    <span class="n">model_potential_parameter_fei_2009</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.8704</span><span class="p">,</span> <span class="mf">22.0040</span><span class="p">,</span> <span class="mf">0.1513</span><span class="p">,</span> <span class="mf">0.3306</span><span class="p">)</span>
+
+    <span class="c1"># https://physics.nist.gov/PhysRefData/Handbook/Tables/ytterbiumtable1.htm</span>
+    <span class="n">_isotope_mass</span> <span class="o">=</span> <span class="mf">173.938859</span>  <span class="c1"># u</span>
+    <span class="n">_corrected_rydberg_constant</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">rydberg_constant</span><span class="o">.</span><span class="n">m</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">electron_mass</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;u&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">m</span> <span class="o">/</span> <span class="n">_isotope_mass</span><span class="p">),</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">rydberg_constant</span><span class="o">.</span><span class="n">u</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">_ionization_threshold_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">CoreKet</span><span class="p">(</span><span class="n">i_c</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">):</span> <span class="p">(</span><span class="mf">50443.070393</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;1/cm&quot;</span><span class="p">),</span>
+        <span class="n">CoreKet</span><span class="p">(</span><span class="n">i_c</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">):</span> <span class="p">(</span><span class="mf">77504.98</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;1/cm&quot;</span><span class="p">),</span>
+        <span class="n">CoreKet</span><span class="p">(</span><span class="n">i_c</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">):</span> <span class="p">(</span><span class="mf">80835.39</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;1/cm&quot;</span><span class="p">),</span>
+        <span class="n">CoreKet</span><span class="p">(</span><span class="n">i_c</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Unknown</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">Unknown</span><span class="p">):</span> <span class="p">(</span><span class="mf">79725.35</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;1/cm&quot;</span><span class="p">),</span>
+        <span class="n">CoreKet</span><span class="p">(</span><span class="n">i_c</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">Unknown</span><span class="p">,</span> <span class="n">Unknown</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6s&quot;</span><span class="p">):</span> <span class="p">(</span><span class="mf">83967.7</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;1/cm&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">core_ground_state</span> <span class="o">=</span> <span class="n">CoreKet</span><span class="p">(</span><span class="n">i_c</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">nuclear_dipole</span> <span class="o">=</span> <span class="mf">2.1</span></div>
+
+
+
+<span class="c1"># --------------------------------------------------------</span>
+<span class="c1"># MQDT models valid at large n</span>
+<span class="c1"># --------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Yb174_S0_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_S0_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_S0_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;S J=0, nu &gt; 2&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1103/PhysRevX.15.011009&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6sns 1S0&quot;</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl a&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6pnp 1S0&quot;</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl b&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6pnp 3P0&quot;</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl c&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl a&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl b&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl c&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.355101645</span><span class="p">,</span> <span class="mf">0.277673956</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.204537535</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.116393648</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.295439966</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.257664798</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.155797119</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.126557575</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.300103593</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.056987912</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.114312578</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.0986363362</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">0.142498543</span><span class="p">),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_S1_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_S1_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_S1_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;S J=1, nu &gt; 26&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">26.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1103/PhysRevLett.128.033201&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6sns 3S1&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.4382</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e4</span><span class="p">,</span> <span class="mf">8e6</span><span class="p">,</span> <span class="o">-</span><span class="mf">3e9</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_P0_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_P0_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_P0_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;P J=0, nu &gt; 6&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">6.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1103/PhysRevX.15.011009&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snp 3P0&quot;</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snd&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snd&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.953661478</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.287531374</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.198460766</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.163343232</span><span class="p">),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_P1_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_P1_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_P1_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;P J=1, nu &gt; 6&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">6.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1103/PhysRevX.15.011009&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snp 1P1&quot;</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snp 3P1&quot;</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl a&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl b&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl c&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl d&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl a&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl b&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl c&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl d&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.92271098</span><span class="p">,</span> <span class="mf">2.6036257</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.98208719</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.4562725</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.22851720</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.20607759</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.19352751</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.18153094</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.08410871</span><span class="p">,</span> <span class="mf">120.37555</span><span class="p">,</span> <span class="o">-</span><span class="mf">9314.23</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.07317986</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.06651879</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.02212194</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.10452109</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.02477464</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.05763934</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.0860644</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">0.04993818</span><span class="p">),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_P2_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_P2_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_P2_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;P J=2, nu &gt; 5&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1103/PhysRevX.15.011009&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snp 3P2&quot;</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl a&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl b&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl c&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl a&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl b&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl c&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.925150932</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.69197178</span><span class="p">,</span> <span class="mf">66.7159709</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.230028034</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.209224174</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.186236574</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.0706189664</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.0231221428</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0291730345</span><span class="p">),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_D1_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_D1_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_D1_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;D J=1, nu &gt; 26&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">26.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1103/PhysRevX.15.011009&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snd 3D1&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.75258093</span><span class="p">,</span> <span class="mf">0.3826</span><span class="p">,</span> <span class="o">-</span><span class="mf">483.1</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_D2_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_D2_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_D2_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;D J=2, nu &gt; 5&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1103/PhysRevX.15.011009&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snd 1D2&quot;</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snd 3D2&quot;</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl a&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl b&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6pnp 1D2&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl a&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl b&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span>
+            <span class="n">l_c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;j_c and j_r unknown&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span>
+        <span class="p">),</span>  <span class="c1"># Jc could be either 1/2 or 3/2</span>
+    <span class="p">]</span>
+    <span class="n">manual_frame_transformation_outer_inner</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span> <span class="o">/</span> <span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">5</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span> <span class="o">/</span> <span class="mi">5</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.729513646</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0377841183</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.752292223</span><span class="p">,</span> <span class="mf">0.104072325</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.19612036</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.233752026</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.152911249</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.21157531</span><span class="p">,</span> <span class="o">-</span><span class="mf">15.3844</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.00521559431</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.0398131577</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0071658109</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.10481227</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.0721660042</span><span class="p">),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_D3_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_D3_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_D3_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;D J=3, nu &gt; 18&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">18.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1103/PhysRevX.15.011009&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snd 3D3&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.72902016</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.705328923</span><span class="p">,</span> <span class="mf">829.238844</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_F2_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_F2_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_F2_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;F J=2, nu &gt; 25&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;arXiv:2507.11487v1&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snf 3F2&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.0718252326</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.00091963</span><span class="p">,</span> <span class="o">-</span><span class="mf">106.291066</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_F3_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_F3_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_F3_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;F J=3, nu &gt; 7&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">7.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1103/PhysRevA.112.042817&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snf 1F3&quot;</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snf 3F3&quot;</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl a&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl b&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl c&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl d&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl e&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl a&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl b&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl c&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl d&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_c</span><span class="o">=</span><span class="n">Unknown</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;4f13 5d 6snl e&quot;</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.276158949</span><span class="p">,</span> <span class="o">-</span><span class="mf">12.7258012</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.0715123712</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.768462937</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.239015576</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.226770354</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.175354845</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.196660618</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.21069642</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0209955122</span><span class="p">,</span> <span class="mf">0.251041249</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00411835457</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0962784945</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.132826901</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0439244317</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">0.0508460294</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0376574252</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.026944623</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0148474857</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0521244126</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mf">0.0349516329</span><span class="p">),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_F4_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_F4_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_F4_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;F J=4, nu &gt; 25&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;arXiv:2507.11487v1&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snf 3F4&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.0839027969</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.91009023</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_G3_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_G3_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_G3_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;G J=3, nu &gt; 25&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;arXiv:2507.11487v1&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6sng 3G3&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.0260964574</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.14139526</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_G4_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_G4_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_G4_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;G J=4, nu &gt; 25&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1103/PhysRevA.112.042817&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetJJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">4.5</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6sng +G4&quot;</span>
+        <span class="n">AngularKetJJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6sng -G4&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">4.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.0262659964</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.148808463</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.0254568575</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.134219071</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.089123698</span><span class="p">),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_G5_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_G5_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_G5_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;G J=5, nu &gt; 25&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1103/PhysRevA.112.042817&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6sng 3G5&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">4.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.02536571</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.18507079</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<span class="c1"># --------------------------------------------------------</span>
+<span class="c1"># MQDT models valid at small n</span>
+<span class="c1"># --------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Yb174_S0_LowN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_S0_LowN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_S0_LowN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;S J=0, 1 &lt; nu &lt; 2&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6sns 1S0&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.525055</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_S1_LowN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_S1_LowN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_S1_LowN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;S J=1, 2 &lt; nu &lt; 26&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">26.0</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6sns 3S1&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.432841</span><span class="p">,</span> <span class="mf">0.724559</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.95424</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_P0_LowN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_P0_LowN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_P0_LowN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;P J=0, 1.5 &lt; nu &lt; 5.5&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snp 3P0&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.969279</span><span class="p">,</span> <span class="mf">0.288219</span><span class="p">,</span> <span class="mf">1.36228</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_P1_Lowest">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_P1_Lowest">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_P1_Lowest</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;P J=1, 1.7 &lt; nu &lt; 2.7&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.7</span><span class="p">,</span> <span class="mf">2.7</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snp 1P1&quot;</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snp 3P1&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.161083</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.920424</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.426128</span><span class="p">,</span> <span class="mf">6.272986</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_P1_LowN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_P1_LowN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_P1_LowN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;P J=1, 2.7 &lt; nu &lt; 5.7&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.7</span><span class="p">,</span> <span class="mf">5.7</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snp 1P1&quot;</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snp 3P1&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.967223</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.03997</span><span class="p">,</span> <span class="mf">0.569205</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.967918</span><span class="p">,</span> <span class="mf">0.25116</span><span class="p">,</span> <span class="mf">0.868505</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_P2_LowN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_P2_LowN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_P2_LowN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;P J=2, 1.5 &lt; nu &lt; 4.5&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snp 3P2&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.906105</span><span class="p">,</span> <span class="mf">0.383471</span><span class="p">,</span> <span class="mf">1.23512</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_D1_LowN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_D1_LowN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_D1_LowN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;D J=1, 2 &lt; nu &lt; 26&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">26.0</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snd 3D1&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.758222</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.017906</span><span class="p">,</span> <span class="mf">3.392161</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_D2_LowN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_D2_LowN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_D2_LowN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;D J=2, 2 &lt; nu &lt; 5&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snd 1D2&quot;</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snd 3D2&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.703156</span><span class="p">,</span> <span class="mf">0.973192</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.724546</span><span class="p">,</span> <span class="mf">0.372621</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.948409</span><span class="p">,</span> <span class="mf">2.121270</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Yb174_D3_LowN">
+<a class="viewcode-back" href="../../../../api/mqdt/yb174.html#rydstate.species.mqdt.yb174.Yb174_D3_LowN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Yb174_D3_LowN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Yb174_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;D J=3, 2 &lt; nu &lt; 18&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>  <span class="c1"># &quot;6snd 3D3&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Yb174&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.734512</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.019501</span><span class="p">,</span> <span class="mf">3.459114</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, RydState Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

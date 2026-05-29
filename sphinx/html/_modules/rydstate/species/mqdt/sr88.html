@@ -1,0 +1,556 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rydstate.species.mqdt.sr88 &mdash; RydState 0.11.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=f3b36f1a"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            RydState
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#radialket">RadialKet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/radial/hydrogen_wavefunction.html">Hydrogen radial wavefunction via numerov and from sympy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/radial/rubidium_wavefunction.html">Rubidium wavefunction and potential</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#angularstate">AngularState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/angular/angular_state.html">Using AngularKets and AngularStates in different spin coupling schemes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#rydbergstate">RydbergState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/dipole_matrix_elements.html">Calculating dipole matrix elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/lifetimes.html">Lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#mqdt">MQDT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/mqdt/mqdt_exp_qn.html">Labeling the angular character of Yb 171</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#comparisons">Comparisons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_z_min_cutoff.html">Comparison of the z_min values for circular states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_nist_energy_levels_data.html">Compare NIST energy levels data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_model_potentials.html">Compare different effective model potentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_whittaker.html">Comparison: Numerov - Whittaker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/benchmark/benchmark_njit.html">Benchmark of Numerov integration with and without using numba.njit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/rydberg_states.html">Rydberg States</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.RydbergStateSQDT.html">RydbergStateSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.RydbergStateSQDTAlkali.html">RydbergStateSQDTAlkali</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.RydbergStateSQDTAlkalineLS.html">RydbergStateSQDTAlkalineLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.RydbergStateSQDTAlkalineJJ.html">RydbergStateSQDTAlkalineJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.RydbergStateSQDTAlkalineFJ.html">RydbergStateSQDTAlkalineFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.RydbergStateMQDT.html">RydbergStateMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/basis.html">Rydberg Basis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.BasisSQDT.html">BasisSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.BasisMQDT.html">BasisMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/angular.html">Angular module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.AngularKetLS.html">AngularKetLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.AngularKetJJ.html">AngularKetJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.AngularKetFJ.html">AngularKetFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.AngularState.html">AngularState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/radial.html">Radial module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.radial.RadialKet.html">RadialKet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.radial.Wavefunction.html">Wavefunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.radial.Model.html">Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.radial.numerov.html">numerov</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/species_sqdt.html">SQDT Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.SpeciesObjectSQDT.html">SpeciesObjectSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.HydrogenTextBook.html">HydrogenTextBook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Hydrogen.html">Hydrogen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Lithium.html">Lithium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Sodium.html">Sodium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Potassium.html">Potassium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Rubidium.html">Rubidium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Cesium.html">Cesium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Strontium87.html">Strontium87</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Strontium88.html">Strontium88</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Ytterbium171.html">Ytterbium171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Ytterbium173.html">Ytterbium173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.Ytterbium174.html">Ytterbium174</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/species_mqdt.html">MQDT Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.SpeciesObjectMQDT.html">SpeciesObjectMQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.FModel.html">FModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.FModelSQDT.html">FModelSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/mqdt/sr87.html">Strontium 87</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/mqdt/sr88.html">Strontium 88</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/mqdt/yb171.html">Ytterbium 171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/mqdt/yb173.html">Ytterbium 173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/mqdt/yb174.html">Ytterbium 174</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style>
+a.gitbutton {
+  display: block;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #fff;
+  padding-top: 10px;
+  padding-left: 85px;
+  padding-right: 0px;
+  margin: 22px;
+  width: 240px;
+  height: 60px;
+  background: transparent url("../../../../_static/buttons/github.svg") 0 0 no-repeat;
+}
+a.gitbutton small {
+  display: block;
+  font-size: 11px;
+}
+button.toctree-expand {
+  display: none;
+}
+</style>
+<a href="https://github.com/pairinteraction/rydstate" class="gitbutton">Explore<small>the GitHub repository</small></a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">RydState</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rydstate.species.mqdt.sr88</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rydstate.species.mqdt.sr88</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.angular.angular_ket</span><span class="w"> </span><span class="kn">import</span> <span class="n">AngularKetFJ</span><span class="p">,</span> <span class="n">AngularKetLS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.angular.core_ket</span><span class="w"> </span><span class="kn">import</span> <span class="n">CoreKet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.species.mqdt.fmodel</span><span class="w"> </span><span class="kn">import</span> <span class="n">FModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.species.mqdt.species_object_mqdt</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpeciesObjectMQDT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">electron_mass</span><span class="p">,</span> <span class="n">rydberg_constant</span>
+
+
+<div class="viewcode-block" id="Strontium88MQDT">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Strontium88MQDT">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Strontium88MQDT</span><span class="p">(</span><span class="n">SpeciesObjectMQDT</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="mi">38</span>
+    <span class="n">i_c</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">number_valence_electrons</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="n">potential_type_default</span> <span class="o">=</span> <span class="s2">&quot;model_potential_fei_2009&quot;</span>
+
+    <span class="c1"># https://physics.nist.gov/PhysRefData/Handbook/Tables/strontiumtable1.htm</span>
+    <span class="n">_isotope_mass</span> <span class="o">=</span> <span class="mf">87.9056122571</span>  <span class="c1"># u</span>
+    <span class="n">_corrected_rydberg_constant</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">rydberg_constant</span><span class="o">.</span><span class="n">m</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">electron_mass</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;u&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">m</span> <span class="o">/</span> <span class="n">_isotope_mass</span><span class="p">),</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">rydberg_constant</span><span class="o">.</span><span class="n">u</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">_ionization_threshold_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">CoreKet</span><span class="p">(</span><span class="n">i_c</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">):</span> <span class="p">(</span><span class="mf">45932.1956</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;1/cm&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">core_ground_state</span> <span class="o">=</span> <span class="n">CoreKet</span><span class="p">(</span><span class="n">i_c</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">nuclear_dipole</span> <span class="o">=</span> <span class="mf">2.3</span></div>
+
+
+
+<span class="c1"># --------------------------------------------------------</span>
+<span class="c1"># MQDT models valid at large n</span>
+<span class="c1"># --------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Sr88_S0_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Sr88_S0_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_S0_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;S J=0, nu &gt; 10&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1088/1361-6455/ab3c26&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5sns 1S0&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">3.26896</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.138</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_S1_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Sr88_S1_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_S1_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;S J=1, nu &gt; 11&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">11.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1088/1361-6455/ab3c26&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5sns 3S1&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">3.370778</span><span class="p">,</span> <span class="mf">0.418</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<span class="c1"># --------------------------------------------------------</span>
+<span class="c1"># MQDT models valid at small n</span>
+<span class="c1"># --------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Sr88_P1_LowN">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Sr88_P1_LowN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_P1_LowN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;P J=1 (recombination), 1.8 &lt; nu &lt; 2.2&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.8</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1088/1361-6455/ab3c26&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snp 1P1&quot;</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snp 3P1&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.87199081</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.13140955</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.31169947</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.48280597</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<span class="c1"># --------------------------------------------------------</span>
+<span class="c1"># MQDT models valid at large n (continued)</span>
+<span class="c1"># --------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Sr88_P0_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Sr88_P0_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_P0_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;P J=0, nu &gt; 7&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">7.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1088/1361-6455/ab3c26&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snp 3P0&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">2.8867</span><span class="p">,</span> <span class="mf">0.44</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.9</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_P1_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Sr88_P1_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_P1_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;P J=1, nu &gt; 5&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1088/1361-6455/ab3c26&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snp 1P1&quot;</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snp 3P1&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">2.724</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.67</span><span class="p">,</span> <span class="o">-</span><span class="mi">157</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">2.8826</span><span class="p">,</span> <span class="mf">0.407</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.3</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_P2_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Sr88_P2_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_P2_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;P J=2, nu &gt; 5&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1088/1361-6455/ab3c26&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snp 3P2&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">2.882</span><span class="p">,</span> <span class="mf">0.446</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.9</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_D1_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Sr88_D1_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_D1_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;D J=1, nu &gt; 17&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">17.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1088/1361-6455/ab3c26&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snd 3D1&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">2.67524</span><span class="p">,</span> <span class="o">-</span><span class="mf">13.15</span><span class="p">,</span> <span class="o">-</span><span class="mi">4444</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_D2_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Sr88_D2_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_D2_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;D J=2, nu &gt; 25&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1088/1361-6455/ab3c26&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snd 1D2&quot;</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snd 3D2&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">2.3847</span><span class="p">,</span> <span class="o">-</span><span class="mf">39.41</span><span class="p">,</span> <span class="o">-</span><span class="mi">1090</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">2.66149</span><span class="p">,</span> <span class="o">-</span><span class="mf">16.77</span><span class="p">,</span> <span class="o">-</span><span class="mi">6656</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.14</span><span class="p">),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_D3_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Sr88_D3_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_D3_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;D J=3, nu &gt; 25&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1088/1361-6455/ab3c26&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snd 3D3&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">2.655</span><span class="p">,</span> <span class="o">-</span><span class="mf">41.4</span><span class="p">,</span> <span class="o">-</span><span class="mi">15363</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_F2_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Sr88_F2_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_F2_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;F J=2, nu &gt; 9&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1088/1361-6455/ab3c26&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snf 3F2&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.12</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.2</span><span class="p">,</span> <span class="mi">120</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_F3_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Sr88_F3_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_F3_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;F J=3, nu &gt; 9&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1088/1361-6455/ab3c26&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snf 1F3&quot;</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snf 3F3&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.089</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.12</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.2</span><span class="p">,</span> <span class="mi">120</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_F4_HighN">
+<a class="viewcode-back" href="../../../../api/mqdt/sr88.html#rydstate.species.mqdt.sr88.Sr88_F4_HighN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_F4_HighN</span><span class="p">(</span><span class="n">FModel</span><span class="p">):</span>
+    <span class="n">species_name</span> <span class="o">=</span> <span class="s2">&quot;Sr88_mqdt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;F J=4, nu &gt; 9&quot;</span>
+    <span class="n">f_tot</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="s2">&quot;10.1088/1361-6455/ab3c26&quot;</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>  <span class="c1"># &quot;5snf 3F4&quot;</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetFJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">&quot;Sr88&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.12</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.2</span><span class="p">,</span> <span class="mi">120</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">mixing_angles</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, RydState Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

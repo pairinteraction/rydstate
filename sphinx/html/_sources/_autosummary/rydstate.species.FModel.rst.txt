@@ -1,0 +1,55 @@
+﻿FModel
+======
+
+.. currentmodule:: rydstate.species
+
+
+.. rubric:: Class Methods
+
+.. autosummary::
+   
+      ~FModel.__init__
+      ~FModel.calc_channel_nuis
+      ~FModel.calc_det_m_matrix
+      ~FModel.calc_det_scaled_m_matrix
+      ~FModel.calc_eigen_quantum_defects
+      ~FModel.calc_frame_transformation
+      ~FModel.calc_frame_transformation_inner_closecoupling
+      ~FModel.calc_frame_transformation_outer_inner
+      ~FModel.calc_k_matrix
+      ~FModel.calc_k_matrix_closecoupling
+      ~FModel.calc_m_matrix
+      ~FModel.calc_scaled_m_matrix
+      ~FModel.get_ionization_thresholds
+
+
+
+.. rubric:: Class Attributes and Properties
+
+.. autosummary::
+
+   ~FModel.frame_transformation_outer_inner
+   ~FModel.full_name
+   ~FModel.ionization_thresholds_au
+   ~FModel.manual_frame_transformation_outer_inner
+   ~FModel.nu_max
+   ~FModel.nu_min
+   ~FModel.reference
+   ~FModel.species
+   ~FModel.name
+   ~FModel.species_name
+   ~FModel.f_tot
+   ~FModel.nu_range
+   ~FModel.inner_channels
+   ~FModel.outer_channels
+   ~FModel.eigen_quantum_defects
+   ~FModel.mixing_angles
+
+
+
+.. autoclass:: rydstate.species.FModel
+   :members:
+   :member-order: bysource
+   :inherited-members:
+   :undoc-members:
+   :class-doc-from: init

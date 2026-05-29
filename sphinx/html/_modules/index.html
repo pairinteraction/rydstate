@@ -1,0 +1,240 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview: module code &mdash; RydState 0.11.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f3b36f1a"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            RydState
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#radialket">RadialKet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/radial/hydrogen_wavefunction.html">Hydrogen radial wavefunction via numerov and from sympy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/radial/rubidium_wavefunction.html">Rubidium wavefunction and potential</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#angularstate">AngularState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/angular/angular_state.html">Using AngularKets and AngularStates in different spin coupling schemes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#rydbergstate">RydbergState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/dipole_matrix_elements.html">Calculating dipole matrix elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/lifetimes.html">Lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#mqdt">MQDT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/mqdt/mqdt_exp_qn.html">Labeling the angular character of Yb 171</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#comparisons">Comparisons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_z_min_cutoff.html">Comparison of the z_min values for circular states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_nist_energy_levels_data.html">Compare NIST energy levels data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_model_potentials.html">Compare different effective model potentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_whittaker.html">Comparison: Numerov - Whittaker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/benchmark/benchmark_njit.html">Benchmark of Numerov integration with and without using numba.njit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/rydberg_states.html">Rydberg States</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.RydbergStateSQDT.html">RydbergStateSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.RydbergStateSQDTAlkali.html">RydbergStateSQDTAlkali</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.RydbergStateSQDTAlkalineLS.html">RydbergStateSQDTAlkalineLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.RydbergStateSQDTAlkalineJJ.html">RydbergStateSQDTAlkalineJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.RydbergStateSQDTAlkalineFJ.html">RydbergStateSQDTAlkalineFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.RydbergStateMQDT.html">RydbergStateMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/basis.html">Rydberg Basis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.BasisSQDT.html">BasisSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.BasisMQDT.html">BasisMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/angular.html">Angular module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.angular.AngularKetLS.html">AngularKetLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.angular.AngularKetJJ.html">AngularKetJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.angular.AngularKetFJ.html">AngularKetFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.angular.AngularState.html">AngularState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.angular.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/radial.html">Radial module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.radial.RadialKet.html">RadialKet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.radial.Wavefunction.html">Wavefunction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.radial.Model.html">Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.radial.numerov.html">numerov</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/species_sqdt.html">SQDT Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.SpeciesObjectSQDT.html">SpeciesObjectSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.HydrogenTextBook.html">HydrogenTextBook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.Hydrogen.html">Hydrogen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.Lithium.html">Lithium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.Sodium.html">Sodium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.Potassium.html">Potassium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.Rubidium.html">Rubidium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.Cesium.html">Cesium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.Strontium87.html">Strontium87</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.Strontium88.html">Strontium88</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.Ytterbium171.html">Ytterbium171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.Ytterbium173.html">Ytterbium173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.Ytterbium174.html">Ytterbium174</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/species_mqdt.html">MQDT Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.SpeciesObjectMQDT.html">SpeciesObjectMQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.FModel.html">FModel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/rydstate.species.FModelSQDT.html">FModelSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/mqdt/sr87.html">Strontium 87</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/mqdt/sr88.html">Strontium 88</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/mqdt/yb171.html">Ytterbium 171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/mqdt/yb173.html">Ytterbium 173</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/mqdt/yb174.html">Ytterbium 174</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style>
+a.gitbutton {
+  display: block;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #fff;
+  padding-top: 10px;
+  padding-left: 85px;
+  padding-right: 0px;
+  margin: 22px;
+  width: 240px;
+  height: 60px;
+  background: transparent url("../_static/buttons/github.svg") 0 0 no-repeat;
+}
+a.gitbutton small {
+  display: block;
+  font-size: 11px;
+}
+button.toctree-expand {
+  display: none;
+}
+</style>
+<a href="https://github.com/pairinteraction/rydstate" class="gitbutton">Explore<small>the GitHub repository</small></a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">RydState</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Overview: module code</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>All modules for which code is available</h1>
+<ul><li><a href="rydstate/angular/angular_ket.html">rydstate.angular.angular_ket</a></li>
+<li><a href="rydstate/angular/angular_state.html">rydstate.angular.angular_state</a></li>
+<li><a href="rydstate/angular/utils.html">rydstate.angular.utils</a></li>
+<li><a href="rydstate/basis/basis_mqdt.html">rydstate.basis.basis_mqdt</a></li>
+<li><a href="rydstate/basis/basis_sqdt.html">rydstate.basis.basis_sqdt</a></li>
+<li><a href="rydstate/radial/model.html">rydstate.radial.model</a></li>
+<li><a href="rydstate/radial/numerov.html">rydstate.radial.numerov</a></li>
+<li><a href="rydstate/radial/radial_ket.html">rydstate.radial.radial_ket</a></li>
+<li><a href="rydstate/radial/wavefunction.html">rydstate.radial.wavefunction</a></li>
+<li><a href="rydstate/rydberg_state/rydberg_mqdt.html">rydstate.rydberg_state.rydberg_mqdt</a></li>
+<li><a href="rydstate/rydberg_state/rydberg_sqdt.html">rydstate.rydberg_state.rydberg_sqdt</a></li>
+<li><a href="rydstate/species/mqdt/fmodel.html">rydstate.species.mqdt.fmodel</a></li>
+<li><a href="rydstate/species/mqdt/species_object_mqdt.html">rydstate.species.mqdt.species_object_mqdt</a></li>
+<li><a href="rydstate/species/mqdt/sr87.html">rydstate.species.mqdt.sr87</a></li>
+<li><a href="rydstate/species/mqdt/sr88.html">rydstate.species.mqdt.sr88</a></li>
+<li><a href="rydstate/species/mqdt/yb171.html">rydstate.species.mqdt.yb171</a></li>
+<li><a href="rydstate/species/mqdt/yb173.html">rydstate.species.mqdt.yb173</a></li>
+<li><a href="rydstate/species/mqdt/yb174.html">rydstate.species.mqdt.yb174</a></li>
+<li><a href="rydstate/species/sqdt/cesium.html">rydstate.species.sqdt.cesium</a></li>
+<li><a href="rydstate/species/sqdt/hydrogen.html">rydstate.species.sqdt.hydrogen</a></li>
+<li><a href="rydstate/species/sqdt/lithium.html">rydstate.species.sqdt.lithium</a></li>
+<li><a href="rydstate/species/sqdt/potassium.html">rydstate.species.sqdt.potassium</a></li>
+<li><a href="rydstate/species/sqdt/rubidium.html">rydstate.species.sqdt.rubidium</a></li>
+<li><a href="rydstate/species/sqdt/sodium.html">rydstate.species.sqdt.sodium</a></li>
+<li><a href="rydstate/species/sqdt/species_object_sqdt.html">rydstate.species.sqdt.species_object_sqdt</a></li>
+<li><a href="rydstate/species/sqdt/strontium.html">rydstate.species.sqdt.strontium</a></li>
+<li><a href="rydstate/species/sqdt/ytterbium.html">rydstate.species.sqdt.ytterbium</a></li>
+</ul>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, RydState Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

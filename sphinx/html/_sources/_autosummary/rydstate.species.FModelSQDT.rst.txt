@@ -1,0 +1,55 @@
+﻿FModelSQDT
+==========
+
+.. currentmodule:: rydstate.species
+
+
+.. rubric:: Class Methods
+
+.. autosummary::
+   
+      ~FModelSQDT.__init__
+      ~FModelSQDT.calc_channel_nuis
+      ~FModelSQDT.calc_det_m_matrix
+      ~FModelSQDT.calc_det_scaled_m_matrix
+      ~FModelSQDT.calc_eigen_quantum_defects
+      ~FModelSQDT.calc_frame_transformation
+      ~FModelSQDT.calc_frame_transformation_inner_closecoupling
+      ~FModelSQDT.calc_frame_transformation_outer_inner
+      ~FModelSQDT.calc_k_matrix
+      ~FModelSQDT.calc_k_matrix_closecoupling
+      ~FModelSQDT.calc_m_matrix
+      ~FModelSQDT.calc_scaled_m_matrix
+      ~FModelSQDT.get_ionization_thresholds
+
+
+
+.. rubric:: Class Attributes and Properties
+
+.. autosummary::
+
+   ~FModelSQDT.frame_transformation_outer_inner
+   ~FModelSQDT.full_name
+   ~FModelSQDT.ionization_thresholds_au
+   ~FModelSQDT.manual_frame_transformation_outer_inner
+   ~FModelSQDT.nu_max
+   ~FModelSQDT.nu_min
+   ~FModelSQDT.reference
+   ~FModelSQDT.species
+   ~FModelSQDT.name
+   ~FModelSQDT.species_name
+   ~FModelSQDT.f_tot
+   ~FModelSQDT.nu_range
+   ~FModelSQDT.inner_channels
+   ~FModelSQDT.outer_channels
+   ~FModelSQDT.eigen_quantum_defects
+   ~FModelSQDT.mixing_angles
+
+
+
+.. autoclass:: rydstate.species.FModelSQDT
+   :members:
+   :member-order: bysource
+   :inherited-members:
+   :undoc-members:
+   :class-doc-from: init

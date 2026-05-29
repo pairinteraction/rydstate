@@ -1,0 +1,32 @@
+﻿RydbergStateMQDT
+================
+
+.. currentmodule:: rydstate
+
+
+.. rubric:: Class Methods
+
+.. autosummary::
+   
+      ~RydbergStateMQDT.__init__
+      ~RydbergStateMQDT.calc_reduced_matrix_element
+      ~RydbergStateMQDT.calc_reduced_overlap
+
+
+
+.. rubric:: Class Attributes and Properties
+
+.. autosummary::
+
+   ~RydbergStateMQDT.norm
+   ~RydbergStateMQDT.nu
+   ~RydbergStateMQDT.angular
+
+
+
+.. autoclass:: rydstate.RydbergStateMQDT
+   :members:
+   :member-order: bysource
+   :inherited-members:
+   :undoc-members:
+   :class-doc-from: init
