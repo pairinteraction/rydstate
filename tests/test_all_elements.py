@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import pytest
 from rydstate import RydbergStateSQDTAlkali, RydbergStateSQDTAlkalineLS
 from rydstate.species import SQDT, ElementProperties, get_subclass
-from rydstate.species.utils import get_all_subclasses
+from rydstate.species.utils import get_all_subclasses, get_element_properties
 
 if TYPE_CHECKING:
     from rydstate import RydbergStateSQDT
@@ -16,7 +16,7 @@ ALL_AVAILABLE_SPECIES = [cls.species for cls in get_all_subclasses(ElementProper
 
 @pytest.mark.parametrize("species", ALL_AVAILABLE_SPECIES)
 def test_sqdt_species(species: str) -> None:
-    element_properties = get_subclass(ElementProperties, species)()
+    element_properties = get_element_properties(species)
     sqdt = get_subclass(SQDT, species)()
     i_c = element_properties.i_c
 
@@ -28,5 +28,7 @@ def test_sqdt_species(species: str) -> None:
             RydbergStateSQDTAlkali(species, n=50, l=1)
     elif element_properties.number_valence_electrons == 2 and sqdt.quantum_defects is not None:
         for s_tot in [0, 1]:
-            state = RydbergStateSQDTAlkalineLS(species, n=50, l=1, s_tot=s_tot, j_tot=1 + s_tot, f_tot=s_tot + 1 + i_c)
+            state = RydbergStateSQDTAlkalineLS(
+                species + "_sqdt", n=50, l=1, s_tot=s_tot, j_tot=1 + s_tot, f_tot=s_tot + 1 + i_c
+            )
             state.radial.create_wavefunction()

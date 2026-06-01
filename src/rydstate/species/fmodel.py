@@ -6,12 +6,11 @@ from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
-from rydstate.species.element_properties import ElementProperties
 from rydstate.species.utils import (
     calc_energy_from_nu,
     calc_modified_ritz_formula_in_nu,
     calc_nu_from_energy,
-    get_subclass,
+    get_element_properties,
 )
 
 if TYPE_CHECKING:
@@ -62,7 +61,7 @@ class FModel:
 
     def __init__(self, mqdt: MQDT) -> None:
         self.mqdt = mqdt
-        self.element_properties = get_subclass(ElementProperties, self.species)()
+        self.element_properties = get_element_properties(self.species)
 
     @property
     def full_name(self) -> str:

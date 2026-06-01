@@ -7,9 +7,8 @@ from typing import TYPE_CHECKING, Literal, overload
 from rydstate.radial.grid import Grid
 from rydstate.radial.radial_matrix_element import calc_radial_matrix_element_from_w_z
 from rydstate.radial.wavefunction import WavefunctionNumerov, WavefunctionWhittaker
-from rydstate.species import ElementProperties
 from rydstate.species.potential import Potential
-from rydstate.species.utils import calc_energy_from_nu, get_subclass
+from rydstate.species.utils import calc_energy_from_nu, get_element_properties, get_subclass
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
@@ -39,7 +38,7 @@ class RadialKet:
 
         """
         self.species = species
-        self.element_properties = get_subclass(ElementProperties, species)()
+        self.element_properties = get_element_properties(species)
         self.potential = get_subclass(Potential, species)(l_r)
 
         self.n: int | None = None

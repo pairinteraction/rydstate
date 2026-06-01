@@ -8,8 +8,7 @@ from typing_extensions import Self
 
 from rydstate.angular.utils import is_angular_momentum_quantum_number, is_unknown
 from rydstate.rydberg_state.rydberg_base import RydbergStateBase
-from rydstate.species import ElementProperties
-from rydstate.species.utils import get_subclass
+from rydstate.species.utils import get_element_properties
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
@@ -23,7 +22,7 @@ class BasisBase(ABC, Generic[_RydbergState]):
 
     def __init__(self, species: str) -> None:
         self.species = species
-        self.element_properties = get_subclass(ElementProperties, species)()
+        self.element_properties = get_element_properties(species)
 
     def __len__(self) -> int:
         return len(self.states)

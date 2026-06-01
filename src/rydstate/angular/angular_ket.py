@@ -26,7 +26,6 @@ from rydstate.angular.utils import (
     try_trivial_spin_addition,
 )
 from rydstate.angular.wigner_symbols import calc_wigner_3j, clebsch_gordan_6j, clebsch_gordan_9j
-from rydstate.species.utils import get_subclass
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -116,9 +115,9 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
         """
         if species is not None:
             if isinstance(species, str):
-                from rydstate.species import ElementProperties  # noqa: PLC0415
+                from rydstate.species.utils import get_element_properties  # noqa: PLC0415
 
-                element_properties = get_subclass(ElementProperties, species)()
+                element_properties = get_element_properties(species)
 
             if i_c is not None and i_c != element_properties.i_c:
                 raise ValueError(f"i_c={i_c} not allowed for {species} with i_c={element_properties.i_c}.")

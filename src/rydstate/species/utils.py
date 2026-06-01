@@ -7,7 +7,11 @@ from typing import TypeAlias, TypeVar
 
 import numpy as np
 
+from rydstate.species.element_properties import ElementProperties
+
 RydbergRitzParameters: TypeAlias = tuple[float, ...] | list[float] | float
+
+T = TypeVar("T", bound=type)
 
 
 def calc_nu_from_energy(reduced_mass_au: float, energy_au: float) -> float:
@@ -132,7 +136,17 @@ def calc_modified_ritz_formula_in_nu(nui: float, parameters: RydbergRitzParamete
     return result
 
 
-T = TypeVar("T", bound=type)
+def get_element_properties(species: str) -> ElementProperties:
+    """Get an instance of the subclass of ElementProperties for the given species."""
+    possible_subclasses = get_all_subclasses(ElementProperties, species)
+    if len(possible_subclasses) == 0:
+        possible_subclasses = get_all_subclasses(ElementProperties, species.replace("_sqdt", "").replace("_mqdt", ""))
+
+    if len(possible_subclasses) == 0:
+        raise ValueError(f"No subclass of ElementProperties found for species {species}.")
+    if len(possible_subclasses) == 1:
+        return possible_subclasses[0]()
+    raise ValueError(f"Multiple subclasses of ElementProperties found for species {species}: {possible_subclasses}.")
 
 
 def get_subclass(cls: T, species: str, tag: str | None = None) -> T:

@@ -10,12 +10,11 @@ from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
-from rydstate.species.element_properties import ElementProperties
 from rydstate.species.utils import (
     calc_modified_ritz_formula,
     calc_nu_from_energy,
     convert_electron_configuration,
-    get_subclass,
+    get_element_properties,
 )
 from rydstate.units import ureg
 
@@ -45,7 +44,7 @@ class SQDT:
     """Ionization energy and unit: (value, unit)."""
 
     def __init__(self) -> None:
-        self.element_properties = get_subclass(ElementProperties, self.species)()
+        self.element_properties = get_element_properties(self.species)
 
         self._setup_nist_energy_levels()
 
