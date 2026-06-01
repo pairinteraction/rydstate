@@ -49,6 +49,11 @@ class ElementProperties(metaclass=RegistrySingletonMeta):
     def __str__(self) -> str:
         return self.species
 
+    @property
+    def s_c(self) -> float:
+        """Total spin of the core electrons (0 for alkali atoms, 0.5 for alkaline earth atoms)."""
+        return 0.5 * (self.number_valence_electrons - 1)
+
     @classmethod
     def get_available_species(cls) -> list[str]:
         """Get a list of all available species names in the library.
