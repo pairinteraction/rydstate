@@ -3,13 +3,14 @@ from __future__ import annotations
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, ClassVar, overload
 
-from rydstate.species.fmodel import FModel, FModelSQDT
+from rydstate.species.fmodel import FModelSQDT
 from rydstate.species.registry_singleton_meta import RegistrySingletonMeta
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetFJ
     from rydstate.angular.core_ket import CoreKet
+    from rydstate.species.fmodel import FModel
     from rydstate.units import PintFloat
 
 
@@ -36,7 +37,7 @@ class MQDT(metaclass=RegistrySingletonMeta):
     """A file containing all the MQDT models for this species.
     Specify either this attribute or the models attribute directly, but not both."""
 
-    def __init__(self, species: str | None = None, tag: str | None = None) -> None:
+    def __init__(self, species: str | None = None, tag: str | None = None) -> None:  # noqa: ARG002
         if getattr(self, "_initialized", False):
             return
 
@@ -53,7 +54,6 @@ class MQDT(metaclass=RegistrySingletonMeta):
         # If models are not defined directly, try to load them from the specified file.
         # load the file and extract all FModel subclasses defined in it that match the species
         raise NotImplementedError("Loading MQDT models from a file is not implemented yet.")
-
 
     def __repr__(self) -> str:
         return f"MQDT({self.species}, {self.tag})"
