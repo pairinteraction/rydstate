@@ -17,7 +17,7 @@ class ElementPropertiesYtterbium171(_ElementPropertiesYtterbiumAbstract):
     species = "Yb171"
     i_c = 1 / 2
 
-    _isotope_mass_u = 170.936323
+    _isotope_mass_u = 170.9363258
     corrected_rydberg_constant = (
         rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass_u),
         str(rydberg_constant.u),
@@ -28,7 +28,7 @@ class ElementPropertiesYtterbium173(_ElementPropertiesYtterbiumAbstract):
     species = "Yb173"
     i_c = 5 / 2
 
-    _isotope_mass_u = 172.938208
+    _isotope_mass_u = 172.938216212
     corrected_rydberg_constant = (
         rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass_u),
         str(rydberg_constant.u),

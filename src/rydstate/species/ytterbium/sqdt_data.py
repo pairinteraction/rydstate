@@ -4,7 +4,7 @@ from rydstate.species.sqdt import SQDT
 
 
 class SQDTYtterbium174(SQDT):
-    species = "Yb174"
+    species = "Yb174_sqdt"
     is_default = True
 
     # -- [1] Peper 2024, http://arxiv.org/abs/2406.01482

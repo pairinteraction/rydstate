@@ -17,7 +17,7 @@ class ElementPropertiesStrontium87(_ElementPropertiesStrontiumAbstract):
     species = "Sr87"
     i_c = 9 / 2
 
-    _isotope_mass_u = 86.908884
+    _isotope_mass_u = 86.9088774970
     corrected_rydberg_constant = (
         rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass_u),
         str(rydberg_constant.u),
@@ -28,7 +28,7 @@ class ElementPropertiesStrontium88(_ElementPropertiesStrontiumAbstract):
     species = "Sr88"
     i_c = 0
 
-    _isotope_mass_u = 87.905619
+    _isotope_mass_u = 87.9056122571
     corrected_rydberg_constant = (
         rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass_u),
         str(rydberg_constant.u),

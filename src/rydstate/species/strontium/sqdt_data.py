@@ -4,7 +4,7 @@ from rydstate.species.sqdt import SQDT
 
 
 class SQDTStrontium88(SQDT):
-    species = "Sr88"
+    species = "Sr88_sqdt"
     is_default = True
 
     # -- [1] Brienza 2023, Phys. Rev. A 108, 022815
