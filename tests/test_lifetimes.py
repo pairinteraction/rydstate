@@ -3,7 +3,9 @@ import pytest
 from rydstate import RydbergStateSQDT, RydbergStateSQDTAlkali
 from rydstate.angular import AngularKetLS
 from rydstate.species import ElementProperties
-from rydstate.species.utils import get_subclass
+from rydstate.species.utils import get_all_subclasses, get_subclass
+
+ALL_AVAILABLE_SPECIES = [cls.species for cls in get_all_subclasses(ElementProperties)]
 
 
 # Reference values from NIST Atomic Spectra Database (ASD), Einstein A coefficients:
@@ -34,7 +36,7 @@ def test_bbr_shortens_lifetime() -> None:
     assert tau_300 < tau_0
 
 
-@pytest.mark.parametrize("species", ElementProperties.get_available_species())
+@pytest.mark.parametrize("species", ALL_AVAILABLE_SPECIES)
 def test_lifetime_n_scaling(species: str) -> None:
     """Test that Rydberg state lifetimes scale as nu^3 (effective quantum number)."""
     if species != "Na":

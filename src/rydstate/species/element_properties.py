@@ -3,14 +3,13 @@ from __future__ import annotations
 from functools import cached_property
 from typing import TYPE_CHECKING, ClassVar, overload
 
-from rydstate.species.registry_singleton_meta import RegistrySingletonMeta
 from rydstate.units import rydberg_constant, ureg
 
 if TYPE_CHECKING:
     from rydstate.units import PintFloat
 
 
-class ElementProperties(metaclass=RegistrySingletonMeta):
+class ElementProperties:
     """Base class for all element properties classes.
 
     For the electronic ground state configurations and sorted shells,
@@ -53,16 +52,6 @@ class ElementProperties(metaclass=RegistrySingletonMeta):
     def s_c(self) -> float:
         """Total spin of the core electrons (0 for alkali atoms, 0.5 for alkaline earth atoms)."""
         return 0.5 * (self.number_valence_electrons - 1)
-
-    @classmethod
-    def get_available_species(cls) -> list[str]:
-        """Get a list of all available species names in the library.
-
-        Returns:
-            List of species names.
-
-        """
-        return sorted([subclass.species for subclass in ElementProperties._instances.values()])
 
     @overload
     def get_corrected_rydberg_constant(self, unit: None = None) -> PintFloat: ...

@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 import pytest
 from rydstate import RydbergStateSQDTAlkali, RydbergStateSQDTAlkalineLS
 from rydstate.species import SQDT, ElementProperties, get_subclass
+from rydstate.species.utils import get_all_subclasses
 
 if TYPE_CHECKING:
     from rydstate import RydbergStateSQDT
@@ -10,7 +11,10 @@ if TYPE_CHECKING:
     from rydstate.angular.utils import AllKnown
 
 
-@pytest.mark.parametrize("species", ElementProperties.get_available_species())
+ALL_AVAILABLE_SPECIES = [cls.species for cls in get_all_subclasses(ElementProperties)]
+
+
+@pytest.mark.parametrize("element", ALL_AVAILABLE_SPECIES)
 def test_sqdt_species(species: str) -> None:
     element_properties = get_subclass(ElementProperties, species)()
     sqdt = get_subclass(SQDT, species)()
