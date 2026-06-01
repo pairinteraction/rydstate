@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, ClassVar, Literal, TypeVar
 import numpy as np
 
 from rydstate.species.element_properties import ElementProperties
+from rydstate.species.utils import get_subclass
 
 if TYPE_CHECKING:
     from rydstate.units import NDArray
@@ -37,7 +38,7 @@ class Potential:
             potential_type: Which potential to use for the model.
 
         """
-        self.element_properties = ElementProperties(self.species)
+        self.element_properties = get_subclass(ElementProperties, self.species)()
         self.l = l
 
     def __repr__(self) -> str:

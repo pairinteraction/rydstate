@@ -39,11 +39,8 @@ class ElementProperties:
     nuclear_dipole: float
     """Nuclear dipole moment of the species."""
 
-    def __init__(self, species: str | None = None) -> None:
-        pass
-
     def __repr__(self) -> str:
-        return f"ElementProperties({self.species})"
+        return f"{self.__class__.__name__}()"
 
     def __str__(self) -> str:
         return self.species

@@ -79,7 +79,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
 
         """
         self.species = species
-        self.element_properties = ElementProperties(species)
+        self.element_properties = get_subclass(ElementProperties, species)()
         self.sqdt = get_subclass(SQDT, species)()
 
         self.angular = quantum_numbers_to_angular_ket(  # type: ignore [assignment]
@@ -117,7 +117,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         obj = cls.__new__(cls)
 
         obj.species = species
-        obj.element_properties = ElementProperties(species)
+        obj.element_properties = get_subclass(ElementProperties, species)()
         obj.sqdt = get_subclass(SQDT, species)()
 
         obj._n = n  # noqa: SLF001

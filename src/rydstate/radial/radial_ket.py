@@ -41,9 +41,8 @@ class RadialKet:
 
         """
         self.species = species
-        self.element_properties = ElementProperties(species)
-        potential_class = get_subclass(Potential, species)
-        self.potential = potential_class(l_r)
+        self.element_properties = get_subclass(ElementProperties, species)()
+        self.potential = get_subclass(Potential, species)(l_r)
 
         self.n: int | None = None
         if not nu > 0:

@@ -12,7 +12,12 @@ import numpy as np
 
 from rydstate.angular.angular_ket import AngularKetLS
 from rydstate.species.element_properties import ElementProperties
-from rydstate.species.utils import calc_modified_ritz_formula, calc_nu_from_energy, convert_electron_configuration
+from rydstate.species.utils import (
+    calc_modified_ritz_formula,
+    calc_nu_from_energy,
+    convert_electron_configuration,
+    get_subclass,
+)
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
@@ -119,7 +124,7 @@ class SQDT:
     @property
     def element_properties(self) -> ElementProperties:
         """Element properties corresponding to this SQDT."""
-        return ElementProperties(self.species)
+        return get_subclass(ElementProperties, self.species)()
 
     def is_allowed_shell(self, n: int, l: int, s_tot: float | None = None) -> bool:
         """Check if the quantum numbers describe an allowed shell.
