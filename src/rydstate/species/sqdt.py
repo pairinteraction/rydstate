@@ -12,7 +12,6 @@ import numpy as np
 
 from rydstate.angular.angular_ket import AngularKetLS
 from rydstate.species.element_properties import ElementProperties
-from rydstate.species.registry_singleton_meta import RegistrySingletonMeta
 from rydstate.species.utils import calc_modified_ritz_formula, calc_nu_from_energy, convert_electron_configuration
 from rydstate.units import ureg
 
@@ -25,7 +24,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class SQDT(metaclass=RegistrySingletonMeta):
+class SQDT:
     """Base class for all SQDT classes."""
 
     species: ClassVar[str]
@@ -41,7 +40,7 @@ class SQDT(metaclass=RegistrySingletonMeta):
     ionization_energy: tuple[float, str]
     """Ionization energy and unit: (value, unit)."""
 
-    def __init__(self, species: str | None = None, tag: str | None = None) -> None:  # noqa: ARG002
+    def __init__(self) -> None:
         self._setup_nist_energy_levels()
 
     def __repr__(self) -> str:
@@ -61,9 +60,6 @@ class SQDT(metaclass=RegistrySingletonMeta):
             file: Path to the NIST energy levels file.
 
         """
-        if hasattr(self, "_nist_energy_levels"):
-            return  # already set up
-
         self._nist_energy_levels: dict[tuple[int, int, float, float], float] = {}
 
         file = Path(inspect.getfile(type(self))).resolve().parent / "nist_data.txt"

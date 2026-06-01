@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 from rydstate import RydbergStateSQDTAlkali, RydbergStateSQDTAlkalineLS
-from rydstate.species import SpeciesObjectSQDT
+from rydstate.species import SQDT, ElementProperties, get_subclass
 
 if TYPE_CHECKING:
     from rydstate import RydbergStateSQDT
@@ -10,18 +10,19 @@ if TYPE_CHECKING:
     from rydstate.angular.utils import AllKnown
 
 
-@pytest.mark.parametrize("species_name", SpeciesObjectSQDT.get_available_species())
-def test_sqdt_species(species_name: str) -> None:
-    species = SpeciesObjectSQDT.from_name(species_name)
-    i_c = species.i_c_number
+@pytest.mark.parametrize("species", ElementProperties.get_available_species())
+def test_sqdt_species(species: str) -> None:
+    element_properties = get_subclass(ElementProperties, species)()
+    sqdt = get_subclass(SQDT, species)()
+    i_c = element_properties.i_c
 
     state: RydbergStateSQDT[AngularKetLS[AllKnown]]
-    if species.number_valence_electrons == 1:
+    if element_properties.number_valence_electrons == 1:
         state = RydbergStateSQDTAlkali(species, n=50, l=0, f=i_c + 0.5)
         state.radial.create_wavefunction()
         with pytest.raises(ValueError, match="Invalid combination of angular quantum numbers provided"):
             RydbergStateSQDTAlkali(species, n=50, l=1)
-    elif species.number_valence_electrons == 2 and species.quantum_defects is not None:
+    elif element_properties.number_valence_electrons == 2 and sqdt.quantum_defects is not None:
         for s_tot in [0, 1]:
             state = RydbergStateSQDTAlkalineLS(species, n=50, l=1, s_tot=s_tot, j_tot=1 + s_tot, f_tot=s_tot + 1 + i_c)
             state.radial.create_wavefunction()

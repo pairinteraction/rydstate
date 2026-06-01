@@ -14,7 +14,7 @@ from rydstate.angular.utils import AllKnown, is_not_set, is_unknown, quantum_num
 from rydstate.radial import RadialKet
 from rydstate.rydberg_state.rydberg_base import RydbergStateBase
 from rydstate.species import SQDT, ElementProperties
-from rydstate.species.utils import calc_energy_from_nu
+from rydstate.species.utils import calc_energy_from_nu, get_subclass
 from rydstate.units import BaseQuantities, MatrixElementOperatorRanks, ureg
 
 if TYPE_CHECKING:
@@ -80,7 +80,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         """
         self.species = species
         self.element_properties = ElementProperties(species)
-        self.sqdt = SQDT(species)
+        self.sqdt = get_subclass(SQDT, species)()
 
         self.angular = quantum_numbers_to_angular_ket(  # type: ignore [assignment]
             species=self.species,
@@ -118,7 +118,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
 
         obj.species = species
         obj.element_properties = ElementProperties(species)
-        obj.sqdt = SQDT(species)
+        obj.sqdt = get_subclass(SQDT, species)()
 
         obj._n = n  # noqa: SLF001
         obj._nu = nu  # noqa: SLF001

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import inspect
 import math
 import re
-from typing import TypeAlias
+from typing import TypeAlias, TypeVar
 
 import numpy as np
 
@@ -129,3 +130,30 @@ def calc_modified_ritz_formula_in_nu(nui: float, parameters: RydbergRitzParamete
     for i, param in enumerate(parameters):
         result += param * 1.0 / nui ** (2 * i)
     return result
+
+
+T = TypeVar("T", bound=type)
+
+
+def get_subclass(cls: T, species: str, tag: str | None = None) -> T:
+    """Get the subclass of cls for the given species and tag."""
+    possible_subclasses: list[type] = []
+    for subclass in cls.__subclasses__():
+        if inspect.isabstract(subclass):
+            continue
+        if getattr(subclass, "species", None) == species:
+            possible_subclasses.append(subclass)
+
+    if tag is not None:
+        possible_subclasses = [sc for sc in possible_subclasses if getattr(sc, "tag", None) == tag]
+    elif tag is None:
+        possible_subclasses = [sc for sc in possible_subclasses if getattr(sc, "is_default", False) == tag]
+
+    if len(possible_subclasses) == 0:
+        raise ValueError(f"No subclass of {cls.__name__} found for species {species} and tag {tag}.")
+    if len(possible_subclasses) == 1:
+        return possible_subclasses[0]  # type: ignore [return-value]
+
+    raise ValueError(
+        f"Multiple subclasses of {cls.__name__} found for species {species} and tag {tag}: {possible_subclasses}."
+    )

@@ -12,6 +12,7 @@ from rydstate.species.utils import calc_energy_from_nu, calc_modified_ritz_formu
 if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ
     from rydstate.angular.utils import AllKnown
+    from rydstate.species.mqdt import MQDT
     from rydstate.species.utils import RydbergRitzParameters
     from rydstate.units import NDArray, PintFloat
 
@@ -53,6 +54,9 @@ class FModel:
     This is mainly needed for models with unknown quantum numbers,
     where the frame transformation cannot (yet) be computed from Wigner coefficients.
     """
+
+    def __init__(self, mqdt: MQDT) -> None:
+        self.mqdt = mqdt
 
     @property
     def full_name(self) -> str:

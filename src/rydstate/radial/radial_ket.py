@@ -9,7 +9,8 @@ from rydstate.radial.model import Model
 from rydstate.radial.radial_matrix_element import calc_radial_matrix_element_from_w_z
 from rydstate.radial.wavefunction import WavefunctionNumerov, WavefunctionWhittaker
 from rydstate.species import ElementProperties
-from rydstate.species.utils import calc_energy_from_nu
+from rydstate.species.potential import Potential
+from rydstate.species.utils import calc_energy_from_nu, get_subclass
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
@@ -41,6 +42,8 @@ class RadialKet:
         """
         self.species = species
         self.element_properties = ElementProperties(species)
+        potential_class = get_subclass(Potential, species)
+        self.potential = potential_class(l_r)
 
         self.n: int | None = None
         if not nu > 0:
@@ -73,16 +76,10 @@ class RadialKet:
     def __repr__(self) -> str:
         species, nu, l_r, n = self.species, self.nu, self.l_r, self.n
         n_str = "" if n is None else f", ({n=})"
-        return f"{self.__class__.__name__}({species.name}, {nu=}, {l_r=}{n_str})"
+        return f"{self.__class__.__name__}({species}, {nu=}, {l_r=}{n_str})"
 
     def __str__(self) -> str:
         return self.__repr__()
-
-    @property
-    def model(self) -> Model:
-        if not hasattr(self, "_model"):
-            self.create_model()
-        return self._model
 
     def create_model(self, potential_type: PotentialType | None = None) -> None:
         """Create the model for the Rydberg state.
@@ -129,8 +126,8 @@ class RadialKet:
             if self.l_r <= 10:
                 z_min = 0.0
             else:
-                energy_au = calc_energy_from_nu(self.species.reduced_mass_au, self.nu)
-                z_min = self.model.calc_turning_point_z(energy_au)
+                energy_au = calc_energy_from_nu(self.element_properties.reduced_mass_au, self.nu)
+                z_min = self.potential.calc_turning_point_z(energy_au)
                 z_min = math.sqrt(0.5) * z_min - 3  # see also compare_z_min_cutoff.ipynb
         else:
             z_min = math.sqrt(x_min)
@@ -187,7 +184,7 @@ class RadialKet:
             raise RuntimeError("The wavefunction was already created, you should not create it again.")
 
         if method == "numerov":
-            self._wavefunction = WavefunctionNumerov(self, self.grid, self.model)
+            self._wavefunction = WavefunctionNumerov(self, self.grid, self.potential)
             self._wavefunction.integrate(run_backward, w0, _use_njit=_use_njit)
         elif method == "whittaker":
             self._wavefunction = WavefunctionWhittaker(self, self.grid)

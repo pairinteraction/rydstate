@@ -4,8 +4,7 @@ import re
 
 import numpy as np
 import pytest
-from rydstate.species.mqdt.fmodel import FModel
-from rydstate.species.mqdt.species_object_mqdt import SpeciesObjectMQDT
+from rydstate.species import FModel
 
 
 def _all_fmodels() -> list[FModel]:
@@ -63,10 +62,10 @@ def test_parity_consistency(model: FModel) -> None:
 
 def test_all_channels_have_ionization_threshold(model: FModel) -> None:
     """All channels must have ionization thresholds."""
-    species = SpeciesObjectMQDT.from_name(model.species)
+    mqdt = model.mqdt
     try:
         for _i, ch in enumerate(model.outer_channels):
-            species.get_ionization_threshold(ch.get_core_ket())
+            mqdt.get_ionization_threshold(ch.get_core_ket())
     except ValueError:
         pytest.fail(
             f"{model.full_name}: outer_channels[{_i}] with core ket {ch.get_core_ket()} "

@@ -13,8 +13,9 @@ from rydstate.radial.numerov import _run_numerov_integration_python, run_numerov
 from rydstate.species.utils import calc_energy_from_nu
 
 if TYPE_CHECKING:
-    from rydstate.radial import Grid, Model
+    from rydstate.radial import Grid
     from rydstate.radial.radial_ket import RadialKet
+    from rydstate.species.potential import Potential
     from rydstate.units import NDArray
 
 logger = logging.getLogger(__name__)
@@ -117,18 +118,18 @@ class WavefunctionNumerov(Wavefunction):
         self,
         radial_ket: RadialKet,
         grid: Grid,
-        model: Model,
+        potential: Potential,
     ) -> None:
         """Create a Wavefunction object.
 
         Args:
             radial_ket: The RadialKet object.
             grid: The grid object.
-            model: The model object.
+            potential: The potential object.
 
         """
         super().__init__(radial_ket, grid)
-        self.model = model
+        self.potential = potential
 
     def integrate(self, run_backward: bool = True, w0: float = 1e-10, *, _use_njit: bool = True) -> None:
         r"""Run the Numerov integration of the radial Schrödinger equation.
@@ -172,10 +173,10 @@ class WavefunctionNumerov(Wavefunction):
         # and not like in the rest of this class, i.e. y = w(z) and x = z
         grid = self.grid
 
-        species = self.radial_ket.species
-        energy_au = calc_energy_from_nu(species.reduced_mass_au, self.radial_ket.nu)
-        v_eff = self.model.calc_total_effective_potential(grid.x_list)
-        glist = 8 * species.reduced_mass_au * grid.z_list * grid.z_list * (energy_au - v_eff)
+        element_properties = self.potential.element_properties
+        energy_au = calc_energy_from_nu(element_properties.reduced_mass_au, self.radial_ket.nu)
+        v_eff = self.potential.calc_total_effective_potential(grid.x_list)
+        glist = 8 * element_properties.reduced_mass_au * grid.z_list * grid.z_list * (energy_au - v_eff)
 
         if run_backward:
             # During the Numerov integration we define the wavefunction such that it should always stop
@@ -195,7 +196,7 @@ class WavefunctionNumerov(Wavefunction):
             # If we further assume, that the wavefunction converges to zero at the inner boundary,
             # we know that after the inner classical turning point
             # the wavefunction should never increase the distance from the x-axis again.
-            x_min = self.model.calc_turning_point_z(energy_au)
+            x_min = self.potential.calc_turning_point_z(energy_au)
 
         else:  # forward
             y0, y1 = 0, w0
@@ -283,8 +284,8 @@ class WavefunctionNumerov(Wavefunction):
         elif n <= 16:
             tol = 2e-3
 
-        species = self.radial_ket.species
-        if species.number_valence_electrons == 2:
+        element_properties = self.potential.element_properties
+        if element_properties.number_valence_electrons == 2:
             # For divalent atoms the inner boundary is less well behaved ...
             tol = 2e-2
 
@@ -324,7 +325,7 @@ class WavefunctionNumerov(Wavefunction):
             if not run_backward and z_stop < grid.z_list[-1] + grid.dz / 2:
                 warning_msgs.append(f"The integration did not stop before z_stop, z={grid.z_list[-1]}")
         elif radial_ket.l_r == 0 and run_backward:
-            z_tol = 0.035 if species.number_valence_electrons == 1 else 0.05
+            z_tol = 0.035 if element_properties.number_valence_electrons == 1 else 0.05
             if grid.z_list[0] > z_tol:  # z_list[0] should run almost to zero for l=0
                 warning_msgs.append(f"The integration for l=0 did stop at {grid.z_list[0]} (should be close to zero).")
 
@@ -344,7 +345,7 @@ class WavefunctionWhittaker(Wavefunction):
         nu = self.radial_ket.nu
 
         whitw_vectorized = np.vectorize(whitw, otypes=[float])
-        m_star = self.radial_ket.species.reduced_mass_au
+        m_star = self.radial_ket.element_properties.reduced_mass_au
         whitw_list = whitw_vectorized(nu, l + 0.5, m_star * 2 * self.grid.x_list / nu)
 
         u_list: NDArray = nu ** (3 / 2) * whitw_list / np.sqrt(nu**2 * gamma(nu + l + 1) * gamma(nu - l))

@@ -4,6 +4,7 @@ from rydstate.species.fmodel import FModel, FModelSQDT
 from rydstate.species.mqdt import MQDT
 from rydstate.species.potential import Potential, PotentialFei2009, PotentialMarinescu1993
 from rydstate.species.sqdt import SQDT
+from rydstate.species.utils import get_subclass
 
 __all__ = [
     "MQDT",
@@ -14,5 +15,6 @@ __all__ = [
     "Potential",
     "PotentialFei2009",
     "PotentialMarinescu1993",
+    "get_subclass",
     "rubidium",
 ]

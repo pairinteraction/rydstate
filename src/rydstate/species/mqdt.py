@@ -4,7 +4,6 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 from rydstate.species.fmodel import FModelSQDT
-from rydstate.species.registry_singleton_meta import RegistrySingletonMeta
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
@@ -14,7 +13,7 @@ if TYPE_CHECKING:
     from rydstate.units import PintFloat
 
 
-class MQDT(metaclass=RegistrySingletonMeta):
+class MQDT:
     """Base class for all MQDT classes."""
 
     species: ClassVar[str]
@@ -30,30 +29,24 @@ class MQDT(metaclass=RegistrySingletonMeta):
     core_ground_state: CoreKet
     """The ground state configuration of the atomic core."""
 
-    models: list[FModel]
-    """List of MQDT FModel's available for this species."""
+    model_classes: list[type[FModel]] | None = None
+    """List of MQDT FModel classes available for this species."""
 
-    models_file: str | None = None
-    """A file containing all the MQDT models for this species.
-    Specify either this attribute or the models attribute directly, but not both."""
+    model_classes_file: str | None = None
+    """A file containing all the MQDT model classes for this species.
+    Specify either this attribute or the model_classes attribute directly, but not both."""
 
-    def __init__(self, species: str | None = None, tag: str | None = None) -> None:  # noqa: ARG002
-        if getattr(self, "_initialized", False):
-            return
+    def __init__(self) -> None:
+        if self.model_classes is not None and self.model_classes_file is not None:
+            raise ValueError("Either define the model_classes attribute or the model_classes_file attribute, not both.")
+        if self.model_classes is None:
+            if self.model_classes_file is None:
+                raise ValueError("Either the model_classes or the model_classes_file attribute must be specified.")
+            # If model classes are not defined directly, try to load them from the specified file.
+            # load the file and extract all FModel subclasses defined in it that match the species
+            raise NotImplementedError("Loading MQDT model classes from a file is not implemented yet.")
 
-        self._initialized = True
-
-        if hasattr(self, "models"):
-            if self.models_file is not None:
-                raise ValueError("Either define the models attribute or the models_file attribute, not both.")
-            return
-
-        if self.models_file is None:
-            raise ValueError("Either the models attribute or the models_file attribute must be specified.")
-
-        # If models are not defined directly, try to load them from the specified file.
-        # load the file and extract all FModel subclasses defined in it that match the species
-        raise NotImplementedError("Loading MQDT models from a file is not implemented yet.")
+        self.models: list[FModel] = [model_class(self) for model_class in self.model_classes]
 
     def __repr__(self) -> str:
         return f"MQDT({self.species}, {self.tag})"
