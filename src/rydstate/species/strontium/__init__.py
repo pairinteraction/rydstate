@@ -8,6 +8,7 @@ from rydstate.species.strontium.potential_data import (
     PotentialMarinescu1993Strontium87,
     PotentialMarinescu1993Strontium88,
 )
+from rydstate.species.strontium.sqdt_data import SQDTStrontium88
 
 __all__ = [
     "ElementPropertiesStrontium87",
@@ -16,4 +17,5 @@ __all__ = [
     "PotentialFei2009Strontium88",
     "PotentialMarinescu1993Strontium87",
     "PotentialMarinescu1993Strontium88",
+    "SQDTStrontium88",
 ]
