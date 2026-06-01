@@ -1,4 +1,4 @@
-from rydstate.species import rubidium
+from rydstate.species import cesium, hydrogen, lithium, potassium, rubidium, sodium, strontium, ytterbium
 from rydstate.species.element_properties import ElementProperties
 from rydstate.species.fmodel import FModel, FModelSQDT
 from rydstate.species.mqdt import MQDT
@@ -15,6 +15,13 @@ __all__ = [
     "Potential",
     "PotentialFei2009",
     "PotentialMarinescu1993",
+    "cesium",
     "get_subclass",
+    "hydrogen",
+    "lithium",
+    "potassium",
     "rubidium",
+    "sodium",
+    "strontium",
+    "ytterbium",
 ]
