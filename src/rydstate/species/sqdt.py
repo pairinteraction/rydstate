@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
-from rydstate.angular.angular_ket import AngularKetLS
 from rydstate.species.element_properties import ElementProperties
 from rydstate.species.utils import (
     calc_modified_ritz_formula,
@@ -21,7 +20,7 @@ from rydstate.species.utils import (
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
-    from rydstate.angular.angular_ket import AngularKetBase
+    from rydstate.angular.angular_ket import AngularKetLS
     from rydstate.species.utils import RydbergRitzParameters
     from rydstate.units import PintFloat
 
@@ -189,7 +188,7 @@ class SQDT:
     def calc_nu(
         self,
         n: int,
-        angular_ket: AngularKetBase[Any],
+        angular_ket: AngularKetLS[Any],
         *,
         use_nist_data: bool = True,
         nist_n_max: int = 15,
@@ -222,7 +221,7 @@ class SQDT:
                 Default is 15.
 
         """
-        if not isinstance(angular_ket, AngularKetLS):
+        if angular_ket.coupling_scheme != "LS":
             raise NotImplementedError("calc_nu is only implemented for AngularKetLS.")
 
         l, j_tot, s_tot = angular_ket.l_r, angular_ket.j_tot, angular_ket.s_tot
