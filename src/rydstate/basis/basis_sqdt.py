@@ -9,10 +9,8 @@ from rydstate.angular import NotSet
 from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKetJJ, AngularKetLS
 from rydstate.angular.utils import is_not_set
 from rydstate.basis.basis_base import BasisBase
-from rydstate.rydberg_state import (
-    RydbergStateSQDT,
-)
-from rydstate.species import SpeciesObjectSQDT
+from rydstate.rydberg_state import RydbergStateSQDT
+from rydstate.species import SQDT
 
 if TYPE_CHECKING:
     from rydstate.angular.utils import AllKnown, CouplingScheme
@@ -23,13 +21,12 @@ logger = logging.getLogger(__name__)
 
 
 class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]):
-    species: SpeciesObjectSQDT
     states: list[RydbergStateSQDT[T_AngularKet]]
 
     @overload
     def __init__(
         self: BasisSQDT[AngularKetLS[AllKnown]],
-        species: str | SpeciesObjectSQDT,
+        species: str,
         n: tuple[int, int],
         m: tuple[float, float] | None | NotSet = NotSet,
         *,
@@ -39,7 +36,7 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
     @overload
     def __init__(
         self: BasisSQDT[AngularKetJJ[AllKnown]],
-        species: str | SpeciesObjectSQDT,
+        species: str,
         n: tuple[int, int],
         m: tuple[float, float] | None | NotSet = NotSet,
         *,
@@ -49,7 +46,7 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
     @overload
     def __init__(
         self: BasisSQDT[AngularKetFJ[AllKnown]],
-        species: str | SpeciesObjectSQDT,
+        species: str,
         n: tuple[int, int],
         m: tuple[float, float] | None | NotSet = NotSet,
         *,
@@ -58,13 +55,14 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
 
     def __init__(
         self,
-        species: str | SpeciesObjectSQDT,
+        species: str,
         n: tuple[int, int],
         m: tuple[float, float] | None | NotSet = NotSet,
         *,
         coupling_scheme: CouplingScheme = "LS",
     ) -> None:
-        self.species = SpeciesObjectSQDT.from_name(species) if isinstance(species, str) else species
+        super().__init__(species)
+        self.sqdt = SQDT(species)
 
         self._init_states(n, m, coupling_scheme)
 
@@ -88,13 +86,13 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
                 add_states(n, l_r, m_range)
 
     def _add_states_ls(self, n: int, l_r: int, m_range: tuple[float, float] | None | NotSet = NotSet) -> None:
-        i_c = self.species.i_c_number
+        i_c = self.element_properties.i_c
         s_r = 0.5
-        s_c = 0 if self.species.number_valence_electrons == 1 else 0.5
+        s_c = self.element_properties.s_c
         s_tot_list = np.arange(s_r - s_c, s_r + s_c + 1)
 
         for s_tot in s_tot_list:
-            if not self.species.is_allowed_shell(n, l_r, s_tot):
+            if not self.sqdt.is_allowed_shell(n, l_r, s_tot):
                 continue
             for j_tot in np.arange(abs(l_r - s_tot), l_r + s_tot + 1):
                 for f_tot in np.arange(abs(j_tot - i_c), j_tot + i_c + 1):
@@ -106,12 +104,12 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
                         self.states.append(state)  # type: ignore [arg-type]
 
     def _add_states_jj(self, n: int, l_r: int, m_range: tuple[float, float] | None | NotSet = NotSet) -> None:
-        i_c = self.species.i_c_number
+        i_c = self.element_properties.i_c
         s_r = 0.5
-        s_c = j_c = 0 if self.species.number_valence_electrons == 1 else 0.5
+        s_c = j_c = self.element_properties.s_c
         s_tot_list = np.arange(s_r - s_c, s_r + s_c + 1)
 
-        allowed = [self.species.is_allowed_shell(n, l_r, s) for s in s_tot_list]
+        allowed = [self.sqdt.is_allowed_shell(n, l_r, s) for s in s_tot_list]
         if not all(allowed):
             if any(allowed):
                 logger.warning(
@@ -132,12 +130,12 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
                         self.states.append(state)  # type: ignore [arg-type]
 
     def _add_states_fj(self, n: int, l_r: int, m_range: tuple[float, float] | None | NotSet = NotSet) -> None:
-        i_c = self.species.i_c_number
+        i_c = self.element_properties.i_c
         s_r = 0.5
-        s_c = j_c = 0 if self.species.number_valence_electrons == 1 else 0.5
+        s_c = j_c = self.element_properties.s_c
         s_tot_list = np.arange(s_r - s_c, s_r + s_c + 1)
 
-        allowed = [self.species.is_allowed_shell(n, l_r, s) for s in s_tot_list]
+        allowed = [self.sqdt.is_allowed_shell(n, l_r, s) for s in s_tot_list]
         if not all(allowed):
             if any(allowed):
                 logger.warning(

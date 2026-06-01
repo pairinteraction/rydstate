@@ -8,7 +8,7 @@ from rydstate.radial.grid import Grid
 from rydstate.radial.model import Model
 from rydstate.radial.radial_matrix_element import calc_radial_matrix_element_from_w_z
 from rydstate.radial.wavefunction import WavefunctionNumerov, WavefunctionWhittaker
-from rydstate.species import SpeciesObject
+from rydstate.species import ElementProperties
 from rydstate.species.utils import calc_energy_from_nu
 from rydstate.units import ureg
 
@@ -26,7 +26,7 @@ class RadialKet:
 
     def __init__(
         self,
-        species: str | SpeciesObject,
+        species: str,
         nu: float,
         l_r: int,
     ) -> None:
@@ -39,7 +39,8 @@ class RadialKet:
             l_r: Orbital angular momentum quantum number of the rydberg electron.
 
         """
-        self.species = SpeciesObject.from_name(species) if isinstance(species, str) else species
+        self.species = species
+        self.element_properties = ElementProperties(species)
 
         self.n: int | None = None
         if not nu > 0:

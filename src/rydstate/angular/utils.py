@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from typing_extensions import ParamSpec, TypeIs
 
     from rydstate.angular.angular_ket import AngularKetBase
-    from rydstate.species.species_object import SpeciesObject
 
     P = ParamSpec("P")
     R = TypeVar("R")
@@ -166,7 +165,7 @@ def get_possible_quantum_number_values(
 
 @lru_cache(maxsize=1_000)
 def quantum_numbers_to_angular_ket(
-    species: str | SpeciesObject,
+    species: str,
     s_c: float | None,
     l_c: int | None,
     j_c: float | None,

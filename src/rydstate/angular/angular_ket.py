@@ -34,7 +34,6 @@ if TYPE_CHECKING:
 
     from rydstate.angular.angular_state import AngularState
     from rydstate.angular.utils import AngularMomentumQuantumNumbers, AngularOperatorType, CouplingScheme
-    from rydstate.species import SpeciesObject
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +105,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
         m: float | NotSet,
         *,
         label: str | None = None,
-        species: str | SpeciesObject | None,
+        species: str | None,
         allow_unknown: bool = False,
     ) -> None:
         """Initialize the Spin ket.
@@ -116,14 +115,16 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
         """
         if species is not None:
             if isinstance(species, str):
-                from rydstate.species.sqdt import SpeciesObjectSQDT  # noqa: PLC0415
+                from rydstate.species import ElementProperties  # noqa: PLC0415
 
-                species = SpeciesObjectSQDT.from_name(species.replace("_mqdt", ""))
-            # use i_c = 0 for species without defined nuclear spin (-> ignore hyperfine)
-            if i_c is not None and i_c != species.i_c_number:
-                raise ValueError(f"Nuclear spin i_c={i_c} does not match the species {species} with i_c={species.i_c}.")
-            i_c = species.i_c_number
-            s_c = 0.5 * (species.number_valence_electrons - 1)
+                element_properties = ElementProperties(species)
+
+            if i_c is not None and i_c != element_properties.i_c:
+                raise ValueError(f"i_c={i_c} not allowed for {species} with i_c={element_properties.i_c}.")
+            i_c = element_properties.i_c
+            if s_c is not None and s_c != element_properties.s_c:
+                raise ValueError(f"s_c={s_c} not allowed for {species} with s_c={element_properties.s_c}.")
+            s_c = element_properties.s_c
 
         if i_c is None:
             raise ValueError("Nuclear spin i_c must be set or a species must be given.")
@@ -751,7 +752,7 @@ class AngularKetLS(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         m: float | NotSet = NotSet,
         *,
         label: str | None = None,
-        species: str | SpeciesObject | None = None,
+        species: str | None = None,
         allow_unknown: Literal[False] = False,
     ) -> None: ...
 
@@ -770,7 +771,7 @@ class AngularKetLS(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         m: float | NotSet = NotSet,
         *,
         label: str | None = None,
-        species: str | SpeciesObject | None = None,
+        species: str | None = None,
         allow_unknown: Literal[True],
     ) -> None: ...
 
@@ -788,7 +789,7 @@ class AngularKetLS(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         m: float | NotSet = NotSet,
         *,
         label: str | None = None,
-        species: str | SpeciesObject | None = None,
+        species: str | None = None,
         allow_unknown: bool = False,
     ) -> None:
         """Initialize the Spin ket."""
@@ -857,7 +858,7 @@ class AngularKetJJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         m: float | NotSet = NotSet,
         *,
         label: str | None = None,
-        species: str | SpeciesObject | None = None,
+        species: str | None = None,
         allow_unknown: Literal[False] = False,
     ) -> None: ...
 
@@ -876,7 +877,7 @@ class AngularKetJJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         m: float | NotSet = NotSet,
         *,
         label: str | None = None,
-        species: str | SpeciesObject | None = None,
+        species: str | None = None,
         allow_unknown: Literal[True],
     ) -> None: ...
 
@@ -894,7 +895,7 @@ class AngularKetJJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         m: float | NotSet = NotSet,
         *,
         label: str | None = None,
-        species: str | SpeciesObject | None = None,
+        species: str | None = None,
         allow_unknown: bool = False,
     ) -> None:
         """Initialize the Spin ket."""
@@ -961,7 +962,7 @@ class AngularKetFJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         m: float | NotSet = NotSet,
         *,
         label: str | None = None,
-        species: str | SpeciesObject | None = None,
+        species: str | None = None,
         allow_unknown: Literal[False] = False,
     ) -> None: ...
 
@@ -980,7 +981,7 @@ class AngularKetFJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         m: float | NotSet = NotSet,
         *,
         label: str | None = None,
-        species: str | SpeciesObject | None = None,
+        species: str | None = None,
         allow_unknown: Literal[True],
     ) -> None: ...
 
@@ -998,7 +999,7 @@ class AngularKetFJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
         m: float | NotSet = NotSet,
         *,
         label: str | None = None,
-        species: str | SpeciesObject | None = None,
+        species: str | None = None,
         allow_unknown: bool = False,
     ) -> None:
         """Initialize the Spin ket."""

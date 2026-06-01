@@ -10,7 +10,7 @@ from rydstate.basis.basis_base import BasisBase
 from rydstate.linalg import calc_nullvector, find_roots
 from rydstate.rydberg_state import RydbergStateMQDT
 from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT
-from rydstate.species import FModel, FModelSQDT, SpeciesObjectMQDT
+from rydstate.species import MQDT, FModel, FModelSQDT
 
 if TYPE_CHECKING:
     from rydstate.species import FModel
@@ -23,7 +23,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
 
     def __init__(  # noqa: C901, PLR0912
         self,
-        species: str | SpeciesObjectMQDT,
+        species: str,
         nu: tuple[float, float],
         f_tot: float | tuple[float, float] | None = None,
         l_r: int | tuple[int, int] | None = None,
@@ -31,10 +31,14 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         skip_high_l: bool = True,
         n_min_high_l: int = 0,
     ) -> None:
-        self.species = SpeciesObjectMQDT.from_name(species) if isinstance(species, str) else species
+        super().__init__(species)
+        self.mqdt = MQDT(species)
 
         models: list[FModel] = []
-        i_c, j_c, s_r = self.species.i_c, 0.5, 0.5
+        s_r = 0.5
+        i_c = self.element_properties.i_c
+        s_c = self.element_properties.s_c
+        j_c = s_c
         for _l_r in range(int(nu[1]) + 1):
             if not is_allowed_qn(l_r, _l_r):
                 continue
@@ -44,9 +48,9 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
                         if not is_allowed_qn(f_tot, _f_tot):
                             continue
                         channel = AngularKetFJ(
-                            l_r=_l_r, j_r=float(j_r), f_c=float(f_c), f_tot=float(_f_tot), species=self.species
+                            l_r=_l_r, j_r=float(j_r), f_c=float(f_c), f_tot=float(_f_tot), species=species
                         )
-                        models.extend(self.species.get_mqdt_models(channel))
+                        models.extend(self.mqdt.get_mqdt_models(channel))
 
         # remove duplicates
         self.models: list[FModel] = []
@@ -150,8 +154,7 @@ def get_mqdt_states_from_fmodel(
 
         sqdt_states: list[RydbergStateSQDT[AngularKetFJ[Any]]] = []
         for nui, angular_ket in zip(nuis, model.outer_channels, strict=True):
-            sqdt_species = model.species_name.replace("_mqdt", "")
-            sqdt_states.append(RydbergStateSQDT.from_angular_ket(sqdt_species, angular_ket, nu=float(nui)))
+            sqdt_states.append(RydbergStateSQDT.from_angular_ket(model.species, angular_ket, nu=float(nui)))
 
         states.append(RydbergStateMQDT(coefficients, sqdt_states, nu=nu))
 

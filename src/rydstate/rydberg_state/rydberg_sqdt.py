@@ -13,7 +13,7 @@ from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKe
 from rydstate.angular.utils import AllKnown, is_not_set, is_unknown, quantum_numbers_to_angular_ket
 from rydstate.radial import RadialKet
 from rydstate.rydberg_state.rydberg_base import RydbergStateBase
-from rydstate.species import SpeciesObjectSQDT
+from rydstate.species import SQDT, ElementProperties
 from rydstate.species.utils import calc_energy_from_nu
 from rydstate.units import BaseQuantities, MatrixElementOperatorRanks, ureg
 
@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
     """Create a Rydberg SQDT state, including the radial and angular states."""
 
-    species: SpeciesObjectSQDT
+    species: str
     """The atomic species of the Rydberg state."""
 
     angular: GenericT_AngularKet
@@ -40,7 +40,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
 
     def __init__(
         self,
-        species: str | SpeciesObjectSQDT,
+        species: str,
         n: int | None = None,
         nu: float | None = None,
         s_c: float | None = None,
@@ -78,7 +78,9 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
                 Optional, only needed for concrete angular matrix elements.
 
         """
-        self.species = SpeciesObjectSQDT.from_name(species) if isinstance(species, str) else species
+        self.species = species
+        self.element_properties = ElementProperties(species)
+        self.sqdt = SQDT(species)
 
         self.angular = quantum_numbers_to_angular_ket(  # type: ignore [assignment]
             species=self.species,
@@ -106,7 +108,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
     @classmethod
     def from_angular_ket(
         cls,
-        species: str | SpeciesObjectSQDT,
+        species: str,
         angular_ket: T_AngularKet,
         n: int | None = None,
         nu: float | None = None,
@@ -114,9 +116,9 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         """Initialize the Rydberg state from an angular ket."""
         obj = cls.__new__(cls)
 
-        if isinstance(species, str):
-            species = SpeciesObjectSQDT.from_name(species)
         obj.species = species
+        obj.element_properties = ElementProperties(species)
+        obj.sqdt = SQDT(species)
 
         obj._n = n  # noqa: SLF001
         obj._nu = nu  # noqa: SLF001
@@ -132,12 +134,12 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         pass
 
     def __repr__(self) -> str:
-        species, n, nu = self.species.name, self._n, self.nu
+        species, n, nu = self.species, self._n, self.nu
         n_str = f", {n=}" if n is not None else ""
         return f"{self.__class__.__name__}({species}{n_str}, {nu=}, {self.angular!r})"
 
     def __str__(self) -> str:
-        species, n, nu = self.species.name, self._n, self.nu
+        species, n, nu = self.species, self._n, self.nu
         n_str = f", {n=}" if n is not None else ""
         return f"{self.__class__.__name__}({species}{n_str}, {nu=}, {self.angular!s})"
 
@@ -155,10 +157,10 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         radial_ket = RadialKet(self.species, nu=self.nu, l_r=self.angular.l_r)
         if self._n is not None:
             radial_ket.set_n_for_sanity_check(self._n)
-            if isinstance(self.species, SpeciesObjectSQDT):
+            if isinstance(self.sqdt, SQDT):
                 s_tot_list = [self.angular.get_qn("s_tot")] if "s_tot" in self.angular.quantum_number_names else [0, 1]
                 for s_tot in s_tot_list:
-                    if is_unknown(s_tot) or not self.species.is_allowed_shell(self._n, self.angular.l_r, s_tot=s_tot):
+                    if is_unknown(s_tot) or not self.sqdt.is_allowed_shell(self._n, self.angular.l_r, s_tot=s_tot):
                         raise ValueError(
                             f"The shell (n={self._n}, l_r={self.angular.l_r}, s_tot={s_tot}) "
                             f"is not allowed for the species {self.species}."
@@ -175,11 +177,11 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
     def nu(self) -> float:
         if self._nu is not None:
             return self._nu
-        if not isinstance(self.species, SpeciesObjectSQDT):
+        if not isinstance(self.sqdt, SQDT):
             raise ValueError("nu must be given if not sqdt")  # noqa: TRY004
         if self.angular.contains_unknown:
             raise ValueError("nu must be given if angular ket contains unknown quantum numbers")
-        return self.species.calc_nu(self.n, self.angular)
+        return self.sqdt.calc_nu(self.n, self.angular)
 
     @property
     def coupling_scheme(self) -> CouplingScheme:
@@ -201,7 +203,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
 
         where `\mu = R_M/R_\infty` is the reduced mass and `\nu` the effective principal quantum number.
         """
-        energy_au = calc_energy_from_nu(self.species.reduced_mass_au, self.nu)
+        energy_au = calc_energy_from_nu(self.element_properties.reduced_mass_au, self.nu)
         if unit == "a.u.":
             return energy_au
         energy: PintFloat = energy_au * BaseQuantities["energy"]
@@ -547,7 +549,7 @@ class RydbergStateSQDTAlkali(RydbergStateSQDT[AngularKetLS[AllKnown]]):
 
     def __init__(
         self,
-        species: str | SpeciesObjectSQDT,
+        species: str,
         n: int,
         l: int,
         j: float | None = None,
@@ -580,10 +582,10 @@ class RydbergStateSQDTAlkali(RydbergStateSQDT[AngularKetLS[AllKnown]]):
         self.m = self.angular.m
 
     def __repr__(self) -> str:
-        species, n, nu = self.species.name, self._n, self.nu
+        species, n, nu = self.species, self._n, self.nu
         l, j, f, m = self.l, self.j, self.f, self.m
         n_str = f", {n=}" if n is not None else ""
-        f_string = f", {f=}" if self.species.i_c_number != 0 else ""
+        f_string = f", {f=}" if self.element_properties.i_c != 0 else ""
         return f"{self.__class__.__name__}({species}{n_str}, {nu=}, {l=}, {j=}{f_string}, {m=})"
 
 
@@ -592,7 +594,7 @@ class RydbergStateSQDTAlkalineLS(RydbergStateSQDT[AngularKetLS[AllKnown]]):
 
     def __init__(
         self,
-        species: str | SpeciesObjectSQDT,
+        species: str,
         n: int,
         l: int,
         s_tot: int,
@@ -628,7 +630,7 @@ class RydbergStateSQDTAlkalineLS(RydbergStateSQDT[AngularKetLS[AllKnown]]):
         self.m = self.angular.m
 
     def __repr__(self) -> str:
-        species, n, nu = self.species.name, self._n, self.nu
+        species, n, nu = self.species, self._n, self.nu
         l, s_tot, j_tot, f_tot, m = self.l, self.s_tot, self.j_tot, self.f_tot, self.m
         n_str = f", {n=}" if n is not None else ""
         return f"{self.__class__.__name__}({species}{n_str}, {nu=}, {l=}, {s_tot=}, {j_tot=}, {f_tot=}, {m=})"
@@ -639,7 +641,7 @@ class RydbergStateSQDTAlkalineJJ(RydbergStateSQDT[AngularKetJJ[AllKnown]]):
 
     def __init__(
         self,
-        species: str | SpeciesObjectSQDT,
+        species: str,
         n: int,
         l: int,
         j_r: float,
@@ -675,7 +677,7 @@ class RydbergStateSQDTAlkalineJJ(RydbergStateSQDT[AngularKetJJ[AllKnown]]):
         self.m = self.angular.m
 
     def __repr__(self) -> str:
-        species, n, nu = self.species.name, self._n, self.nu
+        species, n, nu = self.species, self._n, self.nu
         l, j_r, j_tot, f_tot, m = self.l, self.j_r, self.j_tot, self.f_tot, self.m
         n_str = f", {n=}" if n is not None else ""
         return f"{self.__class__.__name__}({species}{n_str}, {nu=}, {l=}, {j_r=}, {j_tot=}, {f_tot=}, {m=})"
@@ -686,7 +688,7 @@ class RydbergStateSQDTAlkalineFJ(RydbergStateSQDT[AngularKetFJ[AllKnown]]):
 
     def __init__(
         self,
-        species: str | SpeciesObjectSQDT,
+        species: str,
         n: int,
         l: int,
         j_r: float,
@@ -722,7 +724,7 @@ class RydbergStateSQDTAlkalineFJ(RydbergStateSQDT[AngularKetFJ[AllKnown]]):
         self.m = self.angular.m
 
     def __repr__(self) -> str:
-        species, n, nu = self.species.name, self._n, self.nu
+        species, n, nu = self.species, self._n, self.nu
         l, j_r, f_c, f_tot, m = self.l, self.j_r, self.f_c, self.f_tot, self.m
         l_c, j_c = self.angular.l_c, self.angular.j_c
         core_string = f", {l_c=}, {j_c=}" if l_c != 0 else ""
