@@ -62,16 +62,12 @@ class FModel:
 
     def __init__(self, mqdt: MQDT) -> None:
         self.mqdt = mqdt
+        self.element_properties = get_subclass(ElementProperties, self.species)()
 
     @property
     def full_name(self) -> str:
         """Return the full name of the model, combining species and model name."""
         return f"{self.species} {self.name}"
-
-    @property
-    def element_properties(self) -> ElementProperties:
-        """Return the ElementProperties associated with this model."""
-        return get_subclass(ElementProperties, self.species)()
 
     @property
     def nu_min(self) -> float:

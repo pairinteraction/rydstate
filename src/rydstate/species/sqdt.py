@@ -45,6 +45,8 @@ class SQDT:
     """Ionization energy and unit: (value, unit)."""
 
     def __init__(self) -> None:
+        self.element_properties = get_subclass(ElementProperties, self.species)()
+
         self._setup_nist_energy_levels()
 
     def __repr__(self) -> str:
@@ -119,11 +121,6 @@ class SQDT:
 
         if len(self._nist_energy_levels) == 0:
             raise ValueError(f"No NIST energy levels found for species {self.species} in file {file}.")
-
-    @property
-    def element_properties(self) -> ElementProperties:
-        """Element properties corresponding to this SQDT."""
-        return get_subclass(ElementProperties, self.species)()
 
     def is_allowed_shell(self, n: int, l: int, s_tot: float | None = None) -> bool:
         """Check if the quantum numbers describe an allowed shell.
