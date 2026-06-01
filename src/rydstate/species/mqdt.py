@@ -3,7 +3,7 @@ from __future__ import annotations
 import importlib.util
 import inspect
 import sys
-from functools import cached_property
+from functools import cache, cached_property
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, overload
 
@@ -14,6 +14,7 @@ from rydstate.units import ureg
 if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetFJ
     from rydstate.angular.core_ket import CoreKet
+    from rydstate.species.utils import cache  # type: ignore [assignment]  # noqa: TC004
     from rydstate.units import PintFloat
 
 
@@ -138,8 +139,9 @@ class MQDT:
         return models
 
 
-def get_mqdt_class(species: str, tag: str | None = None) -> type[MQDT]:
-    """Get the subclass of MQDT for the given species and tag."""
+@cache
+def get_mqdt(species: str, tag: str | None = None) -> MQDT:
+    """Get an instance of the subclass of MQDT for the given species and tag."""
     subclasses = get_all_subclasses(MQDT, species, tag)
     if len(subclasses) == 0:
         _species = species.replace("_mqdt", "") if species.endswith("_mqdt") else species + "_mqdt"
@@ -151,5 +153,5 @@ def get_mqdt_class(species: str, tag: str | None = None) -> type[MQDT]:
     if len(subclasses) == 0:
         raise ValueError(f"No subclass of MQDT found for {species=} and {tag=}.")
     if len(subclasses) == 1:
-        return subclasses[0]
+        return subclasses[0]()
     raise ValueError(f"Multiple subclasses of MQDT found for {species=} and {tag=}: {subclasses}.")

@@ -4,7 +4,7 @@ import inspect
 import logging
 import re
 from fractions import Fraction
-from functools import cached_property
+from functools import cache, cached_property
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, overload
 
@@ -21,7 +21,10 @@ from rydstate.units import ureg
 
 if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetLS
-    from rydstate.species.utils import RydbergRitzParameters
+    from rydstate.species.utils import (  # type: ignore [assignment]
+        RydbergRitzParameters,
+        cache,  # noqa: TC004
+    )
     from rydstate.units import PintFloat
 
 
@@ -244,8 +247,9 @@ class SQDT:
         return n - delta_nlj
 
 
-def get_sqdt_class(species: str, tag: str | None = None) -> type[SQDT]:
-    """Get the subclass of SQDT for the given species and tag."""
+@cache
+def get_sqdt(species: str, tag: str | None = None) -> SQDT:
+    """Get an instance of the subclass of SQDT for the given species and tag."""
     subclasses = get_all_subclasses(SQDT, species, tag)
     if len(subclasses) == 0:
         _species = species.replace("_sqdt", "") if species.endswith("_sqdt") else species + "_sqdt"
@@ -257,5 +261,5 @@ def get_sqdt_class(species: str, tag: str | None = None) -> type[SQDT]:
     if len(subclasses) == 0:
         raise ValueError(f"No subclass of SQDT found for {species=} and {tag=}.")
     if len(subclasses) == 1:
-        return subclasses[0]
+        return subclasses[0]()
     raise ValueError(f"Multiple subclasses of SQDT found for {species=} and {tag=}: {subclasses}.")

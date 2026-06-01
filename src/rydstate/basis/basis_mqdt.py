@@ -11,7 +11,7 @@ from rydstate.linalg import calc_nullvector, find_roots
 from rydstate.radial.radial_ket import RadialKet
 from rydstate.rydberg_state import RydbergStateMQDT
 from rydstate.rydberg_state.rydberg_ket import RydbergKet
-from rydstate.species import FModel, FModelSQDT, get_mqdt_class
+from rydstate.species import FModel, FModelSQDT, get_mqdt
 
 if TYPE_CHECKING:
     from rydstate.species import FModel
@@ -33,7 +33,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         n_min_high_l: int = 0,
     ) -> None:
         super().__init__(species)
-        self.mqdt = get_mqdt_class(species)()
+        self.mqdt = get_mqdt(species)
 
         models: list[FModel] = []
         s_r = 0.5

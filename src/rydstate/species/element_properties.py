@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from abc import ABC
-from functools import cached_property
+from functools import cache, cached_property
 from typing import TYPE_CHECKING, ClassVar, overload
 
 from rydstate.species.utils import get_all_subclasses
 from rydstate.units import rydberg_constant, ureg
 
 if TYPE_CHECKING:
+    from rydstate.species.utils import cache  # type: ignore [assignment]  # noqa: TC004
     from rydstate.units import PintFloat
 
 
@@ -110,6 +111,7 @@ class ElementProperties(ABC):
         return self.get_corrected_rydberg_constant("hartree") / rydberg_constant.to("hartree").m
 
 
+@cache
 def get_element_properties(species: str) -> ElementProperties:
     """Get an instance of the subclass of ElementProperties for the given species."""
     possible_subclasses = get_all_subclasses(ElementProperties, species)

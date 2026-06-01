@@ -3,13 +3,18 @@ from __future__ import annotations
 import inspect
 import math
 import re
-from typing import TypeAlias, TypeVar
+from typing import TYPE_CHECKING, TypeAlias, TypeVar
 
 import numpy as np
 
 RydbergRitzParameters: TypeAlias = tuple[float, ...] | list[float] | float
 
-T = TypeVar("T", bound=type)
+
+if TYPE_CHECKING:
+    T = TypeVar("T", bound=type)
+    F = TypeVar("F")
+
+    def cache(func: F) -> F: ...
 
 
 def calc_nu_from_energy(reduced_mass_au: float, energy_au: float) -> float:

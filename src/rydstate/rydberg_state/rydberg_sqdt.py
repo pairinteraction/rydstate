@@ -16,7 +16,7 @@ from rydstate.angular.utils import (
 from rydstate.radial import RadialKet
 from rydstate.rydberg_state.rydberg_base import RydbergStateBase
 from rydstate.rydberg_state.rydberg_ket import RydbergKet
-from rydstate.species import get_element_properties, get_sqdt_class
+from rydstate.species import get_element_properties, get_sqdt
 from rydstate.species.utils import calc_energy_from_nu
 from rydstate.units import BaseQuantities, ureg
 
@@ -83,7 +83,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         """
         self.species = species
         self.element_properties = get_element_properties(species)
-        self.sqdt = get_sqdt_class(species)()
+        self.sqdt = get_sqdt(species)
 
         if angular_ket is not None:
             if any(

@@ -4,7 +4,7 @@ from rydstate import RydbergStateSQDT, RydbergStateSQDTAlkali
 from rydstate.angular import AngularKetLS
 from rydstate.species import ElementProperties, get_all_subclasses, get_element_properties
 
-ALL_AVAILABLE_SPECIES = [cls.species for cls in get_all_subclasses(ElementProperties)]
+ALL_AVAILABLE_SPECIES = sorted([cls.species for cls in get_all_subclasses(ElementProperties)])
 
 
 # Reference values from NIST Atomic Spectra Database (ASD), Einstein A coefficients:
