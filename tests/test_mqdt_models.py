@@ -63,7 +63,7 @@ def test_parity_consistency(model: FModel) -> None:
 
 def test_all_channels_have_ionization_threshold(model: FModel) -> None:
     """All channels must have ionization thresholds."""
-    species = SpeciesObjectMQDT.from_name(model.species_name)
+    species = SpeciesObjectMQDT.from_name(model.species)
     try:
         for _i, ch in enumerate(model.outer_channels):
             species.get_ionization_threshold(ch.get_core_ket())
@@ -105,7 +105,7 @@ def test_reference_field_set(model: FModel) -> None:
 
 
 def test_model_name_unique(model: FModel) -> None:
-    """Every model must have a unique combination of species_name and name (full_name)."""
+    """Every model must have a unique combination of species and name (full_name)."""
     full_name = model.full_name
     duplicates = [m for m in ALL_MODELS if m.full_name == full_name]
     assert len(duplicates) == 1, f"{model.full_name}: {len(duplicates)} duplicate models found"
@@ -113,7 +113,7 @@ def test_model_name_unique(model: FModel) -> None:
 
 def test_species_field_set(model: FModel) -> None:
     """Every model must have a species field."""
-    assert model.species_name is not None, f"{model.full_name}: species is None"
+    assert model.species is not None, f"{model.full_name}: species is None"
 
 
 def test_eigen_quantum_defects_format(model: FModel) -> None:
@@ -139,13 +139,13 @@ def test_at_least_one_real_channel(model: FModel) -> None:
 def test_inner_outer_unitary(model: FModel) -> None:
     """The frame transformation matrix from inner to outer channels must be unitary."""
     unitary = model.calc_frame_transformation_outer_inner()
-    msg = f"{model.species_name} - {model.full_name}: frame transformation (outer - inner) is not unitary"
+    msg = f"{model.full_name}: frame transformation (outer - inner) is not unitary"
     np.testing.assert_allclose(unitary.conj().T @ unitary, np.eye(unitary.shape[0]), atol=1e-10, err_msg=msg)
 
     rotation = model.calc_frame_transformation_inner_closecoupling(nu=30.5)
-    msg = f"{model.species_name} - {model.full_name}: frame transformation (inner - closecoupling) is not unitary"
+    msg = f"{model.full_name}: frame transformation (inner - closecoupling) is not unitary"
     np.testing.assert_allclose(rotation.conj().T @ rotation, np.eye(rotation.shape[0]), atol=1e-10, err_msg=msg)
 
     full = model.calc_frame_transformation(nu=30.5)
-    msg = f"{model.species_name} - {model.full_name}: full frame transformation U=QR is not unitary"
+    msg = f"{model.full_name}: full frame transformation U=QR is not unitary"
     np.testing.assert_allclose(full.conj().T @ full, np.eye(full.shape[0]), atol=1e-10, err_msg=msg)
