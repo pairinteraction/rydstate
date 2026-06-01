@@ -24,7 +24,7 @@ class MQDT:
     tag: ClassVar[str]
     """The tag for these MQDT parameters."""
 
-    ionization_threshold_dict: dict[CoreKet, tuple[float, float | None, str]]
+    ionization_threshold_dict: ClassVar[dict[CoreKet, tuple[float, float | None, str]]]
     """Dictionary containing the ionization thresholds for the different core states.
     The thresholds are given in the form of a tuple (ionization_threshold, uncertainty, unit).
     """
