@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from rydstate.angular import AngularKetFJ
 from rydstate.basis.basis_base import BasisBase
 from rydstate.linalg import calc_nullvector, find_roots
+from rydstate.radial.radial_ket import RadialKet
 from rydstate.rydberg_state import RydbergStateMQDT
-from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT
+from rydstate.rydberg_state.rydberg_ket import RydbergKet
 from rydstate.species import MQDT, FModel, FModelSQDT
 from rydstate.species.utils import get_subclass
 
@@ -153,10 +154,11 @@ def get_mqdt_states_from_fmodel(
         arg_max = np.argmax(np.abs(coefficients))
         coefficients *= np.sign(coefficients[arg_max])
 
-        sqdt_states: list[RydbergStateSQDT[AngularKetFJ[Any]]] = []
+        rydberg_kets: list[RydbergKet] = []
         for nui, angular_ket in zip(nuis, model.outer_channels, strict=True):
-            sqdt_states.append(RydbergStateSQDT.from_angular_ket(model.species, angular_ket, nu=float(nui)))
+            radial_ket = RadialKet(model.species, nu=float(nui), l_r=angular_ket.l_r)
+            rydberg_kets.append(RydbergKet(angular_ket, radial_ket))
 
-        states.append(RydbergStateMQDT(coefficients, sqdt_states, nu=nu))
+        states.append(RydbergStateMQDT(coefficients, rydberg_kets, nu=nu))
 
     return states

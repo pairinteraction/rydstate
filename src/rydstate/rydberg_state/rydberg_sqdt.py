@@ -1,30 +1,32 @@
 from __future__ import annotations
 
 import logging
-import math
-from functools import cached_property
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
+from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
 import numpy as np
 from scipy.special import exprel
 
 from rydstate.angular import NotSet
 from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKetJJ, AngularKetLS
-from rydstate.angular.utils import AllKnown, is_not_set, is_unknown, quantum_numbers_to_angular_ket
+from rydstate.angular.utils import (
+    AllKnown,
+    is_not_set,
+    quantum_numbers_to_angular_ket,
+)
 from rydstate.radial import RadialKet
 from rydstate.rydberg_state.rydberg_base import RydbergStateBase
+from rydstate.rydberg_state.rydberg_ket import RydbergKet
 from rydstate.species import SQDT, ElementProperties
 from rydstate.species.utils import calc_energy_from_nu, get_subclass
-from rydstate.units import BaseQuantities, MatrixElementOperatorRanks, ureg
+from rydstate.units import BaseQuantities, ureg
 
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from rydstate.angular.utils import CouplingScheme
-    from rydstate.units import MatrixElementOperator, NDArray, PintArray, PintFloat
+    from rydstate.units import NDArray, PintArray, PintFloat
 
-GenericT_AngularKet = TypeVar("GenericT_AngularKet", bound=AngularKetBase[Any])
-T_AngularKet = TypeVar("T_AngularKet", bound=AngularKetBase[Any])
+GenericT_AngularKet = TypeVar("GenericT_AngularKet", bound=AngularKetBase[AllKnown])
+T_AngularKet = TypeVar("T_AngularKet", bound=AngularKetBase[AllKnown])
 
 logger = logging.getLogger(__name__)
 
@@ -39,14 +41,14 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
     """The angular/spin part of the Rydberg electron."""
 
     def __init__(
-        self,
+        self: RydbergStateSQDT[T_AngularKet],
         species: str,
         n: int,
         s_c: float | None = None,
-        l_c: int = 0,
+        l_c: int | None = None,
         j_c: float | None = None,
         f_c: float | None = None,
-        s_r: float = 0.5,
+        s_r: float | None = None,
         l_r: int | None = None,
         j_r: float | None = None,
         s_tot: float | None = None,
@@ -54,6 +56,8 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         j_tot: float | None = None,
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
+        *,
+        angular_ket: T_AngularKet | None = None,
     ) -> None:
         r"""Initialize the Rydberg state.
 
@@ -73,55 +77,52 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
             f_tot: Total angular momentum quantum number of the atom (rydberg electron + core)
             m: Total magnetic quantum number.
                 Optional, only needed for concrete angular matrix elements.
+            angular_ket: The angular ket to use for the state.
+                Either angular_ket or the quantum numbers for the angular ket must be given.
 
         """
         self.species = species
         self.element_properties = get_subclass(ElementProperties, species)()
         self.sqdt = get_subclass(SQDT, species)()
 
-        self.angular = quantum_numbers_to_angular_ket(  # type: ignore [assignment]
-            species=self.species,
-            s_c=s_c,
-            l_c=l_c,
-            j_c=j_c,
-            f_c=f_c,
-            s_r=s_r,
-            l_r=l_r,
-            j_r=j_r,
-            s_tot=s_tot,
-            l_tot=l_tot,
-            j_tot=j_tot,
-            f_tot=f_tot,
-            m=m,  # type: ignore [arg-type]
-        )
+        if angular_ket is not None:
+            if any(
+                q is not None for q in [s_c, l_c, j_c, f_c, s_r, l_r, j_r, s_tot, l_tot, j_tot, f_tot]
+            ) or not is_not_set(m):
+                raise ValueError("Specify either angular_ket or the quantum numbers for the angular ket, not both.")
+            self.angular = angular_ket
+        else:
+            self.angular = quantum_numbers_to_angular_ket(  # type: ignore [assignment]
+                species=self.species,
+                s_c=s_c,
+                l_c=l_c,
+                j_c=j_c,
+                f_c=f_c,
+                s_r=s_r,
+                l_r=l_r,
+                j_r=j_r,
+                s_tot=s_tot,
+                l_tot=l_tot,
+                j_tot=j_tot,
+                f_tot=f_tot,
+                m=m,  # type: ignore [arg-type]
+            )
+        if not isinstance(self.angular, AngularKetLS):
+            raise NotImplementedError("RydbergStateSQDT is currently only implemented for LS coupled states.")
 
         self.n = n
+        if not self.sqdt.is_allowed_shell(self.n, self.angular.l_r, self.angular.s_tot):
+            raise ValueError(
+                f"The shell (n={self.n}, l_r={self.angular.l_r}, s_tot={self.angular.s_tot}) "
+                f"is not allowed for the species {self.species}."
+            )
 
-        self._set_qn_as_attributes()
+        self.nu = self.sqdt.calc_nu(self.n, self.angular)
+        self.radial = RadialKet(self.species, nu=self.nu, l_r=self.angular.l_r)
+        self.radial.set_n_for_sanity_check(self.n)
 
-    @classmethod
-    def from_angular_ket(
-        cls,
-        species: str,
-        angular_ket: T_AngularKet,
-        n: int,
-    ) -> RydbergStateSQDT[T_AngularKet]:
-        """Initialize the Rydberg state from an angular ket."""
-        obj = cls.__new__(cls)
-
-        obj.species = species
-        obj.element_properties = get_subclass(ElementProperties, species)()
-        obj.sqdt = get_subclass(SQDT, species)()
-
-        obj.n = n
-
-        obj.angular = angular_ket  # type: ignore [assignment]
-        obj._set_qn_as_attributes()  # noqa: SLF001
-
-        return obj  # type: ignore [return-value]
-
-    def _set_qn_as_attributes(self) -> None:
-        pass
+        self.coefficients = np.array([1.0])
+        self.rydberg_kets = [RydbergKet(self.angular, self.radial)]
 
     def __repr__(self) -> str:
         species, n = self.species, self.n
@@ -130,41 +131,6 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
     def __str__(self) -> str:
         species, n = self.species, self.n
         return f"{self.__class__.__name__}({species}, {n=}, {self.angular!s})"
-
-    @cached_property
-    def radial(self) -> RadialKet:
-        """The radial part of the Rydberg electron."""
-        if "l_r" not in self.angular.quantum_number_names:
-            raise ValueError(
-                f"l_r must be defined in the angular ket to access the radial ket, but angular={self.angular}."
-            )
-
-        if is_unknown(self.angular.l_r):
-            raise ValueError("l_r must be known to access the radial ket.")
-
-        radial_ket = RadialKet(self.species, nu=self.nu, l_r=self.angular.l_r)
-        radial_ket.set_n_for_sanity_check(self.n)
-        if isinstance(self.sqdt, SQDT):
-            s_tot_list = [self.angular.get_qn("s_tot")] if "s_tot" in self.angular.quantum_number_names else [0, 1]
-            for s_tot in s_tot_list:
-                if is_unknown(s_tot) or not self.sqdt.is_allowed_shell(self.n, self.angular.l_r, s_tot=s_tot):
-                    raise ValueError(
-                        f"The shell (n={self.n}, l_r={self.angular.l_r}, s_tot={s_tot}) "
-                        f"is not allowed for the species {self.species}."
-                    )
-        return radial_ket
-
-    @cached_property
-    def nu(self) -> float:
-        if not isinstance(self.angular, AngularKetLS):
-            raise NotImplementedError(
-                "Effective principal quantum number is currently only implemented for LS coupled states."
-            )
-        return self.sqdt.calc_nu(self.n, self.angular)
-
-    @property
-    def coupling_scheme(self) -> CouplingScheme:
-        return self.angular.coupling_scheme
 
     @overload
     def get_energy(self, unit: None = None) -> PintFloat: ...
@@ -189,134 +155,6 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         if unit is None:
             return energy
         return energy.to(unit, "spectroscopy").magnitude
-
-    def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
-        """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
-        if not isinstance(other, RydbergStateSQDT):
-            raise NotImplementedError("Reduced overlap only implemented between RydbergStateSQDT states.")
-
-        radial_overlap = self.radial.calc_overlap(other.radial)
-        angular_overlap = self.angular.calc_reduced_overlap(other.angular)
-        return radial_overlap * angular_overlap
-
-    @overload  # type: ignore [override]
-    def calc_reduced_matrix_element(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: None = None
-    ) -> PintFloat: ...
-
-    @overload
-    def calc_reduced_matrix_element(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str
-    ) -> float: ...
-
-    def calc_reduced_matrix_element(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str | None = None
-    ) -> PintFloat | float:
-        r"""Calculate the reduced matrix element.
-
-        Calculate the reduced matrix element between self and other (ignoring m quantum numbers)
-
-        .. math::
-            \left\langle self || r^k_radial \hat{O}_{k_angular} || other \right\rangle
-
-        where \hat{O}_{k_angular} is the operator of rank k_angular for which to calculate the matrix element.
-        k_radial and k_angular are determined from the operator automatically.
-
-        Args:
-            other: The other Rydberg state for which to calculate the matrix element.
-            operator: The operator for which to calculate the matrix element.
-            unit: The unit to which to convert the radial matrix element.
-                Can be "a.u." for atomic units (so no conversion is done), or a specific unit.
-                Default None will return a pint quantity.
-
-        Returns:
-            The reduced matrix element for the given operator.
-
-        """
-        if not isinstance(other, RydbergStateSQDT):
-            raise NotImplementedError("Reduced matrix element only implemented between RydbergStateSQDT states.")
-
-        if operator not in MatrixElementOperatorRanks:
-            raise ValueError(
-                f"Operator {operator} not supported, must be one of {list(MatrixElementOperatorRanks.keys())}."
-            )
-
-        k_radial, k_angular = MatrixElementOperatorRanks[operator]
-        radial_matrix_element = self.radial.calc_matrix_element(other.radial, k_radial)
-
-        matrix_element: PintFloat
-        if operator == "magnetic_dipole":
-            # Magnetic dipole operator: mu = - mu_B (g_l <l_tot> + g_s <s_tot>)
-            g_s = 2.0023192
-            value_s_tot = self.angular.calc_reduced_matrix_element(other.angular, "s_tot", k_angular)
-            g_l = 1
-            value_l_tot = self.angular.calc_reduced_matrix_element(other.angular, "l_tot", k_angular)
-            angular_matrix_element = g_s * value_s_tot + g_l * value_l_tot
-
-            matrix_element = -ureg.Quantity(1, "bohr_magneton") * radial_matrix_element * angular_matrix_element
-            # Note: we use the convention, that the magnetic dipole moments are given
-            # as the same dimensionality as the Bohr magneton (mu = - mu_B (g_l l + g_s s_tot))
-            # such that - mu * B (where the magnetic field B is given in dimension Tesla) is an energy
-
-        elif operator in ["electric_dipole", "electric_quadrupole", "electric_octupole", "electric_quadrupole_zero"]:
-            # Electric multipole operator: p_{k,q} = e r^k_radial * sqrt(4pi / (2k+1)) * Y_{k_angular,q}(\theta, phi)
-            angular_matrix_element = self.angular.calc_reduced_matrix_element(other.angular, "spherical", k_angular)
-            matrix_element = (
-                ureg.Quantity(1, "e")
-                * math.sqrt(4 * np.pi / (2 * k_angular + 1))
-                * radial_matrix_element
-                * angular_matrix_element
-            )
-
-        else:
-            raise NotImplementedError(f"Operator {operator} not implemented.")
-
-        if unit == "a.u.":
-            return matrix_element.to_base_units().magnitude
-        if unit is None:
-            return matrix_element
-        return matrix_element.to(unit).magnitude
-
-    @overload
-    def calc_matrix_element(
-        self, other: RydbergStateSQDT[Any], operator: MatrixElementOperator, q: int
-    ) -> PintFloat: ...
-
-    @overload
-    def calc_matrix_element(
-        self, other: RydbergStateSQDT[Any], operator: MatrixElementOperator, q: int, unit: str
-    ) -> float: ...
-
-    def calc_matrix_element(
-        self, other: RydbergStateSQDT[Any], operator: MatrixElementOperator, q: int, unit: str | None = None
-    ) -> PintFloat | float:
-        r"""Calculate the matrix element.
-
-        Calculate the full matrix element between self and other,
-        also considering the magnetic quantum numbers m of self and other.
-
-        .. math::
-            \left\langle self || r^k_radial \hat{O}_{k_angular} || other \right\rangle
-
-        where \hat{O}_{k_angular} is the operator of rank k_angular for which to calculate the matrix element.
-        k_radial and k_angular are determined from the operator automatically.
-
-        Args:
-            other: The other Rydberg state for which to calculate the matrix element.
-            operator: The operator for which to calculate the matrix element.
-            q: The component of the operator.
-            unit: The unit to which to convert the radial matrix element.
-                Can be "a.u." for atomic units (so no conversion is done), or a specific unit.
-                Default None will return a pint quantity.
-
-        Returns:
-            The matrix element for the given operator.
-
-        """
-        _k_radial, k_angular = MatrixElementOperatorRanks[operator]
-        prefactor = self.angular._calc_wigner_eckart_prefactor(other.angular, k_angular, q)  # noqa: SLF001
-        reduced_matrix_element = self.calc_reduced_matrix_element(other, operator, unit)
-        return prefactor * reduced_matrix_element
 
     @overload
     def get_spontaneous_transition_rates(self: Self, unit: None = None) -> tuple[list[Self], PintArray]: ...
@@ -426,7 +264,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
             raise RuntimeError("m quantum number must be defined to calculate transition rates.")
 
         basis = BasisSQDT(
-            self.species, n=(1, int(self.nu + 35)), m=(m - 1, m + 1), coupling_scheme=self.coupling_scheme
+            self.species, n=(1, int(self.nu + 35)), m=(m - 1, m + 1), coupling_scheme=self.angular.coupling_scheme
         )
         basis.filter_states("l_r", (self.angular.l_r - 1, self.angular.l_r + 1))
 
@@ -551,7 +389,6 @@ class RydbergStateSQDTAlkali(RydbergStateSQDT[AngularKetLS[AllKnown]]):
         """
         super().__init__(species=species, n=n, l_r=l, j_tot=j, f_tot=f, m=m)
 
-    def _set_qn_as_attributes(self) -> None:
         self.l = self.angular.l_r
         self.j = self.angular.j_tot
         self.f = self.angular.f_tot
@@ -594,7 +431,6 @@ class RydbergStateSQDTAlkalineLS(RydbergStateSQDT[AngularKetLS[AllKnown]]):
         """
         super().__init__(species=species, n=n, l_r=l, s_tot=s_tot, j_tot=j_tot, f_tot=f_tot, m=m)
 
-    def _set_qn_as_attributes(self) -> None:
         self.l = self.angular.l_r
         self.s_tot = self.angular.s_tot
         self.j_tot = self.angular.j_tot
@@ -637,7 +473,6 @@ class RydbergStateSQDTAlkalineJJ(RydbergStateSQDT[AngularKetJJ[AllKnown]]):
         """
         super().__init__(species=species, n=n, l_r=l, j_r=j_r, j_tot=j_tot, f_tot=f_tot, m=m)
 
-    def _set_qn_as_attributes(self) -> None:
         self.l = self.angular.l_r
         self.j_r = self.angular.j_r
         self.j_tot = self.angular.j_tot
@@ -680,7 +515,6 @@ class RydbergStateSQDTAlkalineFJ(RydbergStateSQDT[AngularKetFJ[AllKnown]]):
         """
         super().__init__(species=species, n=n, l_r=l, j_r=j_r, f_c=f_c, f_tot=f_tot, m=m)
 
-    def _set_qn_as_attributes(self) -> None:
         self.l = self.angular.l_r
         self.j_r = self.angular.j_r
         self.f_c = self.angular.f_c
