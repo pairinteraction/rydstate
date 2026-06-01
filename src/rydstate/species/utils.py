@@ -137,12 +137,7 @@ T = TypeVar("T", bound=type)
 
 def get_subclass(cls: T, species: str, tag: str | None = None) -> T:
     """Get the subclass of cls for the given species and tag."""
-    possible_subclasses: list[T] = []
-    for subclass in cls.__subclasses__():
-        if inspect.isabstract(subclass):
-            continue
-        if getattr(subclass, "species", None) == species:
-            possible_subclasses.append(subclass)
+    possible_subclasses: list[T] = get_all_subclasses(cls, species)
 
     if tag is not None:
         possible_subclasses = [sc for sc in possible_subclasses if getattr(sc, "tag", None) == tag]
@@ -163,6 +158,7 @@ def get_all_subclasses(cls: T, species: str | None = None) -> list[T]:
     """Get all subclasses of cls for the given species."""
     possible_subclasses: list[T] = []
     for subclass in cls.__subclasses__():
+        possible_subclasses.extend(get_all_subclasses(subclass, species))
         if inspect.isabstract(subclass):
             continue
         if species is None or getattr(subclass, "species", None) == species:
