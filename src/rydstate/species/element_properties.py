@@ -51,6 +51,11 @@ class ElementProperties(ABC):
         """Total spin of the core electrons (0 for alkali atoms, 0.5 for alkaline earth atoms)."""
         return 0.5 * (self.number_valence_electrons - 1)
 
+    @property
+    def s_r(self) -> float:
+        """Total spin of the rydberg electron (always 0.5)."""
+        return 0.5
+
     @overload
     def get_corrected_rydberg_constant(self, unit: None = None) -> PintFloat: ...
 

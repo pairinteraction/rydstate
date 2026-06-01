@@ -126,6 +126,9 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
             if s_c is not None and s_c != element_properties.s_c:
                 raise ValueError(f"s_c={s_c} not allowed for {species} with s_c={element_properties.s_c}.")
             s_c = element_properties.s_c
+            if s_r is not None and s_r != element_properties.s_r:
+                raise ValueError(f"s_r={s_r} not allowed for {species} with s_r={element_properties.s_r}.")
+            s_r = element_properties.s_r
 
         if i_c is None:
             raise ValueError("Nuclear spin i_c must be set or a species must be given.")
