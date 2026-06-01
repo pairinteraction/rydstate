@@ -18,10 +18,10 @@ if TYPE_CHECKING:
 
     from typing_extensions import ParamSpec
 
+    from rydstate.angular.utils import lru_cache  # type: ignore [attr-defined]  # noqa: TC004
+
     P = ParamSpec("P")
     R = TypeVar("R")
-
-    def lru_cache(maxsize: int) -> Callable[[Callable[P, R]], Callable[P, R]]: ...  # type: ignore [no-redef]
 
 
 # global variables to possibly improve the performance of wigner j calculations
