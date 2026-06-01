@@ -37,6 +37,9 @@ class ElementProperties(metaclass=RegistrySingletonMeta):
     core_electron_configuration: ClassVar[str]
     """Electron configuration of the core electrons, e.g. 4p6 for Rb or 5s for Sr."""
 
+    nuclear_dipole: float
+    """Nuclear dipole moment of the species."""
+
     def __init__(self, species: str | None = None) -> None:
         pass
 
