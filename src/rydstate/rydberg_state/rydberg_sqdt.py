@@ -92,6 +92,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
                 raise ValueError("Specify either angular_ket or the quantum numbers for the angular ket, not both.")
             self.angular = angular_ket
         else:
+            l_c = 0 if l_c is None else l_c
             self.angular = quantum_numbers_to_angular_ket(  # type: ignore [assignment]
                 species=self.species,
                 s_c=s_c,

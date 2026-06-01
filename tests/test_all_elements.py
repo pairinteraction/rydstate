@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 ALL_AVAILABLE_SPECIES = [cls.species for cls in get_all_subclasses(ElementProperties)]
 
 
-@pytest.mark.parametrize("element", ALL_AVAILABLE_SPECIES)
+@pytest.mark.parametrize("species", ALL_AVAILABLE_SPECIES)
 def test_sqdt_species(species: str) -> None:
     element_properties = get_subclass(ElementProperties, species)()
     sqdt = get_subclass(SQDT, species)()

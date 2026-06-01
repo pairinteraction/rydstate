@@ -5,7 +5,6 @@ import math
 from typing import TYPE_CHECKING, Literal, overload
 
 from rydstate.radial.grid import Grid
-from rydstate.radial.model import Model
 from rydstate.radial.radial_matrix_element import calc_radial_matrix_element_from_w_z
 from rydstate.radial.wavefunction import WavefunctionNumerov, WavefunctionWhittaker
 from rydstate.species import ElementProperties
@@ -14,7 +13,6 @@ from rydstate.species.utils import calc_energy_from_nu, get_subclass
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
-    from rydstate.radial.model import PotentialType
     from rydstate.radial.radial_matrix_element import INTEGRATION_METHODS
     from rydstate.radial.wavefunction import Wavefunction, WavefunctionSignConvention
     from rydstate.units import PintFloat
@@ -79,18 +77,6 @@ class RadialKet:
 
     def __str__(self) -> str:
         return self.__repr__()
-
-    def create_model(self, potential_type: PotentialType | None = None) -> None:
-        """Create the model for the Rydberg state.
-
-        Args:
-            potential_type: Which potential to use for the model.
-
-        """
-        if hasattr(self, "_model"):
-            raise RuntimeError("The model was already created, you should not create it again.")
-
-        self._model = Model(self.species, self.l_r, potential_type)
 
     @property
     def grid(self) -> Grid:
