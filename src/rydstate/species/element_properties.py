@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC
 from functools import cached_property
 from typing import TYPE_CHECKING, ClassVar, overload
 
@@ -9,7 +10,7 @@ if TYPE_CHECKING:
     from rydstate.units import PintFloat
 
 
-class ElementProperties:
+class ElementProperties(ABC):
     """Base class for all element properties classes.
 
     For the electronic ground state configurations and sorted shells,
