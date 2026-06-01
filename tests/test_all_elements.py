@@ -27,7 +27,5 @@ def test_sqdt_species(species: str) -> None:
             RydbergStateSQDTAlkali(species, n=50, l=1)
     elif element_properties.number_valence_electrons == 2 and sqdt.quantum_defects is not None:
         for s_tot in [0, 1]:
-            state = RydbergStateSQDTAlkalineLS(
-                species + "_sqdt", n=50, l=1, s_tot=s_tot, j_tot=1 + s_tot, f_tot=s_tot + 1 + i_c
-            )
+            state = RydbergStateSQDTAlkalineLS(species, n=50, l=1, s_tot=s_tot, j_tot=1 + s_tot, f_tot=s_tot + 1 + i_c)
             state.radial.create_wavefunction()

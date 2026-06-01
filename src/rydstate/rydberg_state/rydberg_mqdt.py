@@ -24,6 +24,7 @@ class RydbergStateMQDT(RydbergStateBase):
 
     def __init__(
         self,
+        species: str,
         coefficients: Sequence[float] | NDArray,
         rydberg_kets: Sequence[RydbergKet],
         nu: float,
@@ -31,9 +32,10 @@ class RydbergStateMQDT(RydbergStateBase):
         warn_if_not_normalized: bool = True,
         normalize: bool = True,
     ) -> None:
+        self.species = species
         self.coefficients = np.array(coefficients)
         self.rydberg_kets = list(rydberg_kets)
-        self._nu = nu
+        self.nu = nu
 
         if len(rydberg_kets) == 0:
             raise ValueError("RydbergStateMQDT must be initialized with at least one state.")
@@ -41,8 +43,6 @@ class RydbergStateMQDT(RydbergStateBase):
             raise ValueError("Length of coefficients and rydberg_kets must be the same.")
         if not all(isinstance(rydberg_ket.angular, AngularKetFJ) for rydberg_ket in rydberg_kets):
             raise ValueError("All rydberg_kets must have an angular part of type AngularKetFJ.")
-        if not all((rydberg_ket.species is rydberg_kets[0].species) for rydberg_ket in rydberg_kets):
-            raise ValueError("All rydberg_kets must be of the same species.")
         if len(set(rydberg_kets)) != len(rydberg_kets):
             raise ValueError("RydbergStateMQDT initialized with duplicate rydberg_kets.")
 
@@ -53,7 +53,6 @@ class RydbergStateMQDT(RydbergStateBase):
         if normalize:
             self.coefficients /= self.norm
 
-        self.species = rydberg_kets[0].species
         self.angular = AngularState(
             self.coefficients.tolist(),
             [ket.angular for ket in rydberg_kets],  # type: ignore [misc]

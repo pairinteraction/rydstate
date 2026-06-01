@@ -115,7 +115,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
         """
         if species is not None:
             if isinstance(species, str):
-                from rydstate.species import get_element_properties  # noqa: PLC0415
+                from rydstate.species.element_properties import get_element_properties  # noqa: PLC0415
 
                 element_properties = get_element_properties(species)
 

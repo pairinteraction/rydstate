@@ -22,12 +22,7 @@ logger = logging.getLogger(__name__)
 class RadialKet:
     r"""Class representing a radial Rydberg state."""
 
-    def __init__(
-        self,
-        species: str,
-        nu: float,
-        l_r: int,
-    ) -> None:
+    def __init__(self, species: str, nu: float, l_r: int) -> None:
         r"""Initialize the radial ket.
 
         Args:
