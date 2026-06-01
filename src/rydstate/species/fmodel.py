@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
+from rydstate.species.element_properties import get_element_properties
 from rydstate.species.utils import (
     calc_energy_from_nu,
     calc_modified_ritz_formula_in_nu,
     calc_nu_from_energy,
-    get_element_properties,
 )
 
 if TYPE_CHECKING:

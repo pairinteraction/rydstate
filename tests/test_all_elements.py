@@ -2,8 +2,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 from rydstate import RydbergStateSQDTAlkali, RydbergStateSQDTAlkalineLS
-from rydstate.species import SQDT, ElementProperties, get_subclass
-from rydstate.species.utils import get_all_subclasses, get_element_properties
+from rydstate.species import ElementProperties, get_all_subclasses, get_element_properties, get_sqdt_class
 
 if TYPE_CHECKING:
     from rydstate import RydbergStateSQDT
@@ -17,7 +16,7 @@ ALL_AVAILABLE_SPECIES = [cls.species for cls in get_all_subclasses(ElementProper
 @pytest.mark.parametrize("species", ALL_AVAILABLE_SPECIES)
 def test_sqdt_species(species: str) -> None:
     element_properties = get_element_properties(species)
-    sqdt = get_subclass(SQDT, species)()
+    sqdt = get_sqdt_class(species)()
     i_c = element_properties.i_c
 
     state: RydbergStateSQDT[AngularKetLS[AllKnown]]

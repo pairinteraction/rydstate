@@ -8,7 +8,7 @@ from typing_extensions import Self
 
 from rydstate.angular.utils import is_angular_momentum_quantum_number, is_unknown
 from rydstate.rydberg_state.rydberg_base import RydbergStateBase
-from rydstate.species.utils import get_element_properties
+from rydstate.species import get_element_properties
 from rydstate.units import ureg
 
 if TYPE_CHECKING:

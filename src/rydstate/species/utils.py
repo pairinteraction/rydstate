@@ -7,8 +7,6 @@ from typing import TypeAlias, TypeVar
 
 import numpy as np
 
-from rydstate.species.element_properties import ElementProperties
-
 RydbergRitzParameters: TypeAlias = tuple[float, ...] | list[float] | float
 
 T = TypeVar("T", bound=type)
@@ -136,45 +134,17 @@ def calc_modified_ritz_formula_in_nu(nui: float, parameters: RydbergRitzParamete
     return result
 
 
-def get_element_properties(species: str) -> ElementProperties:
-    """Get an instance of the subclass of ElementProperties for the given species."""
-    possible_subclasses = get_all_subclasses(ElementProperties, species)
-    if len(possible_subclasses) == 0:
-        possible_subclasses = get_all_subclasses(ElementProperties, species.replace("_sqdt", "").replace("_mqdt", ""))
-
-    if len(possible_subclasses) == 0:
-        raise ValueError(f"No subclass of ElementProperties found for species {species}.")
-    if len(possible_subclasses) == 1:
-        return possible_subclasses[0]()
-    raise ValueError(f"Multiple subclasses of ElementProperties found for species {species}: {possible_subclasses}.")
-
-
-def get_subclass(cls: T, species: str, tag: str | None = None) -> T:
-    """Get the subclass of cls for the given species and tag."""
-    all_possible_subclasses: list[T] = get_all_subclasses(cls, species)
-
-    possible_subclasses = [sc for sc in all_possible_subclasses if getattr(sc, "tag", None) == tag]
-    if tag is None and len(possible_subclasses) != 1:
-        possible_subclasses = [sc for sc in all_possible_subclasses if getattr(sc, "is_default", False)]
-
-    if len(possible_subclasses) == 0:
-        raise ValueError(f"No subclass of {cls.__name__} found for species {species} and tag {tag}.")
-    if len(possible_subclasses) == 1:
-        return possible_subclasses[0]
-
-    raise ValueError(
-        f"Multiple subclasses of {cls.__name__} found for species {species} and tag {tag}: {possible_subclasses}."
-    )
-
-
-def get_all_subclasses(cls: T, species: str | None = None) -> list[T]:
-    """Get all subclasses of cls for the given species."""
-    possible_subclasses: list[T] = []
+def get_all_subclasses(cls: T, species: str | None = None, tag: str | None = None) -> list[T]:
+    """Get all subclasses of cls for the given species (and tag)."""
+    subclasses: list[T] = []
     for subclass in cls.__subclasses__():
-        possible_subclasses.extend(get_all_subclasses(subclass, species))
-        if inspect.isabstract(subclass) or not hasattr(subclass, "species"):
+        subclasses.extend(get_all_subclasses(subclass, species, tag))
+        if inspect.isabstract(subclass) or getattr(subclass, "species", None) is None:
             continue
-        if species is None or getattr(subclass, "species", None) == species:
-            possible_subclasses.append(subclass)
+        if species is not None and getattr(subclass, "species", None) != species:
+            continue
+        if tag is not None and getattr(subclass, "tag", None) != tag:
+            continue
+        subclasses.append(subclass)
 
-    return possible_subclasses
+    return subclasses

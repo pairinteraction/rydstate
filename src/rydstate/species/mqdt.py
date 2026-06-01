@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 from rydstate.species.fmodel import FModel, FModelSQDT
+from rydstate.species.utils import get_all_subclasses
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
@@ -135,3 +136,20 @@ class MQDT:
         if len(models) == 0:
             models = [FModelSQDT(self.species, outer_channel)]
         return models
+
+
+def get_mqdt_class(species: str, tag: str | None = None) -> type[MQDT]:
+    """Get the subclass of MQDT for the given species and tag."""
+    subclasses = get_all_subclasses(MQDT, species, tag)
+    if len(subclasses) == 0:
+        _species = species.replace("_mqdt", "") if species.endswith("_mqdt") else species + "_mqdt"
+        subclasses = get_all_subclasses(MQDT, _species, tag)
+
+    if tag is None:
+        subclasses = [cls for cls in subclasses if getattr(cls, "is_default", False)]
+
+    if len(subclasses) == 0:
+        raise ValueError(f"No subclass of MQDT found for {species=} and {tag=}.")
+    if len(subclasses) == 1:
+        return subclasses[0]
+    raise ValueError(f"Multiple subclasses of MQDT found for {species=} and {tag=}: {subclasses}.")

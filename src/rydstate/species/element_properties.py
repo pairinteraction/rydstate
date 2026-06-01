@@ -4,6 +4,7 @@ from abc import ABC
 from functools import cached_property
 from typing import TYPE_CHECKING, ClassVar, overload
 
+from rydstate.species.utils import get_all_subclasses
 from rydstate.units import rydberg_constant, ureg
 
 if TYPE_CHECKING:
@@ -107,3 +108,16 @@ class ElementProperties(ABC):
 
         """
         return self.get_corrected_rydberg_constant("hartree") / rydberg_constant.to("hartree").m
+
+
+def get_element_properties(species: str) -> ElementProperties:
+    """Get an instance of the subclass of ElementProperties for the given species."""
+    possible_subclasses = get_all_subclasses(ElementProperties, species)
+    if len(possible_subclasses) == 0:
+        possible_subclasses = get_all_subclasses(ElementProperties, species.replace("_sqdt", "").replace("_mqdt", ""))
+
+    if len(possible_subclasses) == 0:
+        raise ValueError(f"No subclass of ElementProperties found for species {species}.")
+    if len(possible_subclasses) == 1:
+        return possible_subclasses[0]()
+    raise ValueError(f"Multiple subclasses of ElementProperties found for species {species}: {possible_subclasses}.")

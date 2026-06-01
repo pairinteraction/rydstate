@@ -10,11 +10,12 @@ from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
+from rydstate.species.element_properties import get_element_properties
 from rydstate.species.utils import (
     calc_modified_ritz_formula,
     calc_nu_from_energy,
     convert_electron_configuration,
-    get_element_properties,
+    get_all_subclasses,
 )
 from rydstate.units import ureg
 
@@ -241,3 +242,20 @@ class SQDT:
         delta_nlj = calc_modified_ritz_formula(n, quantum_defects)
 
         return n - delta_nlj
+
+
+def get_sqdt_class(species: str, tag: str | None = None) -> type[SQDT]:
+    """Get the subclass of SQDT for the given species and tag."""
+    subclasses = get_all_subclasses(SQDT, species, tag)
+    if len(subclasses) == 0:
+        _species = species.replace("_sqdt", "") if species.endswith("_sqdt") else species + "_sqdt"
+        subclasses = get_all_subclasses(SQDT, _species, tag)
+
+    if tag is None:
+        subclasses = [cls for cls in subclasses if getattr(cls, "is_default", False)]
+
+    if len(subclasses) == 0:
+        raise ValueError(f"No subclass of SQDT found for {species=} and {tag=}.")
+    if len(subclasses) == 1:
+        return subclasses[0]
+    raise ValueError(f"Multiple subclasses of SQDT found for {species=} and {tag=}: {subclasses}.")

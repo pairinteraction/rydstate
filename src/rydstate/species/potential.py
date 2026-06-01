@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING, ClassVar, Literal, TypeVar
 
 import numpy as np
 
-from rydstate.species.utils import get_element_properties
+from rydstate.species.element_properties import get_element_properties
+from rydstate.species.utils import get_all_subclasses
 
 if TYPE_CHECKING:
     from rydstate.units import NDArray
@@ -341,3 +342,20 @@ class PotentialFei2009(Potential):
         with np.errstate(over="ignore"):
             denom: XType = 1 - alpha + alpha * np.exp(beta * x**delta + gamma * x ** (2.0 * delta))
             return -1 / x - (self.element_properties.Z - 1) / (x * denom)
+
+
+def get_potential_class(species: str, tag: str | None = None) -> type[Potential]:
+    """Get the subclass of Potential for the given species and tag."""
+    subclasses = get_all_subclasses(Potential, species, tag)
+    if len(subclasses) == 0:
+        _species = species.replace("_sqdt", "").replace("_mqdt", "")
+        subclasses = get_all_subclasses(Potential, _species, tag)
+
+    if tag is None:
+        subclasses = [cls for cls in subclasses if getattr(cls, "is_default", False)]
+
+    if len(subclasses) == 0:
+        raise ValueError(f"No subclass of Potential found for {species=} and {tag=}.")
+    if len(subclasses) == 1:
+        return subclasses[0]
+    raise ValueError(f"Multiple subclasses of Potential found for {species=} and {tag=}: {subclasses}.")

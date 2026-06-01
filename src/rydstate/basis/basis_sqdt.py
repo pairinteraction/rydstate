@@ -10,8 +10,7 @@ from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKe
 from rydstate.angular.utils import is_not_set
 from rydstate.basis.basis_base import BasisBase
 from rydstate.rydberg_state import RydbergStateSQDT
-from rydstate.species import SQDT
-from rydstate.species.utils import get_subclass
+from rydstate.species import get_sqdt_class
 
 if TYPE_CHECKING:
     from rydstate.angular.utils import AllKnown, CouplingScheme
@@ -63,7 +62,7 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
         coupling_scheme: CouplingScheme = "LS",
     ) -> None:
         super().__init__(species)
-        self.sqdt = get_subclass(SQDT, species)()
+        self.sqdt = get_sqdt_class(species)()
 
         self._init_states(n, m, coupling_scheme)
 

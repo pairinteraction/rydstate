@@ -4,15 +4,13 @@ import re
 
 import numpy as np
 import pytest
-from rydstate.species import FModel
-from rydstate.species.mqdt import MQDT
-from rydstate.species.utils import get_subclass
+from rydstate.species import FModel, get_mqdt_class
 
 
 def _all_fmodels() -> list[FModel]:
     """Collect all concrete FModel subclasses."""
     return [
-        cls(get_subclass(MQDT, cls.species)())
+        cls(get_mqdt_class(cls.species)())
         for cls in FModel.__subclasses__()
         if hasattr(cls, "name") and cls.name is not None
     ]
