@@ -10,7 +10,7 @@ from rydstate.species.fmodel import FModel
 
 REFERENCE_PEPER_2025 = "M. Peper et al., Phys. Rev. X 15, 011009 (2025), https://doi.org/10.1103/PhysRevX.15.011009"
 REFERENCE_KURODA_2025 = "R. Kuroda et al., Phys. Rev. A 112, 042817 (2025), https://doi.org/10.1103/mzsv-rckx"
-REFERENCE_WILSON_2025 = (
+REFERENCE_WILSON_2022 = (
     "J. T. Wilson et al., Phys. Rev. Lett. 128, 033201 (2022), https://doi.org/10.1103/PhysRevLett.128.033201"
 )
 
@@ -62,7 +62,7 @@ class Yb174_S1_HighN(FModel):
     name = "S J=1, nu > 26"
     f_tot = 1
     nu_range = (26.0, np.inf)
-    reference = REFERENCE_WILSON_2025
+    reference = REFERENCE_WILSON_2022
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=1, j_tot=1, species="Yb174"),  # "6sns 3S1"
