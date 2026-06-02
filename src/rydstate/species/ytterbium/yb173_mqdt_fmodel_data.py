@@ -14,7 +14,7 @@ class Yb173_S15_HighN(FModel):
     name = "S F=3/2, nu > 26"
     f_tot = 1.5
     nu_range = (26.0, np.inf)
-    reference = "10.1103/PhysRevA.110.042821"
+    reference = None
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=1, j_tot=1, f_tot=1.5, species="Yb173"),  # "6sns 3S1"
@@ -34,7 +34,7 @@ class Yb173_S25_HighN(FModel):
     name = "S F=5/2, nu > 26"
     f_tot = 2.5
     nu_range = (26.0, np.inf)
-    reference = "10.1103/PhysRevA.110.042821"
+    reference = None
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=0, j_tot=0, f_tot=2.5, species="Yb173"),  # "6sns 1S0"
@@ -92,7 +92,7 @@ class Yb173_S35_HighN(FModel):
     name = "S F=7/2, nu > 26"
     f_tot = 3.5
     nu_range = (26.0, np.inf)
-    reference = "10.1103/PhysRevA.110.042821"
+    reference = None
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=1, j_tot=1, f_tot=3.5, species="Yb173"),  # "6sns 3S1"
@@ -112,7 +112,7 @@ class Yb173_P05_HighN(FModel):
     name = "P F=1/2, nu > 10"
     f_tot = 0.5
     nu_range = (10.0, np.inf)
-    reference = "10.1103/PhysRevA.110.042821"
+    reference = None
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=2, f_tot=0.5, species="Yb173"),  # "6snp 3P2"
@@ -145,7 +145,7 @@ class Yb173_P15_HighN(FModel):
     name = "P F=3/2, nu > 10"
     f_tot = 1.5
     nu_range = (10.0, np.inf)
-    reference = "10.1103/PhysRevA.110.042821"
+    reference = None
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, f_tot=1.5, species="Yb173"),  # "6snp 1P1"
@@ -205,7 +205,7 @@ class Yb173_P25_HighN(FModel):
     name = "P F=5/2, nu > 10"
     f_tot = 2.5
     nu_range = (10.0, np.inf)
-    reference = "10.1103/PhysRevA.110.042821"
+    reference = None
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, f_tot=2.5, species="Yb173"),  # "6snp 1P1"
@@ -272,7 +272,7 @@ class Yb173_P35_HighN(FModel):
     name = "P F=7/2, nu > 10"
     f_tot = 3.5
     nu_range = (10.0, np.inf)
-    reference = "10.1103/PhysRevA.110.042821"
+    reference = None
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, f_tot=3.5, species="Yb173"),  # "6snp 1P1"
@@ -332,7 +332,7 @@ class Yb173_P45_HighN(FModel):
     name = "P F=9/2, nu > 10"
     f_tot = 4.5
     nu_range = (10.0, np.inf)
-    reference = "10.1103/PhysRevA.110.042821"
+    reference = None
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=2, f_tot=4.5, species="Yb173"),  # "6snp 3P2"
