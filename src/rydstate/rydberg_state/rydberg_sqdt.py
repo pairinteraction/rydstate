@@ -17,6 +17,7 @@ from rydstate.radial import RadialKet
 from rydstate.rydberg_state.rydberg_base import RydbergStateBase
 from rydstate.rydberg_state.rydberg_ket import RydbergKet
 from rydstate.species import get_element_properties, get_sqdt
+from rydstate.species.potential import get_potential_class
 from rydstate.species.utils import calc_energy_from_nu
 from rydstate.units import BaseQuantities, ureg
 
@@ -119,7 +120,8 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
             )
 
         self.nu = self.sqdt.calc_nu(self.n, self.angular)
-        self.radial = RadialKet(self.species, nu=self.nu, l_r=self.angular.l_r)
+        potential = get_potential_class(self.species)(self.angular.l_r)
+        self.radial = RadialKet(self.nu, potential)
         self.radial.set_n_for_sanity_check(self.n)
 
         self.coefficients = np.array([1.0])
