@@ -11,6 +11,8 @@ from rydstate.species.strontium.potential_data import (
 )
 from rydstate.species.strontium.sqdt_data import SQDTStrontium88
 
+from rydstate.species.strontium import sr87_mqdt_fmodel_data, sr88_mqdt_fmodel_data  # isort: skip  # must be imported last
+
 __all__ = [
     "ElementPropertiesStrontium87",
     "ElementPropertiesStrontium88",
@@ -21,4 +23,6 @@ __all__ = [
     "PotentialMarinescu1993Strontium87",
     "PotentialMarinescu1993Strontium88",
     "SQDTStrontium88",
+    "sr87_mqdt_fmodel_data",
+    "sr88_mqdt_fmodel_data",
 ]
