@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
+from rydstate.angular.utils import is_unknown
 from rydstate.species.element_properties import get_element_properties
 from rydstate.species.utils import (
     calc_modified_ritz_formula,
@@ -20,7 +21,8 @@ from rydstate.species.utils import (
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
-    from rydstate.angular.angular_ket import AngularKetLS
+    from rydstate.angular.angular_ket import AngularKetBase
+    from rydstate.angular.utils import Unknown
     from rydstate.species.utils import (  # type: ignore [assignment]
         RydbergRitzParameters,
         cache,  # noqa: TC004
@@ -125,7 +127,7 @@ class SQDT:
         if len(self._nist_energy_levels) == 0:
             raise ValueError(f"No NIST energy levels found for species {self.species} in file {file}.")
 
-    def is_allowed_shell(self, n: int, l: int, s_tot: float | None = None) -> bool:
+    def is_allowed_shell(self, n: int, l: int, s_tot: float | Unknown) -> bool:
         """Check if the quantum numbers describe an allowed shell.
 
         I.e. whether the shell is above the ground state shell.
@@ -139,13 +141,14 @@ class SQDT:
             True if the quantum numbers specify a shell equal to or above the ground state shell, False otherwise.
 
         """
-        if s_tot is None:
-            if self.element_properties.number_valence_electrons > 1:
-                raise ValueError("s_tot must be specified for species with more than one valence electron.")
-            s_tot = self.element_properties.number_valence_electrons / 2
-        if (
-            self.element_properties.number_valence_electrons / 2
-        ) % 1 != s_tot % 1 or s_tot > self.element_properties.number_valence_electrons / 2:
+        if is_unknown(s_tot):
+            if self.element_properties.number_valence_electrons == 1:
+                return self.is_allowed_shell(n, l, 0.5)
+            if self.element_properties.number_valence_electrons == 2:
+                return self.is_allowed_shell(n, l, 0) and self.is_allowed_shell(n, l, 1)
+            raise RuntimeError("species with more than 2 valence electrons should not happen")
+
+        if (self.element_properties.number_valence_electrons / 2) % 1 != s_tot % 1:
             raise ValueError(f"Invalid spin {s_tot=} for {self.species}.")
 
         if (n, l) == self.element_properties.ground_state_shell:
@@ -188,7 +191,7 @@ class SQDT:
     def calc_nu(
         self,
         n: int,
-        angular_ket: AngularKetLS[Any],
+        angular_ket: AngularKetBase[Any],
         *,
         use_nist_data: bool = True,
         nist_n_max: int = 15,
@@ -224,22 +227,27 @@ class SQDT:
         if angular_ket.coupling_scheme != "LS":
             raise NotImplementedError("calc_nu is only implemented for AngularKetLS.")
 
-        l, j_tot, s_tot = angular_ket.l_r, angular_ket.j_tot, angular_ket.s_tot
+        l_r = angular_ket.l_r
+        j_tot = angular_ket.get_qn("j_tot", allow_unknown=True)
+        s_tot = angular_ket.get_qn("s_tot", allow_unknown=True)
+
+        if is_unknown(j_tot) or is_unknown(s_tot):
+            raise ValueError(f"Cannot calculate nu for unknown j_tot or s_tot of {angular_ket!r}.")
 
         if n <= nist_n_max and use_nist_data:  # try to use NIST data
-            if (n, l, j_tot, s_tot) in self._nist_energy_levels:
-                energy_au = self._nist_energy_levels[(n, l, j_tot, s_tot)]
+            if (n, l_r, j_tot, s_tot) in self._nist_energy_levels:
+                energy_au = self._nist_energy_levels[(n, l_r, j_tot, s_tot)]
                 energy_au -= self.ionization_energy_au  # use the cached ionization energy for better performance
                 return calc_nu_from_energy(self.element_properties.reduced_mass_au, energy_au)
             logger.debug(
-                "NIST energy levels for (n=%d, l=%d, j_tot=%s, s_tot=%s) not found, using quantum defect theory.",
-                *(n, l, j_tot, s_tot),
+                "NIST energy levels for (n=%d, l_r=%d, j_tot=%s, s_tot=%s) not found, using quantum defect theory.",
+                *(n, l_r, j_tot, s_tot),
             )
 
         if self.quantum_defects is None:
             raise ValueError(f"No quantum defect data available for species {self.species}.")
 
-        quantum_defects = self.quantum_defects.get((l, j_tot, s_tot), 0)
+        quantum_defects = self.quantum_defects.get((l_r, j_tot, s_tot), 0)
         delta_nlj = calc_modified_ritz_formula(n, quantum_defects)
 
         return n - delta_nlj
