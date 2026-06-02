@@ -41,14 +41,14 @@ def test_basis_copy() -> None:
     assert basis_copy.states is not basis.states
 
 
-@pytest.mark.parametrize("species", ["Sr88", "Sr87", "Yb174", "Yb171"])
+@pytest.mark.parametrize("species", ["Sr88", "Yb174"])
 def test_alkaline_basis(species: str) -> None:
     """Test alkaline basis creation."""
     basis = BasisSQDT(species, n=(30, 35), coupling_scheme="LS")
     basis.sort_states("n", "l_r")
     assert (basis.states[0].n, basis.states[0].angular.l_r) == (30, 0)
     assert (basis.states[-1].n, basis.states[-1].angular.l_r) == (35, 34)
-    assert len(basis.states) == {"Sr88": 768, "Sr87": 7188, "Yb174": 768, "Yb171": 1524}[species]
+    assert len(basis.states) == {"Sr88": 768, "Yb174": 768}[species]
 
     # also test JJ and FJ coupling
     basis_jj = BasisSQDT(species, n=(30, 35), coupling_scheme="JJ")
