@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import logging
+from functools import cached_property
 from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
 import numpy as np
 from scipy.special import exprel
 
 from rydstate.angular import NotSet
-from rydstate.angular.angular_ket import AngularKetBase, AngularKetLS
+from rydstate.angular.angular_ket import AngularKetBase
 from rydstate.angular.utils import (
     AllKnown,
     is_not_set,
@@ -24,7 +25,7 @@ from rydstate.units import BaseQuantities, ureg
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from rydstate.angular.angular_ket import AngularKetFJ, AngularKetJJ
+    from rydstate.angular.angular_ket import AngularKetFJ, AngularKetJJ, AngularKetLS
     from rydstate.units import NDArray, PintArray, PintFloat
 
 GenericT_AngularKet = TypeVar("GenericT_AngularKet", bound=AngularKetBase[AllKnown])
@@ -184,33 +185,37 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
                 f_tot=f_tot,
                 m=m,  # type: ignore [arg-type]
             )
-        if not isinstance(self.angular, AngularKetLS):
-            raise NotImplementedError("RydbergStateSQDT is currently only implemented for LS coupled states.")
 
         self.n = n
         self.sqdt = get_sqdt(species)
-        if not self.sqdt.is_allowed_shell(self.n, self.angular.l_r, self.angular.s_tot):
-            raise ValueError(
-                f"The shell (n={self.n}, l_r={self.angular.l_r}, s_tot={self.angular.s_tot}) "
-                f"is not allowed for the species {self.species}."
-            )
-        self.nu = self.sqdt.calc_nu(self.n, self.angular)
-        self._energy_au = (
-            calc_energy_from_nu(self.element_properties.reduced_mass_au, self.nu) + self.sqdt.ionization_energy_au
-        )
-
-        potential = get_potential_class(self.species)(self.angular.l_r)
-        self.radial = RadialKet(self.nu, potential)
-        self.radial.set_n_for_sanity_check(self.n)
-
-        self.coefficients = np.array([1.0])
-        self.rydberg_kets = [RydbergKet(self.angular, self.radial)]
+        _s_tot = self.angular.get_qn("s_tot", allow_unknown=True)
+        if not self.sqdt.is_allowed_shell(self.n, self.angular.l_r, _s_tot):
+            raise ValueError(f"The Rydberg state {self} is not allowed due to forbidden shell configurations.")
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.species}, n={self.n}, {self.angular!r})"
 
     def __str__(self) -> str:
         return f"|{self.species}:n={self.n}, {self.angular!s}⟩"
+
+    @cached_property
+    def nu(self) -> float:  # type: ignore [override]
+        return self.sqdt.calc_nu(self.n, self.angular)
+
+    @cached_property
+    def radial(self) -> RadialKet:
+        potential = get_potential_class(self.species)(self.angular.l_r)
+        radial = RadialKet(self.nu, potential)
+        radial.set_n_for_sanity_check(self.n)
+        return radial
+
+    @cached_property
+    def coefficients(self) -> NDArray:  # type: ignore [override]
+        return np.array([1.0])
+
+    @cached_property
+    def rydberg_kets(self) -> list[RydbergKet]:  # type: ignore [override]
+        return [RydbergKet(self.angular, self.radial)]
 
     @overload
     def get_energy(self, unit: None = None) -> PintFloat: ...
@@ -228,9 +233,12 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
 
         where `\mu = R_M/R_\infty` is the reduced mass and `\nu` the effective principal quantum number.
         """
+        _energy_au = (
+            calc_energy_from_nu(self.element_properties.reduced_mass_au, self.nu) + self.sqdt.ionization_energy_au
+        )
         if unit == "a.u.":
-            return self._energy_au
-        energy: PintFloat = self._energy_au * BaseQuantities["energy"]
+            return _energy_au
+        energy: PintFloat = _energy_au * BaseQuantities["energy"]
         if unit is None:
             return energy
         return energy.to(unit, "spectroscopy").magnitude
