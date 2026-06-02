@@ -29,7 +29,7 @@ class FModel:
     name: ClassVar[str]
     """The name of the atomic species."""
 
-    reference: ClassVar[str | None] = None
+    reference: ClassVar[str | tuple[str, ...] | None] = None
     """Reference for the MQDT model, e.g., a publication doi where the model is described."""
 
     f_tot: ClassVar[float]
