@@ -226,7 +226,16 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
         """Return True if any of the quantum numbers is Unknown."""
         return any(is_unknown(qn) for qn in self.quantum_numbers)
 
-    def get_qn(self, qn: AngularMomentumQuantumNumbers) -> float | GenericT_Unknown:
+    @overload
+    def get_qn(self, qn: AngularMomentumQuantumNumbers) -> float | GenericT_Unknown: ...
+
+    @overload
+    def get_qn(self, qn: AngularMomentumQuantumNumbers, *, allow_unknown: Literal[True]) -> float | Unknown: ...
+
+    @overload
+    def get_qn(self, qn: AngularMomentumQuantumNumbers, *, allow_unknown: Literal[False]) -> float: ...
+
+    def get_qn(self, qn: AngularMomentumQuantumNumbers, *, allow_unknown: bool | None = None) -> float | Unknown:
         """Get the value of a quantum number by name."""
         qn_value: float | Unknown = Unknown
         if qn in self.quantum_number_names:
@@ -248,10 +257,11 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
                 if not is_unknown(qn_value):
                     break
 
-        if not self._allow_unknown and is_unknown(qn_value):
+        allow_unknown = self._allow_unknown if allow_unknown is None else allow_unknown
+        if not allow_unknown and is_unknown(qn_value):
             raise ValueError(f"Quantum number {qn} is unknown for {self!r}.")
 
-        return qn_value  # type: ignore [return-value]
+        return qn_value
 
     def calc_exp_qn(self, qn: AngularMomentumQuantumNumbers) -> float | GenericT_Unknown:
         """Calculate the expectation value of a quantum number qn.
