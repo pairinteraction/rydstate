@@ -6,13 +6,15 @@ from typing import TYPE_CHECKING, ClassVar, Literal, TypeVar
 
 import numpy as np
 
+from rydstate.angular.utils import is_unknown
 from rydstate.species.element_properties import get_element_properties
 from rydstate.species.utils import get_all_subclasses
 
 if TYPE_CHECKING:
+    from rydstate.angular.utils import Unknown
     from rydstate.units import NDArray
 
-PotentialType = Literal["coulomb", "marinescu_1993", "fei_2009"]
+PotentialType = Literal["coulomb", "marinescu_1993", "fei_2009", "dummy"]
 XType = TypeVar("XType", "NDArray", float)
 
 
@@ -29,20 +31,27 @@ class Potential:
     tag: ClassVar[str]
     """The tag for these potential parameters."""
 
-    def __init__(self, l: int) -> None:
+    def __init__(self, l_r: int) -> None:
         r"""Initialize the model.
 
         Args:
             species: The atomic species.
-            l: Orbital angular momentum quantum number
+            l_r: Orbital angular momentum of the Rydberg electron.
             potential_type: Which potential to use for the model.
 
         """
         self.element_properties = get_element_properties(self.species)
-        self.l = l
+
+        if is_unknown(l_r):
+            raise ValueError(
+                f"l_r cannot be unknown for {self.__class__.__name__}, use a dummy potential if l_r is unknown"
+            )
+        if not ((isinstance(l_r, int) or l_r.is_integer()) and l_r >= 0):
+            raise ValueError(f"l_r must be an integer, and larger or equal 0, but {l_r=}")
+        self.l_r = int(l_r)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(l={self.l})"
+        return f"{self.__class__.__name__}(l_r={self.l_r})"
 
     def calc_potential_coulomb(self, x: XType) -> XType:
         r"""Calculate the Coulomb potential V_Col(x) in atomic units.
@@ -81,7 +90,7 @@ class Potential:
 
         """
         x2 = x * x
-        return (1 / self.element_properties.reduced_mass_au) * self.l * (self.l + 1) / (2 * x2)
+        return (1 / self.element_properties.reduced_mass_au) * self.l_r * (self.l_r + 1) / (2 * x2)
 
     def calc_effective_potential_sqrt(self, x: XType) -> XType:
         r"""Calculate the effective potential V_sqrt(x) from the sqrt transformation in atomic units.
@@ -201,8 +210,8 @@ class Potential:
         # for a given hydrogen turning point z_hyd, the classical turning point usually lies within z_hyd \pm 5
         # for a given l, the hydrogen turning point is bound by
         # z_lower = z_hyd(n=inf, l)  = \sqrt{l * (l+1) / 2} <= z_hyd(n, l) <= z_hyd(n=l+1, l) = z_upper
-        z_lower = math.sqrt(self.l * (self.l + 1) / 2)
-        z_upper = self.calc_hydrogen_turning_point_z(n=self.l + 1, l=self.l)
+        z_lower = math.sqrt(self.l_r * (self.l_r + 1) / 2)
+        z_upper = self.calc_hydrogen_turning_point_z(n=self.l_r + 1, l=self.l_r)
 
         z_min_orig, z_max_orig = max(z_lower - 5, dz), z_upper + 5
         z_min, z_max = z_min_orig, z_max_orig
@@ -281,7 +290,7 @@ class PotentialMarinescu1993(Potential):
         if len(parameter_dict) == 0:
             raise ValueError(f"No parametric model potential parameters defined for the species {self.species}.")
         # default to parameters for the maximum l
-        a1, a2, a3, a4 = parameter_dict.get(self.l, parameter_dict[max(parameter_dict.keys())])
+        a1, a2, a3, a4 = parameter_dict.get(self.l_r, parameter_dict[max(parameter_dict.keys())])
         exp_a1 = np.exp(-a1 * x)
         exp_a2 = np.exp(-a2 * x)
         z_nl: XType = 1 + (self.element_properties.Z - 1) * exp_a1 - x * (a3 + a4 * x) * exp_a2
@@ -295,7 +304,7 @@ class PotentialMarinescu1993(Potential):
             if len(r_c_dict) == 0:
                 raise ValueError(f"No parametric model potential parameters defined for the species {self.species}.")
             # default to x_c for the maximum l
-            x_c = r_c_dict.get(self.l, r_c_dict[max(r_c_dict.keys())])
+            x_c = r_c_dict.get(self.l_r, r_c_dict[max(r_c_dict.keys())])
             x2: XType = x * x
             x4: XType = x2 * x2
             x6: XType = x4 * x2
@@ -342,6 +351,27 @@ class PotentialFei2009(Potential):
         with np.errstate(over="ignore"):
             denom: XType = 1 - alpha + alpha * np.exp(beta * x**delta + gamma * x ** (2.0 * delta))
             return -1 / x - (self.element_properties.Z - 1) / (x * denom)
+
+
+class PotentialDummy(Potential):
+    """Dummy potential, which can be used when the potential is unknown."""
+
+    potential_type = "dummy"
+    l_r: int | Unknown  # type: ignore [assignment]
+
+    def __init__(self, l_r: int | Unknown) -> None:
+        r"""Initialize the model.
+
+        Args:
+            species: The atomic species.
+            l_r: Orbital angular momentum of the Rydberg electron.
+            potential_type: Which potential to use for the model.
+
+        """
+        self.l_r = l_r
+
+    def calc_model_potential(self, x: XType) -> XType:  # noqa: ARG002
+        raise RuntimeError("The model potential is unknown for {self.__class__.__name__}, so it cannot be calculated.")
 
 
 def get_potential_class(species: str, tag: str | None = None) -> type[Potential]:
