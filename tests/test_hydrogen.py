@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from rydstate import RydbergStateSQDTAlkali
+from rydstate import RydbergStateSQDT
 from sympy.abc import r as sympy_r
 from sympy.physics import hydrogen as sympy_hydrogen
 from sympy.utilities.lambdify import lambdify
@@ -28,7 +28,7 @@ from sympy.utilities.lambdify import lambdify
 def test_hydrogen_wavefunctions(species: str, n: int, l: int, run_backward: bool) -> None:
     """Test that numerov integration matches sympy's analytical hydrogen wavefunctions."""
     # Setup atom
-    state = RydbergStateSQDTAlkali(species, n=n, l=l, j=l + 0.5)
+    state = RydbergStateSQDT(species, n=n, l_r=l, j_r=l + 0.5)
 
     # Run the numerov integration
     state.radial.integrate_numerov(run_backward=run_backward)

@@ -7,7 +7,7 @@ import numpy as np
 from scipy.special import exprel
 
 from rydstate.angular import NotSet
-from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKetJJ, AngularKetLS
+from rydstate.angular.angular_ket import AngularKetBase, AngularKetLS
 from rydstate.angular.utils import (
     AllKnown,
     is_not_set,
@@ -24,6 +24,7 @@ from rydstate.units import BaseQuantities, ureg
 if TYPE_CHECKING:
     from typing_extensions import Self
 
+    from rydstate.angular.angular_ket import AngularKetFJ, AngularKetJJ
     from rydstate.units import NDArray, PintArray, PintFloat
 
 GenericT_AngularKet = TypeVar("GenericT_AngularKet", bound=AngularKetBase[AllKnown])
@@ -41,10 +42,69 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
     angular: GenericT_AngularKet
     """The angular/spin part of the Rydberg electron."""
 
+    @overload
     def __init__(
         self: RydbergStateSQDT[T_AngularKet],
         species: str,
         n: int,
+        *,
+        angular_ket: T_AngularKet,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self: RydbergStateSQDT[AngularKetLS[AllKnown]],
+        species: str,
+        n: int,
+        *,
+        l_r: int,
+        j_r: float | None = None,
+        s_tot: float | None = None,
+        l_tot: int | None = None,
+        j_tot: float | None = None,
+        f_tot: float | None = None,
+        m: float | NotSet = NotSet,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self: RydbergStateSQDT[AngularKetJJ[AllKnown]],
+        species: str,
+        n: int,
+        *,
+        s_c: float | None = None,
+        l_c: int | None = None,
+        j_c: float,
+        s_r: float | None = None,
+        l_r: int,
+        j_r: float | None = None,
+        j_tot: float | None = None,
+        f_tot: float | None = None,
+        m: float | NotSet = NotSet,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self: RydbergStateSQDT[AngularKetFJ[AllKnown]],
+        species: str,
+        n: int,
+        *,
+        s_c: float | None = None,
+        l_c: int | None = None,
+        j_c: float,
+        f_c: float,
+        s_r: float | None = None,
+        l_r: int,
+        j_r: float | None = None,
+        f_tot: float | None = None,
+        m: float | NotSet = NotSet,
+    ) -> None: ...
+
+    def __init__(
+        self: RydbergStateSQDT[AngularKetBase[AllKnown]],
+        species: str,
+        n: int,
+        *,
         s_c: float | None = None,
         l_c: int | None = None,
         j_c: float | None = None,
@@ -57,8 +117,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         j_tot: float | None = None,
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
-        *,
-        angular_ket: T_AngularKet | None = None,
+        angular_ket: AngularKetBase[AllKnown] | None = None,
     ) -> None:
         r"""Initialize the Rydberg state.
 
@@ -84,7 +143,6 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         """
         self.species = species
         self.element_properties = get_element_properties(species)
-        self.sqdt = get_sqdt(species)
 
         if angular_ket is not None:
             if any(
@@ -94,7 +152,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
             self.angular = angular_ket
         else:
             l_c = 0 if l_c is None else l_c
-            self.angular = quantum_numbers_to_angular_ket(  # type: ignore [assignment]
+            self.angular = quantum_numbers_to_angular_ket(
                 species=self.species,
                 s_c=s_c,
                 l_c=l_c,
@@ -113,6 +171,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
             raise NotImplementedError("RydbergStateSQDT is currently only implemented for LS coupled states.")
 
         self.n = n
+        self.sqdt = get_sqdt(species)
         if not self.sqdt.is_allowed_shell(self.n, self.angular.l_r, self.angular.s_tot):
             raise ValueError(
                 f"The shell (n={self.n}, l_r={self.angular.l_r}, s_tot={self.angular.s_tot}) "
@@ -128,12 +187,10 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         self.rydberg_kets = [RydbergKet(self.angular, self.radial)]
 
     def __repr__(self) -> str:
-        species, n = self.species, self.n
-        return f"{self.__class__.__name__}({species}, {n=}, {self.angular!r})"
+        return f"{self.__class__.__name__}({self.species}, n={self.n}, {self.angular!r})"
 
     def __str__(self) -> str:
-        species, n = self.species, self.n
-        return f"{self.__class__.__name__}({species}, {n=}, {self.angular!s})"
+        return f"|{self.species}:n={self.n}, {self.angular!s}⟩"
 
     @overload
     def get_energy(self, unit: None = None) -> PintFloat: ...
@@ -362,171 +419,3 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         if unit is None:
             return lifetime
         return lifetime.to(unit).magnitude
-
-
-class RydbergStateSQDTAlkali(RydbergStateSQDT[AngularKetLS[AllKnown]]):
-    """Create an Alkali Rydberg state, including the radial and angular states."""
-
-    def __init__(
-        self,
-        species: str,
-        n: int,
-        l: int,
-        j: float | None = None,
-        f: float | None = None,
-        m: float | NotSet = NotSet,
-    ) -> None:
-        r"""Initialize the Rydberg state.
-
-        Args:
-            species: Atomic species.
-            n: Principal quantum number of the rydberg electron.
-            l: Orbital angular momentum quantum number of the rydberg electron.
-            j: Angular momentum quantum number of the rydberg electron.
-            f: Total angular momentum quantum number of the atom (rydberg electron + core)
-              Optional, only needed if the species supports hyperfine structure
-              (i.e. species.i_c is not None and species.i_c != 0).
-            m: Total magnetic quantum number.
-              Optional, only needed for concrete angular matrix elements.
-
-        """
-        super().__init__(species=species, n=n, l_r=l, j_tot=j, f_tot=f, m=m)
-
-        self.l = self.angular.l_r
-        self.j = self.angular.j_tot
-        self.f = self.angular.f_tot
-        self.m = self.angular.m
-
-    def __repr__(self) -> str:
-        species, n = self.species, self.n
-        l, j, f, m = self.l, self.j, self.f, self.m
-        f_string = f", {f=}" if self.element_properties.i_c != 0 else ""
-        return f"{self.__class__.__name__}({species}, {n=}, {l=}, {j=}{f_string}, {m=})"
-
-
-class RydbergStateSQDTAlkalineLS(RydbergStateSQDT[AngularKetLS[AllKnown]]):
-    """Create an Alkaline Rydberg state, including the radial and angular states."""
-
-    def __init__(
-        self,
-        species: str,
-        n: int,
-        l: int,
-        s_tot: int,
-        j_tot: int | None = None,
-        f_tot: float | None = None,
-        m: float | NotSet = NotSet,
-    ) -> None:
-        r"""Initialize the Rydberg state.
-
-        Args:
-            species: Atomic species.
-            n: Principal quantum number of the rydberg electron.
-            l: Orbital angular momentum quantum number of the rydberg electron.
-            s_tot: Total spin quantum number of all electrons.
-            j_tot: Total angular momentum quantum number of all electrons.
-            f_tot: Total angular momentum quantum number of the atom (rydberg electron + core)
-              Optional, only needed if the species supports hyperfine structure
-              (i.e. species.i_c is not None and species.i_c != 0).
-            m: Total magnetic quantum number.
-              Optional, only needed for concrete angular matrix elements.
-
-        """
-        super().__init__(species=species, n=n, l_r=l, s_tot=s_tot, j_tot=j_tot, f_tot=f_tot, m=m)
-
-        self.l = self.angular.l_r
-        self.s_tot = self.angular.s_tot
-        self.j_tot = self.angular.j_tot
-        self.f_tot = self.angular.f_tot
-        self.m = self.angular.m
-
-    def __repr__(self) -> str:
-        species, n = self.species, self.n
-        l, s_tot, j_tot, f_tot, m = self.l, self.s_tot, self.j_tot, self.f_tot, self.m
-        return f"{self.__class__.__name__}({species}, {n=}, {l=}, {s_tot=}, {j_tot=}, {f_tot=}, {m=})"
-
-
-class RydbergStateSQDTAlkalineJJ(RydbergStateSQDT[AngularKetJJ[AllKnown]]):
-    """Create an Alkaline Rydberg state, including the radial and angular states."""
-
-    def __init__(
-        self,
-        species: str,
-        n: int,
-        l: int,
-        j_r: float,
-        j_tot: int | None = None,
-        f_tot: float | None = None,
-        m: float | NotSet = NotSet,
-    ) -> None:
-        r"""Initialize the Rydberg state.
-
-        Args:
-            species: Atomic species.
-            n: Principal quantum number of the rydberg electron.
-            l: Orbital angular momentum quantum number of the rydberg electron.
-            j_r: Total angular momentum quantum number of the Rydberg electron.
-            j_tot: Total angular momentum quantum number of all electrons.
-            f_tot: Total angular momentum quantum number of the atom (rydberg electron + core)
-              Optional, only needed if the species supports hyperfine structure
-              (i.e. species.i_c is not None and species.i_c != 0).
-            m: Total magnetic quantum number.
-              Optional, only needed for concrete angular matrix elements.
-
-        """
-        super().__init__(species=species, n=n, l_r=l, j_r=j_r, j_tot=j_tot, f_tot=f_tot, m=m)
-
-        self.l = self.angular.l_r
-        self.j_r = self.angular.j_r
-        self.j_tot = self.angular.j_tot
-        self.f_tot = self.angular.f_tot
-        self.m = self.angular.m
-
-    def __repr__(self) -> str:
-        species, n = self.species, self.n
-        l, j_r, j_tot, f_tot, m = self.l, self.j_r, self.j_tot, self.f_tot, self.m
-        return f"{self.__class__.__name__}({species}, {n=}, {l=}, {j_r=}, {j_tot=}, {f_tot=}, {m=})"
-
-
-class RydbergStateSQDTAlkalineFJ(RydbergStateSQDT[AngularKetFJ[AllKnown]]):
-    """Create an Alkaline Rydberg state, including the radial and angular states."""
-
-    def __init__(
-        self,
-        species: str,
-        n: int,
-        l: int,
-        j_r: float,
-        f_c: float | None = None,
-        f_tot: float | None = None,
-        m: float | NotSet = NotSet,
-    ) -> None:
-        r"""Initialize the Rydberg state.
-
-        Args:
-            species: Atomic species.
-            n: Principal quantum number of the rydberg electron.
-            l: Orbital angular momentum quantum number of the rydberg electron.
-            j_r: Total angular momentum quantum number of the Rydberg electron.
-            f_c: Total angular momentum quantum number of the core (core electron + nucleus).
-            f_tot: Total angular momentum quantum number of the atom (rydberg electron + core)
-              Optional, only needed if the species supports hyperfine structure
-              (i.e. species.i_c is not None and species.i_c != 0).
-            m: Total magnetic quantum number.
-              Optional, only needed for concrete angular matrix elements.
-
-        """
-        super().__init__(species=species, n=n, l_r=l, j_r=j_r, f_c=f_c, f_tot=f_tot, m=m)
-
-        self.l = self.angular.l_r
-        self.j_r = self.angular.j_r
-        self.f_c = self.angular.f_c
-        self.f_tot = self.angular.f_tot
-        self.m = self.angular.m
-
-    def __repr__(self) -> str:
-        species, n = self.species, self.n
-        l, j_r, f_c, f_tot, m = self.l, self.j_r, self.f_c, self.f_tot, self.m
-        l_c, j_c = self.angular.l_c, self.angular.j_c
-        core_string = f", {l_c=}, {j_c=}" if l_c != 0 else ""
-        return f"{self.__class__.__name__}({species}, {n=}{core_string}, {l=}, {j_r=}, {f_c=}, {f_tot=}, {m=})"

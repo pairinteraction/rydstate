@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from rydstate import RydbergStateSQDT, RydbergStateSQDTAlkali
+from rydstate import RydbergStateSQDT
 from rydstate.angular import AngularKetLS
 from rydstate.species import ElementProperties, get_all_subclasses, get_element_properties
 
@@ -22,14 +22,14 @@ ALL_AVAILABLE_SPECIES = sorted([cls.species for cls in get_all_subclasses(Elemen
 )
 def test_hydrogen_textbook_lifetimes(n: int, l: int, j: float, expected_gamma: float) -> None:
     """Test that calculated H lifetimes match NIST textbook values within 5%."""
-    state = RydbergStateSQDTAlkali("H_textbook", n=n, l=l, j=j, m=0.5)
+    state = RydbergStateSQDT("H_textbook", n=n, l_r=l, j_r=j, m=0.5)
     tau = state.get_lifetime(unit="s")
     np.testing.assert_allclose(tau, 1 / expected_gamma, rtol=0.05)
 
 
 def test_bbr_shortens_lifetime() -> None:
     """Test that black body radiation at 300 K shortens the lifetime relative to T=0."""
-    state = RydbergStateSQDTAlkali("Rb", n=30, l=0, j=0.5, m=0.5)
+    state = RydbergStateSQDT("Rb", n=30, l_r=0, j_r=0.5, m=0.5)
     tau_0 = state.get_lifetime(unit="mus")
     tau_300 = state.get_lifetime(300, temperature_unit="K", unit="mus")
     assert tau_300 < tau_0

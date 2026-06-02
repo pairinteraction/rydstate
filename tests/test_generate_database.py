@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 import pytest
-from rydstate import RydbergStateSQDTAlkali
+from rydstate import RydbergStateSQDT
 from rydstate.basis.basis_sqdt import BasisSQDT
 from rydstate.generate_database.generate_database import DATABASE_SQL_FILE
 from rydstate.generate_database.generate_matrix_elements_table import generate_matrix_elements_tables
@@ -37,7 +37,7 @@ def test_generate_wigner_table_returns_and_inserts_rows(conn: sqlite3.Connection
 
 
 def test_get_state_data_for_sqdt_alkali_state() -> None:
-    state = RydbergStateSQDTAlkali("H", n=1, l=0, j=0.5)
+    state = RydbergStateSQDT("H", n=1, l_r=0, j_r=0.5)
     row = get_state_data(7, state)
     assert row[0] == 7
     assert row[2:6] == (1, 1, 1.0, 0.5)
