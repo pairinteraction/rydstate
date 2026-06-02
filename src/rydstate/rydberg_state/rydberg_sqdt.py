@@ -59,6 +59,19 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         *,
         l_r: int,
         j_r: float | None = None,
+        m: float | NotSet = NotSet,
+    ) -> None: ...  # for Alkali atoms, allow to only specify l_r and j_r, and still construct an AngularKetLS
+
+    @overload
+    def __init__(
+        self: RydbergStateSQDT[AngularKetLS[AllKnown]],
+        species: str,
+        n: int,
+        *,
+        s_c: float | None = None,
+        l_c: int | None = None,
+        s_r: float | None = None,
+        l_r: int,
         s_tot: float | None = None,
         l_tot: int | None = None,
         j_tot: float | None = None,
@@ -74,11 +87,11 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         *,
         s_c: float | None = None,
         l_c: int | None = None,
-        j_c: float,
+        j_c: float | None = None,
         s_r: float | None = None,
         l_r: int,
         j_r: float | None = None,
-        j_tot: float | None = None,
+        j_tot: float,
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
     ) -> None: ...
@@ -91,7 +104,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         *,
         s_c: float | None = None,
         l_c: int | None = None,
-        j_c: float,
+        j_c: float | None = None,
         f_c: float,
         s_r: float | None = None,
         l_r: int,
@@ -151,7 +164,11 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
                 raise ValueError("Specify either angular_ket or the quantum numbers for the angular ket, not both.")
             self.angular = angular_ket
         else:
+            if s_c is None and l_c is None and j_c is None and self.element_properties.number_valence_electrons == 1:
+                # allow to pass l_r and j_r for Alkali atoms, and still construct an AngularKetLS
+                j_tot = j_r if j_tot is None else j_tot
             l_c = 0 if l_c is None else l_c
+
             self.angular = quantum_numbers_to_angular_ket(
                 species=self.species,
                 s_c=s_c,
