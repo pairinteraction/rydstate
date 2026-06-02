@@ -181,7 +181,7 @@ class SQDT:
         return ionization_energy.to(unit, "spectroscopy").magnitude
 
     @cached_property
-    def reference_ionization_energy_au(self) -> float:
+    def ionization_energy_au(self) -> float:
         """Ionization energy in atomic units (Hartree)."""
         return self.get_ionization_energy("hartree")
 
@@ -229,9 +229,7 @@ class SQDT:
         if n <= nist_n_max and use_nist_data:  # try to use NIST data
             if (n, l, j_tot, s_tot) in self._nist_energy_levels:
                 energy_au = self._nist_energy_levels[(n, l, j_tot, s_tot)]
-                energy_au -= (
-                    self.reference_ionization_energy_au
-                )  # use the cached ionization energy for better performance
+                energy_au -= self.ionization_energy_au  # use the cached ionization energy for better performance
                 return calc_nu_from_energy(self.element_properties.reduced_mass_au, energy_au)
             logger.debug(
                 "NIST energy levels for (n=%d, l=%d, j_tot=%s, s_tot=%s) not found, using quantum defect theory.",

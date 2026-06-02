@@ -177,8 +177,11 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
                 f"The shell (n={self.n}, l_r={self.angular.l_r}, s_tot={self.angular.s_tot}) "
                 f"is not allowed for the species {self.species}."
             )
-
         self.nu = self.sqdt.calc_nu(self.n, self.angular)
+        self._energy_au = (
+            calc_energy_from_nu(self.element_properties.reduced_mass_au, self.nu) + self.sqdt.ionization_energy_au
+        )
+
         potential = get_potential_class(self.species)(self.angular.l_r)
         self.radial = RadialKet(self.nu, potential)
         self.radial.set_n_for_sanity_check(self.n)
@@ -208,10 +211,9 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
 
         where `\mu = R_M/R_\infty` is the reduced mass and `\nu` the effective principal quantum number.
         """
-        energy_au = calc_energy_from_nu(self.element_properties.reduced_mass_au, self.nu)
         if unit == "a.u.":
-            return energy_au
-        energy: PintFloat = energy_au * BaseQuantities["energy"]
+            return self._energy_au
+        energy: PintFloat = self._energy_au * BaseQuantities["energy"]
         if unit is None:
             return energy
         return energy.to(unit, "spectroscopy").magnitude
