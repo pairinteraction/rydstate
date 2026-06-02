@@ -10,8 +10,8 @@ class SQDTHydrogen(SQDT):
 
     quantum_defects: ClassVar = {}
 
-    # https://webbook.nist.gov/cgi/inchi?ID=C1333740&Mask=20
-    ionization_energy = (15.425_93, "eV")
+    # https://physics.nist.gov/cgi-bin/ASD/ie.pl?spectra=H&units=1&at_num_out=on&el_name_out=on&seq_out=on&shells_out=on&level_out=on&e_out=0&unc_out=on&biblio=on
+    ionization_energy = (13.598_434_599_702, "eV")
 
     def _setup_nist_energy_levels(self) -> None:
         self._nist_energy_levels = {}
