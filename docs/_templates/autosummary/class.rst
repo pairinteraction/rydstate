@@ -2,6 +2,20 @@
 
 .. currentmodule:: {{ module }}
 
+{% set own_methods = methods | reject("in", inherited_members) | list %}
+{% if module.endswith("_fmodel_data") or ((name.startswith("MQDT") or name.startswith("SQDT")) and own_methods | length == 0) %}
+.. The species data classes (FModel / MQDT / SQDT subclasses) only store
+   parameters (class attributes) for a given species; they inherit all of their
+   behaviour (methods and computed properties) from their respective base class.
+   Here we only document the parameters that are actually defined on the
+   subclass, and hide the inherited members.
+
+.. autoclass:: {{ fullname }}
+   :members:
+   :member-order: bysource
+   :undoc-members:
+   :exclude-members: __init__
+{% else %}
 {% if methods %}
 .. rubric:: Class Methods
 
@@ -27,3 +41,4 @@
    :inherited-members:
    :undoc-members:
    :class-doc-from: init
+{% endif %}
