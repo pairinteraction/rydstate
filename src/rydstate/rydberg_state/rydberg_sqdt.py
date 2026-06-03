@@ -229,13 +229,38 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         The energy is defined as
 
         .. math::
-            E = - \frac{1}{2} \frac{\mu}{\nu^2}
+            E = - \frac{1}{2} \frac{\mu}{\nu^2} + E_{ionization}
 
-        where `\mu = R_M/R_\infty` is the reduced mass and `\nu` the effective principal quantum number.
+        where `\mu = R_M/R_\infty` is the reduced mass and `\nu` the effective principal quantum number,
+        and `E_{ionization}` is the ionization energy of the species.
         """
         _energy_au = (
             calc_energy_from_nu(self.element_properties.reduced_mass_au, self.nu) + self.sqdt.ionization_energy_au
         )
+        if unit == "a.u.":
+            return _energy_au
+        energy: PintFloat = _energy_au * BaseQuantities["energy"]
+        if unit is None:
+            return energy
+        return energy.to(unit, "spectroscopy").magnitude
+
+    @overload
+    def get_radial_energy(self, unit: None = None) -> PintFloat: ...
+
+    @overload
+    def get_radial_energy(self, unit: str) -> float: ...
+
+    def get_radial_energy(self, unit: str | None = None) -> PintFloat | float:
+        r"""Get the energy of the radial part of the Rydberg state.
+
+        The radial part of the energy is given by
+
+        .. math::
+            E = - \frac{1}{2} \frac{\mu}{\nu^2}
+
+        where `\mu = R_M/R_\infty` is the reduced mass and `\nu` the effective principal quantum number.
+        """
+        _energy_au = calc_energy_from_nu(self.element_properties.reduced_mass_au, self.nu)
         if unit == "a.u.":
             return _energy_au
         energy: PintFloat = _energy_au * BaseQuantities["energy"]
