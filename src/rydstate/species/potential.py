@@ -360,13 +360,15 @@ class PotentialDummy(Potential):
     tag = "dummy"
     l_r: int | Unknown  # type: ignore [assignment]
 
-    def __init__(self, l_r: int | Unknown) -> None:
+    def __init__(self, species: str, l_r: int | Unknown) -> None:
         r"""Initialize the model.
 
         Args:
+            species: The species for which to initialize the dummy potential.
             l_r: Orbital angular momentum of the Rydberg electron.
 
         """
+        self.species = species  # type: ignore [misc]
         self.l_r = l_r
 
     def calc_model_potential(self, x: XType) -> XType:  # noqa: ARG002

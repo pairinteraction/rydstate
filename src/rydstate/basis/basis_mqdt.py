@@ -160,7 +160,7 @@ def get_mqdt_states_from_fmodel(
             if not is_unknown(angular_ket.l_r):
                 potential = get_potential_class(model.species)(angular_ket.l_r)
             else:
-                potential = PotentialDummy(angular_ket.l_r)
+                potential = PotentialDummy(model.species, angular_ket.l_r)
             radial_ket = RadialKet(float(nui), potential)
             rydberg_kets.append(RydbergKet(angular_ket, radial_ket))
 
