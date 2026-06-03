@@ -6,9 +6,11 @@ from typing import TYPE_CHECKING, Any, overload
 
 import numpy as np
 
+from rydstate.units import BaseQuantities
+
 if TYPE_CHECKING:
-    from rydstate.angular import AngularState
     from rydstate.angular.angular_ket import AngularKetBase
+    from rydstate.angular.angular_state import AngularState
     from rydstate.rydberg_state.rydberg_ket import RydbergKet
     from rydstate.units import MatrixElementOperator, NDArray, PintFloat
 
@@ -17,20 +19,47 @@ logger = logging.getLogger(__name__)
 
 
 class RydbergStateBase(ABC):
-    angular: AngularState[Any] | AngularKetBase[Any]
+    species: str
+    """The species of the Rydberg state."""
+
+    coefficients: NDArray
+    """The channel coefficients of the different Rydberg ket channels that form the Rydberg state."""
+    rydberg_kets: list[RydbergKet]
+    """The Rydberg kets that form the Rydberg state."""
+    angular: AngularKetBase[Any] | AngularState[Any]
+    """The angular part of the Rydberg state, i.e. the radial part is traced out."""
 
     nu: float
     """The effective principal quantum number nu.
-
     For SQDT states, this is also sometimes called n*.
     For MQDT nu is given in reference to the lowest ionization threshold.
     """
+    _energy_au: float
+    """The energy of the Rydberg state in atomic units (Hartree)."""
 
-    coefficients: NDArray
-    """The coefficients of the Rydberg state in the basis of Rydberg kets."""
+    @overload
+    def get_energy(self, unit: None = None) -> PintFloat: ...
 
-    rydberg_kets: list[RydbergKet]
-    """The Rydberg kets that form the basis of the Rydberg state."""
+    @overload
+    def get_energy(self, unit: str) -> float: ...
+
+    def get_energy(self, unit: str | None = None) -> PintFloat | float:
+        r"""Get the energy of the Rydberg state.
+
+        The energy is defined as
+
+        .. math::
+            E = - \frac{1}{2} \frac{\mu}{\nu^2} + E_{ionization}
+
+        where `\mu = R_M/R_\infty` is the reduced mass and `\nu` the effective principal quantum number,
+        and `E_{ionization}` is the (reference) ionization energy of the species.
+        """
+        if unit == "a.u.":
+            return self._energy_au
+        energy: PintFloat = self._energy_au * BaseQuantities["energy"]
+        if unit is None:
+            return energy
+        return energy.to(unit, "spectroscopy").magnitude
 
     def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
