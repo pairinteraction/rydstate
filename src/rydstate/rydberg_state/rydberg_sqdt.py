@@ -359,9 +359,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
             basis.filter_states("nu", (0, self.nu))
 
         relevant_states = basis.states
-        energy_differences_au = self.get_energy("a.u.") - np.array(
-            [s.get_energy("a.u.") for s in relevant_states]
-        )
+        energy_differences_au = self.get_energy("a.u.") - np.array([s.get_energy("a.u.") for s in relevant_states])
         electric_dipole_moments_au = np.zeros(len(relevant_states))
         for q in [-1, 0, 1]:
             el_di_m = np.array(
