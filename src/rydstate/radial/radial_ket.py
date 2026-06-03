@@ -112,7 +112,8 @@ class RadialKet:
     @property
     def nodes(self) -> int:
         """The number of nodes (i.e. zero-crossings) of the wavefunction."""
-        return int(np.sum(np.abs(np.diff(np.sign(self.w_list)))) // 2)
+        w_list_no_zeros = self.w_list[self.w_list != 0]
+        return int(np.sum(np.abs(np.diff(np.sign(w_list_no_zeros)))) // 2)
 
     def set_n_for_sanity_check(self, n: int) -> None:
         """Provide n for additional sanity checks of the radial wavefunction.
