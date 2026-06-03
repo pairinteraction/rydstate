@@ -15,11 +15,7 @@ General classes
     SQDT
     MQDT
 
-
-
 Specific data for the different species
-
-
 
 .. currentmodule:: rydstate.species
 
