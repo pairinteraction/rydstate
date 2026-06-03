@@ -321,24 +321,36 @@ class RadialKet:
         - The integration stopped before z_force_stop (for l>0)
         """
         warning_msgs: list[str] = []
+        start_id = np.argwhere(self.w_list != 0).flatten()[0]
 
         # Check and Correct if divergence of the wavefunction
         w_list_abs = np.abs(self.w_list)
         idmax = np.argmax(w_list_abs)
         w_abs_max = w_list_abs[idmax]
-        outer_max = np.max(w_list_abs[int(0.1 * self.steps) :])
-        if idmax <= 5 and w_abs_max / outer_max > 10:
+        outer_max = next(
+            w_list_abs[i]
+            for i in range(len(w_list_abs) - 2, 0, -1)
+            if w_list_abs[i] > w_list_abs[i - 1] and w_list_abs[i] > w_list_abs[i + 1]
+        )
+        if idmax <= start_id + 5 and w_abs_max / outer_max > 5:
             warning_msgs.append(
                 f"Wavefunction diverges at the inner boundary, w_abs_max / outer_max={w_abs_max / outer_max:.2e}",
             )
             warning_msgs.append("Trying to correct the wavefunction.")
-            first_ind = np.argwhere(w_list_abs < outer_max)[0][0]
+            first_ind = next(ind for ind in np.argwhere(w_list_abs < outer_max).flatten() if ind > start_id)
             self._w_list[:first_ind] = 0
             self._w_list /= self.norm
 
+        # From here on, we want to keep the logic from the old sanity check,
+        # where the wavefunction is restricted to the region where numerov actually ran
+        # and not set to 0 in the region where numerov did not run
+        w_list = self.w_list[start_id:]
+        z_list = self.z_list[start_id:]
+        steps = len(w_list)
+
         # Check the maximum of the wavefunction
-        idmax = np.argmax(np.abs(self.w_list))
-        if idmax < 0.05 * self.steps:
+        idmax = np.argmax(np.abs(w_list))
+        if idmax < 0.05 * steps:
             warning_msgs.append(
                 f"The maximum of the wavefunction is close to the inner boundary (idmax={idmax}) "
                 "probably due to inner divergence of the wavefunction. "
@@ -347,13 +359,9 @@ class RadialKet:
         # Check the weight of the wavefunction at the inner boundary
         inner_ind = 10
         inner_weight = (
-            2
-            * np.sum(
-                self.w_list[:inner_ind] * self.w_list[:inner_ind] * self.z_list[:inner_ind] * self.z_list[:inner_ind]
-            )
-            * self.dz
+            2 * np.sum(w_list[:inner_ind] * w_list[:inner_ind] * z_list[:inner_ind] * z_list[:inner_ind]) * self.dz
         )
-        inner_weight_scaled_to_whole_grid = inner_weight * self.steps / inner_ind
+        inner_weight_scaled_to_whole_grid = inner_weight * steps / inner_ind
 
         tol = 1e-4
         # for low n the wavefunction converges not as good and still has more weight at the inner boundary
@@ -375,15 +383,15 @@ class RadialKet:
             )
 
         # Check the wavefunction at the outer boundary
-        outer_ind = int(0.95 * self.steps)
-        outer_wf = self.w_list[outer_ind:]
+        outer_ind = int(0.95 * steps)
+        outer_wf = w_list[outer_ind:]
         if np.mean(outer_wf) > 1e-7:
             warning_msgs.append(
                 f"The wavefunction is not close to zero at the outer boundary, mean={np.mean(outer_wf):.2e}"
             )
 
-        outer_weight = 2 * np.sum(outer_wf * outer_wf * self.z_list[outer_ind:] * self.z_list[outer_ind:]) * self.dz
-        outer_weight_scaled_to_whole_grid = outer_weight * self.steps / len(outer_wf)
+        outer_weight = 2 * np.sum(outer_wf * outer_wf * z_list[outer_ind:] * z_list[outer_ind:]) * self.dz
+        outer_weight_scaled_to_whole_grid = outer_weight * steps / len(outer_wf)
         if outer_weight_scaled_to_whole_grid > 1e-10:
             warning_msgs.append(
                 f"The wavefunction is not close to zero at the outer boundary,"
@@ -400,7 +408,7 @@ class RadialKet:
 
         # Check that numerov stopped and did not run until z_force_stop
         if run_backward:
-            z_stop = self.z_list[np.argwhere(self.w_list != 0).flatten()[0]]
+            z_stop = z_list[np.argwhere(w_list != 0).flatten()[0]]
             z_tol = 0.035 if element_properties.number_valence_electrons == 1 else 0.05
             if self.l_r == 0 and z_stop > z_tol:  # z_stop should run almost to zero for l=0
                 warning_msgs.append(f"The integration for l=0 did stop at {z_stop} (should be close to zero).")
@@ -409,7 +417,7 @@ class RadialKet:
                     f"The integration did not stop before z_force_stop, z={z_stop}, z_force_stop={z_force_stop}"
                 )
         else:
-            z_stop = self.z_list[np.argwhere(self.w_list != 0).flatten()[-1]]
+            z_stop = z_list[np.argwhere(w_list != 0).flatten()[-1]]
             if self.l_r > 0 and not run_backward and z_force_stop < z_stop + self.dz / 2:
                 warning_msgs.append(f"The integration did not stop before z_force_stop, z={z_stop}")
 
