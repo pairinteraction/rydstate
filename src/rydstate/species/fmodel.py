@@ -101,6 +101,16 @@ class FModel:
         """Return the ionization thresholds for all channels in atomic units."""
         return self.get_ionization_thresholds(unit="hartree")
 
+    def calc_energy_au(self, nu: float) -> float:
+        """Calculate the energy of the Rydberg state.
+
+        The energy is calculated for an effective principal quantum number nu,
+        which is defined with reference to the lowest ionization threshold of the MQDT model.
+        """
+        return (
+            calc_energy_from_nu(self.element_properties.reduced_mass_au, nu) + self.mqdt.reference_ionization_energy_au
+        )
+
     def calc_channel_nuis(self, nu: float) -> NDArray:
         r"""Return the channel-dependent effective principal quantum numbers nui.
 
@@ -116,12 +126,10 @@ class FModel:
             List of channel nui values.
 
         """
-        thresholds = self.ionization_thresholds_au
-        ioniz_ref = self.mqdt.reference_ionization_energy_au
-        reduced_mass_au = self.element_properties.reduced_mass_au
-        energy_from_nu = calc_energy_from_nu(reduced_mass_au, nu)
+        energy_au = self.calc_energy_au(nu)
         nuis = [
-            calc_nu_from_energy(reduced_mass_au, ioniz_ref + energy_from_nu - threshold) for threshold in thresholds
+            calc_nu_from_energy(self.element_properties.reduced_mass_au, energy_au - threshold)
+            for threshold in self.ionization_thresholds_au
         ]
         return np.array(nuis)
 
