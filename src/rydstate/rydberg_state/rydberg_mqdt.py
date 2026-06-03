@@ -28,6 +28,7 @@ class RydbergStateMQDT(RydbergStateBase):
         coefficients: Sequence[float] | NDArray,
         rydberg_kets: Sequence[RydbergKet],
         nu: float,
+        energy_au: float,
         *,
         warn_if_not_normalized: bool = True,
         normalize: bool = True,
@@ -36,6 +37,7 @@ class RydbergStateMQDT(RydbergStateBase):
         self.coefficients = np.array(coefficients)
         self.rydberg_kets = list(rydberg_kets)
         self.nu = nu
+        self._energy_au = energy_au
 
         if len(rydberg_kets) == 0:
             raise ValueError("RydbergStateMQDT must be initialized with at least one state.")
@@ -76,3 +78,8 @@ class RydbergStateMQDT(RydbergStateBase):
     def norm(self) -> float:
         """Return the norm of the state (should be 1)."""
         return float(np.linalg.norm(self.coefficients))
+
+    @property
+    def nui(self) -> list[float]:
+        """Return the effective principal quantum numbers nui of the different channels."""
+        return [rydberg_ket.radial.nu for rydberg_ket in self.rydberg_kets]

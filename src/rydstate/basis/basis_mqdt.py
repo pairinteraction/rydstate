@@ -197,6 +197,7 @@ def get_mqdt_states_from_fmodel(
             radial_ket = RadialKet(float(nui), potential)
             rydberg_kets.append(RydbergKet(angular_ket, radial_ket))
 
-        states.append(RydbergStateMQDT(model.species, coefficients, rydberg_kets, nu=nu))
+        energy_au = model.calc_energy_au(nu)
+        states.append(RydbergStateMQDT(model.species, coefficients, rydberg_kets, nu=nu, energy_au=energy_au))
 
     return states
