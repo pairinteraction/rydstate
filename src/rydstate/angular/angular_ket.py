@@ -37,8 +37,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-GenericT_Unknown = TypeVar("GenericT_Unknown", float, AllKnown, Unknown)
-T_Unknown = TypeVar("T_Unknown", float, AllKnown, Unknown)
+GenericT_Unknown = TypeVar("GenericT_Unknown", AllKnown, Unknown)
+T_Unknown = TypeVar("T_Unknown", AllKnown, Unknown, Any)
 
 
 class AngularKetBase(ABC, Generic[GenericT_Unknown]):
@@ -1045,4 +1045,4 @@ class AngularKetFJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
 
     def get_core_ket(self) -> CoreKet:
         """Get the core ket corresponding to this FJ ket."""
-        return CoreKet(i_c=self.i_c, s_c=self.s_c, l_c=self.l_c, j_c=self.j_c, f_c=self.f_c, label=self.label)  # type: ignore [arg-type]
+        return CoreKet(i_c=self.i_c, s_c=self.s_c, l_c=self.l_c, j_c=self.j_c, f_c=self.f_c, label=self.label)
