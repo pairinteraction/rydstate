@@ -314,7 +314,7 @@ class RadialKet:
         self._w_list = w_list
         self.apply_sign_convention("positive_at_outer_bound")
 
-    def sanity_check(self, z_stop: float, run_backward: bool) -> bool:  # noqa: C901, PLR0915, PLR0912
+    def sanity_check(self, z_force_stop: float, run_backward: bool) -> bool:  # noqa: C901, PLR0915, PLR0912
         """Do some sanity checks on the wavefunction.
 
         Check if the wavefuntion fulfills the following conditions:
@@ -322,7 +322,7 @@ class RadialKet:
         - The wavefunction is close to zero at the inner boundary.
         - The wavefunction is close to zero at the outer boundary.
         - The wavefunction has exactly (n - l - 1) nodes.
-        - The integration stopped before z_stop (for l>0)
+        - The integration stopped before z_force_stop (for l>0)
         """
         warning_msgs: list[str] = []
 
@@ -402,16 +402,20 @@ class RadialKet:
         if self.n is not None and nodes != self.n - self.l_r - 1:
             warning_msgs.append(f"The wavefunction has {nodes} nodes, but should have {self.n - self.l_r - 1} nodes.")
 
-        # Check that numerov stopped and did not run until x_stop
-        if self.l_r > 0:
-            if run_backward and z_stop > self.z_list[0] - self.dz / 2 and inner_weight_scaled_to_whole_grid > 1e-6:
-                warning_msgs.append(f"The integration did not stop before z_stop, z={self.z_list[0]}, z_stop={z_stop}")
-            if not run_backward and z_stop < self.z_list[-1] + self.dz / 2:
-                warning_msgs.append(f"The integration did not stop before z_stop, z={self.z_list[-1]}")
-        elif self.l_r == 0 and run_backward:
+        # Check that numerov stopped and did not run until z_force_stop
+        if run_backward:
+            z_stop = self.z_list[np.argwhere(self.w_list != 0).flatten()[0]]
             z_tol = 0.035 if element_properties.number_valence_electrons == 1 else 0.05
-            if self.z_list[0] > z_tol:  # z_list[0] should run almost to zero for l=0
-                warning_msgs.append(f"The integration for l=0 did stop at {self.z_list[0]} (should be close to zero).")
+            if self.l_r == 0 and z_stop > z_tol:  # z_stop should run almost to zero for l=0
+                warning_msgs.append(f"The integration for l=0 did stop at {z_stop} (should be close to zero).")
+            if self.l_r > 0 and z_force_stop > z_stop - self.dz / 2 and inner_weight_scaled_to_whole_grid > 1e-6:
+                warning_msgs.append(
+                    f"The integration did not stop before z_force_stop, z={z_stop}, z_force_stop={z_force_stop}"
+                )
+        else:
+            z_stop = self.z_list[np.argwhere(self.w_list != 0).flatten()[-1]]
+            if self.l_r > 0 and not run_backward and z_force_stop < z_stop + self.dz / 2:
+                warning_msgs.append(f"The integration did not stop before z_force_stop, z={z_stop}")
 
         if warning_msgs:
             msg = f"The wavefunction for the radial_ket {self} has some issues:"
