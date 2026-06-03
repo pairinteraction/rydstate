@@ -7,6 +7,4 @@ Radial module
     :toctree: ../_autosummary/
 
     radial.RadialKet
-    radial.Wavefunction
-    radial.Model
     radial.numerov

@@ -7,8 +7,5 @@ Rydberg States
     :toctree: ../_autosummary/
 
     RydbergStateSQDT
-    RydbergStateSQDTAlkali
-    RydbergStateSQDTAlkalineLS
-    RydbergStateSQDTAlkalineJJ
-    RydbergStateSQDTAlkalineFJ
     RydbergStateMQDT
+    rydberg_state.RydbergKet
