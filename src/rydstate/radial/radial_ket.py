@@ -304,11 +304,7 @@ class RadialKet:
         m_star = self.potential.element_properties.reduced_mass_au
         whitw_list = whitw_vectorized(self.nu, self.l_r + 0.5, m_star * 2 * self.x_list / self.nu)
 
-        u_list: NDArray = (
-            self.nu ** (3 / 2)
-            * whitw_list
-            / np.sqrt(self.nu**2 * gamma(self.nu + self.l_r + 1) * gamma(self.nu - self.l_r))
-        )
+        u_list: NDArray = whitw_list / np.sqrt(self.nu**2 * gamma(self.nu + self.l_r + 1) * gamma(self.nu - self.l_r))
         w_list: NDArray = u_list / np.sqrt(self.z_list)
 
         self._w_list = w_list
