@@ -95,7 +95,7 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
         if isinstance(potential_class, type) and issubclass(potential_class, Potential):
             self.potential_class = potential_class
         else:
-            self.potential_class = get_potential_class(species)
+            self.potential_class = get_potential_class(species, tag=potential_class)
 
         self._init_states(n, m, coupling_scheme)
 

@@ -66,7 +66,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         if isinstance(potential_class, type) and issubclass(potential_class, Potential):
             self.potential_class = potential_class
         else:
-            self.potential_class = get_potential_class(species)
+            self.potential_class = get_potential_class(species, tag=potential_class)
 
         models: list[FModel] = []
         s_r = 0.5
