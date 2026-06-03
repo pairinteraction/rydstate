@@ -6,8 +6,6 @@ from typing import TYPE_CHECKING, Any, overload
 
 import numpy as np
 
-from rydstate.units import MatrixElementOperatorRanks
-
 if TYPE_CHECKING:
     from rydstate.angular import AngularState
     from rydstate.angular.angular_ket import AngularKetBase
@@ -83,7 +81,9 @@ class RydbergStateBase(ABC):
         return value
 
     @overload
-    def calc_matrix_element(self, other: RydbergStateBase, operator: MatrixElementOperator, q: int) -> PintFloat: ...
+    def calc_matrix_element(
+        self, other: RydbergStateBase, operator: MatrixElementOperator, q: int, unit: None = None
+    ) -> PintFloat: ...
 
     @overload
     def calc_matrix_element(
@@ -116,9 +116,8 @@ class RydbergStateBase(ABC):
             The matrix element for the given operator.
 
         """
-        _k_radial, k_angular = MatrixElementOperatorRanks[operator]
-        prefactor = self.rydberg_kets[0].angular._calc_wigner_eckart_prefactor(  # noqa: SLF001
-            other.rydberg_kets[0].angular, k_angular, q
-        )
-        reduced_matrix_element = self.calc_reduced_matrix_element(other, operator, unit)
-        return prefactor * reduced_matrix_element
+        value = 0.0
+        for coeff1, sqdt1 in zip(self.coefficients, self.rydberg_kets, strict=True):
+            for coeff2, sqdt2 in zip(other.coefficients, other.rydberg_kets, strict=True):
+                value += np.conjugate(coeff1) * coeff2 * sqdt1.calc_matrix_element(sqdt2, operator, q=q, unit=unit)
+        return value

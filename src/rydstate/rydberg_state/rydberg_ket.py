@@ -118,7 +118,9 @@ class RydbergKet:
         return matrix_element.to(unit).magnitude
 
     @overload
-    def calc_matrix_element(self, other: RydbergKet, operator: MatrixElementOperator, q: int) -> PintFloat: ...
+    def calc_matrix_element(
+        self, other: RydbergKet, operator: MatrixElementOperator, q: int, unit: None = None
+    ) -> PintFloat: ...
 
     @overload
     def calc_matrix_element(self, other: RydbergKet, operator: MatrixElementOperator, q: int, unit: str) -> float: ...
