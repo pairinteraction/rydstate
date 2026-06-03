@@ -78,15 +78,15 @@ class Potential:
         The effective centrifugal potential is given as
 
         .. math::
-            V_l(x) = \frac{l(l+1)}{2x^2}
+            V_{l_r}(x) = \frac{l_r(l_r+1)}{2x^2}
 
-        where x = r / a_0 and l is the orbital angular momentum quantum number.
+        where x = r / a_0 and l_r is the orbital angular momentum quantum number of the Rydberg electron.
 
         Args:
             x: The dimensionless radial coordinate x = r / a_0, for which to calculate the potential.
 
         Returns:
-            V_l: The effective centrifugal potential V_l(x) in atomic units.
+            V_{l_r}: The effective centrifugal potential V_{l_r}(x) in atomic units.
 
         """
         x2 = x * x
@@ -134,10 +134,10 @@ class Potential:
         The total effective potential includes all physical and effective potentials:
 
         .. math::
-            V_{eff}(x) = V(x) + V_l(x) + V_{sqrt}(x)
+            V_{eff}(x) = V(x) + V_{l_r}(x) + V_{sqrt}(x)
 
         where V(x) is the physical potential (either Coulomb or a model potential),
-        V_l(x) is the effective centrifugal potential,
+        V_{l_r}(x) is the effective centrifugal potential,
         and V_{sqrt}(x) is the effective potential from the sqrt transformation.
 
         Note that we on purpose do not include the spin-orbit potential for several reasons:
@@ -165,7 +165,7 @@ class Potential:
         v += self.calc_effective_potential_sqrt(x)
         return v
 
-    def calc_hydrogen_turning_point_z(self, n: int, l: int) -> float:
+    def calc_hydrogen_turning_point_z(self, n: int, l_r: int) -> float:
         r"""Calculate the classical turning point z_i of the state if it would be a hydrogen atom.
 
         The hydrogen turning point is defined as the point,
@@ -174,19 +174,19 @@ class Potential:
         This is exactly the case at
 
         .. math::
-            r_i = n^2 - n \sqrt{n^2 - l(l + 1)}
+            r_i = n^2 - n \sqrt{n^2 - l_r(l_r + 1)}
 
         and z_i = sqrt{r_i / a_0}.
 
         Args:
             n: Principal quantum number of the state.
-            l: Orbital angular momentum quantum number of the state.
+            l_r: Orbital angular momentum quantum number of the state.
 
         Returns:
             z_i: The inner hydrogen turning point z_i in the scaled dimensionless coordinate z_i = sqrt{r_i / a_0}.
 
         """
-        return math.sqrt(n * n - n * math.sqrt(n * n - l * (l + 1)))
+        return math.sqrt(n * n - n * math.sqrt(n * n - l_r * (l_r + 1)))
 
     def calc_turning_point_z(self, energy_au: float, dz: float = 1e-3) -> float:
         r"""Calculate the classical inner turning point z_i for the given state.
@@ -209,9 +209,9 @@ class Potential:
         """
         # for a given hydrogen turning point z_hyd, the classical turning point usually lies within z_hyd \pm 5
         # for a given l, the hydrogen turning point is bound by
-        # z_lower = z_hyd(n=inf, l)  = \sqrt{l * (l+1) / 2} <= z_hyd(n, l) <= z_hyd(n=l+1, l) = z_upper
+        # z_lower = z_hyd(n=inf, l_r)  = \sqrt{l_r * (l_r+1) / 2} <= z_hyd(n, l_r) <= z_hyd(n=l_r+1, l_r) = z_upper
         z_lower = math.sqrt(self.l_r * (self.l_r + 1) / 2)
-        z_upper = self.calc_hydrogen_turning_point_z(n=self.l_r + 1, l=self.l_r)
+        z_upper = self.calc_hydrogen_turning_point_z(n=self.l_r + 1, l_r=self.l_r)
 
         z_min_orig, z_max_orig = max(z_lower - 5, dz), z_upper + 5
         z_min, z_max = z_min_orig, z_max_orig
