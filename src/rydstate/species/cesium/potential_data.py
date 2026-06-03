@@ -1,6 +1,10 @@
 from typing import ClassVar
 
-from rydstate.species.potential import PotentialFei2009, PotentialMarinescu1993
+from rydstate.species.potential import PotentialCoulomb, PotentialFei2009, PotentialMarinescu1993
+
+
+class PotentialCoulombCesium(PotentialCoulomb):
+    species = "Cs"
 
 
 class PotentialMarinescu1993Cesium(PotentialMarinescu1993):

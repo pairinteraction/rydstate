@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import math
-from typing import TYPE_CHECKING, ClassVar, Literal, TypeVar
+from typing import TYPE_CHECKING, ClassVar, TypeVar
 
 import numpy as np
 
@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from rydstate.angular.utils import Unknown
     from rydstate.units import NDArray
 
-PotentialType = Literal["coulomb", "marinescu_1993", "fei_2009", "dummy"]
 XType = TypeVar("XType", "NDArray", float)
 
 
@@ -26,8 +25,6 @@ class Potential:
 
     species: ClassVar[str]
     """The short name of the atomic species."""
-    potential_type: ClassVar[PotentialType]
-    """The type of the potential."""
     tag: ClassVar[str]
     """The tag for these potential parameters."""
 
@@ -35,9 +32,7 @@ class Potential:
         r"""Initialize the model.
 
         Args:
-            species: The atomic species.
             l_r: Orbital angular momentum of the Rydberg electron.
-            potential_type: Which potential to use for the model.
 
         """
         self.element_properties = get_element_properties(self.species)
@@ -114,19 +109,9 @@ class Potential:
         return (1 / self.element_properties.reduced_mass_au) * (3 / 32) / x2
 
     def calc_model_potential(self, x: XType) -> XType:
-        r"""Calculate the model potential V(x) in atomic units.
-
-        Default implementation returns the Coulomb potential, but this can be overridden by subclasses to implement
-        different model potentials.
-
-        Args:
-            x: The dimensionless radial coordinate x = r / a_0, for which to calculate the potential.
-
-        Returns:
-            V: The model potential V(x) in atomic units.
-
-        """
-        return self.calc_potential_coulomb(x)  # default to Coulomb potential, can be overridden by subclasses
+        raise NotImplementedError(
+            f"Subclasses of Potential ({self.__class__.__name__}) must implement the calc_model_potential method."
+        )
 
     def calc_total_effective_potential(self, x: XType) -> XType:
         r"""Calculate the total effective potential V_eff(x) in atomic units.
@@ -239,13 +224,34 @@ class Potential:
         return z_min + (z_max - z_min) * v_list[ind] / (v_list[ind] - v_list[ind + 1])  # type: ignore [no-any-return]
 
 
+class PotentialCoulomb(Potential):
+    """Simple Coulomb potential, without any additional terms."""
+
+    tag = "coulomb"
+
+    def calc_model_potential(self, x: XType) -> XType:
+        r"""Calculate the model potential V(x) in atomic units.
+
+        Default implementation returns the Coulomb potential, but this can be overridden by subclasses to implement
+        different model potentials.
+
+        Args:
+            x: The dimensionless radial coordinate x = r / a_0, for which to calculate the potential.
+
+        Returns:
+            V: The model potential V(x) in atomic units.
+
+        """
+        return self.calc_potential_coulomb(x)
+
+
 class PotentialMarinescu1993(Potential):
     """Model potential for alkali atoms from Marinescu et al. (1994).
 
     See also: Phys. Rev. A 49, 982 (1994)
     """
 
-    potential_type = "marinescu_1993"
+    tag = "marinescu_1993"
 
     # Model Potential Parameters for marinescu_1993
     alpha_c_marinescu_1993: ClassVar[float]
@@ -315,7 +321,7 @@ class PotentialFei2009(Potential):
     See also: Phys. Rev. A 79, 052507 (2009)
     """
 
-    potential_type = "fei_2009"
+    tag = "fei_2009"
 
     # Model Potential Parameters for fei_2009
     model_potential_parameter_fei_2009: tuple[float, float, float, float]
@@ -351,16 +357,14 @@ class PotentialFei2009(Potential):
 class PotentialDummy(Potential):
     """Dummy potential, which can be used when the potential is unknown."""
 
-    potential_type = "dummy"
+    tag = "dummy"
     l_r: int | Unknown  # type: ignore [assignment]
 
     def __init__(self, l_r: int | Unknown) -> None:
         r"""Initialize the model.
 
         Args:
-            species: The atomic species.
             l_r: Orbital angular momentum of the Rydberg electron.
-            potential_type: Which potential to use for the model.
 
         """
         self.l_r = l_r
@@ -375,6 +379,8 @@ def get_potential_class(species: str, tag: str | None = None) -> type[Potential]
     if len(subclasses) == 0:
         _species = species.replace("_sqdt", "").replace("_mqdt", "")
         subclasses = get_all_subclasses(Potential, _species, tag)
+        if len(subclasses) == 0:
+            subclasses = get_all_subclasses(Potential, "", tag)
 
     if tag is None:
         subclasses = [cls for cls in subclasses if getattr(cls, "is_default", False)]

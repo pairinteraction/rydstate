@@ -1,6 +1,14 @@
 from typing import ClassVar
 
-from rydstate.species.potential import PotentialFei2009, PotentialMarinescu1993
+from rydstate.species.potential import PotentialCoulomb, PotentialFei2009, PotentialMarinescu1993
+
+
+class PotentialCoulombStrontium87(PotentialCoulomb):
+    species = "Sr87"
+
+
+class PotentialCoulombStrontium88(PotentialCoulomb):
+    species = "Sr88"
 
 
 class _PotentialFei2009StrontiumAbstract(PotentialFei2009):

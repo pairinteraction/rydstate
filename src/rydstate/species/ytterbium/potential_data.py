@@ -1,4 +1,16 @@
-from rydstate.species.potential import PotentialFei2009
+from rydstate.species.potential import PotentialCoulomb, PotentialFei2009
+
+
+class PotentialCoulombYtterbium171(PotentialCoulomb):
+    species = "Yb171"
+
+
+class PotentialCoulombYtterbium173(PotentialCoulomb):
+    species = "Yb173"
+
+
+class PotentialCoulombYtterbium174(PotentialCoulomb):
+    species = "Yb174"
 
 
 class _PotentialFei2009YtterbiumAbstract(PotentialFei2009):

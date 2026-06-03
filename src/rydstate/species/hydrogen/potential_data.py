@@ -1,13 +1,11 @@
-from rydstate.species.potential import Potential
+from rydstate.species.potential import PotentialCoulomb
 
 
-class PotentialHydrogen(Potential):
+class PotentialCoulombHydrogen(PotentialCoulomb):
     species = "H"
-    potential_type = "coulomb"
     is_default = True
 
 
-class PotentialHydrogenTextBook(Potential):
+class PotentialCoulombHydrogenTextBook(PotentialCoulomb):
     species = "H_textbook"
-    potential_type = "coulomb"
     is_default = True
