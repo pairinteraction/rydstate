@@ -13,7 +13,8 @@ from rydstate.radial.radial_ket import RadialKet
 from rydstate.rydberg_state import RydbergStateMQDT
 from rydstate.rydberg_state.rydberg_ket import RydbergKet
 from rydstate.species import FModel, FModelSQDT, get_mqdt
-from rydstate.species.potential import PotentialDummy, get_potential_class
+from rydstate.species.mqdt import MQDT
+from rydstate.species.potential import Potential, PotentialDummy, get_potential_class
 
 if TYPE_CHECKING:
     from rydstate.species import FModel
@@ -33,9 +34,39 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         *,
         skip_high_l: bool = True,
         n_min_high_l: int = 0,
+        # potential and mqdt parameters
+        mqdt: str | MQDT | None = None,
+        potential_class: str | type[Potential] | None = None,
     ) -> None:
+        """Initialize the MQDT basis.
+
+        Args:
+            species: Atomic species.
+            nu: Tuple of (nu_min, nu_max) for the effective principal quantum number.
+            f_tot: Optional float or tuple of (f_tot_min, f_tot_max) for the total angular momentum.
+                Default None, include all f_tot values.
+            l_r: Optional int or tuple of (l_r_min, l_r_max) for the Rydberg electron orbital angular momentum.
+                This is used to filter models, which include at least one channel with
+                l_c=0 and l_r in the specified range.
+                Default None, include all models.
+            skip_high_l: Whether to skip models, for which no MQDT models are available.
+                If False, include these states as simple SQDT states with zero quantum defects.
+            n_min_high_l: If skip_high_l is False, the minimum n, for which to include high-l states as SQDT states.
+            mqdt: The MQDT to use for the states.
+                Either a string representing the tag of the MQDT class to use,
+                or an instance of an MQDT class.
+            potential_class: The potential class to use for the radial ket.
+                Either a string representing the tag of the potential class to use,
+                or a potential class.
+
+        """
         super().__init__(species)
-        self.mqdt = get_mqdt(species)
+        self.mqdt = mqdt if isinstance(mqdt, MQDT) else get_mqdt(species, tag=mqdt)
+
+        if isinstance(potential_class, type) and issubclass(potential_class, Potential):
+            self.potential_class = potential_class
+        else:
+            self.potential_class = get_potential_class(species)
 
         models: list[FModel] = []
         s_r = 0.5
@@ -72,7 +103,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
                     continue
                 _nu_min = max(_nu_min, n_min_high_l)
             logger.debug("  calculating states for model %s with nu_min=%s, nu_max=%s", model.name, _nu_min, nu[1])
-            _states = get_mqdt_states_from_fmodel(model, _nu_min, nu[1])
+            _states = get_mqdt_states_from_fmodel(model, _nu_min, nu[1], potential_class=self.potential_class)
             if len(_states) == 0:
                 logger.debug("  no states found for model %s", model.name)
             else:
@@ -102,6 +133,7 @@ def get_mqdt_states_from_fmodel(
     nu_max: float | None = None,
     *,
     overwrite_model_limits: bool = False,
+    potential_class: type[Potential],
 ) -> list[RydbergStateMQDT]:
     """Calculate MQDT states from an FModel by finding zeros of det(M-matrix).
 
@@ -111,6 +143,7 @@ def get_mqdt_states_from_fmodel(
         nu_max: Upper bound of the search range.  Defaults to ``model.nu_max``.
         overwrite_model_limits: If True, use nu_min/nu_max directly without clamping to
             the model's validity range.  Both nu_min and nu_max must be provided.
+        potential_class: The potential class to use for the radial ket.
 
     Returns:
         List of :class:`RydbergStateMQDT` objects, one per root of det(M).
@@ -158,7 +191,7 @@ def get_mqdt_states_from_fmodel(
         rydberg_kets: list[RydbergKet] = []
         for nui, angular_ket in zip(nuis, model.outer_channels, strict=True):
             if not is_unknown(angular_ket.l_r):
-                potential = get_potential_class(model.species)(angular_ket.l_r)
+                potential = potential_class(angular_ket.l_r)
             else:
                 potential = PotentialDummy(model.species, angular_ket.l_r)
             radial_ket = RadialKet(float(nui), potential)

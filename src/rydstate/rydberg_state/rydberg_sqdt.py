@@ -18,7 +18,8 @@ from rydstate.radial import RadialKet
 from rydstate.rydberg_state.rydberg_base import RydbergStateBase
 from rydstate.rydberg_state.rydberg_ket import RydbergKet
 from rydstate.species import get_element_properties, get_sqdt
-from rydstate.species.potential import get_potential_class
+from rydstate.species.potential import Potential, get_potential_class
+from rydstate.species.sqdt import SQDT
 from rydstate.species.utils import calc_energy_from_nu
 from rydstate.units import BaseQuantities, ureg
 
@@ -50,6 +51,8 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         n: int,
         *,
         angular_ket: T_AngularKet,
+        sqdt: str | SQDT | None = None,
+        potential: str | Potential | None = None,
     ) -> None: ...
 
     @overload
@@ -61,6 +64,8 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         l_r: int,
         j_r: float | None = None,
         m: float | NotSet = NotSet,
+        sqdt: str | SQDT | None = None,
+        potential: str | Potential | None = None,
     ) -> None: ...  # for Alkali atoms, allow to only specify l_r and j_r, and still construct an AngularKetLS
 
     @overload
@@ -78,6 +83,8 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         j_tot: float | None = None,
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
+        sqdt: str | SQDT | None = None,
+        potential: str | Potential | None = None,
     ) -> None: ...
 
     @overload
@@ -95,6 +102,8 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         j_tot: float,
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
+        sqdt: str | SQDT | None = None,
+        potential: str | Potential | None = None,
     ) -> None: ...
 
     @overload
@@ -112,6 +121,8 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         j_r: float | None = None,
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
+        sqdt: str | SQDT | None = None,
+        potential: str | Potential | None = None,
     ) -> None: ...
 
     def __init__(
@@ -132,6 +143,9 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         f_tot: float | None = None,
         m: float | NotSet = NotSet,
         angular_ket: AngularKetBase[AllKnown] | None = None,
+        # potential and sqdt parameters
+        sqdt: str | SQDT | None = None,
+        potential: str | Potential | None = None,
     ) -> None:
         r"""Initialize the Rydberg state.
 
@@ -153,6 +167,12 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
                 Optional, only needed for concrete angular matrix elements.
             angular_ket: The angular ket to use for the state.
                 Either angular_ket or the quantum numbers for the angular ket must be given.
+            sqdt: The SQDT to use for the state.
+                Either a string representing the tag of the SQDT class to use,
+                or an instance of an SQDT class.
+            potential: The potential to use for the radial ket.
+                Either a string representing the tag of the potential to use,
+                or an instance of a potential class.
 
         """
         self.species = species
@@ -187,10 +207,17 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
             )
 
         self.n = n
-        self.sqdt = get_sqdt(species)
+        self.sqdt = sqdt if isinstance(sqdt, SQDT) else get_sqdt(species, tag=sqdt)
         _s_tot = self.angular.get_qn("s_tot", allow_unknown=True)
         if not self.sqdt.is_allowed_shell(self.n, self.angular.l_r, _s_tot):
             raise ValueError(f"The Rydberg state {self} is not allowed due to forbidden shell configurations.")
+
+        if isinstance(potential, Potential):
+            if potential.l_r != self.angular.l_r:
+                raise ValueError("The potential must have the same l_r as the angular ket.")
+            self.potential = potential
+        else:
+            self.potential = get_potential_class(species, tag=potential)(self.angular.l_r)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.species}, n={self.n}, {self.angular!r})"
@@ -204,8 +231,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
 
     @cached_property
     def radial(self) -> RadialKet:
-        potential = get_potential_class(self.species)(self.angular.l_r)
-        radial = RadialKet(self.nu, potential)
+        radial = RadialKet(self.nu, self.potential)
         radial.set_n_for_sanity_check(self.n)
         return radial
 
