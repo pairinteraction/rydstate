@@ -21,6 +21,7 @@ Specific data for the different species
 
 .. autosummary::
     :toctree: ../_autosummary/
+    :recursive:
 
     hydrogen
     lithium
