@@ -412,7 +412,7 @@ class Yb174_G5_HighN(FModel):
     name = "G J=5, nu > 25"
     f_tot = 5
     nu_range = (25.0, np.inf)
-    reference = REFERENCE_KURODA_2025
+    reference = (REFERENCE_KURODA_2025, "obtained from a fit to the 171Yb 6sng (F = 9/2) spectroscopic data")
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=4, l_tot=4, s_tot=1, j_tot=5, species="Yb174"),  # "6sng 3G5"
@@ -422,7 +422,6 @@ class Yb174_G5_HighN(FModel):
     ]
 
     eigen_quantum_defects = [
-        # obtained from a fit to the 171Yb 6sng (F = 9/2) spectroscopic data
         [0.02536571, -0.18507079],
     ]
     mixing_angles = []

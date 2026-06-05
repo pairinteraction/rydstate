@@ -870,10 +870,10 @@ class Yb171_P25_LowN(FModel):
 
 class Yb171_D05_LowN(FModel):
     species = "Yb171"
-    name = "D F=1/2, 2 < nu < 30 for 2 < nu < 5"
+    name = "D F=1/2, 2 < nu < 30"
     f_tot = 0.5
     nu_range = (2.0, 30.0)
-    reference = "fit to Yb174 NIST data"
+    reference = "fit to Yb174 NIST data for 2 < nu < 5"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=1, j_tot=1, f_tot=0.5, species="Yb171"),  # "6snd 3D1"
