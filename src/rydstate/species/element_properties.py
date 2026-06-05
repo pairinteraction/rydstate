@@ -115,8 +115,6 @@ class ElementProperties(ABC):
 def get_element_properties(species: str) -> ElementProperties:
     """Get an instance of the subclass of ElementProperties for the given species."""
     possible_subclasses = get_all_subclasses(ElementProperties, species)
-    if len(possible_subclasses) == 0:
-        possible_subclasses = get_all_subclasses(ElementProperties, species)
 
     if len(possible_subclasses) == 0:
         raise ValueError(f"No subclass of ElementProperties found for species {species}.")

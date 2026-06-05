@@ -378,11 +378,6 @@ class PotentialDummy(Potential):
 def get_potential_class(species: str, tag: str | None = None) -> type[Potential]:
     """Get the subclass of Potential for the given species and tag."""
     subclasses = get_all_subclasses(Potential, species, tag)
-    if len(subclasses) == 0:
-        _species = species
-        subclasses = get_all_subclasses(Potential, _species, tag)
-        if len(subclasses) == 0:
-            subclasses = get_all_subclasses(Potential, "", tag)
 
     if tag is None:
         subclasses = [cls for cls in subclasses if getattr(cls, "is_default", False)]
