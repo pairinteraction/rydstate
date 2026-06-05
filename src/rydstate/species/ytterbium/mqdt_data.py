@@ -25,7 +25,6 @@ class MQDTYtterbium171(MQDT):
         CoreKet(0.5, 0.5, 1, 1.5, Unknown, label=Unknown): (80835.39, "1/cm"),
         CoreKet(0.5, 0.5, Unknown, Unknown, Unknown, label="4f13 5d 6s"): (83967.7, "1/cm"),
     }
-    core_ground_state = CoreKet(0.5, 0.5, 0, 0.5, 1)
     nuclear_dipole = 0.49367
     model_classes = get_fmodels(yb171_mqdt_fmodel_data, species)
 
@@ -41,7 +40,6 @@ class MQDTYtterbium173(MQDT):
         CoreKet(2.5, 0.5, 1, 1.5, Unknown, label=Unknown): (80835.39, "1/cm"),
         CoreKet(2.5, 0.5, Unknown, Unknown, Unknown, label="4f13 5d 6s"): (83967.7, "1/cm"),
     }
-    core_ground_state = CoreKet(2.5, 0.5, 0, 0.5, 2)
     nuclear_dipole = -0.68
     model_classes = get_fmodels(yb173_mqdt_fmodel_data, species)
 
@@ -57,6 +55,5 @@ class MQDTYtterbium174(MQDT):
         CoreKet(0, 0.5, 1, Unknown, label=Unknown): (79725.35, "1/cm"),
         CoreKet(0, 0.5, Unknown, Unknown, label="4f13 5d 6s"): (83967.7, "1/cm"),
     }
-    core_ground_state = CoreKet(0, 0.5, 0, 0.5)
     nuclear_dipole = 2.1
     model_classes = get_fmodels(yb174_mqdt_fmodel_data, species)

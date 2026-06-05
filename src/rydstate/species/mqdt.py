@@ -28,9 +28,6 @@ class MQDT:
     The thresholds are given in the form of a tuple (ionization_threshold, unit).
     """
 
-    core_ground_state: CoreKet
-    """The ground state configuration of the atomic core."""
-
     model_classes: list[type[FModel]]
     """List of the MQDT :class:`~rydstate.species.fmodel.FModel` models available for this species.
 
@@ -77,8 +74,11 @@ class MQDT:
 
     @cached_property
     def reference_ionization_energy_au(self) -> float:
-        """Ionization energy in atomic units (Hartree)."""
-        return self.get_ionization_threshold(self.core_ground_state, unit="hartree")
+        """Reference ionization energy in atomic units (Hartree).
+
+        We define the reference ionization energy as the smallest ionization energy in the ionization_threshold_dict.
+        """
+        return min(self.get_ionization_threshold(core_ket, unit="a.u.") for core_ket in self.ionization_threshold_dict)
 
     def get_mqdt_models(self, outer_channel: AngularKetFJ[Any]) -> list[FModel]:
         """Return a list of MQDT models for the outer_channel."""
