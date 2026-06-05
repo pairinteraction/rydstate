@@ -32,7 +32,11 @@ class MQDT:
     """The ground state configuration of the atomic core."""
 
     model_classes: list[type[FModel]]
-    """List of MQDT FModel classes available for this species."""
+    """List of the MQDT :class:`~rydstate.species.fmodel.FModel` models available for this species.
+
+    :meta hide-value:
+
+    """
 
     def __init__(self) -> None:
         self.models: list[FModel] = [model_class(self) for model_class in self.model_classes]
