@@ -13,8 +13,8 @@ class MQDTStrontium87(MQDT):
     is_default = True
 
     ionization_threshold_dict: ClassVar = {
-        CoreKet(4.5, 0.5, 0, 0.5, 4): (45932.287373577, None, "1/cm"),
-        CoreKet(4.5, 0.5, 0, 0.5, 5): (45932.120512528, None, "1/cm"),
+        CoreKet(4.5, 0.5, 0, 0.5, 4): (45932.287373577, "1/cm"),
+        CoreKet(4.5, 0.5, 0, 0.5, 5): (45932.120512528, "1/cm"),
     }
     core_ground_state = CoreKet(4.5, 0.5, 0, 0.5, 4)
     nuclear_dipole = -1.0936030
@@ -26,7 +26,7 @@ class MQDTStrontium88(MQDT):
     is_default = True
 
     ionization_threshold_dict: ClassVar = {
-        CoreKet(0, 0.5, 0, 0.5): (45932.1956, None, "1/cm"),
+        CoreKet(0, 0.5, 0, 0.5): (45932.1956, "1/cm"),
     }
     core_ground_state = CoreKet(0, 0.5, 0, 0.5)
     nuclear_dipole = 2.3

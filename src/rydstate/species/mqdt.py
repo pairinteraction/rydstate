@@ -23,9 +23,9 @@ class MQDT:
     tag: ClassVar[str]
     """The tag for these MQDT parameters."""
 
-    ionization_threshold_dict: ClassVar[dict[CoreKet, tuple[float, float | None, str]]]
+    ionization_threshold_dict: ClassVar[dict[CoreKet, tuple[float, str]]]
     """Dictionary containing the ionization thresholds for the different core states.
-    The thresholds are given in the form of a tuple (ionization_threshold, uncertainty, unit).
+    The thresholds are given in the form of a tuple (ionization_threshold, unit).
     """
 
     core_ground_state: CoreKet
@@ -67,7 +67,7 @@ class MQDT:
             raise ValueError(f"Ionization energy for core ket {core_ket} is not defined.") from e
 
         ionization_energy_tuple = self.ionization_threshold_dict[matching_core_ket]
-        ionization_energy: PintFloat = ureg.Quantity(ionization_energy_tuple[0], ionization_energy_tuple[2])
+        ionization_energy: PintFloat = ureg.Quantity(ionization_energy_tuple[0], ionization_energy_tuple[1])
         ionization_energy = ionization_energy.to("hartree", "spectroscopy")
         if unit is None:
             return ionization_energy
