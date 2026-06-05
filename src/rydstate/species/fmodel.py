@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import math
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, ClassVar, overload
@@ -14,6 +15,8 @@ from rydstate.species.utils import (
 )
 
 if TYPE_CHECKING:
+    from types import ModuleType
+
     from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ
     from rydstate.angular.utils import AllKnown
     from rydstate.species.mqdt import MQDT
@@ -321,6 +324,33 @@ class FModel:
 
         """
         return float(np.linalg.det(self.calc_scaled_m_matrix(nu)))
+
+
+def get_fmodels(module: ModuleType, species: str) -> list[type[FModel]]:
+    """Return all FModel subclasses defined in ``module`` that match the given species.
+
+    Args:
+        module: The module to inspect for FModel subclasses.
+        species: The species the returned FModel subclasses must match.
+
+    Returns:
+        List of all FModel subclasses defined in the module for the given species.
+
+    """
+    fmodels = [
+        obj
+        for obj in vars(module).values()
+        if (
+            inspect.isclass(obj)
+            and obj.__module__ == module.__name__
+            and issubclass(obj, FModel)
+            and obj is not FModel
+            and getattr(obj, "species", None) == species
+        )
+    ]
+    if len(fmodels) == 0:
+        raise ValueError(f"No FModel subclasses for species {species!r} found in {module.__name__}.")
+    return fmodels
 
 
 class FModelSQDT(FModel):

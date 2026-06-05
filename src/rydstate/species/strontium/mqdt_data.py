@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import ClassVar
 
 from rydstate.angular.core_ket import CoreKet
+from rydstate.species.fmodel import get_fmodels
 from rydstate.species.mqdt import MQDT
+from rydstate.species.strontium import sr87_mqdt_fmodel_data, sr88_mqdt_fmodel_data
 
 
 class MQDTStrontium87(MQDT):
@@ -18,7 +19,7 @@ class MQDTStrontium87(MQDT):
     }
     core_ground_state = CoreKet(i_c, 0.5, 0, 0.5, 4)
     nuclear_dipole = -1.0936030
-    model_classes_file = Path(__file__).with_name("sr87_mqdt_fmodel_data.py")
+    model_classes = get_fmodels(sr87_mqdt_fmodel_data, species)
 
 
 class MQDTStrontium88(MQDT):
@@ -31,4 +32,4 @@ class MQDTStrontium88(MQDT):
     }
     core_ground_state = CoreKet(i_c, 0.5, 0, 0.5)
     nuclear_dipole = 2.3
-    model_classes_file = Path(__file__).with_name("sr88_mqdt_fmodel_data.py")
+    model_classes = get_fmodels(sr88_mqdt_fmodel_data, species)

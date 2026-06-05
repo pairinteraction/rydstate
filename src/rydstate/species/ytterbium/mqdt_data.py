@@ -1,11 +1,16 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import ClassVar
 
 from rydstate.angular.core_ket import CoreKet
 from rydstate.angular.utils import Unknown
+from rydstate.species.fmodel import get_fmodels
 from rydstate.species.mqdt import MQDT
+from rydstate.species.ytterbium import (
+    yb171_mqdt_fmodel_data,
+    yb173_mqdt_fmodel_data,
+    yb174_mqdt_fmodel_data,
+)
 
 
 class MQDTYtterbium171(MQDT):
@@ -23,7 +28,7 @@ class MQDTYtterbium171(MQDT):
     }
     core_ground_state = CoreKet(i_c, 0.5, 0, 0.5, 1)
     nuclear_dipole = 0.49367
-    model_classes_file = Path(__file__).with_name("yb171_mqdt_fmodel_data.py")
+    model_classes = get_fmodels(yb171_mqdt_fmodel_data, species)
 
 
 class MQDTYtterbium173(MQDT):
@@ -40,7 +45,7 @@ class MQDTYtterbium173(MQDT):
     }
     core_ground_state = CoreKet(i_c, 0.5, 0, 0.5, 2)
     nuclear_dipole = -0.68
-    model_classes_file = Path(__file__).with_name("yb173_mqdt_fmodel_data.py")
+    model_classes = get_fmodels(yb173_mqdt_fmodel_data, species)
 
 
 class MQDTYtterbium174(MQDT):
@@ -57,4 +62,4 @@ class MQDTYtterbium174(MQDT):
     }
     core_ground_state = CoreKet(i_c, 0.5, 0, 0.5)
     nuclear_dipole = 2.1
-    model_classes_file = Path(__file__).with_name("yb174_mqdt_fmodel_data.py")
+    model_classes = get_fmodels(yb174_mqdt_fmodel_data, species)
