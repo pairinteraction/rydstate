@@ -372,7 +372,7 @@ class PotentialDummy(Potential):
         self.l_r = l_r
 
     def calc_model_potential(self, x: XType) -> XType:  # noqa: ARG002
-        raise RuntimeError("The model potential is unknown for {self.__class__.__name__}, so it cannot be calculated.")
+        raise RuntimeError(f"The model potential is unknown for {self.__class__.__name__}, so it cannot be calculated.")
 
 
 def get_potential_class(species: str, tag: str | None = None) -> type[Potential]:
