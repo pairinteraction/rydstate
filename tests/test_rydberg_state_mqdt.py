@@ -10,9 +10,14 @@ The tests build a small MQDT basis for Sr88, pick out individual
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 import pytest
-from rydstate import BasisMQDT, RydbergStateMQDT, RydbergStateSQDT
+from rydstate import BasisMQDT, RydbergStateSQDT
+
+if TYPE_CHECKING:
+    from rydstate import RydbergStateMQDT
 
 
 @pytest.fixture(scope="module")
