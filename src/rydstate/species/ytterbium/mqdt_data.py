@@ -14,7 +14,7 @@ from rydstate.species.ytterbium import (
 
 
 class MQDTYtterbium171(MQDT):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     is_default = True
     i_c = 0.5
 
@@ -32,7 +32,7 @@ class MQDTYtterbium171(MQDT):
 
 
 class MQDTYtterbium173(MQDT):
-    species = "Yb173_mqdt"
+    species = "Yb173"
     is_default = True
     i_c = 2.5
 
@@ -49,7 +49,7 @@ class MQDTYtterbium173(MQDT):
 
 
 class MQDTYtterbium174(MQDT):
-    species = "Yb174_mqdt"
+    species = "Yb174"
     is_default = True
     i_c = 0
 

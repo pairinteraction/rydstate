@@ -88,9 +88,6 @@ class MQDT:
 def get_mqdt(species: str, tag: str | None = None) -> MQDT:
     """Get an instance of the subclass of MQDT for the given species and tag."""
     subclasses = get_all_subclasses(MQDT, species, tag)
-    if len(subclasses) == 0:
-        _species = species.replace("_mqdt", "") if species.endswith("_mqdt") else species + "_mqdt"
-        subclasses = get_all_subclasses(MQDT, _species, tag)
 
     if tag is None:
         subclasses = [cls for cls in subclasses if getattr(cls, "is_default", False)]

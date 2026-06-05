@@ -9,7 +9,7 @@ from rydstate.species.strontium import sr87_mqdt_fmodel_data, sr88_mqdt_fmodel_d
 
 
 class MQDTStrontium87(MQDT):
-    species = "Sr87_mqdt"
+    species = "Sr87"
     is_default = True
     i_c = 4.5
 
@@ -23,7 +23,7 @@ class MQDTStrontium87(MQDT):
 
 
 class MQDTStrontium88(MQDT):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     is_default = True
     i_c = 0
 

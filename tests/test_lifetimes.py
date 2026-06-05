@@ -43,7 +43,7 @@ def test_lifetime_n_scaling(species: str) -> None:
 
     if species in ["Sr87", "Yb171", "Yb173"]:
         pytest.skip("No quantum defect data available")
-    if species in ["Yb174", "Yb174_sqdt"]:
+    if species in ["Yb174", "Yb174"]:
         pytest.skip("Quantum defects not correct for low n states")
 
     n1, n2 = 30, 60

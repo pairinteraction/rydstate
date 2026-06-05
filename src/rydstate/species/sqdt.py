@@ -257,9 +257,6 @@ class SQDT:
 def get_sqdt(species: str, tag: str | None = None) -> SQDT:
     """Get an instance of the subclass of SQDT for the given species and tag."""
     subclasses = get_all_subclasses(SQDT, species, tag)
-    if len(subclasses) == 0:
-        _species = species.replace("_sqdt", "") if species.endswith("_sqdt") else species + "_sqdt"
-        subclasses = get_all_subclasses(SQDT, _species, tag)
 
     if tag is None:
         subclasses = [cls for cls in subclasses if getattr(cls, "is_default", False)]

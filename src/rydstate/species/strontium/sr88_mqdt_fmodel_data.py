@@ -13,7 +13,7 @@ REFERENCE_ROBICHEAUX_2019 = (
 
 
 class Sr88_S0_HighN(FModel):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     name = "S J=0, nu > 10"
     f_tot = 0
     nu_range = (10.0, np.inf)
@@ -33,7 +33,7 @@ class Sr88_S0_HighN(FModel):
 
 
 class Sr88_S1_HighN(FModel):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     name = "S J=1, nu > 11"
     f_tot = 1
     nu_range = (11.0, np.inf)
@@ -58,7 +58,7 @@ class Sr88_S1_HighN(FModel):
 
 
 class Sr88_P1_LowN(FModel):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     name = "P J=1 (recombination), 1.8 < nu < 2.2"
     f_tot = 1
     nu_range = (1.8, 2.2)
@@ -88,7 +88,7 @@ class Sr88_P1_LowN(FModel):
 
 
 class Sr88_P0_HighN(FModel):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     name = "P J=0, nu > 7"
     f_tot = 0
     nu_range = (7.0, np.inf)
@@ -108,7 +108,7 @@ class Sr88_P0_HighN(FModel):
 
 
 class Sr88_P1_HighN(FModel):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     name = "P J=1, nu > 5"
     f_tot = 1
     nu_range = (5.0, np.inf)
@@ -131,7 +131,7 @@ class Sr88_P1_HighN(FModel):
 
 
 class Sr88_P2_HighN(FModel):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     name = "P J=2, nu > 5"
     f_tot = 2
     nu_range = (5.0, np.inf)
@@ -151,7 +151,7 @@ class Sr88_P2_HighN(FModel):
 
 
 class Sr88_D1_HighN(FModel):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     name = "D J=1, nu > 17"
     f_tot = 1
     nu_range = (17.0, np.inf)
@@ -171,7 +171,7 @@ class Sr88_D1_HighN(FModel):
 
 
 class Sr88_D2_HighN(FModel):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     name = "D J=2, nu > 25"
     f_tot = 2
     nu_range = (25.0, np.inf)
@@ -196,7 +196,7 @@ class Sr88_D2_HighN(FModel):
 
 
 class Sr88_D3_HighN(FModel):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     name = "D J=3, nu > 25"
     f_tot = 3
     nu_range = (25.0, np.inf)
@@ -216,7 +216,7 @@ class Sr88_D3_HighN(FModel):
 
 
 class Sr88_F2_HighN(FModel):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     name = "F J=2, nu > 9"
     f_tot = 2
     nu_range = (9.0, np.inf)
@@ -236,7 +236,7 @@ class Sr88_F2_HighN(FModel):
 
 
 class Sr88_F3_HighN(FModel):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     name = "F J=3, nu > 9"
     f_tot = 3
     nu_range = (9.0, np.inf)
@@ -259,7 +259,7 @@ class Sr88_F3_HighN(FModel):
 
 
 class Sr88_F4_HighN(FModel):
-    species = "Sr88_mqdt"
+    species = "Sr88"
     name = "F J=4, nu > 9"
     f_tot = 4
     nu_range = (9.0, np.inf)

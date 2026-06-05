@@ -10,7 +10,7 @@ from rydstate.species.fmodel import FModel
 
 
 class Yb173_S15_HighN(FModel):
-    species = "Yb173_mqdt"
+    species = "Yb173"
     name = "S F=3/2, nu > 26"
     f_tot = 1.5
     nu_range = (26.0, np.inf)
@@ -30,7 +30,7 @@ class Yb173_S15_HighN(FModel):
 
 
 class Yb173_S25_HighN(FModel):
-    species = "Yb173_mqdt"
+    species = "Yb173"
     name = "S F=5/2, nu > 26"
     f_tot = 2.5
     nu_range = (26.0, np.inf)
@@ -88,7 +88,7 @@ class Yb173_S25_HighN(FModel):
 
 
 class Yb173_S35_HighN(FModel):
-    species = "Yb173_mqdt"
+    species = "Yb173"
     name = "S F=7/2, nu > 26"
     f_tot = 3.5
     nu_range = (26.0, np.inf)
@@ -108,7 +108,7 @@ class Yb173_S35_HighN(FModel):
 
 
 class Yb173_P05_HighN(FModel):
-    species = "Yb173_mqdt"
+    species = "Yb173"
     name = "P F=1/2, nu > 10"
     f_tot = 0.5
     nu_range = (10.0, np.inf)
@@ -141,7 +141,7 @@ class Yb173_P05_HighN(FModel):
 
 
 class Yb173_P15_HighN(FModel):
-    species = "Yb173_mqdt"
+    species = "Yb173"
     name = "P F=3/2, nu > 10"
     f_tot = 1.5
     nu_range = (10.0, np.inf)
@@ -201,7 +201,7 @@ class Yb173_P15_HighN(FModel):
 
 
 class Yb173_P25_HighN(FModel):
-    species = "Yb173_mqdt"
+    species = "Yb173"
     name = "P F=5/2, nu > 10"
     f_tot = 2.5
     nu_range = (10.0, np.inf)
@@ -268,7 +268,7 @@ class Yb173_P25_HighN(FModel):
 
 
 class Yb173_P35_HighN(FModel):
-    species = "Yb173_mqdt"
+    species = "Yb173"
     name = "P F=7/2, nu > 10"
     f_tot = 3.5
     nu_range = (10.0, np.inf)
@@ -328,7 +328,7 @@ class Yb173_P35_HighN(FModel):
 
 
 class Yb173_P45_HighN(FModel):
-    species = "Yb173_mqdt"
+    species = "Yb173"
     name = "P F=9/2, nu > 10"
     f_tot = 4.5
     nu_range = (10.0, np.inf)

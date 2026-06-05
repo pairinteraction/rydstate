@@ -13,7 +13,7 @@ REFERENCE_KURODA_2025 = "R. Kuroda et al., Phys. Rev. A 112, 042817 (2025), http
 
 
 class Yb171_S05_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "S F=1/2, nu > 26"
     f_tot = 0.5
     nu_range = (26.0, np.inf)
@@ -71,7 +71,7 @@ class Yb171_S05_HighN(FModel):
 
 
 class Yb171_S15_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "S F=3/2, nu > 26"
     f_tot = 1.5
     nu_range = (26.0, np.inf)
@@ -91,7 +91,7 @@ class Yb171_S15_HighN(FModel):
 
 
 class Yb171_P05_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "P F=1/2, nu > 5.7"
     f_tot = 0.5
     nu_range = (5.7, np.inf)
@@ -144,7 +144,7 @@ class Yb171_P05_HighN(FModel):
 
 
 class Yb171_P15_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "P F=3/2, nu > 10"
     f_tot = 1.5
     nu_range = (10.0, np.inf)
@@ -208,7 +208,7 @@ class Yb171_P15_HighN(FModel):
 
 
 class Yb171_D05_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "D F=1/2, nu > 30"
     f_tot = 0.5
     nu_range = (30.0, np.inf)
@@ -228,7 +228,7 @@ class Yb171_D05_HighN(FModel):
 
 
 class Yb171_D15_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "D F=3/2, nu > 30"
     f_tot = 1.5
     nu_range = (30.0, np.inf)
@@ -280,7 +280,7 @@ class Yb171_D15_HighN(FModel):
 
 
 class Yb171_D25_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "D F=5/2, nu > 30"
     f_tot = 2.5
     nu_range = (30.0, np.inf)
@@ -332,7 +332,7 @@ class Yb171_D25_HighN(FModel):
 
 
 class Yb171_D35_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "D F=7/2, nu > 14"
     f_tot = 3.5
     nu_range = (14.0, np.inf)
@@ -352,7 +352,7 @@ class Yb171_D35_HighN(FModel):
 
 
 class Yb171_F25_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "F F=5/2, nu > 20"
     f_tot = 2.5
     nu_range = (20.0, np.inf)
@@ -421,7 +421,7 @@ class Yb171_F25_HighN(FModel):
 
 
 class Yb171_F35_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "F F=7/2, nu > 20"
     f_tot = 3.5
     nu_range = (20.0, np.inf)
@@ -474,7 +474,7 @@ class Yb171_F35_HighN(FModel):
 
 
 class Yb171_F45_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "F F=9/2, nu > 20"
     f_tot = 4.5
     nu_range = (20.0, np.inf)
@@ -494,7 +494,7 @@ class Yb171_F45_HighN(FModel):
 
 
 class Yb171_G25_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "G F=5/2, nu > 25"
     f_tot = 2.5
     nu_range = (25.0, np.inf)
@@ -514,7 +514,7 @@ class Yb171_G25_HighN(FModel):
 
 
 class Yb171_G35_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "G F=7/2, nu > 25"
     f_tot = 3.5
     nu_range = (25.0, np.inf)
@@ -542,7 +542,7 @@ class Yb171_G35_HighN(FModel):
 
 
 class Yb171_G45_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "G F=9/2, nu > 25"
     f_tot = 4.5
     nu_range = (25.0, np.inf)
@@ -570,7 +570,7 @@ class Yb171_G45_HighN(FModel):
 
 
 class Yb171_G55_HighN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "G F=11/2, nu > 25"
     f_tot = 5.5
     nu_range = (25.0, np.inf)
@@ -595,7 +595,7 @@ class Yb171_G55_HighN(FModel):
 
 
 class Yb171_S05_LowN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "S F=1/2, 2 < nu < 26"
     f_tot = 0.5
     nu_range = (2.0, 26.0)
@@ -654,7 +654,7 @@ class Yb171_S05_LowN(FModel):
 
 
 class Yb171_S15_LowN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "S F=3/2, 2 < nu < 26"
     f_tot = 1.5
     nu_range = (2.0, 26.0)
@@ -674,7 +674,7 @@ class Yb171_S15_LowN(FModel):
 
 
 class Yb171_P05_Lowest(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "P F=1/2, 1.5 < nu < 2.5"
     f_tot = 0.5
     nu_range = (1.5, 2.5)
@@ -702,7 +702,7 @@ class Yb171_P05_Lowest(FModel):
 
 
 class Yb171_P05_LowN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "P F=1/2, 2.9 < nu < 5.9"
     f_tot = 0.5
     nu_range = (2.9, 5.9)
@@ -728,7 +728,7 @@ class Yb171_P05_LowN(FModel):
 
 
 class Yb171_P15_Lowest(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "P F=3/2, 1.5 < nu < 2.5"
     f_tot = 1.5
     nu_range = (1.5, 2.5)
@@ -756,7 +756,7 @@ class Yb171_P15_Lowest(FModel):
 
 
 class Yb171_P15_LowN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "P F=3/2, 3 < nu < 10"
     f_tot = 1.5
     nu_range = (3.0, 10.0)
@@ -816,7 +816,7 @@ class Yb171_P15_LowN(FModel):
 
 
 class Yb171_P25_Lowest(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "P F=5/2, 1.5 < nu < 4.5"
     f_tot = 2.5
     nu_range = (1.5, 4.5)
@@ -836,7 +836,7 @@ class Yb171_P25_Lowest(FModel):
 
 
 class Yb171_P25_LowN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "P F=5/2, 5 < nu < 20"
     f_tot = 2.5
     nu_range = (5.0, 20.0)
@@ -869,7 +869,7 @@ class Yb171_P25_LowN(FModel):
 
 
 class Yb171_D05_LowN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "D F=1/2, 2 < nu < 30 for 2 < nu < 5"
     f_tot = 0.5
     nu_range = (2.0, 30.0)
@@ -889,7 +889,7 @@ class Yb171_D05_LowN(FModel):
 
 
 class Yb171_D15_LowN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "D F=3/2, 2 < nu < 30"
     f_tot = 1.5
     nu_range = (2.0, 30.0)
@@ -941,7 +941,7 @@ class Yb171_D15_LowN(FModel):
 
 
 class Yb171_D25_LowN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "D F=5/2, 2 < nu < 30"
     f_tot = 2.5
     nu_range = (2.0, 30.0)
@@ -993,7 +993,7 @@ class Yb171_D25_LowN(FModel):
 
 
 class Yb171_D35_LowN(FModel):
-    species = "Yb171_mqdt"
+    species = "Yb171"
     name = "D F=7/2, 2 < nu < 14"
     f_tot = 3.5
     nu_range = (2.0, 14.0)
