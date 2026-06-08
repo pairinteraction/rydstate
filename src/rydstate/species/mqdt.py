@@ -84,7 +84,7 @@ class MQDT:
         """Return a list of MQDT models for the outer_channel."""
         models = [model for model in self.models if any(ket == outer_channel for ket in model.outer_channels)]
         if len(models) == 0:
-            models = [FModelSQDT(self.species, outer_channel)]
+            models = [FModelSQDT(self.species, outer_channel, mqdt=self)]
         return models
 
 

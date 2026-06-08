@@ -354,7 +354,7 @@ def get_fmodels(module: ModuleType, species: str) -> list[type[FModel]]:
 
 
 class FModelSQDT(FModel):
-    def __init__(self, species: str, channel: AngularKetFJ[AllKnown]) -> None:
+    def __init__(self, species: str, channel: AngularKetFJ[AllKnown], mqdt: MQDT) -> None:
         self.species = species  # type: ignore [misc]
         self.name = f"SQDT l_r={channel.l_r}, j_r={channel.j_r}, f_tot={channel.f_tot}, nu > {channel.l_r + 1}"  # type: ignore [misc]
         self.f_tot = channel.f_tot  # type: ignore [misc]
@@ -363,3 +363,5 @@ class FModelSQDT(FModel):
         self.outer_channels = [channel]  # type: ignore [misc]
         self.eigen_quantum_defects = [0]  # type: ignore [misc]
         self.mixing_angles = []  # type: ignore [misc]
+
+        super().__init__(mqdt)
