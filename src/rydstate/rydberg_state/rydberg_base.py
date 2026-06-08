@@ -64,9 +64,9 @@ class RydbergStateBase(ABC):
     def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
         ov = 0.0
-        for coeff1, sqdt1 in zip(self.coefficients, self.rydberg_kets, strict=True):
-            for coeff2, sqdt2 in zip(other.coefficients, other.rydberg_kets, strict=True):
-                ov += np.conjugate(coeff1) * coeff2 * sqdt1.calc_reduced_overlap(sqdt2)
+        for coeff1, ket1 in zip(self.coefficients, self.rydberg_kets, strict=True):
+            for coeff2, ket2 in zip(other.coefficients, other.rydberg_kets, strict=True):
+                ov += np.conjugate(coeff1) * coeff2 * ket1.calc_reduced_overlap(ket2)
         return ov
 
     @overload
@@ -104,9 +104,9 @@ class RydbergStateBase(ABC):
 
         """
         value = 0.0
-        for coeff1, sqdt1 in zip(self.coefficients, self.rydberg_kets, strict=True):
-            for coeff2, sqdt2 in zip(other.coefficients, other.rydberg_kets, strict=True):
-                value += np.conjugate(coeff1) * coeff2 * sqdt1.calc_reduced_matrix_element(sqdt2, operator, unit=unit)
+        for coeff1, ket1 in zip(self.coefficients, self.rydberg_kets, strict=True):
+            for coeff2, ket2 in zip(other.coefficients, other.rydberg_kets, strict=True):
+                value += np.conjugate(coeff1) * coeff2 * ket1.calc_reduced_matrix_element(ket2, operator, unit=unit)
         return value
 
     @overload
@@ -146,7 +146,7 @@ class RydbergStateBase(ABC):
 
         """
         value = 0.0
-        for coeff1, sqdt1 in zip(self.coefficients, self.rydberg_kets, strict=True):
-            for coeff2, sqdt2 in zip(other.coefficients, other.rydberg_kets, strict=True):
-                value += np.conjugate(coeff1) * coeff2 * sqdt1.calc_matrix_element(sqdt2, operator, q=q, unit=unit)
+        for coeff1, ket1 in zip(self.coefficients, self.rydberg_kets, strict=True):
+            for coeff2, ket2 in zip(other.coefficients, other.rydberg_kets, strict=True):
+                value += np.conjugate(coeff1) * coeff2 * ket1.calc_matrix_element(ket2, operator, q=q, unit=unit)
         return value

@@ -328,9 +328,12 @@ class RadialKet:
         idmax = np.argmax(w_list_abs)
         w_abs_max = w_list_abs[idmax]
         outer_max = next(
-            w_list_abs[i]
-            for i in range(len(w_list_abs) - 2, 0, -1)
-            if w_list_abs[i] > w_list_abs[i - 1] and w_list_abs[i] > w_list_abs[i + 1]
+            (
+                w_list_abs[i]
+                for i in range(len(w_list_abs) - 2, 0, -1)
+                if w_list_abs[i] > w_list_abs[i - 1] and w_list_abs[i] > w_list_abs[i + 1]
+            ),
+            0,
         )
         if idmax <= start_id + 5 and w_abs_max / outer_max > 5:
             warning_msgs.append(
