@@ -20,9 +20,6 @@ logger = logging.getLogger(__name__)
 class RydbergKet:
     """Create a Rydberg ket, i.e. a tensor product of a radial ket and an angular ket."""
 
-    species: str
-    """The atomic species of the Rydberg state."""
-
     def __init__(
         self,
         angular: AngularKetBase[Any],

@@ -114,10 +114,9 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
         only for convenience to infer the core electron spin and nuclear spin quantum numbers.
         """
         if species is not None:
-            if isinstance(species, str):
-                from rydstate.species.element_properties import get_element_properties  # noqa: PLC0415
+            from rydstate.species.element_properties import get_element_properties  # noqa: PLC0415
 
-                element_properties = get_element_properties(species)
+            element_properties = get_element_properties(species)
 
             if i_c is not None and i_c != element_properties.i_c:
                 raise ValueError(f"i_c={i_c} not allowed for {species} with i_c={element_properties.i_c}.")
