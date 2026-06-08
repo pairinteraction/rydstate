@@ -3,7 +3,7 @@ from rydstate import BasisMQDT
 
 def test_mqdt_basis_creation() -> None:
     """Smoke-test that the basis builds and respects the nu range."""
-    basis = BasisMQDT("Sr88", nu=(25, 30))
+    basis = BasisMQDT("Sr88", nu=(25, 30), skip_high_l=False)
     assert len(basis) > 0
     assert all(25 <= s.nu <= 30 for s in basis.states)
 

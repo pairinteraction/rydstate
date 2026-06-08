@@ -1,13 +1,3 @@
-"""Tests for RydbergStateMQDT created from a BasisMQDT.
-
-The tests build a small MQDT basis for Sr88, pick out individual
-:class:`RydbergStateMQDT` objects and check:
-
-* expectation values (and standard deviations) of their quantum numbers,
-* overlaps between MQDT states and with SQDT states, and
-* (reduced) matrix elements between MQDT states and with SQDT states.
-"""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -22,7 +12,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture(scope="module")
 def basis() -> BasisMQDT:
-    basis = BasisMQDT("Sr88", nu=(28.0, 32.0))
+    basis = BasisMQDT("Sr88", nu=(28.0, 30.0), skip_high_l=False)
     basis.sort_states("nu")
     return basis
 
