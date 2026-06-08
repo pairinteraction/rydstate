@@ -148,8 +148,8 @@ class FModel:
         """
         nuis = self.calc_channel_nuis(nu)
         eigen_quantum_defects = [
-            calc_modified_ritz_formula_in_nu(nu, params)
-            for nu, params in zip(nuis, self.eigen_quantum_defects, strict=True)
+            calc_modified_ritz_formula_in_nu(nui, params)
+            for nui, params in zip(nuis, self.eigen_quantum_defects, strict=True)
         ]
         return np.array(eigen_quantum_defects)
 
