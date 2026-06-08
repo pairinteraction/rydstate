@@ -9,6 +9,8 @@ import numpy as np
 from rydstate.units import BaseQuantities
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from rydstate.angular.angular_ket import AngularKetBase
     from rydstate.angular.angular_state import AngularState
     from rydstate.rydberg_state.rydberg_ket import RydbergKet
@@ -37,6 +39,9 @@ class RydbergStateBase(ABC):
     _energy_au: float
     """The energy of the Rydberg state in atomic units (Hartree)."""
 
+    def __iter__(self) -> Iterator[tuple[float, RydbergKet]]:
+        return zip(self.coefficients, self.rydberg_kets, strict=True).__iter__()
+
     @overload
     def get_energy(self, unit: None = None) -> PintFloat: ...
 
@@ -64,8 +69,8 @@ class RydbergStateBase(ABC):
     def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
         ov = 0.0
-        for coeff1, ket1 in zip(self.coefficients, self.rydberg_kets, strict=True):
-            for coeff2, ket2 in zip(other.coefficients, other.rydberg_kets, strict=True):
+        for coeff1, ket1 in self:
+            for coeff2, ket2 in other:
                 ov += np.conjugate(coeff1) * coeff2 * ket1.calc_reduced_overlap(ket2)
         return ov
 
@@ -104,8 +109,8 @@ class RydbergStateBase(ABC):
 
         """
         value = 0.0
-        for coeff1, ket1 in zip(self.coefficients, self.rydberg_kets, strict=True):
-            for coeff2, ket2 in zip(other.coefficients, other.rydberg_kets, strict=True):
+        for coeff1, ket1 in self:
+            for coeff2, ket2 in other:
                 value += np.conjugate(coeff1) * coeff2 * ket1.calc_reduced_matrix_element(ket2, operator, unit=unit)
         return value
 
@@ -146,7 +151,7 @@ class RydbergStateBase(ABC):
 
         """
         value = 0.0
-        for coeff1, ket1 in zip(self.coefficients, self.rydberg_kets, strict=True):
-            for coeff2, ket2 in zip(other.coefficients, other.rydberg_kets, strict=True):
+        for coeff1, ket1 in self:
+            for coeff2, ket2 in other:
                 value += np.conjugate(coeff1) * coeff2 * ket1.calc_matrix_element(ket2, operator, q=q, unit=unit)
         return value

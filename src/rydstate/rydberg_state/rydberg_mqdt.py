@@ -63,15 +63,11 @@ class RydbergStateMQDT(RydbergStateBase):
         )
 
     def __repr__(self) -> str:
-        terms = [
-            f"{coeff}*{rydberg_ket!r}" for coeff, rydberg_ket in zip(self.coefficients, self.rydberg_kets, strict=True)
-        ]
+        terms = [f"{coeff}*{rydberg_ket!r}" for coeff, rydberg_ket in self]
         return f"{self.__class__.__name__}({', '.join(terms)})"
 
     def __str__(self) -> str:
-        terms = [
-            f"{coeff}*{rydberg_ket!s}" for coeff, rydberg_ket in zip(self.coefficients, self.rydberg_kets, strict=True)
-        ]
+        terms = [f"{coeff}*{rydberg_ket!s}" for coeff, rydberg_ket in self]
         return f"{', '.join(terms)}"
 
     @property
