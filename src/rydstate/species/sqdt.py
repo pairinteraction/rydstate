@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
-from rydstate.angular.utils import is_unknown
+from rydstate.angular.utils import check_spin_addition_rule, get_possible_quantum_number_values, is_unknown
 from rydstate.species.element_properties import get_element_properties
 from rydstate.species.utils import (
     calc_modified_ritz_formula,
@@ -142,13 +142,12 @@ class SQDT:
 
         """
         if is_unknown(s_tot):
-            if self.element_properties.number_valence_electrons == 1:
-                return self.is_allowed_shell(n, l, 0.5)
-            if self.element_properties.number_valence_electrons == 2:
-                return self.is_allowed_shell(n, l, 0) and self.is_allowed_shell(n, l, 1)
-            raise RuntimeError("species with more than 2 valence electrons should not happen")
+            allowed_s_tot = get_possible_quantum_number_values(
+                self.element_properties.s_c, self.element_properties.s_r, s_tot
+            )
+            return all(self.is_allowed_shell(n, l, _s_tot) for _s_tot in allowed_s_tot)
 
-        if (self.element_properties.number_valence_electrons / 2) % 1 != s_tot % 1:
+        if not check_spin_addition_rule(self.element_properties.s_c, self.element_properties.s_r, s_tot):
             raise ValueError(f"Invalid spin {s_tot=} for {self.species}.")
 
         if (n, l) == self.element_properties.ground_state_shell:
