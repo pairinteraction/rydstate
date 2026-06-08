@@ -56,9 +56,6 @@ class AngularState(Generic[GenericT_AngularKet]):
         if normalize:
             self.coefficients /= self.norm
 
-    def __iter__(self) -> Iterator[tuple[float, GenericT_AngularKet]]:
-        return zip(self.coefficients, self.kets, strict=True).__iter__()
-
     def __repr__(self) -> str:
         terms = [f"{coeff}*{ket!r}" for coeff, ket in self]
         return f"{self.__class__.__name__}({', '.join(terms)})"
@@ -66,6 +63,9 @@ class AngularState(Generic[GenericT_AngularKet]):
     def __str__(self) -> str:
         terms = [f"{coeff}*{ket!s}" for coeff, ket in self]
         return f"{', '.join(terms)}"
+
+    def __iter__(self) -> Iterator[tuple[float, GenericT_AngularKet]]:
+        return zip(self.coefficients, self.kets, strict=True).__iter__()
 
     @property
     def coupling_scheme(self) -> CouplingScheme:

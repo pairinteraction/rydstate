@@ -72,9 +72,10 @@ class CoreKet:
 
         This means, is one core_ket in the list a broader or equal description of the same core state.
         Specifically, a core_ket from the list is a match if:
+
         - The quantum numbers are the same or the quantum number of the matching_core_ket (from the list) is unknown.
         - The label is the same, or the label of the matching_core_ket is unknown,
-            or the label of the matching_core_ket is contained in the label of self.
+          or the label of the matching_core_ket is contained in the label of self.
 
         Args:
             matching_core_ket_list: List of core kets to search for a match.
