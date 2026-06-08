@@ -22,6 +22,8 @@ class MQDT:
     """The short name of the atomic species."""
     tag: ClassVar[str]
     """The tag for these MQDT parameters."""
+    is_default: ClassVar[bool] = False
+    """Whether this MQDT is the default MQDT for the species."""
 
     ionization_threshold_dict: ClassVar[dict[CoreKet, tuple[float, str]]]
     """Dictionary containing the ionization thresholds for the different core states.

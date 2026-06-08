@@ -27,6 +27,8 @@ class Potential:
     """The short name of the atomic species."""
     tag: ClassVar[str]
     """The tag for these potential parameters."""
+    is_default: ClassVar[bool] = False
+    """Whether this potential is the default potential for the species."""
 
     def __init__(self, l_r: int) -> None:
         r"""Initialize the model.
@@ -324,7 +326,7 @@ class PotentialFei2009(Potential):
     tag = "fei_2009"
 
     # Model Potential Parameters for fei_2009
-    model_potential_parameter_fei_2009: tuple[float, float, float, float]
+    model_potential_parameter_fei_2009: ClassVar[tuple[float, float, float, float]]
     """Parameters (delta, alpha, beta, gamma) for the four-parameter potential used in the model potential."""
     reference: ClassVar[str] = (
         "Y. Fei et al., Chinese Phys. B 18 4234 (2009), https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025"
@@ -369,6 +371,8 @@ class PotentialDummy(Potential):
 
         """
         self.species = species  # type: ignore [misc]
+        self.element_properties = get_element_properties(self.species)
+
         self.l_r = l_r
 
     def calc_model_potential(self, x: XType) -> XType:  # noqa: ARG002

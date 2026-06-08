@@ -87,7 +87,7 @@ class RadialKet:
         The scaled wavefunction is defined as
 
         .. math::
-            w(z) = z^{-1/2} \tilde{u}(x=z^2) = (r/a_0)^{-1/4} sqrt(a_0) r R(r)
+            w(z) = z^{-1/2} \tilde{u}(x=z^2) = (r/a_0)^{-1/4} \sqrt{a_0} r R(r)
 
         """
         if not hasattr(self, "_w_list"):
@@ -96,7 +96,7 @@ class RadialKet:
 
     @property
     def u_list(self) -> NDArray:
-        r"""The dimensionless wavefunction :math:`\tilde{u}(x) = sqrt(a_0) r R(r)`."""
+        r"""The dimensionless wavefunction :math:`\tilde{u}(x) = \sqrt{a_0} r R(r)`."""
         return np.sqrt(self.z_list) * self.w_list
 
     @property
@@ -211,13 +211,13 @@ class RadialKet:
         The radial wavefunction are related as follows:
 
         .. math::
-            \tilde{u}(x) = \sqrt(a_0) r R(r)
+            \tilde{u}(x) = \sqrt{a_0} r R(r)
 
         .. math::
-            w(z) = z^{-1/2} \tilde{u}(x=z^2) = (r/a_0)^{-1/4} \sqrt(a_0) r R(r)
+            w(z) = z^{-1/2} \tilde{u}(x=z^2) = (r/a_0)^{-1/4} \sqrt{a_0} r R(r)
 
 
-        where z = sqrt(r/a_0) is the dimensionless scaled coordinate.
+        where z = \sqrt{r/a_0} is the dimensionless scaled coordinate.
 
         The resulting radial wavefunction is normalized such that
 
@@ -228,7 +228,7 @@ class RadialKet:
             = 1
 
         Args:
-            run_backward (default: True): Wheter to integrate the radial Schrödinger equation "backward" of "forward".
+            run_backward (default: True): Whether to integrate the radial Schrödinger equation "backward" or "forward".
             w0 (default: 1e-10): The initial magnitude of the radial wavefunction at the outer boundary.
                 For forward integration we set w[0] = 0 and w[1] = w0,
                 for backward integration we set w[-1] = 0 and w[-2] = (-1)^{(n - l - 1) % 2} * w0.

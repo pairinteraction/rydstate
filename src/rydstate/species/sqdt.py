@@ -40,6 +40,8 @@ class SQDT:
     """The short name of the atomic species."""
     tag: ClassVar[str]
     """The tag for these SQDT parameters."""
+    is_default: ClassVar[bool] = False
+    """Whether this SQDT is the default SQDT for the species."""
 
     quantum_defects: ClassVar[dict[tuple[int, float, float], RydbergRitzParameters] | None] = None
     """Dictionary containing the quantum defects for each (l, j_tot, s_tot) combination, i.e.
