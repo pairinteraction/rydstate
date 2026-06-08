@@ -5,6 +5,9 @@ from rydstate.species.ytterbium.element_properties_data import (
 )
 from rydstate.species.ytterbium.mqdt_data import MQDTYtterbium171, MQDTYtterbium173, MQDTYtterbium174
 from rydstate.species.ytterbium.potential_data import (
+    PotentialCoulombYtterbium171,
+    PotentialCoulombYtterbium173,
+    PotentialCoulombYtterbium174,
     PotentialFei2009Ytterbium171,
     PotentialFei2009Ytterbium173,
     PotentialFei2009Ytterbium174,
@@ -20,6 +23,9 @@ __all__ = [
     "MQDTYtterbium171",
     "MQDTYtterbium173",
     "MQDTYtterbium174",
+    "PotentialCoulombYtterbium171",
+    "PotentialCoulombYtterbium173",
+    "PotentialCoulombYtterbium174",
     "PotentialFei2009Ytterbium171",
     "PotentialFei2009Ytterbium173",
     "PotentialFei2009Ytterbium174",
