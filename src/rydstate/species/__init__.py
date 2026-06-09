@@ -7,7 +7,7 @@ from rydstate.species.potential import (
     PotentialCoulomb,
     PotentialDummy,
     PotentialFei2009,
-    PotentialMarinescu1993,
+    PotentialMarinescu1994,
     get_potential_class,
 )
 from rydstate.species.sqdt import SQDT, get_sqdt
@@ -23,7 +23,7 @@ __all__ = [
     "PotentialCoulomb",
     "PotentialDummy",
     "PotentialFei2009",
-    "PotentialMarinescu1993",
+    "PotentialMarinescu1994",
     "cesium",
     "get_all_subclasses",
     "get_element_properties",

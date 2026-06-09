@@ -247,23 +247,23 @@ class PotentialCoulomb(Potential):
         return self.calc_potential_coulomb(x)
 
 
-class PotentialMarinescu1993(Potential):
+class PotentialMarinescu1994(Potential):
     """Model potential for alkali atoms from Marinescu et al. (1994).
 
     See also: Phys. Rev. A 49, 982 (1994)
     """
 
-    tag = "marinescu_1993"
+    tag = "marinescu_1994"
 
-    alpha_c_marinescu_1993: ClassVar[float]
+    alpha_c_marinescu_1994: ClassVar[float]
     """Static dipole polarizability in atomic units (a.u.), used for the parametric model potential.
     See also: Phys. Rev. A 49, 982 (1994)
     """
-    r_c_dict_marinescu_1993: ClassVar[dict[int, float]]
+    r_c_dict_marinescu_1994: ClassVar[dict[int, float]]
     """Cutoff radius {l: r_c} to truncate the unphysical short-range contribution of the polarization potential.
     See also: Phys. Rev. A 49, 982 (1994)
     """
-    model_potential_parameter_marinescu_1993: ClassVar[dict[int, tuple[float, float, float, float]]]
+    model_potential_parameter_marinescu_1994: ClassVar[dict[int, tuple[float, float, float, float]]]
     """Parameters {l: (a_1, a_2, a_3, a_4)} for the parametric model potential.
     See also: M. Marinescu, Phys. Rev. A 49, 982 (1994), https://journals.aps.org/pra/abstract/10.1103/PhysRevA.49.982
     """
@@ -293,7 +293,7 @@ class PotentialMarinescu1993(Potential):
             V_{mp,marinescu}: The four parameter potential V_{mp,marinescu}(x) in atomic units.
 
         """
-        parameter_dict = self.model_potential_parameter_marinescu_1993
+        parameter_dict = self.model_potential_parameter_marinescu_1994
         if len(parameter_dict) == 0:
             raise ValueError(f"No parametric model potential parameters defined for the species {self.species}.")
         # default to parameters for the maximum l
@@ -303,11 +303,11 @@ class PotentialMarinescu1993(Potential):
         z_nl: XType = 1 + (self.element_properties.Z - 1) * exp_a1 - x * (a3 + a4 * x) * exp_a2
         v_c = -z_nl / x
 
-        alpha_c = self.alpha_c_marinescu_1993
+        alpha_c = self.alpha_c_marinescu_1994
         if alpha_c == 0:
             v_p = 0
         else:
-            r_c_dict = self.r_c_dict_marinescu_1993
+            r_c_dict = self.r_c_dict_marinescu_1994
             if len(r_c_dict) == 0:
                 raise ValueError(f"No parametric model potential parameters defined for the species {self.species}.")
             # default to x_c for the maximum l

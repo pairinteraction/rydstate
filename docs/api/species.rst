@@ -10,7 +10,7 @@ General classes
 
     ElementProperties
     PotentialCoulomb
-    PotentialMarinescu1993
+    PotentialMarinescu1994
     PotentialFei2009
     SQDT
     MQDT
