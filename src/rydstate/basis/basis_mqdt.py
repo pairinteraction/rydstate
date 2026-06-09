@@ -6,16 +6,16 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 from rydstate.angular import AngularKetFJ
+from rydstate.angular.utils import is_unknown
 from rydstate.basis.basis_base import BasisBase
 from rydstate.linalg import calc_nullvector, find_roots
 from rydstate.rydberg_state import RydbergStateMQDT
 from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT
-from rydstate.species import FModel, FModelSQDT, get_mqdt
-from rydstate.species.mqdt import MQDT
-from rydstate.species.potential import Potential, get_potential_class
+from rydstate.species import MQDT, FModelSQDT, Potential, PotentialDummy, get_mqdt, get_potential_class
 
 if TYPE_CHECKING:
     from rydstate.species import FModel
+
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +114,8 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
                 )
             self.states.extend(_states)
 
+        self.states.sort(key=lambda state: state.nu)
+
 
 def is_allowed_qn(qn_range: float | tuple[float, float] | None, qn: float, delta: float = 1e-6) -> bool:
     if qn_range is None:
@@ -188,10 +190,13 @@ def get_mqdt_states_from_fmodel(
 
         sqdt_states: list[RydbergStateSQDT[AngularKetFJ[Any]]] = []
         for nui, angular_ket in zip(nuis, model.outer_channels, strict=True):
-            sqdt_species = model.species_name.replace("_mqdt", "")
+            if not is_unknown(angular_ket.l_r):
+                potential = potential_class(angular_ket.l_r)
+            else:
+                potential = PotentialDummy(model.species, angular_ket.l_r)
             sqdt_states.append(
                 RydbergStateSQDT.from_angular_ket(
-                    sqdt_species, angular_ket, nu=float(nui), potential_class=potential_class
+                    model.species, angular_ket, nu=float(nui), potential=potential, sqdt="mqdt"
                 )
             )
 
