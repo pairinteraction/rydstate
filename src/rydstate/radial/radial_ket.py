@@ -4,57 +4,116 @@ import logging
 import math
 from typing import TYPE_CHECKING, Literal, overload
 
-from rydstate.radial.grid import Grid
+import numpy as np
+from mpmath import whitw
+from scipy.special import gamma
+
+from rydstate.angular.utils import is_unknown
+from rydstate.radial.numerov import _run_numerov_integration_python, run_numerov_integration
 from rydstate.radial.radial_matrix_element import calc_radial_matrix_element_from_w_z
-from rydstate.radial.wavefunction import WavefunctionNumerov, WavefunctionWhittaker
-from rydstate.species.element_properties import get_element_properties
-from rydstate.species.potential import Potential, get_potential_class
 from rydstate.species.utils import calc_energy_from_nu
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
+    from rydstate.angular.utils import Unknown
     from rydstate.radial.radial_matrix_element import INTEGRATION_METHODS
-    from rydstate.radial.wavefunction import Wavefunction, WavefunctionSignConvention
-    from rydstate.units import PintFloat
+    from rydstate.species.potential import Potential, PotentialDummy
+    from rydstate.units import NDArray, PintFloat
 
 logger = logging.getLogger(__name__)
+
+
+WavefunctionSignConvention = Literal["positive_at_outer_bound", "n_l_1"] | None
 
 
 class RadialKet:
     r"""Class representing a radial Rydberg state."""
 
-    def __init__(
-        self,
-        species: str,
-        nu: float,
-        l_r: int,
-        potential: Potential | str | None = None,
-    ) -> None:
+    def __init__(self, nu: float, potential: Potential | PotentialDummy) -> None:
         r"""Initialize the radial ket.
 
         Args:
-            species: Atomic species.
             nu: Effective principal quantum number of the rydberg electron,
                 which is used to calculate the energy of the state.
-            l_r: Orbital angular momentum quantum number of the rydberg electron.
-            potential: The potential to use for the radial ket.
+            potential: The potential object.
 
         """
-        self.species = species
-        self.element_properties = get_element_properties(species)
-        self.potential: Potential
-        if not isinstance(potential, Potential):
-            self.potential = get_potential_class(species, tag=potential)(l_r)
-        else:
-            self.potential = potential
+        self.potential = potential
 
-        self.n: int | None = None
         if not nu > 0:
             raise ValueError(f"nu must be larger than 0, but is {nu=}")
         self.nu = nu
-        if not ((isinstance(l_r, int) or l_r.is_integer()) and l_r >= 0):
-            raise ValueError(f"l_r must be an integer, and larger or equal 0, but {l_r=}")
-        self.l_r = int(l_r)
+        self.n: int | None = None
+
+    def __repr__(self) -> str:
+        nu, potential = self.nu, self.potential
+        return f"{self.__class__.__name__}({nu=}, {potential=})"
+
+    @property
+    def l_r(self) -> int | Unknown:
+        """Return the orbital quantum number of the rydberg electron."""
+        return self.potential.l_r
+
+    @property
+    def z_list(self) -> NDArray:
+        r"""The grid in the scaled dimensionless coordinate :math:`z = \sqrt{r/a_0}`.
+
+        In this coordinate the grid points are chosen equidistant,
+        because the nodes of the wavefunction are equally spaced in this coordinate.
+        """
+        if not hasattr(self, "_z_list"):
+            self.create_grid_points()
+        return self._z_list
+
+    @property
+    def x_list(self) -> NDArray:
+        r"""The grid in the dimensionless coordinate :math:`x = r/a_0`."""
+        return self.z_list**2
+
+    @property
+    def dz(self) -> float:
+        r"""The grid step size in the scaled dimensionless coordinate :math:`z = \sqrt{r/a_0}`."""
+        return float(self.z_list[1] - self.z_list[0])
+
+    @property
+    def steps(self) -> int:
+        """The number of grid points."""
+        return len(self.z_list)
+
+    @property
+    def w_list(self) -> NDArray:
+        r"""The dimensionless scaled wavefunction :math:`w(z)`.
+
+        The scaled wavefunction is defined as
+
+        .. math::
+            w(z) = z^{-1/2} \tilde{u}(x=z^2) = (r/a_0)^{-1/4} \sqrt{a_0} r R(r)
+
+        """
+        if not hasattr(self, "_w_list"):
+            self.integrate_wavefunction()
+        return self._w_list
+
+    @property
+    def u_list(self) -> NDArray:
+        r"""The dimensionless wavefunction :math:`\tilde{u}(x) = \sqrt{a_0} r R(r)`."""
+        return np.sqrt(self.z_list) * self.w_list
+
+    @property
+    def r_list(self) -> NDArray:
+        r"""The radial wavefunction in atomic units :math:`\tilde{R}(r) = a_0^{-3/2} R(r)`."""
+        return self.u_list / self.x_list
+
+    @property
+    def norm(self) -> float:
+        """The norm of the wavefunction."""
+        return math.sqrt(2 * np.sum(self.w_list * self.w_list * self.z_list * self.z_list) * self.dz)
+
+    @property
+    def nodes(self) -> int:
+        """The number of nodes (i.e. zero-crossings) of the wavefunction."""
+        w_list_no_zeros = self.w_list[self.w_list != 0]
+        return int(np.sum(np.abs(np.diff(np.sign(w_list_no_zeros)))) // 2)
 
     def set_n_for_sanity_check(self, n: int) -> None:
         """Provide n for additional sanity checks of the radial wavefunction.
@@ -72,52 +131,40 @@ class RadialKet:
             # if n <= 10, we use NIST energy data for low n, which sometimes results in nu > n
             # -1e-5: avoid issues due to numerical precision and due to NIST data
             raise ValueError(f"n must be larger or equal to nu, but {n=}, nu={self.nu} for {self}")
-        if n <= self.l_r:
+        if not is_unknown(self.l_r) and n <= self.l_r:
             raise ValueError(f"n must be larger than l_r, but {n=}, l_r={self.l_r} for {self}")
         self.n = n
 
-    def __repr__(self) -> str:
-        species, nu, l_r, n = self.species, self.nu, self.l_r, self.n
-        n_str = "" if n is None else f", ({n=})"
-        return f"{self.__class__.__name__}({species}, {nu=}, {l_r=}{n_str})"
-
-    def __str__(self) -> str:
-        return self.__repr__()
-
-    @property
-    def grid(self) -> Grid:
-        """The grid object for the integration of the radial Schrödinger equation."""
-        if not hasattr(self, "_grid"):
-            self.create_grid()
-        return self._grid
-
-    def create_grid(
+    def create_grid_points(
         self,
         x_min: float | None = None,
         x_max: float | None = None,
         dz: float = 1e-2,
     ) -> None:
-        """Create the grid object for the integration of the radial Schrödinger equation.
+        r"""Create the grid points for the integration of the radial Schrödinger equation.
 
         Args:
-            x_min: The minimum value of the radial coordinate in dimensionless units (x = r/a_0).
+            x_min: The minimum value of the radial coordinate in dimensionless units :math:`x = r/a_0`.
                 Default: Automatically calculate sensible value.
-            x_max: The maximum value of the radial coordinate in dimensionless units (x = r/a_0).
+            x_max: The maximum value of the radial coordinate in dimensionless units :math:`x = r/a_0`.
                 Default: Automatically calculate sensible value.
-            dz: The step size of the integration (z = r/a_0). Default: 1e-2.
+            dz: The step size of the integration in the scaled dimensionless coordinate :math:`z = \sqrt{r/a_0}`.
+            Default: 1e-2.
 
         """
-        if hasattr(self, "_grid"):
-            raise RuntimeError("The grid was already created, you should not create it again.")
-
+        if hasattr(self, "_z_list"):
+            raise RuntimeError("The grid points were already created, you should not create them again.")
+        l_r = self.l_r if not is_unknown(self.l_r) else 0  # used for limit estimations
         if x_min is None:
             # we set z_min explicitly too small,
             # since the integration will automatically stop after the turning point,
             # and as soon as the wavefunction is close to zero
-            if self.l_r <= 10:
+            if l_r <= 10:
                 z_min = 0.0
             else:
-                energy_au = calc_energy_from_nu(self.element_properties.reduced_mass_au, self.nu)
+                # we use reduced_mass_au=1, which overestimates the energy
+                # and thus underestimates the lower turning point
+                energy_au = calc_energy_from_nu(1, self.nu)
                 z_min = self.potential.calc_turning_point_z(energy_au)
                 z_min = math.sqrt(0.5) * z_min - 3  # see also compare_z_min_cutoff.ipynb
         else:
@@ -129,60 +176,296 @@ class RadialKet:
             n = self.n if self.n is not None else self.nu + 5
             # This is an empirical formula for the maximum value of the radial coordinate
             # it takes into account that for large n but small l the wavefunction is very extended
-            x_max = 2 * n * (n + 15 + (n - self.l_r) / 4)
+            x_max = 2 * n * (n + 15 + (n - l_r) / 4)
         z_max = math.sqrt(x_max)
 
-        self._grid = Grid(z_min, z_max, dz)
+        # put all grid points on a standard grid, i.e. [dz, 2*dz, 3*dz, ...]
+        # this is necessary to allow integration of two different wavefunctions
+        # Note: using np.arange((z_min // dz) * dz, z_max + dz / 2, dz)
+        # would lead to 'quite big' inprecisions (1e-10) between grid points of different grids,
+        # because of floating point errors
+        self._z_list: NDArray = np.arange(0, z_max + dz / 2, dz)[round(z_min / dz) :]
 
-    @property
-    def wavefunction(self) -> Wavefunction:
-        if not hasattr(self, "_wavefunction"):
-            self._wavefunction: Wavefunction
-            self.create_wavefunction()
-        return self._wavefunction
+    def integrate_wavefunction(self, method: Literal["numerov", "whittaker"] = "numerov") -> None:
+        if method == "numerov":
+            self.integrate_numerov()
+        elif method == "whittaker":
+            self.integrate_whittaker()
+        else:
+            raise ValueError(f"Unknown integration method: {method}")
 
-    @overload
-    def create_wavefunction(
-        self, *, sign_convention: WavefunctionSignConvention = "positive_at_outer_bound"
-    ) -> None: ...
-
-    @overload
-    def create_wavefunction(
+    def integrate_numerov(
         self,
-        method: Literal["numerov"],
-        sign_convention: WavefunctionSignConvention = "positive_at_outer_bound",
-        *,
         run_backward: bool = True,
         w0: float = 1e-10,
-        _use_njit: bool = True,
-    ) -> None: ...
-
-    @overload
-    def create_wavefunction(
-        self, method: Literal["whittaker"], sign_convention: WavefunctionSignConvention = "positive_at_outer_bound"
-    ) -> None: ...
-
-    def create_wavefunction(
-        self,
-        method: Literal["numerov", "whittaker"] = "numerov",
-        sign_convention: WavefunctionSignConvention = "positive_at_outer_bound",
         *,
-        run_backward: bool = True,
-        w0: float = 1e-10,
         _use_njit: bool = True,
     ) -> None:
-        if hasattr(self, "_wavefunction"):
-            raise RuntimeError("The wavefunction was already created, you should not create it again.")
+        r"""Run the Numerov integration of the radial Schrödinger equation.
 
-        if method == "numerov":
-            self._wavefunction = WavefunctionNumerov(self, self.grid, self.potential)
-            self._wavefunction.integrate(run_backward, w0, _use_njit=_use_njit)
-        elif method == "whittaker":
-            self._wavefunction = WavefunctionWhittaker(self, self.grid)
-            self._wavefunction.integrate()
+        The resulting radial wavefunctions are then stored as attributes, where
+        - w_list is the dimensionless and scaled wavefunction w(z)
+        - u_list is the dimensionless wavefunction \tilde{u}(x)
+        - r_list is the radial wavefunction R(r) in atomic units
 
-        self._wavefunction.apply_sign_convention(sign_convention)
-        self._grid = self._wavefunction.grid
+        The radial wavefunction are related as follows:
+
+        .. math::
+            \tilde{u}(x) = \sqrt{a_0} r R(r)
+
+        .. math::
+            w(z) = z^{-1/2} \tilde{u}(x=z^2) = (r/a_0)^{-1/4} \sqrt{a_0} r R(r)
+
+
+        where z = \sqrt{r/a_0} is the dimensionless scaled coordinate.
+
+        The resulting radial wavefunction is normalized such that
+
+        .. math::
+            \int_{0}^{\infty} r^2 |R(r)|^2 dr
+            = \int_{0}^{\infty} |\tilde{u}(x)|^2 dx
+            = \int_{0}^{\infty} 2 z^2 |w(z)|^2 dz
+            = 1
+
+        Args:
+            run_backward (default: True): Whether to integrate the radial Schrödinger equation "backward" or "forward".
+            w0 (default: 1e-10): The initial magnitude of the radial wavefunction at the outer boundary.
+                For forward integration we set w[0] = 0 and w[1] = w0,
+                for backward integration we set w[-1] = 0 and w[-2] = (-1)^{(n - l - 1) % 2} * w0.
+            _use_njit (default: True): Whether to use the fast njit version of the Numerov integration.
+
+        """
+        if hasattr(self, "_w_list"):
+            raise RuntimeError("The wavefunction was already integrated, you should not create it again.")
+        if is_unknown(self.l_r):
+            raise ValueError("Cannot integrate wavefunction for unknown l_r, please provide a l_r to the potential.")
+
+        # Note: Inside this method we use y and x like it is used in the numerov function
+        # and not like in the rest of this class, i.e. y = w(z) and x = z
+        element_properties = self.potential.element_properties
+        energy_au = calc_energy_from_nu(element_properties.reduced_mass_au, self.nu)
+        v_eff = self.potential.calc_total_effective_potential(self.x_list)
+        glist = 8 * element_properties.reduced_mass_au * self.z_list * self.z_list * (energy_au - v_eff)
+
+        if run_backward:
+            # During the Numerov integration we define the wavefunction such that it should always stop
+            # at the inner boundary with positive weight
+            # Note: n - l - 1 is the number of nodes of the radial wavefunction
+            # Thus, the sign of the wavefunction at the outer boundary is (-1)^{(n - l - 1) % 2}
+            # You can choose a different sign convention by calling the method apply_sign_convention() afterwards.
+            y0, y1 = 0, w0
+            x_start, x_stop, dx = self.z_list[-1], self.z_list[0], -self.dz
+            g_list_directed = glist[::-1]
+            # We set x_min to the classical turning point
+            # after x_min is reached in the integration, the integration stops, as soon as it crosses the x-axis again
+            # or it reaches a local minimum (thus going away from the x-axis)
+            # the reason for this is that the second derivative of the wavefunction d^2/dz^2 w(z) (= concavity)
+            # can only vanish at either
+            # i) where w(z) = 0 or ii) where the potential is equal to the energy (-> classical turning point)
+            # If we further assume, that the wavefunction converges to zero at the inner boundary,
+            # we know that after the inner classical turning point
+            # the wavefunction should never increase the distance from the x-axis again.
+            x_min = self.potential.calc_turning_point_z(energy_au)
+
+        else:  # forward
+            y0, y1 = 0, w0
+            x_start, x_stop, dx = self.z_list[0], self.z_list[-1], self.dz
+            g_list_directed = glist
+            n = self.n if self.n is not None else self.nu
+            x_min = math.sqrt(n * (n + 15))
+
+        if _use_njit:
+            w_list_list = run_numerov_integration(x_start, x_stop, dx, y0, y1, g_list_directed, x_min)
+        else:
+            logger.warning("Using python implementation of Numerov integration, this is much slower!")
+            w_list_list = _run_numerov_integration_python(x_start, x_stop, dx, y0, y1, g_list_directed, x_min)
+
+        # add zeros for the part of the grid that was not integrated
+        w_list_list += [0] * (len(self.z_list) - len(w_list_list))
+        if run_backward:
+            w_list_list = w_list_list[::-1]
+        self._w_list = np.array(w_list_list)
+
+        # normalize the wavefunction, see docstring
+        self._w_list /= self.norm
+
+        self.apply_sign_convention("positive_at_outer_bound")
+        self.sanity_check(x_stop, run_backward)
+
+    def integrate_whittaker(self) -> None:
+        if hasattr(self, "_w_list"):
+            raise RuntimeError("The wavefunction was already integrated, you should not create it again.")
+        if is_unknown(self.l_r):
+            raise ValueError("Cannot integrate wavefunction for unknown l_r, please provide a l_r to the potential.")
+
+        logger.warning("Using Whittaker to get the wavefunction is not recommended! Use this only for comparison.")
+
+        whitw_vectorized = np.vectorize(whitw, otypes=[float])
+        m_star = self.potential.element_properties.reduced_mass_au
+        whitw_list = whitw_vectorized(self.nu, self.l_r + 0.5, m_star * 2 * self.x_list / self.nu)
+
+        # to get the correct whittaker functions, u_list should be multiplied with nu^(3/2)
+        # however, to normalize them, we divide again by nu^(3/2) and thus we can skip this step
+        u_list: NDArray = whitw_list / np.sqrt(self.nu**2 * gamma(self.nu + self.l_r + 1) * gamma(self.nu - self.l_r))
+        w_list: NDArray = u_list / np.sqrt(self.z_list)
+
+        self._w_list = w_list
+        self.apply_sign_convention("positive_at_outer_bound")
+
+    def sanity_check(self, z_force_stop: float, run_backward: bool) -> bool:  # noqa: C901, PLR0915, PLR0912
+        """Do some sanity checks on the wavefunction.
+
+        Check if the wavefuntion fulfills the following conditions:
+        - The wavefunction is positive (or zero) at the inner boundary.
+        - The wavefunction is close to zero at the inner boundary.
+        - The wavefunction is close to zero at the outer boundary.
+        - The wavefunction has exactly (n - l - 1) nodes.
+        - The integration stopped before z_force_stop (for l>0)
+        """
+        warning_msgs: list[str] = []
+        start_id = np.argwhere(self.w_list != 0).flatten()[0]
+
+        # Check and Correct if divergence of the wavefunction
+        w_list_abs = np.abs(self.w_list)
+        idmax = np.argmax(w_list_abs)
+        w_abs_max = w_list_abs[idmax]
+        outer_max = next(
+            (
+                w_list_abs[i]
+                for i in range(len(w_list_abs) - 2, 0, -1)
+                if w_list_abs[i] > w_list_abs[i - 1] and w_list_abs[i] > w_list_abs[i + 1]
+            ),
+            0,
+        )
+        if outer_max == 0:
+            warning_msgs.append("Could not find a local maximum of the wavefunction at the outer boundary.")
+        elif idmax <= start_id + 5 and w_abs_max / outer_max > 5:
+            warning_msgs.append(
+                f"Wavefunction diverges at the inner boundary, w_abs_max / outer_max={w_abs_max / outer_max:.2e}",
+            )
+            warning_msgs.append("Trying to correct the wavefunction.")
+            first_ind = next(ind for ind in np.argwhere(w_list_abs < outer_max).flatten() if ind > start_id)
+            self._w_list[:first_ind] = 0
+            self._w_list /= self.norm
+
+        # From here on, we want to keep the logic from the old sanity check,
+        # where the wavefunction is restricted to the region where numerov actually ran
+        # and not set to 0 in the region where numerov did not run
+        w_list = self.w_list[start_id:]
+        z_list = self.z_list[start_id:]
+        steps = len(w_list)
+
+        # Check the maximum of the wavefunction
+        idmax = np.argmax(np.abs(w_list))
+        if idmax < 0.05 * steps:
+            warning_msgs.append(
+                f"The maximum of the wavefunction is close to the inner boundary (idmax={idmax}) "
+                "probably due to inner divergence of the wavefunction. "
+            )
+
+        # Check the weight of the wavefunction at the inner boundary
+        inner_ind = 10
+        inner_weight = (
+            2 * np.sum(w_list[:inner_ind] * w_list[:inner_ind] * z_list[:inner_ind] * z_list[:inner_ind]) * self.dz
+        )
+        inner_weight_scaled_to_whole_grid = inner_weight * steps / inner_ind
+
+        tol = 1e-4
+        # for low n the wavefunction converges not as good and still has more weight at the inner boundary
+        n = self.n if self.n is not None else self.nu + 5
+        if n <= 10:
+            tol = 8e-3
+        elif n <= 16:
+            tol = 2e-3
+
+        element_properties = self.potential.element_properties
+        if element_properties.number_valence_electrons == 2:
+            # For divalent atoms the inner boundary is less well behaved ...
+            tol = 2e-2
+
+        if inner_weight_scaled_to_whole_grid > tol:
+            warning_msgs.append(
+                f"The wavefunction is not close to zero at the inner boundary"
+                f" (inner_weight_scaled_to_whole_grid={inner_weight_scaled_to_whole_grid:.2e})"
+            )
+
+        # Check the wavefunction at the outer boundary
+        outer_ind = int(0.95 * steps)
+        outer_wf = w_list[outer_ind:]
+        if np.mean(outer_wf) > 1e-7:
+            warning_msgs.append(
+                f"The wavefunction is not close to zero at the outer boundary, mean={np.mean(outer_wf):.2e}"
+            )
+
+        outer_weight = 2 * np.sum(outer_wf * outer_wf * z_list[outer_ind:] * z_list[outer_ind:]) * self.dz
+        outer_weight_scaled_to_whole_grid = outer_weight * steps / len(outer_wf)
+        if outer_weight_scaled_to_whole_grid > 1e-10:
+            warning_msgs.append(
+                f"The wavefunction is not close to zero at the outer boundary,"
+                f" (outer_weight_scaled_to_whole_grid={outer_weight_scaled_to_whole_grid:.2e})"
+            )
+
+        # Check the number of nodes
+        assert not is_unknown(self.l_r), (
+            "l_r should not be Unknown at this point, otherwise the integration would not work"
+        )
+        nodes = self.nodes
+        if self.n is not None and nodes != self.n - self.l_r - 1:
+            warning_msgs.append(f"The wavefunction has {nodes} nodes, but should have {self.n - self.l_r - 1} nodes.")
+
+        # Check that numerov stopped and did not run until z_force_stop
+        if run_backward:
+            z_stop = z_list[np.argwhere(w_list != 0).flatten()[0]]
+            z_tol = 0.035 if element_properties.number_valence_electrons == 1 else 0.05
+            if self.l_r == 0 and z_stop > z_tol:  # z_stop should run almost to zero for l=0
+                warning_msgs.append(f"The integration for l=0 did stop at {z_stop} (should be close to zero).")
+            if self.l_r > 0 and z_force_stop > z_stop - self.dz / 2 and inner_weight_scaled_to_whole_grid > 1e-6:
+                warning_msgs.append(
+                    f"The integration did not stop before z_force_stop, z={z_stop}, z_force_stop={z_force_stop}"
+                )
+        else:
+            z_stop = z_list[np.argwhere(w_list != 0).flatten()[-1]]
+            if self.l_r > 0 and not run_backward and z_force_stop < z_stop + self.dz / 2:
+                warning_msgs.append(f"The integration did not stop before z_force_stop, z={z_stop}")
+
+        if warning_msgs:
+            msg = f"The wavefunction for the radial_ket {self} has some issues:"
+            msg += "\n      ".join(["", *warning_msgs])
+            logger.warning(msg)
+            return False
+
+        return True
+
+    def apply_sign_convention(self, sign_convention: WavefunctionSignConvention) -> None:
+        """Set the sign of the wavefunction according to the sign convention.
+
+        Args:
+            sign_convention: The sign convention for the wavefunction.
+                - None: Leave the wavefunction as it is.
+                - "n_l_1": The wavefunction is defined to have the sign of (-1)^{(n - l - 1)} at the outer boundary.
+                - "positive_at_outer_bound": The wavefunction is defined to be positive at the outer boundary.
+
+        """
+        if sign_convention is None:
+            return
+
+        current_outer_sign = 1
+        for w in self.w_list[::-1]:
+            if w != 0 and not np.isnan(w):
+                current_outer_sign = np.sign(w)
+                break
+
+        if sign_convention == "positive_at_outer_bound":
+            if current_outer_sign < 0:
+                self._w_list = -self._w_list
+        elif sign_convention == "n_l_1":
+            assert not is_unknown(self.l_r), "l_r should not be Unknown at this point"
+            if self.n is None:
+                raise ValueError("n must be given to apply the 'n_l_1' sign convention.")
+            if current_outer_sign * (-1) ** (self.n - self.l_r - 1) < 0:
+                self._w_list = -self._w_list
+        else:
+            raise ValueError(f"Unknown sign convention: {sign_convention}")
 
     def calc_overlap(self, other: RadialKet, *, integration_method: INTEGRATION_METHODS = "sum") -> float:
         r"""Calculate the overlap <self|other> of two radial kets.
@@ -192,7 +475,7 @@ class RadialKet:
             integration_method: Integration method to use
 
         Returns:
-            The overlap inegral between self and other.
+            The overlap integral between self and other.
 
         """
         return self.calc_matrix_element(other, k_radial=0, unit="a.u.", integration_method=integration_method)
@@ -239,9 +522,8 @@ class RadialKet:
 
         """
         # Ensure wavefunctions are integrated before accessing the grid
-        wf1, wf2 = self.wavefunction, other.wavefunction
         radial_matrix_element_au = calc_radial_matrix_element_from_w_z(
-            wf1.grid.z_list, wf1.w_list, wf2.grid.z_list, wf2.w_list, k_radial, integration_method
+            self.z_list, self.w_list, other.z_list, other.w_list, k_radial, integration_method
         )
 
         if unit == "a.u.":
