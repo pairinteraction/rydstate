@@ -74,7 +74,7 @@ def get_state_data(ids: int, state: RydbergStateSQDT[AngularKetLS[AllKnown]]) ->
 
     parity = -1 if angular_ket.l_tot % 2 == 1 else 1
 
-    is_j_total_momentum = state.species.i_c == 0 or state.species.i_c is None
+    is_j_total_momentum = state.element_properties.i_c == 0
     is_calculated_with_mqdt = False
 
     return (

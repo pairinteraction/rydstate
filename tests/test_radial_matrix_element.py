@@ -3,7 +3,7 @@ import pytest
 from rydstate import RydbergStateSQDTAlkali
 from rydstate.angular import AngularKetLS
 from rydstate.radial import RadialKet
-from rydstate.species import SpeciesObjectSQDT
+from rydstate.species import get_sqdt
 
 
 @pytest.mark.parametrize(
@@ -37,7 +37,7 @@ def test_circular_matrix_element(species: str, n: int, dn: int, dl: int) -> None
 
 
 @pytest.mark.parametrize(
-    ("species_name", "n", "l", "j_tot"),
+    ("species", "n", "l", "j_tot"),
     [
         # for hydrogen the expectation value of r is exact for all states
         ("H", 1, 0, 0.5),
@@ -50,7 +50,7 @@ def test_circular_matrix_element(species: str, n: int, dn: int, dl: int) -> None
         ("Rb", 88, 87, 86.5),
     ],
 )
-def test_circular_expectation_value(species_name: str, n: int, l: int, j_tot: float) -> None:
+def test_circular_expectation_value(species: str, n: int, l: int, j_tot: float) -> None:
     """For circular states, the expectation value of r should be the same as for the hydrogen atom.
 
     For hydrogen the expectation values of r and r^2 are given by
@@ -59,9 +59,9 @@ def test_circular_expectation_value(species_name: str, n: int, l: int, j_tot: fl
         <r>_{nl} = 1/2 (3 n^2 - l(l+1))
         <r^2>_{nl} = n^2/2 (5 n^2 - 3 l(l+1) + 1)
     """
-    species = SpeciesObjectSQDT.from_name(species_name)
+    sqdt = get_sqdt(species)
     angular_ket = AngularKetLS(l_r=l, j_tot=j_tot, species=species)
-    nu = species.calc_nu(n, angular_ket)
+    nu = sqdt.calc_nu(n, angular_ket)
 
     state = RadialKet(species, nu=nu, l_r=l)
     state.set_n_for_sanity_check(n)

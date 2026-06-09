@@ -27,14 +27,14 @@ DATABASE_SQL_FILE = files("rydstate.generate_database").joinpath("database.sql")
 
 
 def create_tables_for_one_species(
-    species_name: str,
+    species: str,
     n_min: int,
     n_max: int,
     max_delta_n: float = np.inf,
     all_n_up_to: float = np.inf,
 ) -> None:
     """Create the database tables for a given species in the current directory."""
-    logger.info("Start creating database for %s", species_name)
+    logger.info("Start creating database for %s", species)
     logger.info("n-min=%d, n-max=%d", n_min, n_max)
     logger.info("max_delta_n=%s, all_n_up_to=%s", max_delta_n, all_n_up_to)
     logger.info("rydstate.__version__=%s", __version__)
@@ -43,7 +43,7 @@ def create_tables_for_one_species(
     db_file = Path("database.db")
     with sqlite3.connect(db_file) as conn:
         conn.executescript(DATABASE_SQL_FILE.read_text(encoding="utf-8"))
-        basis = BasisSQDT(species_name, n=(n_min, n_max), coupling_scheme="LS")
+        basis = BasisSQDT(species, n=(n_min, n_max), coupling_scheme="LS")
         generate_states_table(basis, conn)
         generate_matrix_elements_tables(basis, conn, max_delta_n, all_n_up_to)
     logger.info("Size of %s: %.6f megabytes", db_file, db_file.stat().st_size * 1e-6)

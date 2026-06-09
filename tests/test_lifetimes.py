@@ -2,7 +2,9 @@ import numpy as np
 import pytest
 from rydstate import RydbergStateSQDT, RydbergStateSQDTAlkali
 from rydstate.angular import AngularKetLS
-from rydstate.species import SpeciesObjectSQDT
+from rydstate.species import ElementProperties, get_all_subclasses, get_element_properties
+
+ALL_AVAILABLE_SPECIES = sorted([cls.species for cls in get_all_subclasses(ElementProperties)])
 
 
 # Reference values from NIST Atomic Spectra Database (ASD), Einstein A coefficients:
@@ -33,21 +35,21 @@ def test_bbr_shortens_lifetime() -> None:
     assert tau_300 < tau_0
 
 
-@pytest.mark.parametrize("species_name", SpeciesObjectSQDT.get_available_species())
-def test_lifetime_n_scaling(species_name: str) -> None:
+@pytest.mark.parametrize("species", ALL_AVAILABLE_SPECIES)
+def test_lifetime_n_scaling(species: str) -> None:
     """Test that Rydberg state lifetimes scale as nu^3 (effective quantum number)."""
-    if species_name != "Na":
+    if species != "Na":
         pytest.skip("Skip this test for most species for now, since this test is rather slow.")
 
-    if species_name in ["Sr87", "Yb171", "Yb173"]:
+    if species in ["Sr87", "Yb171", "Yb173"]:
         pytest.skip("No quantum defect data available")
-    if species_name in ["Yb174", "Yb174_sqdt"]:
+    if species in ["Yb174", "Yb174"]:
         pytest.skip("Quantum defects not correct for low n states")
 
     n1, n2 = 30, 60
-    species = SpeciesObjectSQDT.from_name(species_name)
-    s_tot = (species.number_valence_electrons / 2) % 1
-    f = abs(s_tot - species.i_c_number)
+    element_properties = get_element_properties(species)
+    s_tot = (element_properties.number_valence_electrons / 2) % 1
+    f = abs(s_tot - element_properties.i_c)
     angular = AngularKetLS(l_r=0, s_tot=s_tot, f_tot=f, m=f, species=species)
 
     state1 = RydbergStateSQDT.from_angular_ket(species, angular, n=n1)

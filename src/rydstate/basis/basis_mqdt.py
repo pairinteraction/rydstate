@@ -10,7 +10,9 @@ from rydstate.basis.basis_base import BasisBase
 from rydstate.linalg import calc_nullvector, find_roots
 from rydstate.rydberg_state import RydbergStateMQDT
 from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT
-from rydstate.species import FModel, FModelSQDT, SpeciesObjectMQDT
+from rydstate.species import FModel, FModelSQDT, get_mqdt
+from rydstate.species.mqdt import MQDT
+from rydstate.species.potential import Potential, get_potential_class
 
 if TYPE_CHECKING:
     from rydstate.species import FModel
@@ -23,18 +25,52 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
 
     def __init__(  # noqa: C901, PLR0912
         self,
-        species: str | SpeciesObjectMQDT,
+        species: str,
         nu: tuple[float, float],
         f_tot: float | tuple[float, float] | None = None,
         l_r: int | tuple[int, int] | None = None,
         *,
         skip_high_l: bool = True,
         n_min_high_l: int = 0,
+        # potential and mqdt parameters
+        mqdt: str | MQDT | None = None,
+        potential_class: str | type[Potential] | None = None,
     ) -> None:
-        self.species = SpeciesObjectMQDT.from_name(species) if isinstance(species, str) else species
+        """Initialize the MQDT basis.
+
+        Args:
+            species: Atomic species.
+            nu: Tuple of (nu_min, nu_max) for the effective principal quantum number.
+            f_tot: Optional float or tuple of (f_tot_min, f_tot_max) for the total angular momentum.
+                Default None, include all f_tot values.
+            l_r: Optional int or tuple of (l_r_min, l_r_max) for the Rydberg electron orbital angular momentum.
+                This is used to filter models, which include at least one channel with
+                l_c=0 and l_r in the specified range.
+                Default None, include all models.
+            skip_high_l: Whether to skip models, for which no MQDT models are available.
+                If False, include these states as simple SQDT states with zero quantum defects.
+            n_min_high_l: If skip_high_l is False, the minimum n, for which to include high-l states as SQDT states.
+            mqdt: The MQDT to use for the states.
+                Either a string representing the tag of the MQDT class to use,
+                or an instance of an MQDT class.
+            potential_class: The potential class to use for the radial ket.
+                Either a string representing the tag of the potential class to use,
+                or a potential class.
+
+        """
+        super().__init__(species)
+        self.mqdt = mqdt if isinstance(mqdt, MQDT) else get_mqdt(species, tag=mqdt)
+
+        if isinstance(potential_class, type) and issubclass(potential_class, Potential):
+            self.potential_class = potential_class
+        else:
+            self.potential_class = get_potential_class(species, tag=potential_class)
 
         models: list[FModel] = []
-        i_c, j_c, s_r = self.species.i_c, 0.5, 0.5
+        s_r = 0.5
+        i_c = self.element_properties.i_c
+        s_c = self.element_properties.s_c
+        j_c = s_c
         for _l_r in range(int(nu[1]) + 1):
             if not is_allowed_qn(l_r, _l_r):
                 continue
@@ -44,9 +80,9 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
                         if not is_allowed_qn(f_tot, _f_tot):
                             continue
                         channel = AngularKetFJ(
-                            l_r=_l_r, j_r=float(j_r), f_c=float(f_c), f_tot=float(_f_tot), species=self.species
+                            l_r=_l_r, j_r=float(j_r), f_c=float(f_c), f_tot=float(_f_tot), species=species
                         )
-                        models.extend(self.species.get_mqdt_models(channel))
+                        models.extend(self.mqdt.get_mqdt_models(channel))
 
         # remove duplicates
         self.models: list[FModel] = []
@@ -65,7 +101,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
                     continue
                 _nu_min = max(_nu_min, n_min_high_l)
             logger.debug("  calculating states for model %s with nu_min=%s, nu_max=%s", model.name, _nu_min, nu[1])
-            _states = get_mqdt_states_from_fmodel(model, _nu_min, nu[1])
+            _states = get_mqdt_states_from_fmodel(model, _nu_min, nu[1], potential_class=self.potential_class)
             if len(_states) == 0:
                 logger.debug("  no states found for model %s", model.name)
             else:
@@ -95,6 +131,7 @@ def get_mqdt_states_from_fmodel(
     nu_max: float | None = None,
     *,
     overwrite_model_limits: bool = False,
+    potential_class: type[Potential],
 ) -> list[RydbergStateMQDT]:
     """Calculate MQDT states from an FModel by finding zeros of det(M-matrix).
 
@@ -104,6 +141,7 @@ def get_mqdt_states_from_fmodel(
         nu_max: Upper bound of the search range.  Defaults to ``model.nu_max``.
         overwrite_model_limits: If True, use nu_min/nu_max directly without clamping to
             the model's validity range.  Both nu_min and nu_max must be provided.
+        potential_class: The potential class to use for the radial ket.
 
     Returns:
         List of :class:`RydbergStateMQDT` objects, one per root of det(M).
@@ -151,7 +189,11 @@ def get_mqdt_states_from_fmodel(
         sqdt_states: list[RydbergStateSQDT[AngularKetFJ[Any]]] = []
         for nui, angular_ket in zip(nuis, model.outer_channels, strict=True):
             sqdt_species = model.species_name.replace("_mqdt", "")
-            sqdt_states.append(RydbergStateSQDT.from_angular_ket(sqdt_species, angular_ket, nu=float(nui)))
+            sqdt_states.append(
+                RydbergStateSQDT.from_angular_ket(
+                    sqdt_species, angular_ket, nu=float(nui), potential_class=potential_class
+                )
+            )
 
         states.append(RydbergStateMQDT(coefficients, sqdt_states, nu=nu))
 

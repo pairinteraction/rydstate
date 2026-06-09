@@ -541,11 +541,14 @@ class RydbergStateSQDTAlkali(RydbergStateSQDT[AngularKetLS[AllKnown]]):
 
     def __init__(
         self,
-        species: str | SpeciesObjectSQDT,
+        species: str,
         n: int,
+        *,
         l: int,
         j: float | None = None,
         m: float | NotSet = NotSet,
+        sqdt: str | SQDT | None = None,
+        potential: str | Potential | None = None,
     ) -> None:
         r"""Initialize the Rydberg state.
 
@@ -556,6 +559,12 @@ class RydbergStateSQDTAlkali(RydbergStateSQDT[AngularKetLS[AllKnown]]):
             j: Angular momentum quantum number of the rydberg electron.
             m: Total magnetic quantum number.
               Optional, only needed for concrete angular matrix elements.
+            sqdt: The SQDT to use for the state.
+              Either a string representing the tag of the SQDT class to use,
+              or an instance of an SQDT class.
+            potential: The potential to use for the radial ket.
+              Either a string representing the tag of the potential to use,
+              or an instance of a potential class.
 
         """
-        super().__init__(species=species, n=n, l_r=l, j_tot=j, m=m)
+        super().__init__(species=species, n=n, l_r=l, j_tot=j, m=m, sqdt=sqdt, potential=potential)

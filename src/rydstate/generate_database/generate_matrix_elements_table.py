@@ -123,7 +123,7 @@ def calc_matrix_elements_one_pair(
             continue
 
         radial_matrix_element_au = calc_radial_matrix_element_cached(
-            state1.species.name,
+            state1.species,
             *(state1.n, state1.nu, state1.angular.l_r),
             *(state2.n, state2.nu, state2.angular.l_r),
             k_radial,
@@ -151,25 +151,25 @@ def calc_reduced_angular_matrix_element_cached(
 
 
 def calc_radial_matrix_element_cached(
-    species_name: str, n1: int, nu1: float, l1: int, n2: int, nu2: float, l2: int, k_radial: int
+    species: str, n1: int, nu1: float, l1: int, n2: int, nu2: float, l2: int, k_radial: int
 ) -> float:
     if k_radial == 0 and nu1 == nu2:
         return 1 if l1 == l2 else 0
 
     if (nu1, l1) > (nu2, l2):  # for better use of the cache and since the radial matrix element is symmetric
-        return _calc_radial_matrix_element_cached(species_name, n2, nu2, l2, n1, nu1, l1, k_radial)
+        return _calc_radial_matrix_element_cached(species, n2, nu2, l2, n1, nu1, l1, k_radial)
 
-    return _calc_radial_matrix_element_cached(species_name, n1, nu1, l1, n2, nu2, l2, k_radial)
+    return _calc_radial_matrix_element_cached(species, n1, nu1, l1, n2, nu2, l2, k_radial)
 
 
 # Cache size should be at least on the order of 4 * (all_n_up_to + 2 * max_delta_n)
 # however, for the first n until n=all_n_up_to we need an even larger cache size
 @lru_cache(maxsize=50_000)
 def _calc_radial_matrix_element_cached(
-    species_name: str, n1: int, nu1: float, l1: int, n2: int, nu2: float, l2: int, k_radial: int
+    species: str, n1: int, nu1: float, l1: int, n2: int, nu2: float, l2: int, k_radial: int
 ) -> float:
-    state1 = get_radial_state_cached(species_name, n1, nu1, l1)
-    state2 = get_radial_state_cached(species_name, n2, nu2, l2)
+    state1 = get_radial_state_cached(species, n1, nu1, l1)
+    state2 = get_radial_state_cached(species, n2, nu2, l2)
     # state2 is the final state and state1 the initial state
     return state2.calc_matrix_element(state1, k_radial, unit="a.u.")
 
@@ -177,9 +177,9 @@ def _calc_radial_matrix_element_cached(
 # Cache size should be one the order of N_MAX * 4 * 2
 # (since for each initial state we loop over all l' = l, l+1, l+2 and l+3 final states (and all j final))
 @lru_cache(maxsize=2_000)
-def get_radial_state_cached(species_name: str, n: int, nu: float, l: int) -> RadialKet:
+def get_radial_state_cached(species: str, n: int, nu: float, l: int) -> RadialKet:
     """Get the cached rydberg state (where the wavefunction was already calculated)."""
-    state = RadialKet(species_name, nu, l)
+    state = RadialKet(species, nu, l)
     state.set_n_for_sanity_check(n)
     state.create_wavefunction(sign_convention="n_l_1")
     return state

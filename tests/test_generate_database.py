@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Generator
 
 
-TEST_SPECIES = ["H", "Li", "Na", "K", "Rb", "Cs", "Sr88_sqdt", "Yb174_sqdt"]
+TEST_SPECIES = ["H", "Li", "Na", "K", "Rb", "Cs", "Sr88", "Yb174"]
 
 
 @pytest.fixture
