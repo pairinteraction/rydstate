@@ -4,6 +4,7 @@ from rydstate import RydbergStateSQDTAlkali
 from rydstate.angular import AngularKetLS
 from rydstate.radial import RadialKet
 from rydstate.species import get_sqdt
+from rydstate.species.potential import get_potential_class
 
 
 @pytest.mark.parametrize(
@@ -63,9 +64,10 @@ def test_circular_expectation_value(species: str, n: int, l: int, j_tot: float) 
     angular_ket = AngularKetLS(l_r=l, j_tot=j_tot, species=species)
     nu = sqdt.calc_nu(n, angular_ket)
 
-    state = RadialKet(species, nu=nu, l_r=l)
+    potential = get_potential_class(species)(l)
+    state = RadialKet(nu, potential)
     state.set_n_for_sanity_check(n)
-    state.create_wavefunction()
+    state.integrate_wavefunction()
 
     exp_value_numerov = {i: state.calc_matrix_element(state, i, unit=f"bohr^{i}" if i > 0 else "") for i in range(3)}
     exp_value_analytic = {

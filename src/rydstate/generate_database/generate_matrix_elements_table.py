@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from rydstate.angular import AngularKetLS
 from rydstate.radial.radial_ket import RadialKet
+from rydstate.species.potential import get_potential_class
 from rydstate.units import MatrixElementOperatorRanks
 
 if TYPE_CHECKING:
@@ -179,7 +180,9 @@ def _calc_radial_matrix_element_cached(
 @lru_cache(maxsize=2_000)
 def get_radial_state_cached(species: str, n: int, nu: float, l: int) -> RadialKet:
     """Get the cached rydberg state (where the wavefunction was already calculated)."""
-    state = RadialKet(species, nu, l)
+    potential = get_potential_class(species)(l)
+    state = RadialKet(nu, potential)
     state.set_n_for_sanity_check(n)
-    state.create_wavefunction(sign_convention="n_l_1")
+    state.integrate_numerov()
+    state.apply_sign_convention("n_l_1")
     return state

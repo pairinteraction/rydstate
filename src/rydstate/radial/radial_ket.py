@@ -149,7 +149,7 @@ class RadialKet:
             x_max: The maximum value of the radial coordinate in dimensionless units :math:`x = r/a_0`.
                 Default: Automatically calculate sensible value.
             dz: The step size of the integration in the scaled dimensionless coordinate :math:`z = \sqrt{r/a_0}`.
-            Default: 1e-2.
+                Default: 1e-2.
 
         """
         if hasattr(self, "_z_list"):
@@ -425,7 +425,7 @@ class RadialKet:
                 )
         else:
             z_stop = z_list[np.argwhere(w_list != 0).flatten()[-1]]
-            if self.l_r > 0 and not run_backward and z_force_stop < z_stop + self.dz / 2:
+            if self.l_r > 0 and z_force_stop < z_stop + self.dz / 2:
                 warning_msgs.append(f"The integration did not stop before z_force_stop, z={z_stop}")
 
         if warning_msgs:

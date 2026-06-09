@@ -13,15 +13,15 @@ from rydstate.angular.angular_ket import AngularKetBase, AngularKetLS
 from rydstate.angular.utils import AllKnown, is_not_set, is_unknown, quantum_numbers_to_angular_ket
 from rydstate.radial import RadialKet
 from rydstate.rydberg_state.rydberg_base import RydbergStateBase
-from rydstate.species import SQDT, get_element_properties, get_sqdt
+from rydstate.species import SQDT, Potential, get_element_properties, get_sqdt
+from rydstate.species.potential import get_potential_class
 from rydstate.species.utils import calc_energy_from_nu
 from rydstate.units import BaseQuantities, MatrixElementOperatorRanks, ureg
 
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from rydstate.angular.utils import CouplingScheme, Unknown
-    from rydstate.species import Potential
+    from rydstate.angular.utils import CouplingScheme
     from rydstate.units import MatrixElementOperator, NDArray, PintArray, PintFloat
 
 GenericT_AngularKet = TypeVar("GenericT_AngularKet", bound=AngularKetBase[Any])
@@ -118,7 +118,10 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         else:
             self.sqdt = sqdt if isinstance(sqdt, SQDT) else get_sqdt(species, tag=sqdt)
 
-        self._potential = potential
+        if isinstance(potential, Potential):
+            self.potential = potential
+        else:
+            self.potential = get_potential_class(species, tag=potential)(self.angular.l_r)
 
     @classmethod
     def from_angular_ket(
@@ -149,7 +152,10 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         else:
             obj.sqdt = sqdt if isinstance(sqdt, SQDT) else get_sqdt(species, tag=sqdt)
 
-        obj._potential = potential  # noqa: SLF001
+        if isinstance(potential, Potential):
+            obj.potential = potential
+        else:
+            obj.potential = get_potential_class(species, tag=potential)(obj.angular.l_r)
 
         return obj  # type: ignore [return-value]
 
@@ -166,19 +172,15 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
     @cached_property
     def radial(self) -> RadialKet:
         """The radial part of the Rydberg electron."""
-        l_r: int | Unknown = self.angular.get_qn("l_r", allow_unknown=True)  # type: ignore [assignment]
-        if is_unknown(l_r):
-            raise ValueError("l_r must be known to access the radial ket.")
-
-        radial_ket = RadialKet(self.species, nu=self.nu, l_r=l_r, potential=self._potential)
+        radial_ket = RadialKet(nu=self.nu, potential=self.potential)
         if self._n is not None:
             radial_ket.set_n_for_sanity_check(self._n)
             if self.sqdt is not None:
                 s_tot_list = [self.angular.get_qn("s_tot")] if "s_tot" in self.angular.quantum_number_names else [0, 1]
                 for s_tot in s_tot_list:
-                    if is_unknown(s_tot) or not self.sqdt.is_allowed_shell(self._n, l_r, s_tot=s_tot):
+                    if is_unknown(s_tot) or not self.sqdt.is_allowed_shell(self._n, self.angular.l_r, s_tot=s_tot):
                         raise ValueError(
-                            f"The shell (n={self._n}, l_r={l_r}, s_tot={s_tot}) "
+                            f"The shell (n={self._n}, l_r={self.angular.l_r}, s_tot={s_tot}) "
                             f"is not allowed for the species {self.species}."
                         )
         return radial_ket
