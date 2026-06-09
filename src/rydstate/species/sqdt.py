@@ -1,79 +1,78 @@
 from __future__ import annotations
 
+import inspect
 import logging
 import re
+from abc import ABC
 from fractions import Fraction
-from functools import cached_property
+from functools import cache, cached_property
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
-from rydstate.angular.angular_ket import AngularKetLS
-from rydstate.species.species_object import SpeciesObject
-from rydstate.species.utils import calc_modified_ritz_formula, calc_nu_from_energy, convert_electron_configuration
+from rydstate.angular.utils import check_spin_addition_rule, get_possible_quantum_number_values, is_unknown
+from rydstate.species.element_properties import get_element_properties
+from rydstate.species.utils import (
+    calc_modified_ritz_formula,
+    calc_nu_from_energy,
+    convert_electron_configuration,
+    get_all_subclasses,
+)
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from rydstate.angular.angular_ket import AngularKetBase
-    from rydstate.species.utils import RydbergRitzParameters
+    from rydstate.angular.utils import Unknown
+    from rydstate.species.utils import (  # type: ignore [assignment]
+        RydbergRitzParameters,
+        cache,  # noqa: TC004
+    )
     from rydstate.units import PintFloat
+
 
 logger = logging.getLogger(__name__)
 
 
-class SpeciesObjectSQDT(SpeciesObject):
-    """Abstract base class for all sqdt species objects.
+class SQDT(ABC):
+    """Base class for all SQDT classes."""
 
-    For the electronic ground state configurations and sorted shells,
-    see e.g. https://www.webelements.com/atoms.html
+    species: ClassVar[str]
+    """The short name of the atomic species."""
+    tag: ClassVar[str | None] = None
+    """The tag for these SQDT parameters."""
+    is_default: ClassVar[bool] = False
+    """Whether this SQDT is the default SQDT for the species."""
 
-    """
+    ionization_energy: tuple[float, str]
+    """Ionization energy and unit: (value, unit)."""
 
-    ground_state_shell: ClassVar[tuple[int, int]]
-    """Shell (n, l) describing the electronic ground state configuration."""
-    _additional_allowed_shells: ClassVar[list[tuple[int, int]]] = []
-    """Additional allowed shells (n, l), which (n, l) is smaller than the ground state shell."""
-
-    _core_electron_configuration: ClassVar[str]
-    """Electron configuration of the core electrons, e.g. 4p6 for Rb or 5s for Sr."""
-    _ionization_energy: tuple[float, float | None, str]
-    """Ionization energy with uncertainty and unit: (value, uncertainty, unit)."""
-
-    # Parameters for the extended Rydberg Ritz formula, see calc_nu
-    _quantum_defects: ClassVar[dict[tuple[int, float, float], RydbergRitzParameters] | None] = None
+    quantum_defects: ClassVar[dict[tuple[int, float, float], RydbergRitzParameters] | None] = None
     """Dictionary containing the quantum defects for each (l, j_tot, s_tot) combination, i.e.
-    _quantum_defects[(l,j_tot,s_tot)] = (d0, d2, d4, d6, d8)
-    """
-
-    _nist_energy_levels_file: Path | None = None
-    """Path to the NIST energy levels file for this species.
-    The file should be directly downloaded from https://physics.nist.gov/PhysRefData/ASD/levels_form.html
-    in the 'Tab-delimited' format and in units of Hartree.
+    quantum_defects[(l,j_tot,s_tot)] = (d0, d2, d4, d6, d8)
     """
 
     def __init__(self) -> None:
-        """Initialize an species instance.
+        self.element_properties = get_element_properties(self.species)
 
-        Use this init method to set up additional properties and data for the species,
-        like loading NIST energy levels from a file.
+        self._setup_nist_energy_levels()
+
+    def __repr__(self) -> str:
+        return f"SQDT({self.species}, {self.tag})"
+
+    def _setup_nist_energy_levels(self) -> None:  # noqa: C901, PLR0912
+        """Set up NIST energy levels.
+
+        This method should be called in the constructor to load the NIST energy levels.
+        It reads the file `nist_data.txt` and prepares the data for further use.
+
+        The file `nist_data.txt` should be directly downloaded from https://physics.nist.gov/PhysRefData/ASD/levels_form.html
+        in the 'Tab-delimited' format and in units of Hartree.
 
         """
         self._nist_energy_levels: dict[tuple[int, int, float, float], float] = {}
-        if self._nist_energy_levels_file is not None:
-            self._setup_nist_energy_levels(self._nist_energy_levels_file)
 
-    def _setup_nist_energy_levels(self, file: Path) -> None:  # noqa: C901, PLR0912
-        """Set up NIST energy levels from a file.
-
-        This method should be called in the constructor to load the NIST energy levels
-        from the specified file. It reads the file and prepares the data for further use.
-
-        Args:
-            file: Path to the NIST energy levels file.
-
-        """
+        file = Path(inspect.getfile(type(self))).resolve().parent / "nist_data.txt"
         if not file.exists():
             raise ValueError(f"NIST energy data file {file} does not exist.")
 
@@ -85,7 +84,7 @@ class SpeciesObjectSQDT(SpeciesObject):
 
         data = np.loadtxt(file, skiprows=1, dtype=str, quotechar='"', delimiter="\t")
         # data[i] := (Configuration, Term, J, Prefix, Energy, Suffix, Uncertainty, Reference)
-        core_config_parts = convert_electron_configuration(self._core_electron_configuration)
+        core_config_parts = convert_electron_configuration(self.element_properties.core_electron_configuration)
 
         for row in data:
             if re.match(r"^([A-Z])", row[0]):
@@ -125,9 +124,9 @@ class SpeciesObjectSQDT(SpeciesObject):
                 self._nist_energy_levels[(n, l, j_tot, s_tot)] = energy
 
         if len(self._nist_energy_levels) == 0:
-            raise ValueError(f"No NIST energy levels found for species {self.name} in file {file}.")
+            raise ValueError(f"No NIST energy levels found for species {self.species} in file {file}.")
 
-    def is_allowed_shell(self, n: int, l: int, s_tot: float | None = None) -> bool:
+    def is_allowed_shell(self, n: int, l: int, s_tot: float | Unknown) -> bool:
         """Check if the quantum numbers describe an allowed shell.
 
         I.e. whether the shell is above the ground state shell.
@@ -141,20 +140,22 @@ class SpeciesObjectSQDT(SpeciesObject):
             True if the quantum numbers specify a shell equal to or above the ground state shell, False otherwise.
 
         """
-        if s_tot is None:
-            if self.number_valence_electrons > 1:
-                raise ValueError("s_tot must be specified for species with more than one valence electron.")
-            s_tot = self.number_valence_electrons / 2
-        if (self.number_valence_electrons / 2) % 1 != s_tot % 1 or s_tot > self.number_valence_electrons / 2:
-            raise ValueError(f"Invalid spin {s_tot=} for {self.name}.")
+        if is_unknown(s_tot):
+            allowed_s_tot = get_possible_quantum_number_values(
+                self.element_properties.s_c, self.element_properties.s_r, s_tot
+            )
+            return all(self.is_allowed_shell(n, l, _s_tot) for _s_tot in allowed_s_tot)
 
-        if (n, l) == self.ground_state_shell:
+        if not check_spin_addition_rule(self.element_properties.s_c, self.element_properties.s_r, s_tot):
+            raise ValueError(f"Invalid spin {s_tot=} for {self.species}.")
+
+        if (n, l) == self.element_properties.ground_state_shell:
             return s_tot != 1  # For alkaline earth atoms, the triplet state of the ground state shell is not allowed
         if n < 1 or l < 0 or l >= n:
             raise ValueError(f"Invalid shell: (n={n}, l={l}). Must be n >= 1 and 0 <= l <= n-1.")
-        if (n, l) >= self.ground_state_shell:
+        if (n, l) >= self.element_properties.ground_state_shell:
             return True
-        return (n, l) in self._additional_allowed_shells
+        return (n, l) in self.element_properties.additional_allowed_shells
 
     @overload
     def get_ionization_energy(self, unit: None = None) -> PintFloat: ...
@@ -172,7 +173,7 @@ class SpeciesObjectSQDT(SpeciesObject):
             Ionization energy in the desired unit.
 
         """
-        ionization_energy: PintFloat = ureg.Quantity(self._ionization_energy[0], self._ionization_energy[2])
+        ionization_energy: PintFloat = ureg.Quantity(self.ionization_energy[0], self.ionization_energy[1])
         ionization_energy = ionization_energy.to("hartree", "spectroscopy")
         if unit is None:
             return ionization_energy
@@ -181,7 +182,7 @@ class SpeciesObjectSQDT(SpeciesObject):
         return ionization_energy.to(unit, "spectroscopy").magnitude
 
     @cached_property
-    def reference_ionization_energy_au(self) -> float:
+    def ionization_energy_au(self) -> float:
         """Ionization energy in atomic units (Hartree)."""
         return self.get_ionization_energy("hartree")
 
@@ -221,27 +222,45 @@ class SpeciesObjectSQDT(SpeciesObject):
                 Default is 15.
 
         """
-        if not isinstance(angular_ket, AngularKetLS):
+        if angular_ket.coupling_scheme != "LS":
             raise NotImplementedError("calc_nu is only implemented for AngularKetLS.")
 
-        l, j_tot, s_tot = angular_ket.l_r, angular_ket.j_tot, angular_ket.s_tot
+        l_r = angular_ket.l_r
+        j_tot = angular_ket.get_qn("j_tot", allow_unknown=True)
+        s_tot = angular_ket.get_qn("s_tot", allow_unknown=True)
+
+        if is_unknown(j_tot) or is_unknown(s_tot):
+            raise ValueError(f"Cannot calculate nu for unknown j_tot or s_tot of {angular_ket!r}.")
 
         if n <= nist_n_max and use_nist_data:  # try to use NIST data
-            if (n, l, j_tot, s_tot) in self._nist_energy_levels:
-                energy_au = self._nist_energy_levels[(n, l, j_tot, s_tot)]
-                energy_au -= (
-                    self.reference_ionization_energy_au
-                )  # use the cached ionization energy for better performance
-                return calc_nu_from_energy(self.reduced_mass_au, energy_au)
+            if (n, l_r, j_tot, s_tot) in self._nist_energy_levels:
+                energy_au = self._nist_energy_levels[(n, l_r, j_tot, s_tot)]
+                energy_au -= self.ionization_energy_au  # use the cached ionization energy for better performance
+                return calc_nu_from_energy(self.element_properties.reduced_mass_au, energy_au)
             logger.debug(
-                "NIST energy levels for (n=%d, l=%d, j_tot=%s, s_tot=%s) not found, using quantum defect theory.",
-                *(n, l, j_tot, s_tot),
+                "NIST energy levels for (n=%d, l_r=%d, j_tot=%s, s_tot=%s) not found, using quantum defect theory.",
+                *(n, l_r, j_tot, s_tot),
             )
 
-        if self._quantum_defects is None:
-            raise ValueError(f"No quantum defect data available for species {self.name}.")
+        if self.quantum_defects is None:
+            raise ValueError(f"No quantum defect data available for species {self.species}.")
 
-        quantum_defects = self._quantum_defects.get((l, j_tot, s_tot), 0)
+        quantum_defects = self.quantum_defects.get((l_r, j_tot, s_tot), 0)
         delta_nlj = calc_modified_ritz_formula(n, quantum_defects)
 
         return n - delta_nlj
+
+
+@cache
+def get_sqdt(species: str, tag: str | None = None) -> SQDT:
+    """Get an instance of the subclass of SQDT for the given species and tag."""
+    subclasses = get_all_subclasses(SQDT, species, tag)
+
+    if tag is None:
+        subclasses = [cls for cls in subclasses if getattr(cls, "is_default", False)]
+
+    if len(subclasses) == 0:
+        raise ValueError(f"No subclass of SQDT found for {species=} and {tag=}.")
+    if len(subclasses) == 1:
+        return subclasses[0]()
+    raise ValueError(f"Multiple subclasses of SQDT found for {species=} and {tag=}: {subclasses}.")

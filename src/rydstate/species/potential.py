@@ -2,50 +2,54 @@ from __future__ import annotations
 
 import logging
 import math
-from typing import TYPE_CHECKING, Literal, TypeVar, get_args
+from abc import ABC
+from typing import TYPE_CHECKING, ClassVar, TypeVar
 
 import numpy as np
 
-from rydstate.species import SpeciesObject
+from rydstate.angular.utils import is_unknown
+from rydstate.species.element_properties import get_element_properties
+from rydstate.species.utils import get_all_subclasses
 
 if TYPE_CHECKING:
+    from rydstate.angular.utils import Unknown
     from rydstate.units import NDArray
-
-
-logger = logging.getLogger(__name__)
-
-PotentialType = Literal["coulomb", "model_potential_marinescu_1993", "model_potential_fei_2009"]
 
 XType = TypeVar("XType", "NDArray", float)
 
 
-class Model:
-    """Model to describe the potentials for an atomic state."""
+logger = logging.getLogger(__name__)
 
-    def __init__(
-        self,
-        species: str | SpeciesObject,
-        l: int,
-        potential_type: PotentialType | None = None,
-    ) -> None:
+
+class Potential(ABC):
+    """Base class for all potential classes."""
+
+    species: ClassVar[str]
+    """The short name of the atomic species."""
+    tag: ClassVar[str]
+    """The tag for these potential parameters."""
+    is_default: ClassVar[bool] = False
+    """Whether this potential is the default potential for the species."""
+
+    def __init__(self, l_r: int) -> None:
         r"""Initialize the model.
 
         Args:
-            species: The atomic species.
-            l: Orbital angular momentum quantum number
-            potential_type: Which potential to use for the model.
+            l_r: Orbital angular momentum of the Rydberg electron.
 
         """
-        self.species = SpeciesObject.from_name(species) if isinstance(species, str) else species
-        self.l = l
+        self.element_properties = get_element_properties(self.species)
 
-        if potential_type is None:
-            potential_type = self.species.potential_type_default
-            if potential_type is None:
-                potential_type = "coulomb"
-        if potential_type not in get_args(PotentialType):
-            raise ValueError(f"Invalid potential type {potential_type}. Must be one of {get_args(PotentialType)}.")
-        self.potential_type = potential_type
+        if is_unknown(l_r):
+            raise ValueError(
+                f"l_r cannot be unknown for {self.__class__.__name__}, use a dummy potential if l_r is unknown"
+            )
+        if not ((isinstance(l_r, int) or l_r.is_integer()) and l_r >= 0):
+            raise ValueError(f"l_r must be an integer, and larger or equal 0, but {l_r=}")
+        self.l_r = int(l_r)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(l_r={self.l_r})"
 
     def calc_potential_coulomb(self, x: XType) -> XType:
         r"""Calculate the Coulomb potential V_Col(x) in atomic units.
@@ -66,101 +70,25 @@ class Model:
         """
         return -1 / x
 
-    def calc_model_potential_marinescu_1993(self, x: XType) -> XType:
-        r"""Calculate the model potential by Marinescu et al. (1994) in atomic units.
-
-        The model potential from
-        M. Marinescu, Phys. Rev. A 49, 982 (1994), https://journals.aps.org/pra/abstract/10.1103/PhysRevA.49.982
-        is given by
-
-        .. math::
-            V_{mp,marinescu}(x) = - \frac{Z_{l}}{x} - \frac{\alpha_c}{2x^4} (1 - e^{-x^6/x_c**6})
-
-        where Z_{l} is the effective nuclear charge, :math:`\alpha_c` is the static core dipole polarizability,
-        and x_c is the effective core size.
-
-        .. math::
-            Z_{l} = 1 + (Z - 1) \exp(-a_1 x) - x (a_3 + a_4 x) \exp(-a_2 x)
-
-        with the nuclear charge Z.
-
-        Args:
-            x: The dimensionless radial coordinate x = r / a_0, for which to calculate potential.
-
-        Returns:
-            V_{mp,marinescu}: The four parameter potential V_{mp,marinescu}(x) in atomic units.
-
-        """
-        parameter_dict = self.species.model_potential_parameter_marinescu_1993
-        if len(parameter_dict) == 0:
-            raise ValueError(f"No parametric model potential parameters defined for the species {self.species}.")
-        # default to parameters for the maximum l
-        a1, a2, a3, a4 = parameter_dict.get(self.l, parameter_dict[max(parameter_dict.keys())])
-        exp_a1 = np.exp(-a1 * x)
-        exp_a2 = np.exp(-a2 * x)
-        z_nl: XType = 1 + (self.species.Z - 1) * exp_a1 - x * (a3 + a4 * x) * exp_a2
-        v_c = -z_nl / x
-
-        alpha_c = self.species.alpha_c_marinescu_1993
-        if alpha_c == 0:
-            v_p = 0
-        else:
-            r_c_dict = self.species.r_c_dict_marinescu_1993
-            if len(r_c_dict) == 0:
-                raise ValueError(f"No parametric model potential parameters defined for the species {self.species}.")
-            # default to x_c for the maximum l
-            x_c = r_c_dict.get(self.l, r_c_dict[max(r_c_dict.keys())])
-            x2: XType = x * x
-            x4: XType = x2 * x2
-            x6: XType = x4 * x2
-            exp_x6 = np.exp(-(x6 / x_c**6))
-            v_p = -alpha_c / (2 * x4) * (1 - exp_x6)
-
-        return v_c + v_p
-
-    def calc_model_potential_fei_2009(self, x: XType) -> XType:
-        r"""Calculate the model potential by Fei et al. (2009) in atomic units.
-
-        The four parameter potential from Y. Fei et al., Chin. Phys. B 18, 4349 (2009), https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025
-        is given by
-
-        .. math::
-            V_{mp,fei}(x) = - \frac{1}{x}
-                - \frac{Z-1}{x} \cdot [1 - \alpha + \alpha e^{\beta x^\delta + \gamma x^{2\delta}}]^{-1}
-
-        where Z is the nuclear charge.
-
-        Args:
-            x: The dimensionless radial coordinate x = r / a_0, for which to calculate potential.
-
-        Returns:
-            V_{mp,fei}: The four parameter potential V_{mp,fei}(x) in atomic units.
-
-        """
-        delta, alpha, beta, gamma = self.species.model_potential_parameter_fei_2009
-        with np.errstate(over="ignore"):
-            denom: XType = 1 - alpha + alpha * np.exp(beta * x**delta + gamma * x ** (2.0 * delta))
-            return -1 / x - (self.species.Z - 1) / (x * denom)
-
     def calc_effective_potential_centrifugal(self, x: XType) -> XType:
         r"""Calculate the effective centrifugal potential V_l(x) in atomic units.
 
         The effective centrifugal potential is given as
 
         .. math::
-            V_l(x) = \frac{l(l+1)}{2x^2}
+            V_{l_r}(x) = \frac{l_r(l_r+1)}{2x^2}
 
-        where x = r / a_0 and l is the orbital angular momentum quantum number.
+        where x = r / a_0 and l_r is the orbital angular momentum quantum number of the Rydberg electron.
 
         Args:
             x: The dimensionless radial coordinate x = r / a_0, for which to calculate the potential.
 
         Returns:
-            V_l: The effective centrifugal potential V_l(x) in atomic units.
+            V_{l_r}: The effective centrifugal potential V_{l_r}(x) in atomic units.
 
         """
         x2 = x * x
-        return (1 / self.species.reduced_mass_au) * self.l * (self.l + 1) / (2 * x2)
+        return (1 / self.element_properties.reduced_mass_au) * self.l_r * (self.l_r + 1) / (2 * x2)
 
     def calc_effective_potential_sqrt(self, x: XType) -> XType:
         r"""Calculate the effective potential V_sqrt(x) from the sqrt transformation in atomic units.
@@ -181,7 +109,12 @@ class Model:
 
         """
         x2 = x * x
-        return (1 / self.species.reduced_mass_au) * (3 / 32) / x2
+        return (1 / self.element_properties.reduced_mass_au) * (3 / 32) / x2
+
+    def calc_model_potential(self, x: XType) -> XType:
+        raise NotImplementedError(
+            f"Subclasses of Potential ({self.__class__.__name__}) must implement the calc_model_potential method."
+        )
 
     def calc_total_effective_potential(self, x: XType) -> XType:
         r"""Calculate the total effective potential V_eff(x) in atomic units.
@@ -189,10 +122,10 @@ class Model:
         The total effective potential includes all physical and effective potentials:
 
         .. math::
-            V_{eff}(x) = V(x) + V_l(x) + V_{sqrt}(x)
+            V_{eff}(x) = V(x) + V_{l_r}(x) + V_{sqrt}(x)
 
         where V(x) is the physical potential (either Coulomb or a model potential),
-        V_l(x) is the effective centrifugal potential,
+        V_{l_r}(x) is the effective centrifugal potential,
         and V_{sqrt}(x) is the effective potential from the sqrt transformation.
 
         Note that we on purpose do not include the spin-orbit potential for several reasons:
@@ -215,21 +148,12 @@ class Model:
 
         """
         # Note: we do not include the spin-orbit potential, see docstring for details.
-        if self.potential_type == "coulomb":
-            v = self.calc_potential_coulomb(x)
-        elif self.potential_type == "model_potential_marinescu_1993":
-            v = self.calc_model_potential_marinescu_1993(x)
-        elif self.potential_type == "model_potential_fei_2009":
-            v = self.calc_model_potential_fei_2009(x)
-        else:
-            raise ValueError(f"Invalid potential type {self.potential_type}.")
-
+        v = self.calc_model_potential(x)
         v += self.calc_effective_potential_centrifugal(x)
         v += self.calc_effective_potential_sqrt(x)
-
         return v
 
-    def calc_hydrogen_turning_point_z(self, n: int, l: int) -> float:
+    def calc_hydrogen_turning_point_z(self, n: int, l_r: int) -> float:
         r"""Calculate the classical turning point z_i of the state if it would be a hydrogen atom.
 
         The hydrogen turning point is defined as the point,
@@ -238,19 +162,19 @@ class Model:
         This is exactly the case at
 
         .. math::
-            r_i = n^2 - n \sqrt{n^2 - l(l + 1)}
+            r_i = n^2 - n \sqrt{n^2 - l_r(l_r + 1)}
 
         and z_i = sqrt{r_i / a_0}.
 
         Args:
             n: Principal quantum number of the state.
-            l: Orbital angular momentum quantum number of the state.
+            l_r: Orbital angular momentum quantum number of the state.
 
         Returns:
             z_i: The inner hydrogen turning point z_i in the scaled dimensionless coordinate z_i = sqrt{r_i / a_0}.
 
         """
-        return math.sqrt(n * n - n * math.sqrt(n * n - l * (l + 1)))
+        return math.sqrt(n * n - n * math.sqrt(n * n - l_r * (l_r + 1)))
 
     def calc_turning_point_z(self, energy_au: float, dz: float = 1e-3) -> float:
         r"""Calculate the classical inner turning point z_i for the given state.
@@ -273,9 +197,9 @@ class Model:
         """
         # for a given hydrogen turning point z_hyd, the classical turning point usually lies within z_hyd \pm 5
         # for a given l, the hydrogen turning point is bound by
-        # z_lower = z_hyd(n=inf, l)  = \sqrt{l * (l+1) / 2} <= z_hyd(n, l) <= z_hyd(n=l+1, l) = z_upper
-        z_lower = math.sqrt(self.l * (self.l + 1) / 2)
-        z_upper = self.calc_hydrogen_turning_point_z(n=self.l + 1, l=self.l)
+        # z_lower = z_hyd(n=inf, l_r)  = \sqrt{l_r * (l_r+1) / 2} <= z_hyd(n, l_r) <= z_hyd(n=l_r+1, l_r) = z_upper
+        z_lower = math.sqrt(self.l_r * (self.l_r + 1) / 2)
+        z_upper = self.calc_hydrogen_turning_point_z(n=self.l_r + 1, l_r=self.l_r)
 
         z_min_orig, z_max_orig = max(z_lower - 5, dz), z_upper + 5
         z_min, z_max = z_min_orig, z_max_orig
@@ -301,3 +225,175 @@ class Model:
             )
 
         return z_min + (z_max - z_min) * v_list[ind] / (v_list[ind] - v_list[ind + 1])  # type: ignore [no-any-return]
+
+
+class PotentialCoulomb(Potential):
+    """Simple Coulomb potential, without any additional terms."""
+
+    tag = "coulomb"
+
+    def calc_model_potential(self, x: XType) -> XType:
+        r"""Calculate the model potential V(x) in atomic units.
+
+        Default implementation returns the Coulomb potential, but this can be overridden by subclasses to implement
+        different model potentials.
+
+        Args:
+            x: The dimensionless radial coordinate x = r / a_0, for which to calculate the potential.
+
+        Returns:
+            V: The model potential V(x) in atomic units.
+
+        """
+        return self.calc_potential_coulomb(x)
+
+
+class PotentialMarinescu1993(Potential):
+    """Model potential for alkali atoms from Marinescu et al. (1994).
+
+    See also: Phys. Rev. A 49, 982 (1994)
+    """
+
+    tag = "marinescu_1993"
+
+    # Model Potential Parameters for marinescu_1993
+    alpha_c_marinescu_1993: ClassVar[float]
+    """Static dipole polarizability in atomic units (a.u.), used for the parametric model potential.
+    See also: Phys. Rev. A 49, 982 (1994)
+    """
+    r_c_dict_marinescu_1993: ClassVar[dict[int, float]]
+    """Cutoff radius {l: r_c} to truncate the unphysical short-range contribution of the polarization potential.
+    See also: Phys. Rev. A 49, 982 (1994)
+    """
+    model_potential_parameter_marinescu_1993: ClassVar[dict[int, tuple[float, float, float, float]]]
+    """Parameters {l: (a_1, a_2, a_3, a_4)} for the parametric model potential.
+    See also: M. Marinescu, Phys. Rev. A 49, 982 (1994), https://journals.aps.org/pra/abstract/10.1103/PhysRevA.49.982
+    """
+
+    def calc_model_potential(self, x: XType) -> XType:
+        r"""Calculate the model potential by Marinescu et al. (1994) in atomic units.
+
+        The model potential from
+        M. Marinescu, Phys. Rev. A 49, 982 (1994), https://journals.aps.org/pra/abstract/10.1103/PhysRevA.49.982
+        is given by
+
+        .. math::
+            V_{mp,marinescu}(x) = - \frac{Z_{l}}{x} - \frac{\alpha_c}{2x^4} (1 - e^{-x^6/x_c**6})
+
+        where Z_{l} is the effective nuclear charge, :math:`\alpha_c` is the static core dipole polarizability,
+        and x_c is the effective core size.
+
+        .. math::
+            Z_{l} = 1 + (Z - 1) \exp(-a_1 x) - x (a_3 + a_4 x) \exp(-a_2 x)
+
+        with the nuclear charge Z.
+
+        Args:
+            x: The dimensionless radial coordinate x = r / a_0, for which to calculate potential.
+
+        Returns:
+            V_{mp,marinescu}: The four parameter potential V_{mp,marinescu}(x) in atomic units.
+
+        """
+        parameter_dict = self.model_potential_parameter_marinescu_1993
+        if len(parameter_dict) == 0:
+            raise ValueError(f"No parametric model potential parameters defined for the species {self.species}.")
+        # default to parameters for the maximum l
+        a1, a2, a3, a4 = parameter_dict.get(self.l_r, parameter_dict[max(parameter_dict.keys())])
+        exp_a1 = np.exp(-a1 * x)
+        exp_a2 = np.exp(-a2 * x)
+        z_nl: XType = 1 + (self.element_properties.Z - 1) * exp_a1 - x * (a3 + a4 * x) * exp_a2
+        v_c = -z_nl / x
+
+        alpha_c = self.alpha_c_marinescu_1993
+        if alpha_c == 0:
+            v_p = 0
+        else:
+            r_c_dict = self.r_c_dict_marinescu_1993
+            if len(r_c_dict) == 0:
+                raise ValueError(f"No parametric model potential parameters defined for the species {self.species}.")
+            # default to x_c for the maximum l
+            x_c = r_c_dict.get(self.l_r, r_c_dict[max(r_c_dict.keys())])
+            x2: XType = x * x
+            x4: XType = x2 * x2
+            x6: XType = x4 * x2
+            exp_x6 = np.exp(-(x6 / x_c**6))
+            v_p = -alpha_c / (2 * x4) * (1 - exp_x6)
+
+        return v_c + v_p
+
+
+class PotentialFei2009(Potential):
+    """Model potential for alkaline earth atoms from Fei et al. (2009).
+
+    See also: Phys. Rev. A 79, 052507 (2009)
+    """
+
+    tag = "fei_2009"
+
+    # Model Potential Parameters for fei_2009
+    model_potential_parameter_fei_2009: ClassVar[tuple[float, float, float, float]]
+    """Parameters (delta, alpha, beta, gamma) for the new four-parameter potential, used in the model potential
+    defined in: Y. Fei et al., Chin. Phys. B 18, 4349 (2009), https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025
+    """
+
+    def calc_model_potential(self, x: XType) -> XType:
+        r"""Calculate the model potential by Fei et al. (2009) in atomic units.
+
+        The four parameter potential from Y. Fei et al., Chin. Phys. B 18, 4349 (2009), https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025
+        is given by
+
+        .. math::
+            V_{mp,fei}(x) = - \frac{1}{x}
+                - \frac{Z-1}{x} \cdot [1 - \alpha + \alpha e^{\beta x^\delta + \gamma x^{2\delta}}]^{-1}
+
+        where Z is the nuclear charge.
+
+        Args:
+            x: The dimensionless radial coordinate x = r / a_0, for which to calculate potential.
+
+        Returns:
+            V_{mp,fei}: The four parameter potential V_{mp,fei}(x) in atomic units.
+
+        """
+        delta, alpha, beta, gamma = self.model_potential_parameter_fei_2009
+        with np.errstate(over="ignore"):
+            denom: XType = 1 - alpha + alpha * np.exp(beta * x**delta + gamma * x ** (2.0 * delta))
+            return -1 / x - (self.element_properties.Z - 1) / (x * denom)
+
+
+class PotentialDummy(Potential):
+    """Dummy potential, which can be used when the potential is unknown."""
+
+    tag = "dummy"
+    l_r: int | Unknown  # type: ignore [assignment]
+
+    def __init__(self, species: str, l_r: int | Unknown) -> None:
+        r"""Initialize the model.
+
+        Args:
+            species: The species for which to initialize the dummy potential.
+            l_r: Orbital angular momentum of the Rydberg electron.
+
+        """
+        self.species = species  # type: ignore [misc]
+        self.element_properties = get_element_properties(self.species)
+
+        self.l_r = l_r
+
+    def calc_model_potential(self, x: XType) -> XType:  # noqa: ARG002
+        raise RuntimeError(f"The model potential is unknown for {self.__class__.__name__}, so it cannot be calculated.")
+
+
+def get_potential_class(species: str, tag: str | None = None) -> type[Potential]:
+    """Get the subclass of Potential for the given species and tag."""
+    subclasses = get_all_subclasses(Potential, species, tag)
+
+    if tag is None:
+        subclasses = [cls for cls in subclasses if getattr(cls, "is_default", False)]
+
+    if len(subclasses) == 0:
+        raise ValueError(f"No subclass of Potential found for {species=} and {tag=}.")
+    if len(subclasses) == 1:
+        return subclasses[0]
+    raise ValueError(f"Multiple subclasses of Potential found for {species=} and {tag=}: {subclasses}.")

@@ -1,17 +1,21 @@
 from __future__ import annotations
 
+import inspect
 import math
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
+from rydstate.species.element_properties import get_element_properties
 from rydstate.species.utils import calc_energy_from_nu, calc_modified_ritz_formula_in_nu, calc_nu_from_energy
 
 if TYPE_CHECKING:
+    from types import ModuleType
+
     from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ
     from rydstate.angular.utils import AllKnown
-    from rydstate.species.mqdt.species_object_mqdt import SpeciesObjectMQDT
+    from rydstate.species.mqdt import MQDT
     from rydstate.species.utils import RydbergRitzParameters
     from rydstate.units import NDArray, PintFloat
 
@@ -19,14 +23,13 @@ if TYPE_CHECKING:
 class FModel:
     """Class to store the parameters of a MQDT model for a given species."""
 
+    species: ClassVar[str]
+    """The species for which the MQDT model is defined."""
     name: ClassVar[str]
     """The name of the atomic species."""
 
-    reference: ClassVar[str | None] = None
+    reference: ClassVar[str | tuple[str, ...] | None] = None
     """Reference for the MQDT model, e.g., a publication doi where the model is described."""
-
-    species_name: ClassVar[str]
-    """The species for which the MQDT model is defined."""
 
     f_tot: ClassVar[float]
     """Total angular momentum f_tot of the Rydberg state."""
@@ -55,6 +58,15 @@ class FModel:
     where the frame transformation cannot (yet) be computed from Wigner coefficients.
     """
 
+    def __init__(self, mqdt: MQDT) -> None:
+        self.mqdt = mqdt
+        self.element_properties = get_element_properties(self.species)
+
+    @property
+    def full_name(self) -> str:
+        """Return the full name of the model, combining species and model name."""
+        return f"{self.species} {self.name}"
+
     @property
     def nu_min(self) -> float:
         """Minimum nu for which the model is valid."""
@@ -64,18 +76,6 @@ class FModel:
     def nu_max(self) -> float:
         """Maximum nu for which the model is valid."""
         return self.nu_range[1]
-
-    @cached_property
-    def species(self) -> SpeciesObjectMQDT:
-        """Return the SpeciesObjectMQDT associated with this model."""
-        from rydstate.species.mqdt.species_object_mqdt import SpeciesObjectMQDT  # noqa: PLC0415
-
-        return SpeciesObjectMQDT.from_name(self.species_name)
-
-    @property
-    def full_name(self) -> str:
-        """Return the full name of the model, combining species and model name."""
-        return f"{self.species_name} {self.name}"
 
     @overload
     def get_ionization_thresholds(self, unit: None = None) -> list[PintFloat]: ...
@@ -93,12 +93,22 @@ class FModel:
             List of ionization thresholds in the desired unit.
 
         """
-        return [self.species.get_ionization_threshold(ket.get_core_ket(), unit=unit) for ket in self.outer_channels]  # type: ignore [return-value]
+        return [self.mqdt.get_ionization_threshold(ket.get_core_ket(), unit=unit) for ket in self.outer_channels]  # type: ignore [return-value]
 
     @cached_property  # don't remove this caching without benchmarking it!!!
     def ionization_thresholds_au(self) -> list[float]:
         """Return the ionization thresholds for all channels in atomic units."""
         return self.get_ionization_thresholds(unit="hartree")
+
+    def calc_energy_au(self, nu: float) -> float:
+        """Calculate the energy of the Rydberg state.
+
+        The energy is calculated for an effective principal quantum number nu,
+        which is defined with reference to the lowest ionization threshold of the MQDT model.
+        """
+        return (
+            calc_energy_from_nu(self.element_properties.reduced_mass_au, nu) + self.mqdt.reference_ionization_energy_au
+        )
 
     def calc_channel_nuis(self, nu: float) -> NDArray:
         r"""Return the channel-dependent effective principal quantum numbers nui.
@@ -115,12 +125,10 @@ class FModel:
             List of channel nui values.
 
         """
-        thresholds = self.ionization_thresholds_au
-        ioniz_ref = self.species.reference_ionization_energy_au
-        reduced_mass_au = self.species.reduced_mass_au
-        energy_from_nu = calc_energy_from_nu(reduced_mass_au, nu)
+        energy_au = self.calc_energy_au(nu)
         nuis = [
-            calc_nu_from_energy(reduced_mass_au, ioniz_ref + energy_from_nu - threshold) for threshold in thresholds
+            calc_nu_from_energy(self.element_properties.reduced_mass_au, energy_au - threshold)
+            for threshold in self.ionization_thresholds_au
         ]
         return np.array(nuis)
 
@@ -136,8 +144,8 @@ class FModel:
         """
         nuis = self.calc_channel_nuis(nu)
         eigen_quantum_defects = [
-            calc_modified_ritz_formula_in_nu(nu, params)
-            for nu, params in zip(nuis, self.eigen_quantum_defects, strict=True)
+            calc_modified_ritz_formula_in_nu(nui, params)
+            for nui, params in zip(nuis, self.eigen_quantum_defects, strict=True)
         ]
         return np.array(eigen_quantum_defects)
 
@@ -314,9 +322,36 @@ class FModel:
         return float(np.linalg.det(self.calc_scaled_m_matrix(nu)))
 
 
+def get_fmodels(module: ModuleType, species: str) -> list[type[FModel]]:
+    """Return all FModel subclasses defined in ``module`` that match the given species.
+
+    Args:
+        module: The module to inspect for FModel subclasses.
+        species: The species the returned FModel subclasses must match.
+
+    Returns:
+        List of all FModel subclasses defined in the module for the given species.
+
+    """
+    fmodels = [
+        obj
+        for obj in vars(module).values()
+        if (
+            inspect.isclass(obj)
+            and obj.__module__ == module.__name__
+            and issubclass(obj, FModel)
+            and obj is not FModel
+            and getattr(obj, "species", None) == species
+        )
+    ]
+    if len(fmodels) == 0:
+        raise ValueError(f"No FModel subclasses for species {species!r} found in {module.__name__}.")
+    return fmodels
+
+
 class FModelSQDT(FModel):
-    def __init__(self, species_name: str, channel: AngularKetFJ[AllKnown]) -> None:
-        self.species_name = species_name  # type: ignore [misc]
+    def __init__(self, species: str, channel: AngularKetFJ[AllKnown], mqdt: MQDT) -> None:
+        self.species = species  # type: ignore [misc]
         self.name = f"SQDT l_r={channel.l_r}, j_r={channel.j_r}, f_tot={channel.f_tot}, nu > {channel.l_r + 1}"  # type: ignore [misc]
         self.f_tot = channel.f_tot  # type: ignore [misc]
         self.nu_range = (channel.l_r + 1, math.inf)  # type: ignore [misc]
@@ -324,3 +359,5 @@ class FModelSQDT(FModel):
         self.outer_channels = [channel]  # type: ignore [misc]
         self.eigen_quantum_defects = [0]  # type: ignore [misc]
         self.mixing_angles = []  # type: ignore [misc]
+
+        super().__init__(mqdt)

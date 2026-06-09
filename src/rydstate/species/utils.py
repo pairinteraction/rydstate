@@ -1,12 +1,20 @@
 from __future__ import annotations
 
+import inspect
 import math
 import re
-from typing import TypeAlias
+from typing import TYPE_CHECKING, TypeAlias, TypeVar
 
 import numpy as np
 
 RydbergRitzParameters: TypeAlias = tuple[float, ...] | list[float] | float
+
+
+if TYPE_CHECKING:
+    T = TypeVar("T", bound=type)
+    F = TypeVar("F")
+
+    def cache(func: F) -> F: ...
 
 
 def calc_nu_from_energy(reduced_mass_au: float, energy_au: float) -> float:
@@ -129,3 +137,19 @@ def calc_modified_ritz_formula_in_nu(nui: float, parameters: RydbergRitzParamete
     for i, param in enumerate(parameters):
         result += param * 1.0 / nui ** (2 * i)
     return result
+
+
+def get_all_subclasses(cls: T, species: str | None = None, tag: str | None = None) -> list[T]:
+    """Get all subclasses of cls for the given species (and tag)."""
+    subclasses: list[T] = []
+    for subclass in cls.__subclasses__():
+        subclasses.extend(get_all_subclasses(subclass, species, tag))
+        if inspect.isabstract(subclass) or getattr(subclass, "species", None) is None:
+            continue
+        if species is not None and getattr(subclass, "species", None) != species:
+            continue
+        if tag is not None and getattr(subclass, "tag", None) != tag:
+            continue
+        subclasses.append(subclass)
+
+    return subclasses
