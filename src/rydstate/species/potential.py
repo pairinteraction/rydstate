@@ -32,7 +32,7 @@ class Potential(ABC):
     """Whether this potential is the default potential for the species."""
 
     def __init__(self, l_r: int) -> None:
-        r"""Initialize the model.
+        r"""Initialize the potential.
 
         Args:
             l_r: Orbital angular momentum of the Rydberg electron.
@@ -132,7 +132,7 @@ class Potential(ABC):
 
         i) The fine structure corrections are important for the energies of the states.
            This includes a) spin-orbit coupling, b) Darwin term, and c) relativistic corrections to the kinetic energy.
-           Since we (obviously) can not include the latter two in the model,
+           Since we (obviously) can not include the latter two in the potential,
            it is only consistent to not include the spin-orbit term either.
 
         ii) The model potentials are generated without the spin-orbit term,
@@ -153,7 +153,7 @@ class Potential(ABC):
         v += self.calc_effective_potential_sqrt(x)
         return v
 
-    def calc_hydrogen_turning_point_z(self, n: int, l_r: int) -> float:
+    def calc_hydrogen_turning_point_z(self, n: int) -> float:
         r"""Calculate the classical turning point z_i of the state if it would be a hydrogen atom.
 
         The hydrogen turning point is defined as the point,
@@ -168,13 +168,12 @@ class Potential(ABC):
 
         Args:
             n: Principal quantum number of the state.
-            l_r: Orbital angular momentum quantum number of the state.
 
         Returns:
             z_i: The inner hydrogen turning point z_i in the scaled dimensionless coordinate z_i = sqrt{r_i / a_0}.
 
         """
-        return math.sqrt(n * n - n * math.sqrt(n * n - l_r * (l_r + 1)))
+        return math.sqrt(n * n - n * math.sqrt(n * n - self.l_r * (self.l_r + 1)))
 
     def calc_turning_point_z(self, energy_au: float, dz: float = 1e-3) -> float:
         r"""Calculate the classical inner turning point z_i for the given state.
@@ -199,7 +198,7 @@ class Potential(ABC):
         # for a given l, the hydrogen turning point is bound by
         # z_lower = z_hyd(n=inf, l_r)  = \sqrt{l_r * (l_r+1) / 2} <= z_hyd(n, l_r) <= z_hyd(n=l_r+1, l_r) = z_upper
         z_lower = math.sqrt(self.l_r * (self.l_r + 1) / 2)
-        z_upper = self.calc_hydrogen_turning_point_z(n=self.l_r + 1, l_r=self.l_r)
+        z_upper = self.calc_hydrogen_turning_point_z(n=self.l_r + 1)
 
         z_min_orig, z_max_orig = max(z_lower - 5, dz), z_upper + 5
         z_min, z_max = z_min_orig, z_max_orig
@@ -256,7 +255,6 @@ class PotentialMarinescu1993(Potential):
 
     tag = "marinescu_1993"
 
-    # Model Potential Parameters for marinescu_1993
     alpha_c_marinescu_1993: ClassVar[float]
     """Static dipole polarizability in atomic units (a.u.), used for the parametric model potential.
     See also: Phys. Rev. A 49, 982 (1994)
@@ -331,7 +329,6 @@ class PotentialFei2009(Potential):
 
     tag = "fei_2009"
 
-    # Model Potential Parameters for fei_2009
     model_potential_parameter_fei_2009: ClassVar[tuple[float, float, float, float]]
     """Parameters (delta, alpha, beta, gamma) for the new four-parameter potential, used in the model potential
     defined in: Y. Fei et al., Chin. Phys. B 18, 4349 (2009), https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025
@@ -369,7 +366,7 @@ class PotentialDummy(Potential):
     l_r: int | Unknown  # type: ignore [assignment]
 
     def __init__(self, species: str, l_r: int | Unknown) -> None:
-        r"""Initialize the model.
+        r"""Initialize the dummy potential.
 
         Args:
             species: The species for which to initialize the dummy potential.

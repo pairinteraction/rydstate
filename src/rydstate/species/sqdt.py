@@ -44,7 +44,7 @@ class SQDT(ABC):
     is_default: ClassVar[bool] = False
     """Whether this SQDT is the default SQDT for the species."""
 
-    ionization_energy: tuple[float, str]
+    ionization_energy: ClassVar[tuple[float, str]]
     """Ionization energy and unit: (value, unit)."""
 
     quantum_defects: ClassVar[dict[tuple[int, float, float], RydbergRitzParameters] | None] = None

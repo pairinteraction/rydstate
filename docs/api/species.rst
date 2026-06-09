@@ -23,6 +23,7 @@ Specific data for the different species
     :toctree: ../_autosummary/
     :recursive:
 
+    cesium
     hydrogen
     lithium
     potassium

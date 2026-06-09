@@ -29,7 +29,7 @@ class ElementProperties(ABC):
     number_valence_electrons: ClassVar[int]
     """Number of valence electrons (i.e. 1 for alkali atoms and 2 for alkaline earth atoms)."""
 
-    corrected_rydberg_constant: tuple[float, str]
+    corrected_rydberg_constant: ClassVar[tuple[float, str]]
     r"""Corrected Rydberg constant stored as a tuple of the form (value, unit) for lazy unit conversion."""
 
     ground_state_shell: ClassVar[tuple[int, int]]
@@ -39,7 +39,7 @@ class ElementProperties(ABC):
     core_electron_configuration: ClassVar[str]
     """Electron configuration of the core electrons, e.g. 4p6 for Rb or 5s for Sr."""
 
-    nuclear_dipole: float
+    nuclear_dipole: ClassVar[float]
     """Nuclear dipole moment of the species."""
 
     def __repr__(self) -> str:
@@ -77,7 +77,7 @@ class ElementProperties(ABC):
         and :math:`m_e` is the mass of the electron.
 
         Args:
-            unit: Desired unit for the corrected Rydberg constant. Default is atomic units "hartree".
+            unit: Desired unit for the corrected Rydberg constant. Default None returns a Pint quantity.
 
         Returns:
             Corrected Rydberg constant in the desired unit.
