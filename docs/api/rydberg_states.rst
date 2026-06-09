@@ -8,7 +8,4 @@ Rydberg States
 
     RydbergStateSQDT
     RydbergStateSQDTAlkali
-    RydbergStateSQDTAlkalineLS
-    RydbergStateSQDTAlkalineJJ
-    RydbergStateSQDTAlkalineFJ
     RydbergStateMQDT
