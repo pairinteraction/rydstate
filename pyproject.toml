@@ -91,7 +91,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 rydstate = [
-  "species/sqdt/nist_energy_levels/*.txt",
+  "species/**/nist_data.txt",
   "generate_database/database.sql"
 ]
 
