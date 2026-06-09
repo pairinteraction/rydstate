@@ -1,37 +1,29 @@
 from typing import ClassVar
 
-from rydstate.species.sqdt.species_object_sqdt import SpeciesObjectSQDT
+from rydstate.species.sqdt import SQDT
 from rydstate.units import rydberg_constant
 
 
-class Hydrogen(SpeciesObjectSQDT):
-    name = "H"
-    Z = 1
-    number_valence_electrons = 1
-    ground_state_shell = (1, 0)
+class SQDTHydrogen(SQDT):
+    species = "H"
+    is_default = True
 
     # https://webbook.nist.gov/cgi/inchi?ID=C1333740&Mask=20
-    _ionization_energy = (15.425_93, 0.000_05, "eV")
+    ionization_energy = (15.425_93, "eV")
 
-    potential_type_default = "coulomb"
+    quantum_defects: ClassVar = {}
 
-    _quantum_defects: ClassVar = {}
+    def _setup_nist_energy_levels(self) -> None:
+        self._nist_energy_levels = {}
 
-    _corrected_rydberg_constant = (109677.58340280356, None, "1/cm")
 
+class SQDTHydrogenTextBook(SQDT):
+    species = "H_textbook"
+    is_default = True
 
-class HydrogenTextBook(SpeciesObjectSQDT):
-    """Hydrogen from QM textbook with infinite nucleus mass and no spin orbit coupling."""
+    ionization_energy = (rydberg_constant.m, str(rydberg_constant.u))
 
-    name = "H_textbook"
-    Z = 1
-    number_valence_electrons = 1
-    ground_state_shell = (1, 0)
+    quantum_defects: ClassVar = {}
 
-    _ionization_energy = (rydberg_constant.m, 0, str(rydberg_constant.u))
-
-    potential_type_default = "coulomb"
-
-    _quantum_defects: ClassVar = {}
-
-    _corrected_rydberg_constant = (109737.31568160003, None, "1/cm")
+    def _setup_nist_energy_levels(self) -> None:
+        self._nist_energy_levels = {}

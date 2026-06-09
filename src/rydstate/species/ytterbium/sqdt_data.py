@@ -1,67 +1,14 @@
-from __future__ import annotations
-
-from pathlib import Path
 from typing import ClassVar
 
-from rydstate.species.sqdt.species_object_sqdt import SpeciesObjectSQDT
-from rydstate.units import electron_mass, rydberg_constant
+from rydstate.species.sqdt import SQDT
 
 
-class _YtterbiumAbstract(SpeciesObjectSQDT):
-    Z = 70
-    number_valence_electrons = 2
-    ground_state_shell = (6, 0)
-    _additional_allowed_shells: ClassVar = [(5, 2), (5, 3), (5, 4)]
-
-    _core_electron_configuration = "4f14.6s"
-    _nist_energy_levels_file = Path(__file__).parent / "nist_energy_levels" / "ytterbium.txt"
+class SQDTYtterbium174(SQDT):
+    species = "Yb174"
+    is_default = True
 
     # https://webbook.nist.gov/cgi/inchi?ID=C7440644&Mask=20
-    _ionization_energy = (6.25416, None, "eV")
-
-    potential_type_default = "model_potential_fei_2009"
-
-    # https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025
-    model_potential_parameter_fei_2009 = (0.8704, 22.0040, 0.1513, 0.3306)
-
-
-class Ytterbium171(_YtterbiumAbstract):
-    name = "Yb171"
-    i_c = 1 / 2
-
-    # https://physics.nist.gov/PhysRefData/Handbook/Tables/ytterbiumtable1.htm
-    _isotope_mass = 170.936323  # u
-    _corrected_rydberg_constant = (
-        rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass),
-        None,
-        str(rydberg_constant.u),
-    )
-
-
-class Ytterbium173(_YtterbiumAbstract):
-    name = "Yb173"
-    i_c = 5 / 2
-
-    # https://physics.nist.gov/PhysRefData/Handbook/Tables/ytterbiumtable1.htm
-    _isotope_mass = 172.938208  # u
-    _corrected_rydberg_constant = (
-        rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass),
-        None,
-        str(rydberg_constant.u),
-    )
-
-
-class Ytterbium174(_YtterbiumAbstract):
-    name = "Yb174"
-    i_c = 0
-
-    # https://physics.nist.gov/PhysRefData/Handbook/Tables/ytterbiumtable1.htm
-    _isotope_mass = 173.938859  # u
-    _corrected_rydberg_constant = (
-        rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass),
-        None,
-        str(rydberg_constant.u),
-    )
+    ionization_energy = (6.25416, "eV")
 
     # -- [1] Peper 2024, http://arxiv.org/abs/2406.01482
     #        Spectroscopy and modeling of 171Yb Rydberg states for high-fidelity two-qubit gates
@@ -76,8 +23,7 @@ class Ytterbium174(_YtterbiumAbstract):
     #        Microwave spectroscopy and multi-channel quantum defect analysis of ytterbium Rydberg states
     #        see Table S1 - S8
     #        Isotope Yb174
-
-    _quantum_defects: ClassVar = {
+    quantum_defects: ClassVar = {
         # singlet
         (0, 0.0, 0): (4 + 0.355101645, 0.277673956, 0.0, 0.0, 0.0),  # [3] S2
         (1, 1.0, 0): (3 + 0.922709076, 2.60055203, 0.0, 0.0, 0.0),  # [3] S4
@@ -100,8 +46,3 @@ class Ytterbium174(_YtterbiumAbstract):
         # (4, 4.0, "+"): (0.0262659964, 0.0254568575, 0.0, 0.0, 0.0),  # [3] S8
         # (4, 4.0, "-"): (-0.148808463, -0.134219071, 0.0, 0.0, 0.0),  # [3] S8
     }
-
-
-class Ytterbium174SQDT(Ytterbium174):
-    # alias for ytterbium-174 in SQDT
-    name = "Yb174_sqdt"
