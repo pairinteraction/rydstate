@@ -18,5 +18,4 @@ All the available classes, methods and functions are documented below:
     api/basis
     api/angular
     api/radial
-    api/species_sqdt
-    api/species_mqdt
+    api/species

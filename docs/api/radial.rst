@@ -8,5 +8,4 @@ Radial module
 
     radial.RadialKet
     radial.Wavefunction
-    radial.Model
     radial.numerov

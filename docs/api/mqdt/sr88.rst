@@ -1,6 +1,0 @@
-Strontium 88
-============
-
-.. automodule:: rydstate.species.mqdt.sr88
-    :members:
-    :member-order: bysource
