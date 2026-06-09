@@ -1,52 +1,16 @@
+# ruff: noqa: RUF012, N801
+
 from __future__ import annotations
 
 import numpy as np
 
 from rydstate.angular.angular_ket import AngularKetFJ, AngularKetJJ, AngularKetLS
-from rydstate.angular.core_ket import CoreKet
 from rydstate.angular.utils import Unknown
-from rydstate.species.mqdt.fmodel import FModel
-from rydstate.species.mqdt.species_object_mqdt import SpeciesObjectMQDT
-from rydstate.units import electron_mass, rydberg_constant
-
-
-class Ytterbium174MQDT(SpeciesObjectMQDT):
-    name = "Yb174_mqdt"
-    Z = 70
-    i_c = 0
-    number_valence_electrons = 2
-
-    potential_type_default = "model_potential_fei_2009"
-
-    # https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025
-    model_potential_parameter_fei_2009 = (0.8704, 22.0040, 0.1513, 0.3306)
-
-    # https://physics.nist.gov/PhysRefData/Handbook/Tables/ytterbiumtable1.htm
-    _isotope_mass = 173.938859  # u
-    _corrected_rydberg_constant = (
-        rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass),
-        None,
-        str(rydberg_constant.u),
-    )
-
-    _ionization_threshold_dict = {
-        CoreKet(i_c, 0.5, 0, 0.5): (50443.070393, None, "1/cm"),
-        CoreKet(i_c, 0.5, 1, 0.5): (77504.98, None, "1/cm"),
-        CoreKet(i_c, 0.5, 1, 1.5): (80835.39, None, "1/cm"),
-        CoreKet(i_c, 0.5, 1, Unknown, label=Unknown): (79725.35, None, "1/cm"),
-        CoreKet(i_c, 0.5, Unknown, Unknown, label="4f13 5d 6s"): (83967.7, None, "1/cm"),
-    }
-    core_ground_state = CoreKet(i_c, 0.5, 0, 0.5)
-    nuclear_dipole = 2.1
-
-
-# --------------------------------------------------------
-# MQDT models valid at large n
-# --------------------------------------------------------
+from rydstate.species.fmodel import FModel
 
 
 class Yb174_S0_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "S J=0, nu > 2"
     f_tot = 0
     nu_range = (2.0, np.inf)
@@ -88,7 +52,7 @@ class Yb174_S0_HighN(FModel):
 
 
 class Yb174_S1_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "S J=1, nu > 26"
     f_tot = 1
     nu_range = (26.0, np.inf)
@@ -108,7 +72,7 @@ class Yb174_S1_HighN(FModel):
 
 
 class Yb174_P0_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "P J=0, nu > 6"
     f_tot = 0
     nu_range = (6.0, np.inf)
@@ -133,7 +97,7 @@ class Yb174_P0_HighN(FModel):
 
 
 class Yb174_P1_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "P J=1, nu > 6"
     f_tot = 1
     nu_range = (6.0, np.inf)
@@ -178,7 +142,7 @@ class Yb174_P1_HighN(FModel):
 
 
 class Yb174_P2_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "P J=2, nu > 5"
     f_tot = 2
     nu_range = (5.0, np.inf)
@@ -211,7 +175,7 @@ class Yb174_P2_HighN(FModel):
 
 
 class Yb174_D1_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "D J=1, nu > 26"
     f_tot = 1
     nu_range = (26.0, np.inf)
@@ -231,7 +195,7 @@ class Yb174_D1_HighN(FModel):
 
 
 class Yb174_D2_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "D J=2, nu > 5"
     f_tot = 2
     nu_range = (5.0, np.inf)
@@ -281,7 +245,7 @@ class Yb174_D2_HighN(FModel):
 
 
 class Yb174_D3_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "D J=3, nu > 18"
     f_tot = 3
     nu_range = (18.0, np.inf)
@@ -301,7 +265,7 @@ class Yb174_D3_HighN(FModel):
 
 
 class Yb174_F2_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "F J=2, nu > 25"
     f_tot = 2
     nu_range = (25.0, np.inf)
@@ -321,7 +285,7 @@ class Yb174_F2_HighN(FModel):
 
 
 class Yb174_F3_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "F J=3, nu > 7"
     f_tot = 3
     nu_range = (7.0, np.inf)
@@ -371,7 +335,7 @@ class Yb174_F3_HighN(FModel):
 
 
 class Yb174_F4_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "F J=4, nu > 25"
     f_tot = 4
     nu_range = (25.0, np.inf)
@@ -391,7 +355,7 @@ class Yb174_F4_HighN(FModel):
 
 
 class Yb174_G3_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "G J=3, nu > 25"
     f_tot = 3
     nu_range = (25.0, np.inf)
@@ -411,7 +375,7 @@ class Yb174_G3_HighN(FModel):
 
 
 class Yb174_G4_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "G J=4, nu > 25"
     f_tot = 4
     nu_range = (25.0, np.inf)
@@ -436,7 +400,7 @@ class Yb174_G4_HighN(FModel):
 
 
 class Yb174_G5_HighN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "G J=5, nu > 25"
     f_tot = 5
     nu_range = (25.0, np.inf)
@@ -461,7 +425,7 @@ class Yb174_G5_HighN(FModel):
 
 
 class Yb174_S0_LowN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "S J=0, 1 < nu < 2"
     f_tot = 0
     nu_range = (1.0, 2.0)
@@ -481,7 +445,7 @@ class Yb174_S0_LowN(FModel):
 
 
 class Yb174_S1_LowN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "S J=1, 2 < nu < 26"
     f_tot = 1
     nu_range = (2.0, 26.0)
@@ -501,7 +465,7 @@ class Yb174_S1_LowN(FModel):
 
 
 class Yb174_P0_LowN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "P J=0, 1.5 < nu < 5.5"
     f_tot = 0
     nu_range = (1.5, 5.5)
@@ -521,7 +485,7 @@ class Yb174_P0_LowN(FModel):
 
 
 class Yb174_P1_Lowest(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "P J=1, 1.7 < nu < 2.7"
     f_tot = 1
     nu_range = (1.7, 2.7)
@@ -546,7 +510,7 @@ class Yb174_P1_Lowest(FModel):
 
 
 class Yb174_P1_LowN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "P J=1, 2.7 < nu < 5.7"
     f_tot = 1
     nu_range = (2.7, 5.7)
@@ -569,7 +533,7 @@ class Yb174_P1_LowN(FModel):
 
 
 class Yb174_P2_LowN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "P J=2, 1.5 < nu < 4.5"
     f_tot = 2
     nu_range = (1.5, 4.5)
@@ -589,7 +553,7 @@ class Yb174_P2_LowN(FModel):
 
 
 class Yb174_D1_LowN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "D J=1, 2 < nu < 26"
     f_tot = 1
     nu_range = (2.0, 26.0)
@@ -609,7 +573,7 @@ class Yb174_D1_LowN(FModel):
 
 
 class Yb174_D2_LowN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "D J=2, 2 < nu < 5"
     f_tot = 2
     nu_range = (2.0, 5.0)
@@ -634,7 +598,7 @@ class Yb174_D2_LowN(FModel):
 
 
 class Yb174_D3_LowN(FModel):
-    species_name = "Yb174_mqdt"
+    species = "Yb174"
     name = "D J=3, 2 < nu < 18"
     f_tot = 3
     nu_range = (2.0, 18.0)

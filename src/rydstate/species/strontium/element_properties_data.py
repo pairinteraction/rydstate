@@ -23,6 +23,8 @@ class ElementPropertiesStrontium87(_ElementPropertiesStrontiumAbstract):
         str(rydberg_constant.u),
     )
 
+    nuclear_dipole = -1.0936030
+
 
 class ElementPropertiesStrontium88(_ElementPropertiesStrontiumAbstract):
     species = "Sr88"
@@ -33,3 +35,5 @@ class ElementPropertiesStrontium88(_ElementPropertiesStrontiumAbstract):
         rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass_u),
         str(rydberg_constant.u),
     )
+
+    nuclear_dipole = 2.3

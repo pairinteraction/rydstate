@@ -1,51 +1,16 @@
+# ruff: noqa: RUF012, N801
+
 from __future__ import annotations
 
 import numpy as np
 
 from rydstate.angular.angular_ket import AngularKetFJ, AngularKetLS
-from rydstate.angular.core_ket import CoreKet
 from rydstate.angular.utils import Unknown
-from rydstate.species.mqdt.fmodel import FModel
-from rydstate.species.mqdt.species_object_mqdt import SpeciesObjectMQDT
-from rydstate.units import electron_mass, rydberg_constant
-
-
-class Ytterbium173MQDT(SpeciesObjectMQDT):
-    name = "Yb173_mqdt"
-    Z = 70
-    i_c = 2.5
-    number_valence_electrons = 2
-
-    potential_type_default = "model_potential_fei_2009"
-
-    # https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025
-    model_potential_parameter_fei_2009 = (0.8704, 22.0040, 0.1513, 0.3306)
-
-    _isotope_mass = 172.938216212  # u
-    _corrected_rydberg_constant = (
-        rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass),
-        None,
-        str(rydberg_constant.u),
-    )
-
-    _ionization_threshold_dict = {
-        CoreKet(i_c, 0.5, 0, 0.5, 2): (50443.291203, None, "1/cm"),
-        CoreKet(i_c, 0.5, 0, 0.5, 3): (50442.941262, None, "1/cm"),
-        CoreKet(i_c, 0.5, 1, 0.5, Unknown, label=Unknown): (77504.98, None, "1/cm"),
-        CoreKet(i_c, 0.5, 1, 1.5, Unknown, label=Unknown): (80835.39, None, "1/cm"),
-        CoreKet(i_c, 0.5, Unknown, Unknown, Unknown, label="4f13 5d 6s"): (83967.7, None, "1/cm"),
-    }
-    core_ground_state = CoreKet(i_c, 0.5, 0, 0.5, 2)
-    nuclear_dipole = -0.68
-
-
-# --------------------------------------------------------
-# MQDT models valid at large n
-# --------------------------------------------------------
+from rydstate.species.fmodel import FModel
 
 
 class Yb173_S15_HighN(FModel):
-    species_name = "Yb173_mqdt"
+    species = "Yb173"
     name = "S F=3/2, nu > 26"
     f_tot = 1.5
     nu_range = (26.0, np.inf)
@@ -65,7 +30,7 @@ class Yb173_S15_HighN(FModel):
 
 
 class Yb173_S25_HighN(FModel):
-    species_name = "Yb173_mqdt"
+    species = "Yb173"
     name = "S F=5/2, nu > 26"
     f_tot = 2.5
     nu_range = (26.0, np.inf)
@@ -123,7 +88,7 @@ class Yb173_S25_HighN(FModel):
 
 
 class Yb173_S35_HighN(FModel):
-    species_name = "Yb173_mqdt"
+    species = "Yb173"
     name = "S F=7/2, nu > 26"
     f_tot = 3.5
     nu_range = (26.0, np.inf)
@@ -143,7 +108,7 @@ class Yb173_S35_HighN(FModel):
 
 
 class Yb173_P05_HighN(FModel):
-    species_name = "Yb173_mqdt"
+    species = "Yb173"
     name = "P F=1/2, nu > 10"
     f_tot = 0.5
     nu_range = (10.0, np.inf)
@@ -176,7 +141,7 @@ class Yb173_P05_HighN(FModel):
 
 
 class Yb173_P15_HighN(FModel):
-    species_name = "Yb173_mqdt"
+    species = "Yb173"
     name = "P F=3/2, nu > 10"
     f_tot = 1.5
     nu_range = (10.0, np.inf)
@@ -236,7 +201,7 @@ class Yb173_P15_HighN(FModel):
 
 
 class Yb173_P25_HighN(FModel):
-    species_name = "Yb173_mqdt"
+    species = "Yb173"
     name = "P F=5/2, nu > 10"
     f_tot = 2.5
     nu_range = (10.0, np.inf)
@@ -303,7 +268,7 @@ class Yb173_P25_HighN(FModel):
 
 
 class Yb173_P35_HighN(FModel):
-    species_name = "Yb173_mqdt"
+    species = "Yb173"
     name = "P F=7/2, nu > 10"
     f_tot = 3.5
     nu_range = (10.0, np.inf)
@@ -363,7 +328,7 @@ class Yb173_P35_HighN(FModel):
 
 
 class Yb173_P45_HighN(FModel):
-    species_name = "Yb173_mqdt"
+    species = "Yb173"
     name = "P F=9/2, nu > 10"
     f_tot = 4.5
     nu_range = (10.0, np.inf)

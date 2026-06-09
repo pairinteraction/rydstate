@@ -1,44 +1,15 @@
+# ruff: noqa: RUF012, N801
+
 from __future__ import annotations
 
 import numpy as np
 
 from rydstate.angular.angular_ket import AngularKetFJ, AngularKetLS
-from rydstate.angular.core_ket import CoreKet
-from rydstate.species.mqdt.fmodel import FModel
-from rydstate.species.mqdt.species_object_mqdt import SpeciesObjectMQDT
-from rydstate.units import electron_mass, rydberg_constant
-
-
-class Strontium87MQDT(SpeciesObjectMQDT):
-    name = "Sr87_mqdt"
-    Z = 38
-    i_c = 4.5
-    number_valence_electrons = 2
-
-    potential_type_default = "model_potential_fei_2009"
-
-    _isotope_mass = 86.9088774970  # u
-    _corrected_rydberg_constant = (
-        rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass),
-        None,
-        str(rydberg_constant.u),
-    )
-
-    _ionization_threshold_dict = {
-        CoreKet(i_c, 0.5, 0, 0.5, 4): (45932.287373577, None, "1/cm"),
-        CoreKet(i_c, 0.5, 0, 0.5, 5): (45932.120512528, None, "1/cm"),
-    }
-    core_ground_state = CoreKet(i_c, 0.5, 0, 0.5, 4)
-    nuclear_dipole = -1.0936030
-
-
-# --------------------------------------------------------
-# MQDT models valid at large n
-# --------------------------------------------------------
+from rydstate.species.fmodel import FModel
 
 
 class Sr87_S35_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "S F=7/2, nu > 11"
     f_tot = 3.5
     nu_range = (11.0, np.inf)
@@ -58,7 +29,7 @@ class Sr87_S35_HighN(FModel):
 
 
 class Sr87_S45_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "S F=9/2, nu > 11"
     f_tot = 4.5
     nu_range = (11.0, np.inf)
@@ -81,7 +52,7 @@ class Sr87_S45_HighN(FModel):
 
 
 class Sr87_S55_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "S F=11/2, nu > 11"
     f_tot = 5.5
     nu_range = (11.0, np.inf)
@@ -106,7 +77,7 @@ class Sr87_S55_HighN(FModel):
 
 
 class Sr87_P45_LowN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "P F=9/2 (clock), 1.8 < nu < 2.2"
     f_tot = 4.5
     nu_range = (1.8, 2.2)
@@ -140,7 +111,7 @@ class Sr87_P45_LowN(FModel):
 
 
 class Sr87_P25_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "P F=5/2, nu > 5"
     f_tot = 2.5
     nu_range = (5.0, np.inf)
@@ -160,7 +131,7 @@ class Sr87_P25_HighN(FModel):
 
 
 class Sr87_P35_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "P F=7/2, nu > 5"
     f_tot = 3.5
     nu_range = (5.0, np.inf)
@@ -186,7 +157,7 @@ class Sr87_P35_HighN(FModel):
 
 
 class Sr87_P45_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "P F=9/2, nu > 7"
     f_tot = 4.5
     nu_range = (7.0, np.inf)
@@ -215,7 +186,7 @@ class Sr87_P45_HighN(FModel):
 
 
 class Sr87_P55_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "P F=11/2, nu > 5"
     f_tot = 5.5
     nu_range = (5.0, np.inf)
@@ -241,7 +212,7 @@ class Sr87_P55_HighN(FModel):
 
 
 class Sr87_P65_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "P F=13/2, nu > 5"
     f_tot = 6.5
     nu_range = (5.0, np.inf)
@@ -266,7 +237,7 @@ class Sr87_P65_HighN(FModel):
 
 
 class Sr87_D15_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "D F=3/2, nu > 25"
     f_tot = 1.5
     nu_range = (25.0, np.inf)
@@ -286,7 +257,7 @@ class Sr87_D15_HighN(FModel):
 
 
 class Sr87_D25_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "D F=5/2, nu > 25"
     f_tot = 2.5
     nu_range = (25.0, np.inf)
@@ -314,7 +285,7 @@ class Sr87_D25_HighN(FModel):
 
 
 class Sr87_D35_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "D F=7/2, nu > 25"
     f_tot = 3.5
     nu_range = (25.0, np.inf)
@@ -345,7 +316,7 @@ class Sr87_D35_HighN(FModel):
 
 
 class Sr87_D45_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "D F=9/2, nu > 25"
     f_tot = 4.5
     nu_range = (25.0, np.inf)
@@ -376,7 +347,7 @@ class Sr87_D45_HighN(FModel):
 
 
 class Sr87_D55_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "D F=11/2, nu > 25"
     f_tot = 5.5
     nu_range = (25.0, np.inf)
@@ -407,7 +378,7 @@ class Sr87_D55_HighN(FModel):
 
 
 class Sr87_D65_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "D F=13/2, nu > 25"
     f_tot = 6.5
     nu_range = (25.0, np.inf)
@@ -435,7 +406,7 @@ class Sr87_D65_HighN(FModel):
 
 
 class Sr87_D75_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "D F=15/2, nu > 25"
     f_tot = 7.5
     nu_range = (25.0, np.inf)
@@ -460,7 +431,7 @@ class Sr87_D75_HighN(FModel):
 
 
 class Sr87_F45_HighN(FModel):
-    species_name = "Sr87_mqdt"
+    species = "Sr87"
     name = "F F=9/2, nu > 9"
     f_tot = 4.5
     nu_range = (9.0, np.inf)

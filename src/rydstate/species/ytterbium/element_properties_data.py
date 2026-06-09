@@ -23,6 +23,8 @@ class ElementPropertiesYtterbium171(_ElementPropertiesYtterbiumAbstract):
         str(rydberg_constant.u),
     )
 
+    nuclear_dipole = 0.49367
+
 
 class ElementPropertiesYtterbium173(_ElementPropertiesYtterbiumAbstract):
     species = "Yb173"
@@ -34,6 +36,8 @@ class ElementPropertiesYtterbium173(_ElementPropertiesYtterbiumAbstract):
         str(rydberg_constant.u),
     )
 
+    nuclear_dipole = -0.68
+
 
 class ElementPropertiesYtterbium174(_ElementPropertiesYtterbiumAbstract):
     species = "Yb174"
@@ -44,3 +48,5 @@ class ElementPropertiesYtterbium174(_ElementPropertiesYtterbiumAbstract):
         rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass_u),
         str(rydberg_constant.u),
     )
+
+    nuclear_dipole = 2.1
