@@ -7,4 +7,3 @@ Radial module
     :toctree: ../_autosummary/
 
     radial.RadialKet
-    radial.numerov

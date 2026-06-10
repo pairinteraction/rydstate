@@ -1,7 +1,7 @@
 Rydberg States
 ==============
 
-.. currentmodule:: rydstate
+.. currentmodule:: rydstate.rydberg_state
 
 .. autosummary::
     :toctree: ../_autosummary/
@@ -9,3 +9,4 @@ Rydberg States
     RydbergStateSQDT
     RydbergStateSQDTAlkali
     RydbergStateMQDT
+    RydbergKet

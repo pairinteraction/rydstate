@@ -10,4 +10,5 @@ Angular module
     angular.AngularKetJJ
     angular.AngularKetFJ
     angular.AngularState
+    angular.CoreKet
     angular.utils

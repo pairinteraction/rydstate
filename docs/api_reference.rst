@@ -14,7 +14,7 @@ All the available classes, methods and functions are documented below:
 .. toctree::
     :maxdepth: 2
 
-    api/rydberg_states.rst
+    api/rydberg_state.rst
     api/basis.rst
     api/angular.rst
     api/radial.rst
