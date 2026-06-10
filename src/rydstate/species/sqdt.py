@@ -223,7 +223,11 @@ class SQDT(ABC):
 
         """
         if angular_ket.coupling_scheme != "LS":
-            raise NotImplementedError("calc_nu is only implemented for AngularKetLS.")
+            angular_state = angular_ket.to_state("LS")
+            if len(angular_state.kets) == 1:
+                angular_ket = angular_state.kets[0]
+            else:
+                raise NotImplementedError("calc_nu is only implemented for AngularKetLS.")
 
         l_r = angular_ket.l_r
         j_tot = angular_ket.get_qn("j_tot", allow_unknown=True)
