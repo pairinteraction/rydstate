@@ -22,7 +22,6 @@ from rydstate.units import BaseQuantities, ureg
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from rydstate.angular.utils import CouplingScheme
     from rydstate.units import NDArray, PintArray, PintFloat
 
 GenericT_AngularKet = TypeVar("GenericT_AngularKet", bound=AngularKetBase[AllKnown])
@@ -181,10 +180,6 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
     def rydberg_kets(self) -> list[RydbergKet]:  # type: ignore [override]
         return [RydbergKet(self.angular, self.radial)]
 
-    @property
-    def coupling_scheme(self) -> CouplingScheme:
-        return self.angular.coupling_scheme
-
     @overload
     def get_radial_energy(self, unit: None = None) -> PintFloat: ...
 
@@ -317,7 +312,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
             raise RuntimeError("m quantum number must be defined to calculate transition rates.")
 
         basis = BasisSQDT(
-            self.species, n=(1, int(self.nu + 35)), m=(m - 1, m + 1), coupling_scheme=self.coupling_scheme
+            self.species, n=(1, int(self.nu + 35)), m=(m - 1, m + 1), coupling_scheme=self.angular.coupling_scheme
         )
         basis.filter_states("l_r", (self.angular.l_r - 1, self.angular.l_r + 1))
 
@@ -325,9 +320,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
             basis.filter_states("nu", (0, self.nu))
 
         relevant_states = basis.states
-        energy_differences_au = self.get_energy("hartree") - np.array(
-            [s.get_energy("hartree") for s in relevant_states]
-        )
+        energy_differences_au = self.get_energy("a.u.") - np.array([s.get_energy("a.u.") for s in relevant_states])
         electric_dipole_moments_au = np.zeros(len(relevant_states))
         for q in [-1, 0, 1]:
             el_di_m = np.array(

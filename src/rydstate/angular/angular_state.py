@@ -135,7 +135,7 @@ class AngularState(Generic[GenericT_AngularKet]):
             )
 
         coefficients2 = np.conjugate(coeffs) * coeffs / norm**2
-        return np.sum(coefficients2 * qns)  # type: ignore [no-any-return]
+        return float(np.sum(coefficients2 * qns))
 
     def calc_std_qn(self, q: AngularMomentumQuantumNumbers) -> float:
         """Calculate the standard deviation of a quantum number q.
