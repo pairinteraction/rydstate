@@ -11,22 +11,20 @@ from rydstate.species.strontium import sr87_mqdt_fmodel_data, sr88_mqdt_fmodel_d
 class MQDTStrontium87(MQDT):
     species = "Sr87"
     is_default = True
-    i_c = 4.5
 
     ionization_threshold_dict: ClassVar = {
-        CoreKet(i_c, 0.5, 0, 0.5, 4): (45932.287373577, "1/cm"),
-        CoreKet(i_c, 0.5, 0, 0.5, 5): (45932.120512528, "1/cm"),
+        CoreKet(4.5, 0.5, 0, 0.5, 4): (45932.287373577, "1/cm"),
+        CoreKet(4.5, 0.5, 0, 0.5, 5): (45932.120512528, "1/cm"),
     }
-    reference_core_ket = CoreKet(i_c, 0.5, 0, 0.5, 4)
+    reference_core_ket = CoreKet(4.5, 0.5, 0, 0.5, 4)
     model_classes = get_fmodels(sr87_mqdt_fmodel_data, species)
 
 
 class MQDTStrontium88(MQDT):
     species = "Sr88"
     is_default = True
-    i_c = 0
 
     ionization_threshold_dict: ClassVar = {
-        CoreKet(i_c, 0.5, 0, 0.5): (45932.1956, "1/cm"),
+        CoreKet(0, 0.5, 0, 0.5): (45932.1956, "1/cm"),
     }
     model_classes = get_fmodels(sr88_mqdt_fmodel_data, species)
