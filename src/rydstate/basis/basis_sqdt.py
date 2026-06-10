@@ -133,10 +133,10 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
                         angular_ket = AngularKetLS(
                             l_r=l_r, s_tot=s_tot, j_tot=j_tot, f_tot=f_tot, m=m, species=self.species
                         )
-                        state = RydbergStateSQDT.from_angular_ket(
+                        state = RydbergStateSQDT(
                             self.species,
-                            angular_ket,
                             n=n,
+                            angular_ket=angular_ket,
                             sqdt=self.sqdt,
                             potential=self.potential_class(l_r),
                         )
@@ -165,10 +165,10 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
                         angular_ket = AngularKetJJ(
                             l_r=l_r, j_r=j_r, j_tot=j_tot, f_tot=f_tot, m=m, species=self.species
                         )
-                        state = RydbergStateSQDT.from_angular_ket(
+                        state = RydbergStateSQDT(
                             self.species,
-                            angular_ket,
                             n=n,
+                            angular_ket=angular_ket,
                             sqdt=self.sqdt,
                             potential=self.potential_class(l_r),
                         )
@@ -195,10 +195,10 @@ class BasisSQDT(BasisBase[RydbergStateSQDT[T_AngularKet]], Generic[T_AngularKet]
                 for f_tot in np.arange(abs(f_c - j_r), f_c + j_r + 1):
                     for m in self._get_m_range(m_range, f_tot):
                         angular_ket = AngularKetFJ(l_r=l_r, j_r=j_r, f_c=f_c, f_tot=f_tot, m=m, species=self.species)
-                        state = RydbergStateSQDT.from_angular_ket(
+                        state = RydbergStateSQDT(
                             self.species,
-                            angular_ket,
                             n=n,
+                            angular_ket=angular_ket,
                             sqdt=self.sqdt,
                             potential=self.potential_class(l_r),
                         )

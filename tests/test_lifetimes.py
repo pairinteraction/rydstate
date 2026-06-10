@@ -52,8 +52,8 @@ def test_lifetime_n_scaling(species: str) -> None:
     f = abs(s_tot - element_properties.i_c)
     angular = AngularKetLS(l_r=0, s_tot=s_tot, f_tot=f, m=f, species=species)
 
-    state1 = RydbergStateSQDT.from_angular_ket(species, angular, n=n1)
-    state2 = RydbergStateSQDT.from_angular_ket(species, angular, n=n2)
+    state1 = RydbergStateSQDT(species, n=n1, angular_ket=angular)
+    state2 = RydbergStateSQDT(species, n=n2, angular_ket=angular)
     tau1 = state1.get_lifetime(unit="mus")
     tau2 = state2.get_lifetime(unit="mus")
     nu1 = state1.nu
