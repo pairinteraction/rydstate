@@ -8,13 +8,16 @@ from rydstate.angular.angular_ket import AngularKetFJ, AngularKetJJ, AngularKetL
 from rydstate.angular.utils import Unknown
 from rydstate.species.fmodel import FModel
 
+REFERENCE_PEPER_2025 = "M. Peper et al., Phys. Rev. X 15, 011009 (2025), https://doi.org/10.1103/PhysRevX.15.011009"
+REFERENCE_KURODA_2025 = "R. Kuroda et al., Phys. Rev. A 112, 042817 (2025), https://doi.org/10.1103/mzsv-rckx"
+
 
 class Yb171_S05_HighN(FModel):
     species = "Yb171"
     name = "S F=1/2, nu > 26"
     f_tot = 0.5
     nu_range = (26.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817, 10.1103/PhysRevX.15.011009"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=0, j_tot=0, f_tot=0.5, species="Yb171"),  # "6sns 1S0"
@@ -72,7 +75,7 @@ class Yb171_S15_HighN(FModel):
     name = "S F=3/2, nu > 26"
     f_tot = 1.5
     nu_range = (26.0, np.inf)
-    reference = "10.1103/PhysRevX.15.011009"
+    reference = (REFERENCE_KURODA_2025, "taken from Yb171 3S1, F=1/2 data")
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=1, j_tot=1, f_tot=1.5, species="Yb171"),  # "6sns 3S1"
@@ -92,7 +95,7 @@ class Yb171_P05_HighN(FModel):
     name = "P F=1/2, nu > 5.7"
     f_tot = 0.5
     nu_range = (5.7, np.inf)
-    reference = "10.1103/PhysRevA.112.042817, 10.1103/PhysRevX.15.011009"
+    reference = (REFERENCE_KURODA_2025, "fit for nu > 28, but extrapolates nicely down for nu > 5.7)")
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, f_tot=0.5, species="Yb171"),  # "6snp 1P1"
@@ -145,7 +148,7 @@ class Yb171_P15_HighN(FModel):
     name = "P F=3/2, nu > 10"
     f_tot = 1.5
     nu_range = (10.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, f_tot=1.5, species="Yb171"),  # "6snp 1P1"
@@ -209,7 +212,7 @@ class Yb171_D05_HighN(FModel):
     name = "D F=1/2, nu > 30"
     f_tot = 0.5
     nu_range = (30.0, np.inf)
-    reference = "10.1103/PhysRevX.15.011009"
+    reference = (REFERENCE_KURODA_2025, "taken from Yb171 3D1, F=3/2 data")
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=1, j_tot=1, f_tot=0.5, species="Yb171"),  # "6snd 3D1"
@@ -229,7 +232,7 @@ class Yb171_D15_HighN(FModel):
     name = "D F=3/2, nu > 30"
     f_tot = 1.5
     nu_range = (30.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817, 10.1103/PhysRevX.15.011009"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=0, j_tot=2, f_tot=1.5, species="Yb171"),  # "6snd 1D2"
@@ -281,7 +284,7 @@ class Yb171_D25_HighN(FModel):
     name = "D F=5/2, nu > 30"
     f_tot = 2.5
     nu_range = (30.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817, 10.1103/PhysRevX.15.011009"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=0, j_tot=2, f_tot=2.5, species="Yb171"),  # "6snd 1D2"
@@ -333,7 +336,7 @@ class Yb171_D35_HighN(FModel):
     name = "D F=7/2, nu > 14"
     f_tot = 3.5
     nu_range = (14.0, np.inf)
-    reference = "10.1103/PhysRevX.15.011009"
+    reference = (REFERENCE_KURODA_2025, "taken from Yb171 3D3, F=5/2 data")
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=1, j_tot=3, f_tot=3.5, species="Yb171"),  # "6snd 3D3"
@@ -353,7 +356,7 @@ class Yb171_F25_HighN(FModel):
     name = "F F=5/2, nu > 20"
     f_tot = 2.5
     nu_range = (20.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=3, l_tot=3, s_tot=0, j_tot=3, f_tot=2.5, species="Yb171"),  # "6snf 1F3"
@@ -422,7 +425,7 @@ class Yb171_F35_HighN(FModel):
     name = "F F=7/2, nu > 20"
     f_tot = 3.5
     nu_range = (20.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=3, l_tot=3, s_tot=0, j_tot=3, f_tot=3.5, species="Yb171"),  # "6snf 1F3"
@@ -475,7 +478,7 @@ class Yb171_F45_HighN(FModel):
     name = "F F=9/2, nu > 20"
     f_tot = 4.5
     nu_range = (20.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817"
+    reference = (REFERENCE_KURODA_2025, "taken from Yb171 3F4, F=7/2 data")
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=3, l_tot=3, s_tot=1, j_tot=4, f_tot=4.5, species="Yb171"),  # "6snf 3F4"
@@ -495,7 +498,7 @@ class Yb171_G25_HighN(FModel):
     name = "G F=5/2, nu > 25"
     f_tot = 2.5
     nu_range = (25.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=4, l_tot=4, s_tot=1, j_tot=3, f_tot=2.5, species="Yb171"),  # "6sng 3G3"
@@ -515,7 +518,7 @@ class Yb171_G35_HighN(FModel):
     name = "G F=7/2, nu > 25"
     f_tot = 3.5
     nu_range = (25.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetJJ(l_c=0, l_r=4, j_c=0.5, j_r=4.5, j_tot=4, f_tot=3.5, species="Yb171"),  # "6sng +G4"
@@ -543,7 +546,7 @@ class Yb171_G45_HighN(FModel):
     name = "G F=9/2, nu > 25"
     f_tot = 4.5
     nu_range = (25.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetJJ(l_c=0, l_r=4, j_c=0.5, j_r=4.5, j_tot=4, f_tot=4.5, species="Yb171"),  # "6sng +G4"
@@ -571,7 +574,7 @@ class Yb171_G55_HighN(FModel):
     name = "G F=11/2, nu > 25"
     f_tot = 5.5
     nu_range = (25.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817"
+    reference = (REFERENCE_KURODA_2025, "taken from Yb171 3G5, F=9/2 data")
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=4, l_tot=4, s_tot=1, j_tot=5, f_tot=5.5, species="Yb171"),  # "6sng 3G5"
@@ -596,7 +599,7 @@ class Yb171_S05_LowN(FModel):
     name = "S F=1/2, 2 < nu < 26"
     f_tot = 0.5
     nu_range = (2.0, 26.0)
-    reference = "10.1103/PhysRevX.15.011009"
+    reference = (REFERENCE_PEPER_2025, "with modified 3S1 data taken from Yb174 fit to NIST")
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=0, j_tot=0, f_tot=0.5, species="Yb171"),  # "6sns 1S0"
@@ -655,7 +658,7 @@ class Yb171_S15_LowN(FModel):
     name = "S F=3/2, 2 < nu < 26"
     f_tot = 1.5
     nu_range = (2.0, 26.0)
-    reference = None
+    reference = "fit to Yb174 NIST data"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=1, j_tot=1, f_tot=1.5, species="Yb171"),  # "6sns 3S1"
@@ -675,7 +678,7 @@ class Yb171_P05_Lowest(FModel):
     name = "P F=1/2, 1.5 < nu < 2.5"
     f_tot = 0.5
     nu_range = (1.5, 2.5)
-    reference = None
+    reference = "fit to Yb174 NIST data"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, f_tot=0.5, species="Yb171"),  # "6snp 1P1"
@@ -703,7 +706,7 @@ class Yb171_P05_LowN(FModel):
     name = "P F=1/2, 2.9 < nu < 5.9"
     f_tot = 0.5
     nu_range = (2.9, 5.9)
-    reference = None
+    reference = "fit to Yb174 NIST data"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, f_tot=0.5, species="Yb171"),  # "6snp 1P1"
@@ -729,7 +732,7 @@ class Yb171_P15_Lowest(FModel):
     name = "P F=3/2, 1.5 < nu < 2.5"
     f_tot = 1.5
     nu_range = (1.5, 2.5)
-    reference = None
+    reference = "fit to Yb174 NIST data"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, f_tot=1.5, species="Yb171"),  # "6snp 1P1"
@@ -757,7 +760,7 @@ class Yb171_P15_LowN(FModel):
     name = "P F=3/2, 3 < nu < 10"
     f_tot = 1.5
     nu_range = (3.0, 10.0)
-    reference = None
+    reference = "fit to Yb174 NIST data"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, f_tot=1.5, species="Yb171"),  # "6snp 1P1"
@@ -817,7 +820,7 @@ class Yb171_P25_Lowest(FModel):
     name = "P F=5/2, 1.5 < nu < 4.5"
     f_tot = 2.5
     nu_range = (1.5, 4.5)
-    reference = None
+    reference = "fit to Yb174 NIST data"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=2, f_tot=2.5, species="Yb171"),  # "6snp 3P2"
@@ -837,7 +840,7 @@ class Yb171_P25_LowN(FModel):
     name = "P F=5/2, 5 < nu < 20"
     f_tot = 2.5
     nu_range = (5.0, 20.0)
-    reference = "10.1103/PhysRevX.15.011009"
+    reference = "fit to Yb174 Phys. Rev. X 15, 011009 (2025)"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=2, f_tot=2.5, species="Yb171"),  # "6snp 3P2"
@@ -870,7 +873,7 @@ class Yb171_D05_LowN(FModel):
     name = "D F=1/2, 2 < nu < 30"
     f_tot = 0.5
     nu_range = (2.0, 30.0)
-    reference = None
+    reference = "fit to Yb174 NIST data for 2 < nu < 5"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=1, j_tot=1, f_tot=0.5, species="Yb171"),  # "6snd 3D1"
@@ -890,7 +893,7 @@ class Yb171_D15_LowN(FModel):
     name = "D F=3/2, 2 < nu < 30"
     f_tot = 1.5
     nu_range = (2.0, 30.0)
-    reference = "arXiv:2507.11487v1"
+    reference = "model from [arXiv:2507.11487v1] with modified 3D1 data taken from Yb174 fit to NIST"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=0, j_tot=2, f_tot=1.5, species="Yb171"),  # "6snd 1D2"
@@ -942,7 +945,7 @@ class Yb171_D25_LowN(FModel):
     name = "D F=5/2, 2 < nu < 30"
     f_tot = 2.5
     nu_range = (2.0, 30.0)
-    reference = "arXiv:2507.11487v1"
+    reference = "model from [arXiv:2507.11487v1] with modified 3D3 data taken from Yb174 fit to NIST"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=0, j_tot=2, f_tot=2.5, species="Yb171"),  # "6snd 1D2"
@@ -994,7 +997,7 @@ class Yb171_D35_LowN(FModel):
     name = "D F=7/2, 2 < nu < 14"
     f_tot = 3.5
     nu_range = (2.0, 14.0)
-    reference = None
+    reference = "data taken from Yb174 NIST fit for 2 < nu < 5, provides good match around 18d"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=1, j_tot=3, f_tot=3.5, species="Yb171"),  # "6snd 3D3"

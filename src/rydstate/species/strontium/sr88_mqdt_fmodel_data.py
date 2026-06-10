@@ -7,13 +7,17 @@ import numpy as np
 from rydstate.angular.angular_ket import AngularKetFJ, AngularKetLS
 from rydstate.species.fmodel import FModel
 
+REFERENCE_ROBICHEAUX_2019 = (
+    "F. Robicheaux, J. Phys. B: At. Mol. Opt. Phys. 52 244001 (2019), https://doi.org/10.1088/1361-6455/ab4c22"
+)
+
 
 class Sr88_S0_HighN(FModel):
     species = "Sr88"
     name = "S J=0, nu > 10"
     f_tot = 0
     nu_range = (10.0, np.inf)
-    reference = "10.1088/1361-6455/ab3c26"
+    reference = REFERENCE_ROBICHEAUX_2019
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=0, j_tot=0, species="Sr88"),  # "5sns 1S0"
@@ -33,7 +37,7 @@ class Sr88_S1_HighN(FModel):
     name = "S J=1, nu > 11"
     f_tot = 1
     nu_range = (11.0, np.inf)
-    reference = "10.1088/1361-6455/ab3c26"
+    reference = REFERENCE_ROBICHEAUX_2019
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=1, j_tot=1, species="Sr88"),  # "5sns 3S1"
@@ -58,7 +62,7 @@ class Sr88_P1_LowN(FModel):
     name = "P J=1 (recombination), 1.8 < nu < 2.2"
     f_tot = 1
     nu_range = (1.8, 2.2)
-    reference = "10.1088/1361-6455/ab3c26"
+    reference = REFERENCE_ROBICHEAUX_2019
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, species="Sr88"),  # "5snp 1P1"
@@ -88,7 +92,7 @@ class Sr88_P0_HighN(FModel):
     name = "P J=0, nu > 7"
     f_tot = 0
     nu_range = (7.0, np.inf)
-    reference = "10.1088/1361-6455/ab3c26"
+    reference = REFERENCE_ROBICHEAUX_2019
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=0, species="Sr88"),  # "5snp 3P0"
@@ -108,7 +112,7 @@ class Sr88_P1_HighN(FModel):
     name = "P J=1, nu > 5"
     f_tot = 1
     nu_range = (5.0, np.inf)
-    reference = "10.1088/1361-6455/ab3c26"
+    reference = REFERENCE_ROBICHEAUX_2019
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, species="Sr88"),  # "5snp 1P1"
@@ -131,7 +135,7 @@ class Sr88_P2_HighN(FModel):
     name = "P J=2, nu > 5"
     f_tot = 2
     nu_range = (5.0, np.inf)
-    reference = "10.1088/1361-6455/ab3c26"
+    reference = REFERENCE_ROBICHEAUX_2019
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=2, species="Sr88"),  # "5snp 3P2"
@@ -151,7 +155,7 @@ class Sr88_D1_HighN(FModel):
     name = "D J=1, nu > 17"
     f_tot = 1
     nu_range = (17.0, np.inf)
-    reference = "10.1088/1361-6455/ab3c26"
+    reference = REFERENCE_ROBICHEAUX_2019
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=1, j_tot=1, species="Sr88"),  # "5snd 3D1"
@@ -171,7 +175,7 @@ class Sr88_D2_HighN(FModel):
     name = "D J=2, nu > 25"
     f_tot = 2
     nu_range = (25.0, np.inf)
-    reference = "10.1088/1361-6455/ab3c26"
+    reference = REFERENCE_ROBICHEAUX_2019
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=0, j_tot=2, species="Sr88"),  # "5snd 1D2"
@@ -196,7 +200,7 @@ class Sr88_D3_HighN(FModel):
     name = "D J=3, nu > 25"
     f_tot = 3
     nu_range = (25.0, np.inf)
-    reference = "10.1088/1361-6455/ab3c26"
+    reference = REFERENCE_ROBICHEAUX_2019
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=1, j_tot=3, species="Sr88"),  # "5snd 3D3"
@@ -216,7 +220,7 @@ class Sr88_F2_HighN(FModel):
     name = "F J=2, nu > 9"
     f_tot = 2
     nu_range = (9.0, np.inf)
-    reference = "10.1088/1361-6455/ab3c26"
+    reference = REFERENCE_ROBICHEAUX_2019
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=3, l_tot=3, s_tot=1, j_tot=2, species="Sr88"),  # "5snf 3F2"
@@ -236,7 +240,7 @@ class Sr88_F3_HighN(FModel):
     name = "F J=3, nu > 9"
     f_tot = 3
     nu_range = (9.0, np.inf)
-    reference = "10.1088/1361-6455/ab3c26"
+    reference = REFERENCE_ROBICHEAUX_2019
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=3, l_tot=3, s_tot=0, j_tot=3, species="Sr88"),  # "5snf 1F3"
@@ -259,7 +263,7 @@ class Sr88_F4_HighN(FModel):
     name = "F J=4, nu > 9"
     f_tot = 4
     nu_range = (9.0, np.inf)
-    reference = "10.1088/1361-6455/ab3c26"
+    reference = REFERENCE_ROBICHEAUX_2019
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=3, l_tot=3, s_tot=1, j_tot=4, species="Sr88"),  # "5snf 3F4"

@@ -8,13 +8,19 @@ from rydstate.angular.angular_ket import AngularKetFJ, AngularKetJJ, AngularKetL
 from rydstate.angular.utils import Unknown
 from rydstate.species.fmodel import FModel
 
+REFERENCE_PEPER_2025 = "M. Peper et al., Phys. Rev. X 15, 011009 (2025), https://doi.org/10.1103/PhysRevX.15.011009"
+REFERENCE_KURODA_2025 = "R. Kuroda et al., Phys. Rev. A 112, 042817 (2025), https://doi.org/10.1103/mzsv-rckx"
+REFERENCE_WILSON_2022 = (
+    "J. T. Wilson et al., Phys. Rev. Lett. 128, 033201 (2022), https://doi.org/10.1103/PhysRevLett.128.033201"
+)
+
 
 class Yb174_S0_HighN(FModel):
     species = "Yb174"
     name = "S J=0, nu > 2"
     f_tot = 0
     nu_range = (2.0, np.inf)
-    reference = "10.1103/PhysRevX.15.011009"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=0, j_tot=0, species="Yb174"),  # "6sns 1S0"
@@ -56,7 +62,7 @@ class Yb174_S1_HighN(FModel):
     name = "S J=1, nu > 26"
     f_tot = 1
     nu_range = (26.0, np.inf)
-    reference = "10.1103/PhysRevLett.128.033201"
+    reference = REFERENCE_WILSON_2022
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=1, j_tot=1, species="Yb174"),  # "6sns 3S1"
@@ -76,7 +82,7 @@ class Yb174_P0_HighN(FModel):
     name = "P J=0, nu > 6"
     f_tot = 0
     nu_range = (6.0, np.inf)
-    reference = "10.1103/PhysRevX.15.011009"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=0, species="Yb174"),  # "6snp 3P0"
@@ -101,7 +107,7 @@ class Yb174_P1_HighN(FModel):
     name = "P J=1, nu > 6"
     f_tot = 1
     nu_range = (6.0, np.inf)
-    reference = "10.1103/PhysRevX.15.011009"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, species="Yb174"),  # "6snp 1P1"
@@ -146,7 +152,7 @@ class Yb174_P2_HighN(FModel):
     name = "P J=2, nu > 5"
     f_tot = 2
     nu_range = (5.0, np.inf)
-    reference = "10.1103/PhysRevX.15.011009"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=2, species="Yb174"),  # "6snp 3P2"
@@ -179,7 +185,7 @@ class Yb174_D1_HighN(FModel):
     name = "D J=1, nu > 26"
     f_tot = 1
     nu_range = (26.0, np.inf)
-    reference = "10.1103/PhysRevX.15.011009"
+    reference = REFERENCE_PEPER_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=1, j_tot=1, species="Yb174"),  # "6snd 3D1"
@@ -188,7 +194,7 @@ class Yb174_D1_HighN(FModel):
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, j_r=1.5, f_tot=1, species="Yb174"),
     ]
 
-    eigen_quantum_defects = [
+    eigen_quantum_defects = [  # TABLE I main text
         [0.75258093, 0.3826, -483.1],
     ]
     mixing_angles = []
@@ -199,7 +205,7 @@ class Yb174_D2_HighN(FModel):
     name = "D J=2, nu > 5"
     f_tot = 2
     nu_range = (5.0, np.inf)
-    reference = "10.1103/PhysRevX.15.011009"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=0, j_tot=2, species="Yb174"),  # "6snd 1D2"
@@ -249,7 +255,7 @@ class Yb174_D3_HighN(FModel):
     name = "D J=3, nu > 18"
     f_tot = 3
     nu_range = (18.0, np.inf)
-    reference = "10.1103/PhysRevX.15.011009"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=1, j_tot=3, species="Yb174"),  # "6snd 3D3"
@@ -269,7 +275,7 @@ class Yb174_F2_HighN(FModel):
     name = "F J=2, nu > 25"
     f_tot = 2
     nu_range = (25.0, np.inf)
-    reference = "arXiv:2507.11487v1"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=3, l_tot=3, s_tot=1, j_tot=2, species="Yb174"),  # "6snf 3F2"
@@ -289,7 +295,7 @@ class Yb174_F3_HighN(FModel):
     name = "F J=3, nu > 7"
     f_tot = 3
     nu_range = (7.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=3, l_tot=3, s_tot=0, j_tot=3, species="Yb174"),  # "6snf 1F3"
@@ -339,7 +345,7 @@ class Yb174_F4_HighN(FModel):
     name = "F J=4, nu > 25"
     f_tot = 4
     nu_range = (25.0, np.inf)
-    reference = "arXiv:2507.11487v1"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=3, l_tot=3, s_tot=1, j_tot=4, species="Yb174"),  # "6snf 3F4"
@@ -359,7 +365,7 @@ class Yb174_G3_HighN(FModel):
     name = "G J=3, nu > 25"
     f_tot = 3
     nu_range = (25.0, np.inf)
-    reference = "arXiv:2507.11487v1"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=4, l_tot=4, s_tot=1, j_tot=3, species="Yb174"),  # "6sng 3G3"
@@ -379,7 +385,7 @@ class Yb174_G4_HighN(FModel):
     name = "G J=4, nu > 25"
     f_tot = 4
     nu_range = (25.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817"
+    reference = REFERENCE_KURODA_2025
 
     inner_channels = [
         AngularKetJJ(l_c=0, l_r=4, j_c=0.5, j_r=4.5, j_tot=4, species="Yb174"),  # "6sng +G4"
@@ -391,6 +397,8 @@ class Yb174_G4_HighN(FModel):
     ]
 
     eigen_quantum_defects = [
+        # TODO is this correct? In the paper the "matrix" is transposed
+        # but Fig 7 suggests that this interpretation is correct
         [0.0262659964, -0.148808463],
         [0.0254568575, -0.134219071],
     ]
@@ -404,7 +412,7 @@ class Yb174_G5_HighN(FModel):
     name = "G J=5, nu > 25"
     f_tot = 5
     nu_range = (25.0, np.inf)
-    reference = "10.1103/PhysRevA.112.042817"
+    reference = (REFERENCE_KURODA_2025, "obtained from a fit to the 171Yb 6sng (F = 9/2) spectroscopic data")
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=4, l_tot=4, s_tot=1, j_tot=5, species="Yb174"),  # "6sng 3G5"
@@ -429,7 +437,7 @@ class Yb174_S0_LowN(FModel):
     name = "S J=0, 1 < nu < 2"
     f_tot = 0
     nu_range = (1.0, 2.0)
-    reference = None
+    reference = "fit to the 6s^2 ground state"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=0, j_tot=0, species="Yb174"),  # "6sns 1S0"
@@ -449,7 +457,7 @@ class Yb174_S1_LowN(FModel):
     name = "S J=1, 2 < nu < 26"
     f_tot = 1
     nu_range = (2.0, 26.0)
-    reference = None
+    reference = "fit to NIST data between 7s and 13s, extrapolation seems good up to 30s"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=0, l_tot=0, s_tot=1, j_tot=1, species="Yb174"),  # "6sns 3S1"
@@ -469,7 +477,7 @@ class Yb174_P0_LowN(FModel):
     name = "P J=0, 1.5 < nu < 5.5"
     f_tot = 0
     nu_range = (1.5, 5.5)
-    reference = None
+    reference = "fit to NIST data between 6p and 9p"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=0, species="Yb174"),  # "6snp 3P0"
@@ -489,7 +497,7 @@ class Yb174_P1_Lowest(FModel):
     name = "P J=1, 1.7 < nu < 2.7"
     f_tot = 1
     nu_range = (1.7, 2.7)
-    reference = None
+    reference = "fit to NIST data for the 6p states"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, species="Yb174"),  # "6snp 1P1"
@@ -514,7 +522,7 @@ class Yb174_P1_LowN(FModel):
     name = "P J=1, 2.7 < nu < 5.7"
     f_tot = 1
     nu_range = (2.7, 5.7)
-    reference = None
+    reference = "fit to NIST data between 7p and 9p"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=0, j_tot=1, species="Yb174"),  # "6snp 1P1"
@@ -537,7 +545,7 @@ class Yb174_P2_LowN(FModel):
     name = "P J=2, 1.5 < nu < 4.5"
     f_tot = 2
     nu_range = (1.5, 4.5)
-    reference = None
+    reference = "fit to NIST data between 6p and 8p"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=1, l_tot=1, s_tot=1, j_tot=2, species="Yb174"),  # "6snp 3P2"
@@ -557,7 +565,7 @@ class Yb174_D1_LowN(FModel):
     name = "D J=1, 2 < nu < 26"
     f_tot = 1
     nu_range = (2.0, 26.0)
-    reference = None
+    reference = "fit to NIST data between 5d and 8d, causes a µ=0.005 difference at the 30d state"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=1, j_tot=1, species="Yb174"),  # "6snd 3D1"
@@ -577,7 +585,7 @@ class Yb174_D2_LowN(FModel):
     name = "D J=2, 2 < nu < 5"
     f_tot = 2
     nu_range = (2.0, 5.0)
-    reference = None
+    reference = "fit to NIST data between 5d and 7d"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=0, j_tot=2, species="Yb174"),  # "6snd 1D2"
@@ -602,7 +610,7 @@ class Yb174_D3_LowN(FModel):
     name = "D J=3, 2 < nu < 18"
     f_tot = 3
     nu_range = (2.0, 18.0)
-    reference = None
+    reference = "fit to NIST data between 5d and 8d, provides good match around 21d"
 
     inner_channels = [
         AngularKetLS(l_c=0, l_r=2, l_tot=2, s_tot=1, j_tot=3, species="Yb174"),  # "6snd 3D3"
