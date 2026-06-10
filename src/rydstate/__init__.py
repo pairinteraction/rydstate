@@ -11,6 +11,7 @@ __all__ = [
     "RydbergStateSQDTAlkali",
     "angular",
     "basis",
+    "generate_database",
     "radial",
     "rydberg_state",
     "species",
@@ -19,3 +20,5 @@ __all__ = [
 
 
 __version__ = "0.11.0"
+
+from rydstate import generate_database  # isort: skip  # must be imported last
