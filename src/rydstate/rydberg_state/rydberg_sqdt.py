@@ -298,7 +298,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
 
         .. math::
             \Gamma^{spontaneous}_{self \to other} = \frac{4}{3} \frac{\alpha}{c^2} \omega^3
-                |\langle self || r^k_radial \hat{O}_{k_angular} || other \rangle|^2
+                |\langle self || r^k_{radial} \hat{d}_q || other \rangle|^2
 
         where :math:`\alpha = 1/c` in atomic units.
 

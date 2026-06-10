@@ -59,9 +59,9 @@ class RydbergKet:
         Calculate the reduced matrix element between self and other (ignoring m quantum numbers)
 
         .. math::
-            \left\langle self || r^k_radial \hat{O}_{k_angular} || other \right\rangle
+            \left\langle self || r^k_radial \hat{O}^{(k_{angular})} || other \right\rangle
 
-        where \hat{O}_{k_angular} is the operator of rank k_angular for which to calculate the matrix element.
+        where \hat{O}^{(k_{angular})} is the operator of rank k_angular for which to calculate the matrix element.
         k_radial and k_angular are determined from the operator automatically.
 
         Args:
@@ -133,9 +133,9 @@ class RydbergKet:
         also considering the magnetic quantum numbers m of self and other.
 
         .. math::
-            \left\langle self || r^k_radial \hat{O}_{k_angular} || other \right\rangle
+            \left\langle self | r^k_radial \hat{O}^{(k_{angular})}_q | other \right\rangle
 
-        where \hat{O}_{k_angular} is the operator of rank k_angular for which to calculate the matrix element.
+        where \hat{O}^{(k_{angular})}_q is the operator of rank k_angular for which to calculate the matrix element.
         k_radial and k_angular are determined from the operator automatically.
 
         Args:

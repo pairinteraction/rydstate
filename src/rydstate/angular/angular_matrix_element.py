@@ -114,19 +114,19 @@ def calc_prefactor_of_operator_in_coupled_scheme(
     the reduced matrix element is given by
 
     .. math::
-        \langle f1, f2, f12 || \hat{O}_{\kappa} || i1, i2, i12 \rangle
+        \langle f1, f2, f12 || \hat{O}^{(\kappa)} || i1, i2, i12 \rangle
         = (-1)^{f1 + i2 + i12 + \kappa} * sqrt((2 * f12 + 1)(2 * i12 + 1))
-            * \mathrm{Wigner6j}(f1, f12, i2; i12, i1, \kappa) * \langle f1 || \hat{O}_{\kappa} || i1 \rangle
-        = prefactor  * \langle f1 || \hat{O}_{\kappa} || i1 \rangle
+            * \mathrm{Wigner6j}(f1, f12, i2; i12, i1, \kappa) * \langle f1 || \hat{O}^{(\kappa)} || i1 \rangle
+        = prefactor  * \langle f1 || \hat{O}^{(\kappa)} || i1 \rangle
 
     and if the operator only acts on the second quantum number (thus it must be f1 = i1),
     the reduced matrix element is given by
 
     .. math::
-        \langle f1, f2, f12 || \hat{O}_{\kappa} || i1, i2, i12 \rangle
+        \langle f1, f2, f12 || \hat{O}^{(\kappa)} || i1, i2, i12 \rangle
         = (-1)^{i1 + i2 + f12 + \kappa} * sqrt((2 * f12 + 1)(2 * i12 + 1))
-            * \mathrm{Wigner6j}(f2, f12, i1; i12, i2, \kappa) * \langle f2 || \hat{O}_{\kappa} || i2 \rangle
-        = prefactor  * \langle f2 || \hat{O}_{\kappa} || i2 \rangle
+            * \mathrm{Wigner6j}(f2, f12, i1; i12, i2, \kappa) * \langle f2 || \hat{O}^{(\kappa)} || i2 \rangle
+        = prefactor  * \langle f2 || \hat{O}^{(\kappa)} || i2 \rangle
 
     This function calculates and returns the prefactor.
 

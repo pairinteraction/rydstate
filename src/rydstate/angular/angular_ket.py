@@ -635,7 +635,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
 
         Args:
             other: The other AngularKet :math:`|other>`.
-            operator: The operator type :math:`\hat{O}_{kq}` for which to calculate the matrix element.
+            operator: The operator type :math:`\hat{O}^{(\kappa)}_q` for which to calculate the matrix element.
                 E.g. 'spherical', 's_tot', 'l_r', etc.
             kappa: The rank :math:`\kappa` of the angular momentum operator.
             q: The component :math:`q` of the angular momentum operator.
