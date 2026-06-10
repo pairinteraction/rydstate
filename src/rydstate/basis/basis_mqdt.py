@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -9,9 +9,12 @@ from rydstate.angular import AngularKetFJ
 from rydstate.angular.utils import is_unknown
 from rydstate.basis.basis_base import BasisBase
 from rydstate.linalg import calc_nullvector, find_roots
+from rydstate.radial.radial_ket import RadialKet
 from rydstate.rydberg_state import RydbergStateMQDT
-from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT
-from rydstate.species import MQDT, FModelSQDT, Potential, PotentialDummy, get_mqdt, get_potential_class
+from rydstate.rydberg_state.rydberg_ket import RydbergKet
+from rydstate.species import FModelSQDT, get_mqdt
+from rydstate.species.mqdt import MQDT
+from rydstate.species.potential import Potential, PotentialDummy, get_potential_class
 
 if TYPE_CHECKING:
     from rydstate.species import FModel
@@ -188,18 +191,16 @@ def get_mqdt_states_from_fmodel(
         arg_max = np.argmax(np.abs(coefficients))
         coefficients *= np.sign(coefficients[arg_max])
 
-        sqdt_states: list[RydbergStateSQDT[AngularKetFJ[Any]]] = []
+        rydberg_kets: list[RydbergKet] = []
         for nui, angular_ket in zip(nuis, model.outer_channels, strict=True):
             if not is_unknown(angular_ket.l_r):
                 potential = potential_class(angular_ket.l_r)
             else:
                 potential = PotentialDummy(model.species, angular_ket.l_r)
-            sqdt_states.append(
-                RydbergStateSQDT.from_angular_ket(
-                    model.species, angular_ket, nu=float(nui), potential=potential, sqdt="mqdt"
-                )
-            )
+            radial_ket = RadialKet(float(nui), potential)
+            rydberg_kets.append(RydbergKet(angular_ket, radial_ket))
 
-        states.append(RydbergStateMQDT(coefficients, sqdt_states, nu=nu))
+        energy_au = model.calc_energy_au(nu)
+        states.append(RydbergStateMQDT(model.species, coefficients, rydberg_kets, nu=nu, energy_au=energy_au))
 
     return states
