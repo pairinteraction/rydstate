@@ -256,24 +256,19 @@ class PotentialMarinescu1994(Potential):
     tag = "marinescu_1994"
 
     alpha_c_marinescu_1994: ClassVar[float]
-    """Static dipole polarizability in atomic units (a.u.), used for the parametric model potential.
-    See also: Phys. Rev. A 49, 982 (1994)
-    """
+    """Static dipole polarizability in atomic units (a.u.), used for the parametric model potential."""
     r_c_dict_marinescu_1994: ClassVar[dict[int, float]]
-    """Cutoff radius {l: r_c} to truncate the unphysical short-range contribution of the polarization potential.
-    See also: Phys. Rev. A 49, 982 (1994)
-    """
+    """Cutoff radius {l: r_c} to truncate the unphysical short-range contribution of the polarization potential."""
     model_potential_parameter_marinescu_1994: ClassVar[dict[int, tuple[float, float, float, float]]]
-    """Parameters {l: (a_1, a_2, a_3, a_4)} for the parametric model potential.
-    See also: M. Marinescu, Phys. Rev. A 49, 982 (1994), https://journals.aps.org/pra/abstract/10.1103/PhysRevA.49.982
-    """
+    """Parameters {l: (a_1, a_2, a_3, a_4)} for the parametric model potential."""
+    reference: ClassVar[str] = (
+        "M. Marinescu et al., Phys. Rev. A 49, 982 (1994), https://journals.aps.org/pra/abstract/10.1103/PhysRevA.49.982"
+    )
 
     def calc_model_potential(self, x: XType) -> XType:
         r"""Calculate the model potential by Marinescu et al. (1994) in atomic units.
 
-        The model potential from
-        M. Marinescu, Phys. Rev. A 49, 982 (1994), https://journals.aps.org/pra/abstract/10.1103/PhysRevA.49.982
-        is given by
+        The model potential, see :attr:`~PotentialMarinescu1994.reference`, is given by
 
         .. math::
             V_{mp,marinescu}(x) = - \frac{Z_{l}}{x} - \frac{\alpha_c}{2x^4} (1 - e^{-x^6/x_c**6})
@@ -330,15 +325,15 @@ class PotentialFei2009(Potential):
     tag = "fei_2009"
 
     model_potential_parameter_fei_2009: ClassVar[tuple[float, float, float, float]]
-    """Parameters (delta, alpha, beta, gamma) for the new four-parameter potential, used in the model potential
-    defined in: Y. Fei et al., Chin. Phys. B 18, 4349 (2009), https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025
-    """
+    """Parameters (delta, alpha, beta, gamma) for the four-parameter potential used in the model potential."""
+    reference: ClassVar[str] = (
+        "Y. Fei et al., Chinese Phys. B 18 4234 (2009), https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025"
+    )
 
     def calc_model_potential(self, x: XType) -> XType:
         r"""Calculate the model potential by Fei et al. (2009) in atomic units.
 
-        The four parameter potential from Y. Fei et al., Chin. Phys. B 18, 4349 (2009), https://iopscience.iop.org/article/10.1088/1674-1056/18/10/025
-        is given by
+        The four parameter potential, see :attr:`~PotentialFei2009.reference`, is given by
 
         .. math::
             V_{mp,fei}(x) = - \frac{1}{x}
