@@ -36,8 +36,8 @@ class RydbergStateMQDT(RydbergStateBase):
         self.species = species
         self.coefficients = np.array(coefficients)
         self.rydberg_kets = list(rydberg_kets)
-        self.nu = nu
-        self._energy_au = energy_au
+        self.nu = float(nu)
+        self._energy_au = float(energy_au)
 
         if len(rydberg_kets) == 0:
             raise ValueError("RydbergStateMQDT must be initialized with at least one state.")

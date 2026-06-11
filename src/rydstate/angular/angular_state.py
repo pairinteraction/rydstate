@@ -144,12 +144,12 @@ class AngularState(Generic[GenericT_AngularKet]):
                 if q in ket_class.quantum_number_names:
                     return self.to(ket_class.coupling_scheme).calc_exp_qn(q)
 
-        qns = np.array([ket.get_qn(q) for ket in self.kets])
+        qns = [ket.get_qn(q) for ket in self.kets]
         if all(q_val == qns[0] for q_val in qns):
-            return qns[0]  # type: ignore [no-any-return]
+            return qns[0]
 
         coeffs = np.array([coeff for coeff, qn in zip(self.coefficients, qns, strict=True) if not is_unknown(qn)])
-        qns = np.array([qn for qn in qns if not is_unknown(qn)])
+        qns = [qn for qn in qns if not is_unknown(qn)]
         norm = np.linalg.norm(coeffs)
         if 1 - norm / self.norm > 1e-2:
             logger.warning(
@@ -159,7 +159,7 @@ class AngularState(Generic[GenericT_AngularKet]):
             )
 
         coefficients2 = np.conjugate(coeffs) * coeffs / norm**2
-        return float(np.sum(coefficients2 * qns))
+        return float(np.sum(coefficients2 * np.array(qns)))
 
     def calc_std_qn(self, q: AngularMomentumQuantumNumbers) -> float:
         """Calculate the standard deviation of a quantum number q.
