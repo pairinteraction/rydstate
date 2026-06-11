@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import logging
+import math
 from abc import ABC
 from typing import TYPE_CHECKING, Any, overload
 
 import numpy as np
 
+from rydstate.angular.utils import is_angular_momentum_quantum_number
 from rydstate.units import BaseQuantities
 
 if TYPE_CHECKING:
@@ -171,3 +173,33 @@ class RydbergStateBase(ABC):
             for coeff2, ket2 in other:
                 value += np.conjugate(coeff1) * coeff2 * ket1.calc_matrix_element(ket2, operator, q=q, unit=unit)
         return value
+
+    def calc_exp_qn(self, qn: str) -> float:
+        if is_angular_momentum_quantum_number(qn):
+            return self.angular.calc_exp_qn(qn)
+        if qn == "nu":
+            return self.nu
+        if qn == "n":
+            n = getattr(self, "n", None)
+            if n is None:
+                raise ValueError(f"{self} has no quantum number n")
+            return n  # type: ignore [no-any-return]
+        if qn == "nui":
+            return float(sum([np.abs(coeff) ** 2 * ket.radial.nu / self.norm**2 for coeff, ket in self]))
+        raise ValueError(f"Unknown quantum number {qn}")
+
+    def calc_std_qn(self, qn: str) -> float:
+        if is_angular_momentum_quantum_number(qn):
+            return self.angular.calc_std_qn(qn)
+        if qn in ("n", "nu"):
+            return 0
+        if qn == "nui":
+            qns = np.array(self.nui)
+            coefficients2 = np.conjugate(self.coefficients) * self.coefficients / self.norm**2
+            exp_q = np.sum(coefficients2 * qns)
+            exp_q2 = np.sum(coefficients2 * qns * qns)
+            if abs(exp_q2 - exp_q**2) < 1e-10:
+                return 0
+            return math.sqrt(exp_q2 - exp_q**2)
+
+        raise ValueError(f"Unknown quantum number {qn}")
