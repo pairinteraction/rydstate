@@ -29,9 +29,6 @@ class RydbergStateMQDT(RydbergStateBase):
         rydberg_kets: Sequence[RydbergKet],
         nu: float,
         energy_au: float,
-        *,
-        warn_if_not_normalized: bool = True,
-        normalize: bool = True,
     ) -> None:
         self.species = species
         self.coefficients = np.array(coefficients)
@@ -48,19 +45,14 @@ class RydbergStateMQDT(RydbergStateBase):
         if len(set(rydberg_kets)) != len(rydberg_kets):
             raise ValueError("RydbergStateMQDT initialized with duplicate rydberg_kets.")
 
-        if abs(self.norm - 1) > 1e-10 and warn_if_not_normalized:
-            logger.warning(
-                "RydbergStateMQDT initialized with non-normalized coefficients: %s, %s", coefficients, rydberg_kets
-            )
-        if normalize:
-            self.coefficients /= self.norm
-
         self.angular = AngularState(
             self.coefficients.tolist(),
             [ket.angular for ket in rydberg_kets],  # type: ignore [misc]
             normalize=False,
             warn_if_not_normalized=False,
         )
+
+        super().__init__()
 
     def __repr__(self) -> str:
         terms = [f"{coeff}*{rydberg_ket!r}" for coeff, rydberg_ket in self]
@@ -69,13 +61,3 @@ class RydbergStateMQDT(RydbergStateBase):
     def __str__(self) -> str:
         terms = [f"{coeff}*{rydberg_ket!s}" for coeff, rydberg_ket in self]
         return f"{', '.join(terms)}"
-
-    @property
-    def norm(self) -> float:
-        """Return the norm of the state (should be 1)."""
-        return float(np.linalg.norm(self.coefficients))
-
-    @property
-    def nui(self) -> list[float]:
-        """Return the effective principal quantum numbers nui of the different channels."""
-        return [rydberg_ket.radial.nu for rydberg_ket in self.rydberg_kets]

@@ -39,8 +39,24 @@ class RydbergStateBase(ABC):
     _energy_au: float
     """The energy of the Rydberg state in atomic units (Hartree)."""
 
+    def __init__(self) -> None:
+        if abs(self.norm - 1) > 1e-10:
+            raise ValueError(
+                f"RydbergState initialized with non-normalized coefficients: {self.coefficients}, {self.rydberg_kets}"
+            )
+
     def __iter__(self) -> Iterator[tuple[float, RydbergKet]]:
         return zip(self.coefficients, self.rydberg_kets, strict=True).__iter__()
+
+    @property
+    def norm(self) -> float:
+        """Return the norm of the state (should be 1)."""
+        return float(np.linalg.norm(self.coefficients))
+
+    @property
+    def nui(self) -> list[float]:
+        """Return the effective principal quantum numbers nui of the different channels."""
+        return [rydberg_ket.radial.nu for rydberg_ket in self.rydberg_kets]
 
     @overload
     def get_energy(self, unit: None = None) -> PintFloat: ...

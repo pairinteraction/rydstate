@@ -199,6 +199,8 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         else:
             self.potential = get_potential_class(species, tag=potential)(self.angular.l_r)
 
+        super().__init__()
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.species}, n={self.n}, {self.angular!r})"
 
