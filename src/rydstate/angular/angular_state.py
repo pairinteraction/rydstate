@@ -77,6 +77,30 @@ class AngularState(Generic[GenericT_AngularKet]):
         """Return the norm of the state (should be 1)."""
         return np.linalg.norm(self.coefficients)  # type: ignore [return-value]
 
+    @property
+    def i_c(self) -> float:
+        """Return the i_c quantum number of the state."""
+        i_c_list = [ket.i_c for ket in self.kets]
+        if not all(f == i_c_list[0] for f in i_c_list):
+            raise ValueError(f"Cannot calculate i_c for {self!r} because the kets have different i_c values.")
+        return i_c_list[0]
+
+    @property
+    def f_tot(self) -> float:
+        """Return the total f quantum number of the state."""
+        f_tot_list = [ket.f_tot for ket in self.kets]
+        if not all(f == f_tot_list[0] for f in f_tot_list):
+            raise ValueError(f"Cannot calculate f_tot for {self!r} because the kets have different f_tot values.")
+        return f_tot_list[0]
+
+    @property
+    def parity(self) -> int:
+        """Return the parity of the state."""
+        parities = [ket.parity for ket in self.kets]
+        if not all(parity == parities[0] for parity in parities):
+            raise ValueError(f"Cannot calculate parity for {self!r} because the kets have different parities.")
+        return parities[0]
+
     @overload
     def to(self, coupling_scheme: Literal["LS"]) -> AngularState[AngularKetLS[Any]]: ...
 
