@@ -54,9 +54,9 @@ def test_f_tot_consistency(model: FModel) -> None:
 
 
 def test_parity_consistency(model: FModel) -> None:
-    """All non-dummy channels must have the same parity (-1)^(l_c+l_r)."""
-    parities: list[int] = [(-1) ** (ch.l_c + ch.l_r) for ch in model.inner_channels if not ch.contains_unknown]
-    parities.extend((-1) ** (och.l_c + och.l_r) for och in model.outer_channels if not och.contains_unknown)
+    """All channels must define the same parity, including channels with unknown orbital quantum numbers."""
+    parities = [ch.parity for ch in model.inner_channels]
+    parities.extend(och.parity for och in model.outer_channels)
     assert len(set(parities)) <= 1, f"{model.full_name}: channels have inconsistent parity"
 
 
