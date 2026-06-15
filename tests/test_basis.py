@@ -41,6 +41,14 @@ def test_basis_copy() -> None:
     assert basis_copy.states is not basis.states
 
 
+def test_sqdt_basis_m_range() -> None:
+    basis = BasisSQDT("H", n=(5, 5), f_tot=(0.5, 0.5), l_r=(0, 0), m=(-0.5, 0.5), coupling_scheme="LS")
+    invalid_basis = BasisSQDT("H", n=(5, 5), f_tot=(0.5, 0.5), l_r=(0, 0), m=(0, 0), coupling_scheme="LS")
+
+    assert [state.angular.m for state in basis.states] == [-0.5, 0.5]
+    assert len(invalid_basis.states) == 0
+
+
 @pytest.mark.parametrize("species", ["Sr88", "Yb174"])
 def test_alkaline_basis(species: str) -> None:
     """Test alkaline basis creation."""

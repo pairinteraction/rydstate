@@ -3,7 +3,7 @@ from rydstate import BasisMQDT
 
 def test_mqdt_basis_creation() -> None:
     """Smoke-test that the basis builds and respects the nu range."""
-    basis = BasisMQDT("Sr88", nu=(25, 30), skip_high_l=False)
+    basis = BasisMQDT("Sr88", nu=(25, 30))
     assert len(basis) > 0
     assert all(25 <= s.nu <= 30 for s in basis.states)
 
@@ -17,10 +17,20 @@ def test_mqdt_basis_coefficients_normalized() -> None:
 
 def test_mqdt_basis_f_tot_filter() -> None:
     """When f_tot is passed, only states with that total angular momentum are returned."""
-    basis = BasisMQDT("Sr88", nu=(25, 30), f_tot=0.0)
+    basis = BasisMQDT("Sr88", nu=(25, 30), f_tot=(0, 0))
     assert len(basis) > 0
     for state in basis.states:
         assert abs(state.angular.calc_exp_qn("f_tot") - 0.0) < 1e-10
+
+
+def test_mqdt_basis_m_range() -> None:
+    basis = BasisMQDT("Sr87", nu=(25, 26), f_tot=(3.5, 3.5), l_r=(0, 0), m=(-0.5, 0.5))
+
+    assert len(basis.states) == 2
+    assert [state.rydberg_kets[0].angular.m for state in basis.states] == [-0.5, 0.5]
+    assert all(
+        all(ket.angular.m == state.rydberg_kets[0].angular.m for ket in state.rydberg_kets) for state in basis.states
+    )
 
 
 def test_mqdt_basis_sort_and_filter() -> None:

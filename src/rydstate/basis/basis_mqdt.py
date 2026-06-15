@@ -6,15 +6,13 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from rydstate.angular import AngularKetFJ
-from rydstate.angular.utils import is_unknown
+from rydstate.angular.utils import NotSet, is_unknown
 from rydstate.basis.basis_base import BasisBase
+from rydstate.basis.utils import get_m_range, is_allowed_qn
 from rydstate.linalg import calc_nullvector, find_roots
 from rydstate.radial.radial_ket import RadialKet
-from rydstate.rydberg_state import RydbergStateMQDT
-from rydstate.rydberg_state.rydberg_ket import RydbergKet
-from rydstate.species import FModelSQDT, get_mqdt
-from rydstate.species.mqdt import MQDT
-from rydstate.species.potential import Potential, PotentialDummy, get_potential_class
+from rydstate.rydberg_state import RydbergKet, RydbergStateMQDT
+from rydstate.species import MQDT, FModelSQDT, Potential, PotentialDummy, get_mqdt, get_potential_class
 
 if TYPE_CHECKING:
     from rydstate.species import FModel
@@ -24,41 +22,43 @@ logger = logging.getLogger(__name__)
 
 
 class BasisMQDT(BasisBase[RydbergStateMQDT]):
-    """Basis set of MQDT Rydberg states for a given species over a range of effective principal quantum numbers."""
+    states: list[RydbergStateMQDT]
 
-    def __init__(  # noqa: C901, PLR0912
+    def __init__(
         self,
         species: str,
         nu: tuple[float, float],
-        f_tot: float | tuple[float, float] | None = None,
-        l_r: int | tuple[int, int] | None = None,
         *,
-        skip_high_l: bool = True,
-        n_min_high_l: int = 0,
+        f_tot: tuple[float, float] | None = None,
+        l_r: tuple[int, int] | None = None,
+        m: tuple[float, float] | None | NotSet = NotSet,
+        include_sqdt_fallback_models: bool = True,
         # potential and mqdt parameters
-        mqdt: str | MQDT | None = None,
-        potential_class: str | type[Potential] | None = None,
+        mqdt: MQDT | str | None = None,
+        potential_class: type[Potential] | str | None = None,
     ) -> None:
         """Initialize the MQDT basis.
 
         Args:
             species: Atomic species.
             nu: Tuple of (nu_min, nu_max) for the effective principal quantum number.
-            f_tot: Optional float or tuple of (f_tot_min, f_tot_max) for the total angular momentum.
+            f_tot: Optional tuple of (f_tot_min, f_tot_max) for the total angular momentum.
                 Default None, include all f_tot values.
-            l_r: Optional int or tuple of (l_r_min, l_r_max) for the Rydberg electron orbital angular momentum.
+            l_r: Optional tuple of (l_r_min, l_r_max) for the Rydberg electron orbital angular momentum.
                 This is used to filter models, which include at least one channel with
                 l_c=0 and l_r in the specified range.
                 Default None, include all models.
-            skip_high_l: Whether to skip models, for which no MQDT models are available.
-                If False, include these states as simple SQDT states with zero quantum defects.
-            n_min_high_l: If skip_high_l is False, the minimum n, for which to include high-l states as SQDT states.
-            mqdt: The MQDT to use for the states.
-                Either a string representing the tag of the MQDT class to use,
-                or an instance of an MQDT class.
+            m: Optional tuple of (m_min, m_max) for the magnetic quantum number range.
+                Default NotSet, only include states with m=NotSet.
+                If m is given as None, include all allowed m values.
+            include_sqdt_fallback_models: Whether to include simple SQDT models (with zero quantum defects) as fallback
+                for states, for which no MQDT models are available.
+            mqdt: The MQDT data to use for the states.
+                Either an instance of an MQDT class
+                or a string representing the tag of the MQDT class to use.
             potential_class: The potential class to use for the radial ket.
-                Either a string representing the tag of the potential class to use,
-                or a potential class.
+                Either a a potential class
+                or a string representing the tag of the potential class to use.
 
         """
         super().__init__(species)
@@ -69,42 +69,53 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         else:
             self.potential_class = get_potential_class(species, tag=potential_class)
 
-        models: list[FModel] = []
+        # the maximum l_r is limited by the maximum nu, because l_r < n for bound states
+        # and for high l_r the quantum defects are 0, so n = nu
+        max_l_r = int(nu[1])
+        self._init_models(max_l_r, f_tot, l_r, include_sqdt_fallback_models=include_sqdt_fallback_models)
+        self._init_states(nu, m)
+
+    def _init_models(
+        self,
+        max_l_r: int,
+        f_tot_range: tuple[float, float] | None,
+        l_r_range: tuple[int, int] | None,
+        *,
+        include_sqdt_fallback_models: bool,
+    ) -> None:
+        self.models: list[FModel] = []
         s_r = 0.5
         i_c = self.element_properties.i_c
         s_c = self.element_properties.s_c
         j_c = s_c
-        for _l_r in range(int(nu[1]) + 1):
-            if not is_allowed_qn(l_r, _l_r):
+        for l_r in range(max_l_r + 1):
+            if not is_allowed_qn(l_r_range, l_r):
                 continue
-            for j_r in np.arange(abs(_l_r - s_r), _l_r + s_r + 1):
+            for j_r in np.arange(abs(l_r - s_r), l_r + s_r + 1):
                 for f_c in np.arange(abs(j_c - i_c), j_c + i_c + 1):
-                    for _f_tot in np.arange(abs(f_c - j_r), f_c + j_r + 1):
-                        if not is_allowed_qn(f_tot, _f_tot):
+                    for f_tot in np.arange(abs(f_c - j_r), f_c + j_r + 1):
+                        if not is_allowed_qn(f_tot_range, f_tot):
                             continue
                         channel = AngularKetFJ(
-                            l_r=_l_r, j_r=float(j_r), f_c=float(f_c), f_tot=float(_f_tot), species=species
+                            l_r=l_r, j_r=float(j_r), f_c=float(f_c), f_tot=float(f_tot), species=self.species
                         )
-                        models.extend(self.mqdt.get_mqdt_models(channel))
+                        for model in self.mqdt.get_mqdt_models(channel):
+                            if model in self.models:
+                                continue
+                            if isinstance(model, FModelSQDT) and not include_sqdt_fallback_models:
+                                continue
+                            self.models.append(model)
 
-        # remove duplicates
-        self.models: list[FModel] = []
-        model_names: set[str] = set()
-        for model in models:
-            if model.full_name not in model_names:
-                self.models.append(model)
-                model_names.add(model.full_name)
-
+    def _init_states(
+        self,
+        nu_range: tuple[float, float],
+        m_range: tuple[float, float] | None | NotSet,
+    ) -> None:
         logger.debug("Calculating MQDT states...")
-        self.states: list[RydbergStateMQDT] = []
+        self.states = []
         for model in self.models:
-            _nu_min = nu[0]
-            if isinstance(model, FModelSQDT):
-                if skip_high_l:
-                    continue
-                _nu_min = max(_nu_min, n_min_high_l)
-            logger.debug("  calculating states for model %s with nu_min=%s, nu_max=%s", model.name, _nu_min, nu[1])
-            _states = get_mqdt_states_from_fmodel(model, _nu_min, nu[1], potential_class=self.potential_class)
+            logger.debug("  calculating states for model %s with nu_range=%s", model.name, nu_range)
+            _states = get_mqdt_states_from_fmodel(model, nu_range, m_range, self.potential_class)
             if len(_states) == 0:
                 logger.debug("  no states found for model %s", model.name)
             else:
@@ -120,38 +131,30 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         self.states.sort(key=lambda state: state.nu)
 
 
-def is_allowed_qn(qn_range: float | tuple[float, float] | None, qn: float, delta: float = 1e-6) -> bool:
-    if qn_range is None:
-        return True
-    if isinstance(qn_range, (int, float)) or np.isscalar(qn_range):
-        return abs(qn - qn_range) <= delta  # type: ignore [operator]
-    if isinstance(qn_range, tuple) or (isinstance(qn_range, list) and len(qn_range) == 2):
-        return qn_range[0] - delta <= qn <= qn_range[1] + delta
-    raise ValueError(f"Invalid qn_range: {qn_range}. Must be a float or a tuple of two floats.")
-
-
-def get_mqdt_states_from_fmodel(
+def get_mqdt_states_from_fmodel(  # noqa: C901
     model: FModel,
-    nu_min: float | None = None,
-    nu_max: float | None = None,
+    nu_range: tuple[float, float],
+    m_range: tuple[float, float] | None | NotSet,
+    potential_class: type[Potential],
     *,
     overwrite_model_limits: bool = False,
-    potential_class: type[Potential],
 ) -> list[RydbergStateMQDT]:
     """Calculate MQDT states from an FModel by finding zeros of det(M-matrix).
 
     Args:
         model: The MQDT model to compute states for.
-        nu_min: Lower bound of the search range.  Defaults to ``model.nu_min``.
-        nu_max: Upper bound of the search range.  Defaults to ``model.nu_max``.
-        overwrite_model_limits: If True, use nu_min/nu_max directly without clamping to
-            the model's validity range.  Both nu_min and nu_max must be provided.
+        nu_range: Tuple of (nu_min, nu_max) for the search range.
+        m_range: Tuple of (m_min, m_max) for the magnetic quantum number range.
+            NotSet will only include states with m=NotSet.
         potential_class: The potential class to use for the radial ket.
+        overwrite_model_limits: If True, use nu_min/nu_max directly without clamping to
+            the model's validity range.
 
     Returns:
         List of :class:`RydbergStateMQDT` objects, one per root of det(M).
 
     """
+    nu_min, nu_max = nu_range
     if overwrite_model_limits:
         if nu_min is None or nu_max is None:
             raise ValueError("nu_min and nu_max must be given if overwrite_model_limits is True.")
@@ -191,16 +194,20 @@ def get_mqdt_states_from_fmodel(
         arg_max = np.argmax(np.abs(coefficients))
         coefficients *= np.sign(coefficients[arg_max])
 
-        rydberg_kets: list[RydbergKet] = []
+        radial_kets: list[RadialKet] = []
         for nui, angular_ket in zip(nuis, model.outer_channels, strict=True):
             if not is_unknown(angular_ket.l_r):
                 potential = potential_class(angular_ket.l_r)
             else:
                 potential = PotentialDummy(model.species, angular_ket.l_r)
-            radial_ket = RadialKet(float(nui), potential)
-            rydberg_kets.append(RydbergKet(angular_ket, radial_ket))
+            radial_kets.append(RadialKet(float(nui), potential))
 
         energy_au = model.calc_energy_au(nu)
-        states.append(RydbergStateMQDT(model.species, coefficients, rydberg_kets, nu=nu, energy_au=energy_au))
+        for m in get_m_range(model.f_tot, m_range):
+            rydberg_kets = [
+                RydbergKet(angular_ket.replace_m(m), radial_ket)
+                for angular_ket, radial_ket in zip(model.outer_channels, radial_kets, strict=True)
+            ]
+            states.append(RydbergStateMQDT(model.species, coefficients, rydberg_kets, nu=nu, energy_au=energy_au))
 
     return states

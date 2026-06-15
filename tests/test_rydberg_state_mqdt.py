@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture(scope="module")
 def basis() -> BasisMQDT:
-    basis = BasisMQDT("Sr88", nu=(28.0, 30.0), skip_high_l=False)
+    basis = BasisMQDT("Sr88", nu=(28.0, 30.0))
     basis.sort_states("nu")
     return basis
 

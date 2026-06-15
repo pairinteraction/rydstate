@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
 
 import numpy as np
@@ -44,7 +45,7 @@ class BasisBase(ABC, Generic[_RydbergState]):
     def filter_states(
         self, qn: str, value: float | tuple[float, float], *, delta: float = 1e-10, keep_unknown: bool = False
     ) -> Self:
-        if isinstance(value, tuple):
+        if isinstance(value, Sequence) and len(value) == 2:
             qn_min = value[0] - delta
             qn_max = value[1] + delta
         else:
