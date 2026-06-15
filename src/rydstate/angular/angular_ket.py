@@ -247,6 +247,11 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
             )
         )
 
+    def replace_m(self, m: float | NotSet) -> Self:
+        """Return a copy of this ket with the given magnetic quantum number m."""
+        qn_dict = dict(zip(self.quantum_number_names, self.quantum_numbers, strict=True))
+        return self.__class__(**qn_dict, m=m, parity=self.parity, label=self.label, allow_unknown=self._allow_unknown)  # type: ignore [arg-type]
+
     @property
     def contains_unknown(self) -> bool:
         """Return True if any of the quantum numbers is Unknown."""
