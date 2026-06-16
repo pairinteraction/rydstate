@@ -83,7 +83,6 @@ class RydbergKet:
             )
 
         k_radial, k_angular = MatrixElementOperatorRanks[operator]
-        radial_matrix_element = self.radial.calc_matrix_element(other.radial, k_radial, unit="a.u.")
 
         if operator == "magnetic_dipole":
             # Magnetic dipole operator: mu = - mu_B (g_l <l_tot> + g_s <s_tot>)
@@ -92,8 +91,7 @@ class RydbergKet:
             g_l = 1
             value_l_tot = self.angular.calc_reduced_matrix_element(other.angular, "l_tot", k_angular)
             angular_matrix_element = g_s * value_s_tot + g_l * value_l_tot
-
-            matrix_element = -0.5 * radial_matrix_element * angular_matrix_element
+            prefactor = -0.5
             # Note: we use the convention, that the magnetic dipole moments are given
             # as the same dimensionality as the Bohr magneton (mu = - mu_B (g_l l + g_s s_tot))
             # such that - mu * B (where the magnetic field B is given in dimension Tesla) is an energy
@@ -101,10 +99,16 @@ class RydbergKet:
         elif operator in ["electric_dipole", "electric_quadrupole", "electric_octupole", "electric_quadrupole_zero"]:
             # Electric multipole operator: p_{k,q} = e r^k_radial * sqrt(4pi / (2k+1)) * Y_{k_angular,q}(\theta, phi)
             angular_matrix_element = self.angular.calc_reduced_matrix_element(other.angular, "spherical", k_angular)
-            matrix_element = math.sqrt(4 * np.pi / (2 * k_angular + 1)) * radial_matrix_element * angular_matrix_element
+            prefactor = math.sqrt(4 * np.pi / (2 * k_angular + 1))
 
         else:
             raise NotImplementedError(f"Operator {operator} not implemented.")
+
+        if angular_matrix_element == 0:
+            matrix_element = 0.0
+        else:
+            radial_matrix_element = self.radial.calc_matrix_element(other.radial, k_radial, unit="a.u.")
+            matrix_element = prefactor * radial_matrix_element * angular_matrix_element
 
         if unit == "a.u.":
             return matrix_element
