@@ -1,4 +1,6 @@
 from rydstate import BasisMQDT
+from rydstate.angular import AngularKetFJ
+from rydstate.species import FModelSQDT, get_mqdt
 
 
 def test_mqdt_basis_creation() -> None:
@@ -31,6 +33,35 @@ def test_mqdt_basis_m_range() -> None:
     assert all(
         all(ket.angular.m == state.rydberg_kets[0].angular.m for ket in state.rydberg_kets) for state in basis.states
     )
+
+
+def test_mqdt_basis_includes_all_available_sqdt_fallback_models() -> None:
+    basis = BasisMQDT(
+        "Sr87",
+        nu=(24.9, 25.1),
+        l_r=(5, 5),
+        f_tot=(0.5, 0.5),
+        include_sqdt_fallback_models=True,
+    )
+
+    expected_channels = {
+        AngularKetFJ(l_r=5, j_r=4.5, f_c=4.0, f_tot=0.5, species="Sr87"),
+        AngularKetFJ(l_r=5, j_r=4.5, f_c=5.0, f_tot=0.5, species="Sr87"),
+        AngularKetFJ(l_r=5, j_r=5.5, f_c=5.0, f_tot=0.5, species="Sr87"),
+    }
+
+    assert all(isinstance(model, FModelSQDT) for model in basis.models)
+    assert len(basis.models) == len(expected_channels)
+    assert {model.outer_channels[0] for model in basis.models} == expected_channels
+
+
+def test_mqdt_basis_without_sqdt_fallback_models_includes_all_available_mqdt_models() -> None:
+    basis = BasisMQDT("Sr88", nu=(25, 30), include_sqdt_fallback_models=False)
+    expected_models = get_mqdt("Sr88").models
+
+    assert not any(isinstance(model, FModelSQDT) for model in basis.models)
+    assert len(basis.models) == len(expected_models)
+    assert {model.full_name for model in basis.models} == {model.full_name for model in expected_models}
 
 
 def test_mqdt_basis_sort_and_filter() -> None:
