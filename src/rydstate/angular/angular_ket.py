@@ -637,7 +637,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
             return 0  # TODO, ignore Unknown contributions for now
 
         if operator == "spherical":
-            complete_reduced_matrix_element = calc_reduced_spherical_matrix_element(qn_self, qn_other, kappa)
+            complete_reduced_matrix_element = calc_reduced_spherical_matrix_element(qn_self, qn_other, kappa)  # type: ignore [arg-type]
         elif operator in self.quantum_number_names:
             complete_reduced_matrix_element = calc_reduced_spin_matrix_element(qn_self, qn_other)
         elif operator.startswith("identity_"):

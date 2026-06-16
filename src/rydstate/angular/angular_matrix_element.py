@@ -1,16 +1,12 @@
 from __future__ import annotations
 
 import math
-from functools import lru_cache
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 import numpy as np
 
-from rydstate.angular.utils import minus_one_pow
+from rydstate.angular.utils import lru_cache, minus_one_pow
 from rydstate.angular.wigner_symbols import calc_wigner_3j, calc_wigner_6j
-
-if TYPE_CHECKING:
-    from rydstate.angular.utils import lru_cache  # type: ignore [attr-defined]  # noqa: TC004
 
 
 @lru_cache(maxsize=10_000)

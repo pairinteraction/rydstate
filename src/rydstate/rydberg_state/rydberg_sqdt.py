@@ -183,7 +183,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
                 l_tot=l_tot,
                 j_tot=j_tot,
                 f_tot=f_tot,
-                m=m,  # type: ignore [arg-type]
+                m=m,
             )
 
         self.n = n

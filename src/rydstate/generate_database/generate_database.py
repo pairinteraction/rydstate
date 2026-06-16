@@ -100,4 +100,4 @@ def create_tables_for_misc(f_max: float, kappa_max: int = 3) -> None:
             with Path("log").open("a") as buf:
                 table.info(buf=buf)
 
-    logger.info("calc_wigner_3j: %s", calc_wigner_3j.cache_info())
+    logger.info("calc_wigner_3j: %s", calc_wigner_3j.cache_info())  # type: ignore [attr-defined]
