@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import contextlib
+import functools
 import typing as t
-from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, TypeVar, get_args
 
 import numpy as np
@@ -18,7 +18,10 @@ if TYPE_CHECKING:
     P = ParamSpec("P")
     R = TypeVar("R")
 
-    def lru_cache(maxsize: int) -> Callable[[Callable[P, R]], Callable[P, R]]: ...  # type: ignore [no-redef]
+
+def lru_cache(maxsize: int) -> Callable[[Callable[P, R]], Callable[P, R]]:
+    """Wrap functools.lru_cache for correct type annotations."""
+    return functools.lru_cache(maxsize=maxsize)  # type: ignore [return-value]
 
 
 CouplingScheme = Literal["LS", "JJ", "FJ"]

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from functools import lru_cache, wraps
+from functools import wraps
 from typing import TYPE_CHECKING, TypeVar
 
 from sympy import Integer
@@ -11,14 +11,12 @@ from sympy.physics.wigner import (
     wigner_9j as sympy_wigner_9j,
 )
 
-from rydstate.angular.utils import minus_one_pow
+from rydstate.angular.utils import lru_cache, minus_one_pow
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from typing_extensions import ParamSpec
-
-    from rydstate.angular.utils import lru_cache  # type: ignore [attr-defined]  # noqa: TC004
 
     P = ParamSpec("P")
     R = TypeVar("R")
@@ -210,6 +208,6 @@ def calc_wigner_9j_with_symmetries(
 
 
 if USE_SYMMETRIES:
-    calc_wigner_3j = calc_wigner_3j_with_symmetries  # type: ignore [assignment]
-    calc_wigner_6j = calc_wigner_6j_with_symmetries  # type: ignore [assignment]
-    calc_wigner_9j = calc_wigner_9j_with_symmetries  # type: ignore [assignment]
+    calc_wigner_3j = calc_wigner_3j_with_symmetries
+    calc_wigner_6j = calc_wigner_6j_with_symmetries
+    calc_wigner_9j = calc_wigner_9j_with_symmetries
