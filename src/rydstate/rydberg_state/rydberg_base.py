@@ -126,6 +126,11 @@ class RydbergStateBase(ABC):
             The reduced matrix element for the given operator.
 
         """
+        if len(self.rydberg_kets) == 1 and len(other.rydberg_kets) == 1:
+            # fast path for sqdt states
+            me = self.rydberg_kets[0].calc_reduced_matrix_element(other.rydberg_kets[0], operator, unit=unit)
+            return me * np.conjugate(self.coefficients[0]) * other.coefficients[0]  # type: ignore [no-any-return]
+
         value = 0.0
         for coeff1, ket1 in self:
             for coeff2, ket2 in other:
