@@ -74,6 +74,7 @@ mypy = [
 dev = [
   "rydstate[docs,tests,jupyter,mypy]",
   "check-wheel-contents >= 0.6",
+  "py-spy >= 0.4",
 ]
 
 [project.urls]
