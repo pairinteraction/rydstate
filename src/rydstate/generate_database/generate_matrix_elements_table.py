@@ -1,21 +1,19 @@
 from __future__ import annotations
 
 import logging
-import math
-from functools import lru_cache
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from rydstate.angular import AngularKetLS
-from rydstate.radial.radial_ket import RadialKet
-from rydstate.species.potential import get_potential_class
+import numpy as np
+
+from rydstate.angular.angular_ket import AngularKetBase
+from rydstate.angular.utils import is_unknown
 from rydstate.units import MatrixElementOperatorRanks
 
 if TYPE_CHECKING:
     import sqlite3
 
-    from rydstate.angular.utils import AllKnown, AngularOperatorType
-    from rydstate.basis.basis_sqdt import BasisSQDT
-    from rydstate.rydberg_state import RydbergStateSQDT
+    from rydstate.basis import BasisMQDT, BasisSQDT
+    from rydstate.rydberg_state.rydberg_base import RydbergStateBase
     from rydstate.units import MatrixElementOperator
 
 logger = logging.getLogger(__name__)
@@ -35,32 +33,59 @@ MATRIX_ELEMENTS_OF_INTEREST: dict[str, MatrixElementOperator] = {
 }
 
 
+def get_l_r_difference(state1: RydbergStateBase, state2: RydbergStateBase) -> int:
+    """Calculate the minimal difference in l_r between two states."""
+    angular1, angular2 = state1.angular, state2.angular
+    if isinstance(angular1, AngularKetBase) and isinstance(angular2, AngularKetBase):
+        return abs(angular1.l_r - angular2.l_r)  # type: ignore [no-any-return]
+
+    if isinstance(angular1, AngularKetBase):
+        angular1 = angular1.to_state()
+    if isinstance(angular2, AngularKetBase):
+        angular2 = angular2.to_state()
+
+    if any(ket1 == ket2 for ket1 in angular1.kets for ket2 in angular2.kets):
+        # this also checks states with l_r = unknown
+        return 0
+
+    all_diffs = [
+        ket1.l_r - ket2.l_r
+        for ket1 in angular1.kets
+        for ket2 in angular2.kets
+        if not is_unknown(ket1.l_r) and not is_unknown(ket2.l_r)
+    ]
+    if len(all_diffs) == 0:
+        raise RuntimeError("Could not calculate l_r difference, this should not happen.")
+    return int(np.min(np.abs(all_diffs)))
+
+
 def generate_matrix_elements_tables(  # noqa: C901
-    basis: BasisSQDT[AngularKetLS[AllKnown]],
+    basis: BasisMQDT | BasisSQDT[Any],
     conn: sqlite3.Connection | None = None,
-    max_delta_n: float = float("inf"),
-    all_n_up_to: float = float("inf"),
+    max_delta_nu: float = float("inf"),
+    all_nu_up_to: float = float("inf"),
 ) -> dict[str, list[tuple[int, int, float]]]:
     """Populate matrix element tables for all relevant pairs of states."""
-    if basis.coupling_scheme != "LS":
-        raise ValueError("Only LS coupling scheme is supported for now.")
-
     k_angular_max = max(MatrixElementOperatorRanks[op][1] for op in MATRIX_ELEMENTS_OF_INTEREST.values())
 
     basis.sort_states("nu")  # sort by nu == sort by energy
     list_of_id_state = list(enumerate(basis.states))
-    list_of_id_state = sorted(list_of_id_state, key=lambda x: (x[1].angular.l_r, x[1].n, x[0]))
+    list_of_id_state = sorted(list_of_id_state, key=lambda x: (x[1].angular.calc_exp_qn("l_r"), x[1].nu, x[0]))
 
     matrix_elements: dict[str, list[tuple[int, int, float]]] = {tkey: [] for tkey in MATRIX_ELEMENTS_OF_INTEREST}
     for i, (id1, state1) in enumerate(list_of_id_state):
         for id2, state2 in list_of_id_state[i:]:
-            if abs(state1.angular.l_r - state2.angular.l_r) > k_angular_max:
+            if get_l_r_difference(state1, state2) > k_angular_max:
                 # If the difference in l is larger than k_angular_max, no matrix elements have to be calculated
                 continue
-            if all(n > all_n_up_to for n in [state1.n, state2.n]) and abs(state1.n - state2.n) > max_delta_n:
-                # If delta_n is larger than max_delta_n, we dont calculate the matrix elements anymore,
+            if (
+                all(nu > all_nu_up_to for nu in [state1.nu, state2.nu])
+                and abs(state1.nu - state2.nu) > max_delta_nu + 0.5
+            ):
+                # If delta_nu is larger than max_delta_nu (+0.5 to not lose states compared to previous max_delta_n)
+                # we dont calculate the matrix elements anymore,
                 # since these are so small, that they are usually not relevant for further calculations
-                # However, we keep all dipole interactions with small n (we choose all_n_up_to as a cutoff)
+                # However, we keep all dipole interactions with small n (we choose all_nu_up_to as a cutoff)
                 # since these are relevant for the spontaneous decay rates
                 continue
 
@@ -91,96 +116,11 @@ def generate_matrix_elements_tables(  # noqa: C901
 
 
 def calc_matrix_elements_one_pair(
-    state1: RydbergStateSQDT[AngularKetLS[AllKnown]],
-    state2: RydbergStateSQDT[AngularKetLS[AllKnown]],
-    matrix_elements_of_interest: dict[str, MatrixElementOperator],
+    state1: RydbergStateBase, state2: RydbergStateBase, matrix_elements_of_interest: dict[str, MatrixElementOperator]
 ) -> dict[str, float]:
     matrix_elements: dict[str, float] = {}
     for tkey, operator in matrix_elements_of_interest.items():
-        k_radial, k_angular = MatrixElementOperatorRanks[operator]
-
-        if operator == "magnetic_dipole":
-            # Magnetic dipole operator: mu = - mu_B (g_l <l_tot> + g_s <s_tot>)
-            g_s = 2.0023192
-            value_s_tot = calc_reduced_angular_matrix_element_cached(
-                state1.angular.quantum_numbers, state2.angular.quantum_numbers, "s_tot", k_angular
-            )
-            g_l = 1
-            value_l_tot = calc_reduced_angular_matrix_element_cached(
-                state1.angular.quantum_numbers, state2.angular.quantum_numbers, "l_tot", k_angular
-            )
-            angular_matrix_element = g_s * value_s_tot + g_l * value_l_tot
-            prefactor = -0.5  # - mu_B in atomic units
-
-        elif operator in ["electric_dipole", "electric_quadrupole", "electric_octupole", "electric_quadrupole_zero"]:
-            angular_matrix_element = calc_reduced_angular_matrix_element_cached(
-                state1.angular.quantum_numbers, state2.angular.quantum_numbers, "spherical", k_angular
-            )
-            prefactor = math.sqrt(4 * math.pi / (2 * k_angular + 1))  # e in atomic units is 1
-        else:
-            raise NotImplementedError(f"Operator {operator} not implemented.")
-
-        if angular_matrix_element == 0:
-            continue
-
-        radial_matrix_element_au = calc_radial_matrix_element_cached(
-            state1.species,
-            *(state1.n, state1.nu, state1.angular.l_r),
-            *(state2.n, state2.nu, state2.angular.l_r),
-            k_radial,
-        )
-        if radial_matrix_element_au == 0:
-            continue
-
-        matrix_elements[tkey] = prefactor * radial_matrix_element_au * angular_matrix_element
-
+        me = state2.calc_reduced_matrix_element(state1, operator, unit="a.u.")
+        if me != 0:
+            matrix_elements[tkey] = me
     return matrix_elements
-
-
-@lru_cache(maxsize=100_000)
-def calc_reduced_angular_matrix_element_cached(
-    qns1: tuple[float, ...],
-    qns2: tuple[float, ...],
-    operator: AngularOperatorType,
-    k_angular: int,
-) -> float:
-    ket1: AngularKetLS[AllKnown] = AngularKetLS(*qns1)  # type: ignore[call-overload]
-    ket2: AngularKetLS[AllKnown] = AngularKetLS(*qns2)  # type: ignore[call-overload]
-    # ket2 is the final state and ket1 the initial state
-    # ket2.calc_reduced_matrix_element(ket1, T, k) gives the reduced matrix element <ket2||T^k||ket1>
-    return ket2.calc_reduced_matrix_element(ket1, operator, k_angular)
-
-
-def calc_radial_matrix_element_cached(
-    species: str, n1: int, nu1: float, l1: int, n2: int, nu2: float, l2: int, k_radial: int
-) -> float:
-    if k_radial == 0 and nu1 == nu2:
-        return 1 if l1 == l2 else 0
-
-    if (nu1, l1) > (nu2, l2):  # for better use of the cache and since the radial matrix element is symmetric
-        return _calc_radial_matrix_element_cached(species, n2, nu2, l2, n1, nu1, l1, k_radial)
-
-    return _calc_radial_matrix_element_cached(species, n1, nu1, l1, n2, nu2, l2, k_radial)
-
-
-# Cache size should be at least on the order of 4 * (all_n_up_to + 2 * max_delta_n)
-# however, for the first n until n=all_n_up_to we need an even larger cache size
-@lru_cache(maxsize=50_000)
-def _calc_radial_matrix_element_cached(
-    species: str, n1: int, nu1: float, l1: int, n2: int, nu2: float, l2: int, k_radial: int
-) -> float:
-    state1 = get_radial_state_cached(species, n1, nu1, l1)
-    state2 = get_radial_state_cached(species, n2, nu2, l2)
-    # state2 is the final state and state1 the initial state
-    return state2.calc_matrix_element(state1, k_radial, unit="a.u.")
-
-
-# Cache size should be one the order of N_MAX * 4 * 2
-# (since for each initial state we loop over all l' = l, l+1, l+2 and l+3 final states (and all j final))
-@lru_cache(maxsize=2_000)
-def get_radial_state_cached(species: str, n: int, nu: float, l: int) -> RadialKet:
-    """Get the cached rydberg state (where the wavefunction was already calculated)."""
-    potential = get_potential_class(species)(l)
-    state = RadialKet(nu, potential, n_expected=n, sign_convention="n_l_1")
-    state.integrate_wavefunction()
-    return state

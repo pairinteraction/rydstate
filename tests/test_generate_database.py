@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import sqlite3
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pytest
 from rydstate import RydbergStateSQDTAlkali
-from rydstate.basis.basis_sqdt import BasisSQDT
+from rydstate.basis import BasisMQDT, BasisSQDT
 from rydstate.generate_database.generate_database import DATABASE_SQL_FILE
 from rydstate.generate_database.generate_matrix_elements_table import generate_matrix_elements_tables
 from rydstate.generate_database.generate_misc_table import generate_wigner_table
@@ -16,7 +16,11 @@ if TYPE_CHECKING:
     from collections.abc import Generator
 
 
-TEST_SPECIES = ["H", "Li", "Na", "K", "Rb", "Cs", "Sr88", "Yb174"]
+TEST_SPECIES_SPECIFIER = [
+    *["H", "Li", "Na", "K", "Rb", "Cs"],
+    *["Sr88_sqdt", "Yb174_sqdt"],
+    *["Sr87_mqdt", "Sr88_mqdt", "Yb171_mqdt", "Yb173_mqdt", "Yb174_mqdt"],
+]
 
 
 @pytest.fixture
@@ -45,10 +49,14 @@ def test_get_state_data_for_sqdt_alkali_state() -> None:
     assert row[12:] == (0, 0, 0, 0, 0, 0, True, False, 0)
 
 
-@pytest.mark.parametrize("species", TEST_SPECIES)
-def test_generate_states_table(species: str, conn: sqlite3.Connection) -> None:
-    basis = BasisSQDT(species, n=(20, 21), coupling_scheme="LS")
-    basis.filter_states("l_r", (0, 2))
+@pytest.mark.parametrize("species_specifier", TEST_SPECIES_SPECIFIER)
+def test_generate_states_table(species_specifier: str, conn: sqlite3.Connection) -> None:
+    species = species_specifier.removesuffix("_mqdt").removesuffix("_sqdt")
+    basis: BasisMQDT | BasisSQDT[Any]
+    if species_specifier.endswith("_mqdt"):
+        basis = BasisMQDT(species, nu=(50, 52), l_r=(0, 2))
+    else:
+        basis = BasisSQDT(species, n=(50, 52), l_r=(0, 2), coupling_scheme="LS")
     basis.sort_states("nu")
 
     rows = generate_states_table(basis, conn=conn)
@@ -56,16 +64,20 @@ def test_generate_states_table(species: str, conn: sqlite3.Connection) -> None:
     assert len(basis.states) > 2
     assert len(rows) == len(basis.states)
 
-    data = np.array(conn.execute("SELECT n, exp_l_ryd, exp_s FROM states").fetchall())
-    assert np.allclose(data[:, 0], basis.calc_exp_qn("n"))
+    data = np.array(conn.execute("SELECT nu, exp_l_ryd, exp_s FROM states").fetchall())
+    assert np.allclose(data[:, 0], basis.calc_exp_qn("nu"))
     assert np.allclose(data[:, 1], basis.calc_exp_qn("l_r"))
     assert np.allclose(data[:, 2], basis.calc_exp_qn("s_tot"))
 
 
-@pytest.mark.parametrize("species", TEST_SPECIES)
-def test_generate_matrix_elements_table(species: str, conn: sqlite3.Connection) -> None:
-    basis = BasisSQDT(species, n=(20, 21), coupling_scheme="LS")
-    basis.filter_states("l_r", (0, 2))
+@pytest.mark.parametrize("species_specifier", TEST_SPECIES_SPECIFIER)
+def test_generate_matrix_elements_table(species_specifier: str, conn: sqlite3.Connection) -> None:
+    species = species_specifier.removesuffix("_mqdt").removesuffix("_sqdt")
+    basis: BasisMQDT | BasisSQDT[Any]
+    if species_specifier.endswith("_mqdt"):
+        basis = BasisMQDT(species, nu=(50, 52), l_r=(0, 2))
+    else:
+        basis = BasisSQDT(species, n=(50, 52), l_r=(0, 2), coupling_scheme="LS")
     basis.sort_states("nu")
 
     rows_by_table = generate_matrix_elements_tables(basis, conn=conn)
@@ -75,8 +87,5 @@ def test_generate_matrix_elements_table(species: str, conn: sqlite3.Connection) 
 
     states = basis.states
     for row in rows_by_table["matrix_elements_d"]:
-        state1, state2 = states[row[0]], states[row[1]]
-        sign1 = (-1) ** (state1.radial.n_expected - state1.radial.l_r - 1)  # type: ignore [operator]
-        sign2 = (-1) ** (state2.radial.n_expected - state2.radial.l_r - 1)  # type: ignore [operator]
-        reference = state2.calc_reduced_matrix_element(state1, "electric_dipole", unit="a.u.") * sign1 * sign2
+        reference = states[row[1]].calc_reduced_matrix_element(states[row[0]], "electric_dipole", unit="a.u.")
         assert np.isclose(row[2], reference)

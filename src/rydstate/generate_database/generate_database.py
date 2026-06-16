@@ -4,19 +4,16 @@ import logging
 import sqlite3
 from importlib.resources import files
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
 from rydstate import __version__
 from rydstate.angular.wigner_symbols import calc_wigner_3j
+from rydstate.basis.basis_mqdt import BasisMQDT
 from rydstate.basis.basis_sqdt import BasisSQDT
-from rydstate.generate_database.generate_matrix_elements_table import (
-    _calc_radial_matrix_element_cached,
-    calc_reduced_angular_matrix_element_cached,
-    generate_matrix_elements_tables,
-    get_radial_state_cached,
-)
+from rydstate.generate_database.generate_matrix_elements_table import generate_matrix_elements_tables
 from rydstate.generate_database.generate_misc_table import generate_wigner_table
 from rydstate.generate_database.generate_states_table import generate_states_table
 
@@ -27,25 +24,39 @@ DATABASE_SQL_FILE = files("rydstate.generate_database").joinpath("database.sql")
 
 
 def create_tables_for_one_species(
-    species: str,
-    n_min: int,
-    n_max: int,
-    max_delta_n: float = np.inf,
-    all_n_up_to: float = np.inf,
+    species_specifier: str,
+    n: tuple[int, int] | None = None,
+    nu: tuple[float, float] | None = None,
+    max_delta_nu: float = np.inf,
+    all_nu_up_to: float = np.inf,
 ) -> None:
     """Create the database tables for a given species in the current directory."""
-    logger.info("Start creating database for %s", species)
-    logger.info("n-min=%d, n-max=%d", n_min, n_max)
-    logger.info("max_delta_n=%s, all_n_up_to=%s", max_delta_n, all_n_up_to)
+    logger.info("Start creating database for %s", species_specifier)
+    logger.info("n-range=%s", n)
+    logger.info("nu-range=%s", nu)
+    logger.info("max_delta_nu=%s, all_nu_up_to=%s", max_delta_nu, all_nu_up_to)
     logger.info("rydstate.__version__=%s", __version__)
 
     # create the database and populate the states and matrix elements tables
     db_file = Path("database.db")
     with sqlite3.connect(db_file) as conn:
         conn.executescript(DATABASE_SQL_FILE.read_text(encoding="utf-8"))
-        basis = BasisSQDT(species, n=(n_min, n_max), coupling_scheme="LS")
+        basis: BasisSQDT[Any] | BasisMQDT
+        species = species_specifier.removesuffix("_mqdt").removesuffix("_sqdt")
+        if species_specifier.endswith("_mqdt"):
+            if nu is None:
+                raise ValueError("nu must be provided for MQDT basis")
+            basis = BasisMQDT(species, nu=nu)
+            if n is not None:
+                basis.filter_states("n", n)
+        else:
+            if n is None:
+                raise ValueError("n must be provided for SQDT basis")
+            basis = BasisSQDT(species, n=n, coupling_scheme="LS")
+            if nu is not None:
+                basis.filter_states("nu", nu)
         generate_states_table(basis, conn)
-        generate_matrix_elements_tables(basis, conn, max_delta_n, all_n_up_to)
+        generate_matrix_elements_tables(basis, conn, max_delta_nu, all_nu_up_to)
     logger.info("Size of %s: %.6f megabytes", db_file, db_file.stat().st_size * 1e-6)
 
     # convert the tables to parquet files
@@ -66,12 +77,6 @@ def create_tables_for_one_species(
                 table.info(verbose=True)
                 with Path("log").open("a") as buf:
                     table.info(buf=buf)
-
-    logger.info(
-        "calc_reduced_angular_matrix_element_cached: %s", calc_reduced_angular_matrix_element_cached.cache_info()
-    )
-    logger.info("_calc_radial_matrix_element_cached: %s", _calc_radial_matrix_element_cached.cache_info())
-    logger.info("get_radial_state_cached: %s", get_radial_state_cached.cache_info())
 
 
 def create_tables_for_misc(f_max: float, kappa_max: int = 3) -> None:

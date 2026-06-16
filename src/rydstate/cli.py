@@ -12,7 +12,7 @@ from rydstate.generate_database.generate_database import create_tables_for_misc,
 logger = logging.getLogger(__name__)
 
 
-def main() -> None:
+def main() -> None:  # noqa: C901, PLR0912, PLR0915
     """Entry point for the generate_database script."""
     parser = argparse.ArgumentParser(
         description="Generate a database, containing energies and matrix elements, for a given species.",
@@ -25,7 +25,6 @@ def main() -> None:
         default=None,
         type=int,
         help="The minimal principal quantum number n for the states to be included in the database. "
-        "This is used for species, where the low lying states do not converge nicely, so we exclude those states. "
         "Default 1 will start with the ground state configuration of the specific species (e.g. n=5 for Rb).",
     )
     parser.add_argument(
@@ -35,16 +34,29 @@ def main() -> None:
         help="The maximum principal quantum number n for the states to be included in the database.",
     )
     parser.add_argument(
-        "--max-delta-n",
-        default=float("inf"),
-        type=float,
-        help="The maximum difference in principal quantum number n for matrix elements to be calculated.",
+        "--nu-min",
+        default=None,
+        type=int,
+        help="The minimal effective principal quantum number nu for the states to be included in the database. "
+        "Default 0 will include all low lying states.",
     )
     parser.add_argument(
-        "--all-n-up-to",
+        "--nu-max",
+        default=None,
+        type=int,
+        help="The maximum effective principal quantum number nu for the states to be included in the database.",
+    )
+    parser.add_argument(
+        "--max-delta-nu",
         default=float("inf"),
         type=float,
-        help="Calculate all matrix elements where at least one state has principal quantum number n "
+        help="The maximum difference in effective principal quantum number nu for matrix elements to be calculated.",
+    )
+    parser.add_argument(
+        "--all-nu-up-to",
+        default=float("inf"),
+        type=float,
+        help="Calculate all matrix elements where at least one state has effective principal quantum number nu "
         "smaller than or equal to this value.",
     )
     parser.add_argument(
@@ -81,11 +93,14 @@ def main() -> None:
         if (
             args.n_min is not None
             or args.n_max is not None
-            or args.max_delta_n != float("inf")
-            or args.all_n_up_to != float("inf")
+            or args.nu_min is not None
+            or args.nu_max is not None
+            or args.max_delta_nu != float("inf")
+            or args.all_nu_up_to != float("inf")
         ):
             parser.error(
-                "--n-min, --n-max, --max-delta-n, and --all-n-up-to are only valid when generating a species database."
+                "--n-min, --n-max, --nu-min, --nu-max, --max-delta-nu, and --all-nu-up-to are only valid "
+                "when generating a species database."
             )
     elif args.f_max is not None:
         parser.error("--f-max is only valid when generating the misc database.")
@@ -108,10 +123,25 @@ def main() -> None:
             parser.error("--f-max is required when generating the misc database.")
         create_tables_for_misc(f_max=args.f_max, kappa_max=3)
     else:
-        n_min = args.n_min if args.n_min is not None else 1
-        if args.n_max is None:
-            parser.error("--n-max is required when generating a species database.")
-        create_tables_for_one_species(args.species, n_min, args.n_max, args.max_delta_n, args.all_n_up_to)
+        if args.n_max is None and args.nu_max is None:
+            parser.error("At least one of --n-max or --nu-max must be provided.")
+
+        if args.n_min is None and args.n_max is None:
+            n = None
+        else:
+            n_min = args.n_min if args.n_min is not None else 1
+            n_max = args.n_max if args.n_max is not None else int(args.nu_max) + 10
+            n = (n_min, n_max)
+
+        if args.nu_min is None and args.nu_max is None:
+            nu = None
+        else:
+            nu_min = args.nu_min if args.nu_min is not None else 0
+            nu_max = args.nu_max if args.nu_max is not None else args.n_max
+            nu = (nu_min, nu_max)
+        create_tables_for_one_species(
+            args.species, n=n, nu=nu, max_delta_nu=args.max_delta_nu, all_nu_up_to=args.all_nu_up_to
+        )
     logger.info("Time taken: %.2f seconds", time.perf_counter() - time_start)
 
 

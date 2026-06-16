@@ -1,16 +1,17 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from rydstate.angular.angular_ket import AngularKetLS
+import numpy as np
+
+from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT
 
 if TYPE_CHECKING:
     import sqlite3
 
-    from rydstate.angular.utils import AllKnown
-    from rydstate.basis import BasisSQDT
-    from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT
+    from rydstate.basis import BasisMQDT, BasisSQDT
+    from rydstate.rydberg_state.rydberg_base import RydbergStateBase
 
 
 logger = logging.getLogger(__name__)
@@ -41,12 +42,10 @@ COLUMNS = [
 
 
 def generate_states_table(
-    basis: BasisSQDT[AngularKetLS[AllKnown]],
+    basis: BasisMQDT | BasisSQDT[Any],
     conn: sqlite3.Connection | None = None,
 ) -> list[tuple[float | int | str | bool, ...]]:
     """Populate the states table for a given species and n-range using BasisSQDT."""
-    if basis.coupling_scheme != "LS":
-        raise ValueError("Only LS coupling scheme is supported for now.")
     basis.sort_states("nu")  # sort by nu == sort by energy
 
     states_data: list[tuple[float | int | str | bool, ...]] = []
@@ -64,39 +63,34 @@ def generate_states_table(
     return states_data
 
 
-def get_state_data(ids: int, state: RydbergStateSQDT[AngularKetLS[AllKnown]]) -> tuple[float | int | str | bool, ...]:
+def get_state_data(ids: int, state: RydbergStateBase) -> tuple[float | int | str | bool, ...]:
     """Get the data for a given state as a tuple."""
-    angular_ket = state.angular
-    if not isinstance(angular_ket, AngularKetLS):
-        raise TypeError("Only AngularKetLS is supported for now")
+    angular = state.angular
+    underspecified_channel_contribution = sum(abs(coeff) ** 2 for coeff, ket in state if ket.angular.contains_unknown)
 
-    angular_state = angular_ket.to_state()
+    n = state.n if isinstance(state, RydbergStateSQDT) else 0
 
-    parity = -1 if angular_ket.l_tot % 2 == 1 else 1
-
-    is_j_total_momentum = state.element_properties.i_c == 0
-    is_calculated_with_mqdt = False
-
-    return (
+    data = (
         ids,  # id
         state.get_energy("a.u."),  # energy
-        parity,  # parity = (-1)^l_tot
-        state.n,  # n: quantum number
-        state.nu,  # nu = NStar for sqdt
-        angular_ket.f_tot,  # f: quantum number
-        state.nu,  # exp_nui = nu for sqdt
-        angular_ket.l_tot,  # exp_l = l
-        angular_ket.j_tot,  # exp_j = j
-        angular_ket.s_tot,  # exp_s = s
-        angular_ket.l_r,  # exp_l_ryd = l for sqdt
-        angular_state.calc_exp_qn("j_r"),  # exp_j_ryd = j for sqdt only one valence electron
-        0,  # std_nui = 0
-        0,  # std_l = 0
-        0,  # std_j = 0
-        0,  # std_s = 0
-        0,  # std_l_ryd = 0
-        angular_state.calc_std_qn("j_r"),  # std_j_ryd = 0 for sqdt and only one valence electron
-        is_j_total_momentum,  # is_j_total_momentum = True for no hyperfine splitting
-        is_calculated_with_mqdt,  # is_calculated_with_mqdt = False for sqdt
-        0,  # underspecified_channel_contribution = 0 for sqdt
+        angular.parity,  # parity = (-1)^l_tot
+        n,  # n: quantum number
+        state.nu,  # nu
+        angular.f_tot,  # f_tot
+        state.calc_exp_qn("nui"),  # exp_nui
+        angular.calc_exp_qn("l_tot"),  # exp_l
+        angular.calc_exp_qn("j_tot"),  # exp_j
+        angular.calc_exp_qn("s_tot"),  # exp_s
+        angular.calc_exp_qn("l_r"),  # exp_l_ryd
+        angular.calc_exp_qn("j_r"),  # exp_j_ryd = j for sqdt only one valence electron
+        state.calc_std_qn("nui"),  # std_nui = 0
+        angular.calc_std_qn("l_tot"),  # std_l
+        angular.calc_std_qn("j_tot"),  # std_j
+        angular.calc_std_qn("s_tot"),  # std_s
+        angular.calc_std_qn("l_r"),  # std_l_ryd
+        angular.calc_std_qn("j_r"),  # std_j_ryd
+        bool(angular.i_c == 0),  # is_j_total_momentum
+        bool(len(state.rydberg_kets) > 1),  # is_calculated_with_mqdt
+        underspecified_channel_contribution,  # underspecified_channel_contribution = 0 for sqdt
     )
+    return tuple(x.item() if isinstance(x, np.generic) else x for x in data)
