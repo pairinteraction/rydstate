@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, overload
 
 import numpy as np
 
+from rydstate.angular.utils import is_unknown
 from rydstate.units import MatrixElementOperatorRanks, ureg
 
 if TYPE_CHECKING:
@@ -39,6 +40,11 @@ class RydbergKet:
 
     def calc_reduced_overlap(self, other: RydbergKet) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
+        if is_unknown(self.radial.l_r) and is_unknown(other.radial.l_r):
+            return 1 if abs(self.radial.nu - other.radial.nu) < 1e-10 else 0
+        if is_unknown(self.radial.l_r) or is_unknown(other.radial.l_r):
+            return 0
+
         angular_overlap = self.angular.calc_reduced_overlap(other.angular)
         if angular_overlap == 0:
             return 0
@@ -81,6 +87,9 @@ class RydbergKet:
             raise ValueError(
                 f"Operator {operator} not supported, must be one of {list(MatrixElementOperatorRanks.keys())}."
             )
+
+        if is_unknown(self.radial.l_r) or is_unknown(other.radial.l_r):
+            return 0
 
         k_radial, k_angular = MatrixElementOperatorRanks[operator]
 
