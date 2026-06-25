@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from rydstate.angular.utils import AngularMomentumQuantumNumbers, AngularOperatorType, CouplingScheme
+    from rydstate.angular.utils import AngularMomentumQuantumNumbers, AngularOperatorType, CouplingScheme, NotSet
     from rydstate.units import NDArray
 
 logger = logging.getLogger(__name__)
@@ -100,6 +100,14 @@ class AngularState(Generic[GenericT_AngularKet]):
         if not all(parity == parities[0] for parity in parities):
             raise ValueError(f"Cannot calculate parity for {self!r} because the kets have different parities.")
         return parities[0]
+
+    @property
+    def m(self) -> float | NotSet:
+        """Return the m quantum number of the state."""
+        m_list = [ket.m for ket in self.kets]
+        if not all(m == m_list[0] for m in m_list):
+            raise ValueError(f"Cannot calculate m for {self!r} because the kets have different m values.")
+        return m_list[0]
 
     @overload
     def to(self, coupling_scheme: Literal["LS"]) -> AngularState[AngularKetLS[Any]]: ...
