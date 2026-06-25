@@ -173,10 +173,9 @@ class RadialKet:
         z_min = max(z_min, dz)
 
         if x_max is None:
-            n = self.n if self.n is not None else self.nu + 5
             # This is an empirical formula for the maximum value of the radial coordinate
             # it takes into account that for large n but small l the wavefunction is very extended
-            x_max = 2 * n * (n + 15 + (n - l_r) / 4)
+            x_max = 2 * self.nu * (self.nu + 20 + (self.nu - l_r) / 4) + 5
         z_max = math.sqrt(x_max)
 
         # put all grid points on a standard grid, i.e. [dz, 2*dz, 3*dz, ...]
@@ -271,8 +270,7 @@ class RadialKet:
             y0, y1 = 0, w0
             x_start, x_stop, dx = self.z_list[0], self.z_list[-1], self.dz
             g_list_directed = glist
-            n = self.n if self.n is not None else self.nu
-            x_min = math.sqrt(n * (n + 15))
+            x_min = math.sqrt(self.nu * (self.nu + 15))
 
         if _use_njit:
             w_list_list = run_numerov_integration(x_start, x_stop, dx, y0, y1, g_list_directed, x_min)
@@ -371,11 +369,10 @@ class RadialKet:
         inner_weight_scaled_to_whole_grid = inner_weight * steps / inner_ind
 
         tol = 1e-4
-        # for low n the wavefunction converges not as good and still has more weight at the inner boundary
-        n = self.n if self.n is not None else self.nu + 5
-        if n <= 10:
+        # for low nu the wavefunction converges not as good and still has more weight at the inner boundary
+        if self.nu <= 10:
             tol = 8e-3
-        elif n <= 16:
+        elif self.nu <= 16:
             tol = 2e-3
 
         element_properties = self.potential.element_properties
@@ -391,10 +388,10 @@ class RadialKet:
 
         # Check the wavefunction at the outer boundary
         outer_ind = int(0.95 * steps)
-        outer_wf = w_list[outer_ind:]
-        if np.mean(outer_wf) > 1e-7:
+        outer_wf = np.abs(w_list[outer_ind:])
+        if np.max(outer_wf) > 1e-7:
             warning_msgs.append(
-                f"The wavefunction is not close to zero at the outer boundary, mean={np.mean(outer_wf):.2e}"
+                f"The wavefunction is not close to zero at the outer boundary, max={np.max(outer_wf):.2e}"
             )
 
         outer_weight = 2 * np.sum(outer_wf * outer_wf * z_list[outer_ind:] * z_list[outer_ind:]) * self.dz
