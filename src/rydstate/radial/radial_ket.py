@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import math
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, overload
+from typing import TYPE_CHECKING, Literal, overload
 
 import numpy as np
 from mpmath import whitw
@@ -29,25 +29,20 @@ WavefunctionSignConvention = Literal["positive_at_outer_bound", "n_l_1"] | None
 class RadialKet:
     r"""Class representing a radial Rydberg state."""
 
-    # Default values for the developer/advanced parameters
-    DEFAULT_PARAMETERS: ClassVar[dict[str, Any]] = {
-        "dz": 1e-2,
-        "x_min": None,
-        "x_max": None,
-        "run_backward": True,
-        "w0": 1e-10,
-        "use_njit": True,
-        "integration_method": "numerov",
-        "sign_convention": "positive_at_outer_bound",
-    }
-
     def __init__(
         self,
         nu: float,
         potential: Potential | PotentialDummy,
         *,
         n_expected: int | None = None,
-        parameters: dict[str, Any] | None = None,
+        dz: float = 1e-2,
+        x_min: float | None = None,
+        x_max: float | None = None,
+        run_backward: bool = True,
+        w0: float = 1e-10,
+        use_njit: bool = True,
+        integration_method: Literal["numerov", "whittaker"] = "numerov",
+        sign_convention: WavefunctionSignConvention = "positive_at_outer_bound",
     ) -> None:
         r"""Initialize the radial ket.
 
@@ -58,26 +53,21 @@ class RadialKet:
             n_expected: Optional principal quantum number of the rydberg electron, used for additional
                 sanity checks of the radial wavefunction (e.g. checking that the number of nodes matches
                 n - l - 1). It is also required for the "n_l_1" sign convention.
-            parameters: Optional dictionary of advanced parameters that influence the wavefunction.
-                These are usually kept at their defaults and only changed for developing/debugging purposes.
-                Recognized keys (with defaults) are:
-
-                - ``dz`` (default: 1e-2): The step size of the integration in the scaled dimensionless
-                  coordinate :math:`z = \sqrt{r/a_0}`.
-                - ``x_min`` (default: None): The minimum value of the radial coordinate in dimensionless
-                  units :math:`x = r/a_0`. None means a sensible value is calculated automatically.
-                - ``x_max`` (default: None): The maximum value of the radial coordinate in dimensionless
-                  units :math:`x = r/a_0`. None means a sensible value is calculated automatically.
-                - ``run_backward`` (default: True): Whether to integrate the radial Schrödinger equation
-                  "backward" or "forward".
-                - ``w0`` (default: 1e-10): The initial magnitude of the radial wavefunction at the boundary.
-                - ``use_njit`` (default: True): Whether to use the fast njit version of the Numerov integration.
-                - ``integration_method`` (default: "numerov"): The method used to integrate the wavefunction,
-                  either "numerov" or "whittaker".
-                - ``sign_convention`` (default: "positive_at_outer_bound"): The sign convention applied to the
-                  wavefunction after the integration. One of "positive_at_outer_bound", "n_l_1" or None
-                  (see :meth:`_apply_sign_convention`). The "n_l_1" convention requires ``n_expected``
-                  to be set.
+            dz: The step size of the integration in the scaled dimensionless
+                coordinate :math:`z = \sqrt{r/a_0}`.
+            x_min: The minimum value of the radial coordinate in dimensionless
+                units :math:`x = r/a_0`. None means a sensible value is calculated automatically.
+            x_max: The maximum value of the radial coordinate in dimensionless
+                units :math:`x = r/a_0`. None means a sensible value is calculated automatically.
+            run_backward: Whether to integrate the radial Schrödinger equation
+                "backward" or "forward".
+            w0: The initial magnitude of the radial wavefunction at the boundary.
+            use_njit: Whether to use the fast njit version of the Numerov integration.
+            integration_method: The method used to integrate the wavefunction,
+                either "numerov" or "whittaker".
+            sign_convention: The sign convention applied to the wavefunction after the integration.
+                One of "positive_at_outer_bound", "n_l_1" or None (see :meth:`_apply_sign_convention`).
+                The "n_l_1" convention requires ``n_expected`` to be set.
 
         """
         self.potential = potential
@@ -86,13 +76,14 @@ class RadialKet:
             raise ValueError(f"nu must be larger than 0, but is {nu=}")
         self.nu = nu
 
-        unknown_keys = set(parameters or {}) - set(self.DEFAULT_PARAMETERS)
-        if unknown_keys:
-            raise ValueError(
-                f"Unknown keys in parameters: {sorted(unknown_keys)}. "
-                f"Allowed keys are: {sorted(self.DEFAULT_PARAMETERS)}."
-            )
-        self._parameters: dict[str, Any] = {**self.DEFAULT_PARAMETERS, **(parameters or {})}
+        self._dz = dz
+        self._x_min = x_min
+        self._x_max = x_max
+        self._run_backward = run_backward
+        self._w0 = w0
+        self._use_njit = use_njit
+        self._integration_method = integration_method
+        self._sign_convention: WavefunctionSignConvention = sign_convention
 
         self.n_expected: int | None = n_expected
         if self.n_expected is not None:
@@ -191,12 +182,12 @@ class RadialKet:
     def _create_grid_points(self) -> None:
         r"""Create the grid points for the integration of the radial Schrödinger equation.
 
-        The grid is controlled by the ``x_min``, ``x_max`` and ``dz`` entries of the ``parameters``
-        dictionary passed to :meth:`__init__` (see there for details).
+        The grid is controlled by the ``x_min``, ``x_max`` and ``dz`` arguments
+        passed to :meth:`__init__` (see there for details).
         """
-        x_min = self._parameters["x_min"]
-        x_max = self._parameters["x_max"]
-        dz = self._parameters["dz"]
+        x_min = self._x_min
+        x_max = self._x_max
+        dz = self._dz
         if hasattr(self, "_z_list"):
             raise RuntimeError("The grid points were already created, you should not create them again.")
         l_r = self.l_r if not is_unknown(self.l_r) else 0  # used for limit estimations
@@ -232,7 +223,7 @@ class RadialKet:
 
     def integrate_wavefunction(self) -> None:
         """Integrate the wavefunction using the method given by the ``integration_method`` parameter."""
-        method = self._parameters["integration_method"]
+        method = self._integration_method
         if method == "numerov":
             self._integrate_numerov()
         elif method == "whittaker":
@@ -267,16 +258,16 @@ class RadialKet:
             = \int_{0}^{\infty} 2 z^2 |w(z)|^2 dz
             = 1
 
-        The integration is controlled by the ``run_backward``, ``w0`` and ``use_njit`` entries of the
-        ``parameters`` dictionary passed to :meth:`__init__`:
+        The integration is controlled by the ``run_backward``, ``w0`` and ``use_njit`` arguments
+        passed to :meth:`__init__`:
 
         - ``run_backward``: Whether to integrate the radial Schrödinger equation "backward" or "forward".
         - ``w0``: The initial magnitude of the wavefunction at the inner/outer boundary for forward/backward integration
         - ``use_njit``: Whether to use the fast njit version of the Numerov integration.
         """
-        run_backward = self._parameters["run_backward"]
-        w0 = self._parameters["w0"]
-        use_njit = self._parameters["use_njit"]
+        run_backward = self._run_backward
+        w0 = self._w0
+        use_njit = self._use_njit
 
         if hasattr(self, "_w_list"):
             raise RuntimeError("The wavefunction was already integrated, you should not create it again.")
@@ -481,13 +472,12 @@ class RadialKet:
     def _apply_sign_convention(self) -> None:
         """Set the sign of the wavefunction according to the ``sign_convention`` parameter.
 
-        The sign convention is taken from the ``sign_convention`` entry of the ``parameters`` dictionary
-        passed to :meth:`__init__`:
+        The sign convention is taken from the ``sign_convention`` argument passed to :meth:`__init__`:
             - None: Leave the wavefunction as it is.
             - "n_l_1": The wavefunction is defined to have the sign of (-1)^{(n_expected - l - 1)} at the outer boundary
             - "positive_at_outer_bound": The wavefunction is defined to be positive at the outer boundary.
         """
-        sign_convention: WavefunctionSignConvention = self._parameters["sign_convention"]
+        sign_convention: WavefunctionSignConvention = self._sign_convention
         if sign_convention is None:
             return
 
