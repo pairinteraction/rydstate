@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import math
+import weakref
 from typing import TYPE_CHECKING, Literal, overload
 
 import numpy as np
@@ -71,6 +72,10 @@ class RadialKet(metaclass=CachedABCMeta):
                 The "n_l_1" convention requires ``n_expected`` to be set.
 
         """
+        self._matrix_element_cache: weakref.WeakKeyDictionary[RadialKet, dict[tuple[int, str], float]] = (
+            weakref.WeakKeyDictionary()
+        )
+
         self.potential = potential
 
         if not nu > 0:
@@ -515,7 +520,7 @@ class RadialKet(metaclass=CachedABCMeta):
 
     @overload
     def calc_matrix_element(
-        self, other: RadialKet, k_radial: int, *, integration_method: INTEGRATION_METHODS = "sum"
+        self, other: RadialKet, k_radial: int, *, unit: None = None, integration_method: INTEGRATION_METHODS = "sum"
     ) -> PintFloat: ...
 
     @overload
@@ -554,10 +559,17 @@ class RadialKet(metaclass=CachedABCMeta):
             The radial matrix element in the desired unit.
 
         """
-        # Ensure wavefunctions are integrated before accessing the grid
-        radial_matrix_element_au = calc_radial_matrix_element_from_w_z(
-            self.z_list, self.w_list, other.z_list, other.w_list, k_radial, integration_method
-        )
+        if other not in self._matrix_element_cache and self in other._matrix_element_cache:
+            return other.calc_matrix_element(self, k_radial=k_radial, unit=unit, integration_method=integration_method)
+
+        cache = self._matrix_element_cache.setdefault(other, {})
+        cache_key = (k_radial, integration_method)
+        if cache_key not in cache:
+            cache[cache_key] = calc_radial_matrix_element_from_w_z(
+                self.z_list, self.w_list, other.z_list, other.w_list, k_radial, integration_method
+            )
+
+        radial_matrix_element_au = cache[cache_key]
 
         if unit == "a.u.":
             return radial_matrix_element_au

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import weakref
 from abc import ABC
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, TypeVar, overload
 
@@ -59,6 +60,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         "quantum_numbers",
         "_allow_unknown",
         "_initialized",
+        "_reduced_matrix_element_cache",
         "__weakref__",
     )
 
@@ -119,6 +121,10 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         Atomic species, e.g. 'Rb87', will not be used for calculation,
         only for convenience to infer the core electron spin and nuclear spin quantum numbers.
         """
+        self._reduced_matrix_element_cache: weakref.WeakKeyDictionary[
+            AngularKetBase[Any], dict[tuple[AngularOperatorType, int], float]
+        ] = weakref.WeakKeyDictionary()
+
         if species is not None:
             from rydstate.species.element_properties import get_element_properties  # noqa: PLC0415
 
@@ -600,8 +606,8 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
 
         raise NotImplementedError(f"This method is not yet implemented for {self!r} and {other!r}.")
 
-    def calc_reduced_matrix_element(  # noqa: C901, PLR0912
-        self: Self, other: AngularKetBase[Any], operator: AngularOperatorType, kappa: int
+    def calc_reduced_matrix_element(
+        self, other: AngularKetBase[Any], operator: AngularOperatorType, kappa: int
     ) -> float:
         r"""Calculate the reduced angular matrix element.
 
@@ -612,6 +618,15 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
             \left\langle self || \hat{O}^{(\kappa)} || other \right\rangle
 
         """
+        cache = self._reduced_matrix_element_cache.setdefault(other, {})
+        cache_key = (operator, kappa)
+        if cache_key not in cache:
+            cache[cache_key] = self._calc_reduced_matrix_element(other, operator, kappa)
+        return cache[cache_key]
+
+    def _calc_reduced_matrix_element(  # noqa: C901, PLR0912
+        self: Self, other: AngularKetBase[Any], operator: AngularOperatorType, kappa: int
+    ) -> float:
         if not is_angular_operator_type(operator):
             raise NotImplementedError(f"calc_reduced_matrix_element is not implemented for operator {operator}.")
 
