@@ -5,13 +5,14 @@ import logging
 import re
 from abc import ABC
 from fractions import Fraction
-from functools import cache, cached_property
+from functools import cached_property
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
 from rydstate.angular.utils import check_spin_addition_rule, get_possible_quantum_number_values, is_unknown
+from rydstate.metaclass_cache import CachedABCMeta
 from rydstate.species.element_properties import get_element_properties
 from rydstate.species.utils import (
     calc_modified_ritz_formula,
@@ -24,17 +25,14 @@ from rydstate.units import ureg
 if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetBase
     from rydstate.angular.utils import Unknown
-    from rydstate.species.utils import (  # type: ignore [assignment]
-        RydbergRitzParameters,
-        cache,  # noqa: TC004
-    )
+    from rydstate.species.utils import RydbergRitzParameters
     from rydstate.units import PintFloat
 
 
 logger = logging.getLogger(__name__)
 
 
-class SQDT(ABC):
+class SQDT(ABC, metaclass=CachedABCMeta):
     """Base class for all SQDT classes."""
 
     species: ClassVar[str]
@@ -255,7 +253,6 @@ class SQDT(ABC):
         return n - delta_nlj
 
 
-@cache
 def get_sqdt(species: str, tag: str | None = None) -> SQDT:
     """Get an instance of the subclass of SQDT for the given species and tag."""
     subclasses = get_all_subclasses(SQDT, species, tag)

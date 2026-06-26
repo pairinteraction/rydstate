@@ -74,8 +74,6 @@ def test_generate_matrix_elements_table(species: str, conn: sqlite3.Connection) 
         assert len(rows) > 2
 
     states = basis.states
-    for state in states:
-        state.radial.integrate_wavefunction()
     for row in rows_by_table["matrix_elements_d"]:
         state1, state2 = states[row[0]], states[row[1]]
         sign1 = (-1) ** (state1.radial.n_expected - state1.radial.l_r - 1)  # type: ignore [operator]

@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, ClassVar, TypeVar
 import numpy as np
 
 from rydstate.angular.utils import is_unknown
+from rydstate.metaclass_cache import CachedABCMeta
 from rydstate.species.element_properties import get_element_properties
 from rydstate.species.utils import get_all_subclasses
 
@@ -21,7 +22,7 @@ XType = TypeVar("XType", "NDArray", float)
 logger = logging.getLogger(__name__)
 
 
-class Potential(ABC):
+class Potential(ABC, metaclass=CachedABCMeta):
     """Base class for all potential classes."""
 
     species: ClassVar[str]

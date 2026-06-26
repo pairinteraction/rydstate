@@ -9,6 +9,7 @@ from mpmath import whitw
 from scipy.special import gamma
 
 from rydstate.angular.utils import is_unknown
+from rydstate.metaclass_cache import CachedABCMeta
 from rydstate.radial.numerov import _run_numerov_integration_python, run_numerov_integration
 from rydstate.radial.radial_matrix_element import calc_radial_matrix_element_from_w_z
 from rydstate.species.utils import calc_energy_from_nu
@@ -26,7 +27,7 @@ logger = logging.getLogger(__name__)
 WavefunctionSignConvention = Literal["positive_at_outer_bound", "n_l_1"] | None
 
 
-class RadialKet:
+class RadialKet(metaclass=CachedABCMeta):
     r"""Class representing a radial Rydberg state."""
 
     def __init__(

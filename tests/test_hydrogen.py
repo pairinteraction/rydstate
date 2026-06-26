@@ -33,7 +33,6 @@ def test_hydrogen_wavefunctions(species: str, n: int, l: int, run_backward: bool
 
     # Setup radial wavefunction and run the numerov integration
     radial = RadialKet(state.nu, state.potential, n_expected=n, run_backward=run_backward, sign_convention="n_l_1")
-    radial.integrate_wavefunction()
 
     # Get analytical solution from sympy
     if n <= 35:

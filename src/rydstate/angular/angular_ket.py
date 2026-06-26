@@ -26,6 +26,7 @@ from rydstate.angular.utils import (
     try_trivial_spin_addition,
 )
 from rydstate.angular.wigner_symbols import calc_wigner_3j, clebsch_gordan_6j, clebsch_gordan_9j
+from rydstate.metaclass_cache import CachedABCMeta
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -41,7 +42,7 @@ GenericT_Unknown = TypeVar("GenericT_Unknown", AllKnown, Unknown)
 T_Unknown = TypeVar("T_Unknown", AllKnown, Unknown, Any)
 
 
-class AngularKetBase(ABC, Generic[GenericT_Unknown]):
+class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
     """Base class for a angular ket (i.e. a simple canonical spin ketstate)."""
 
     # We use __slots__ to prevent dynamic attributes and make the objects immutable after initialization
@@ -58,6 +59,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown]):
         "quantum_numbers",
         "_allow_unknown",
         "_initialized",
+        "__weakref__",
     )
 
     quantum_number_names: ClassVar[tuple[AngularMomentumQuantumNumbers, ...]]

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from abc import ABC
-from functools import cache, cached_property
+from functools import cached_property
 from typing import TYPE_CHECKING, Any, ClassVar, overload
 
+from rydstate.metaclass_cache import CachedABCMeta
 from rydstate.species.fmodel import FModelSQDT
 from rydstate.species.utils import get_all_subclasses
 from rydstate.units import ureg
@@ -12,11 +13,10 @@ if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetFJ
     from rydstate.angular.core_ket import CoreKet
     from rydstate.species.fmodel import FModel
-    from rydstate.species.utils import cache  # type: ignore [assignment]  # noqa: TC004
     from rydstate.units import PintFloat
 
 
-class MQDT(ABC):
+class MQDT(ABC, metaclass=CachedABCMeta):
     """Base class for all MQDT classes."""
 
     species: ClassVar[str]
@@ -98,7 +98,6 @@ class MQDT(ABC):
         return models
 
 
-@cache
 def get_mqdt(species: str, tag: str | None = None) -> MQDT:
     """Get an instance of the subclass of MQDT for the given species and tag."""
     subclasses = get_all_subclasses(MQDT, species, tag)
