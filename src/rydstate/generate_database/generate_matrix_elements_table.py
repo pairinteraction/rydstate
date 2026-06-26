@@ -181,8 +181,6 @@ def _calc_radial_matrix_element_cached(
 def get_radial_state_cached(species: str, n: int, nu: float, l: int) -> RadialKet:
     """Get the cached rydberg state (where the wavefunction was already calculated)."""
     potential = get_potential_class(species)(l)
-    state = RadialKet(nu, potential)
-    state.set_n_for_sanity_check(n)
-    state.integrate_numerov()
-    state.apply_sign_convention("n_l_1")
+    state = RadialKet(nu, potential, n_expected=n, parameters={"sign_convention": "n_l_1"})
+    state.integrate_wavefunction()
     return state

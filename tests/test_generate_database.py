@@ -76,7 +76,9 @@ def test_generate_matrix_elements_table(species: str, conn: sqlite3.Connection) 
     states = basis.states
     for state in states:
         state.radial.integrate_wavefunction()
-        state.radial.apply_sign_convention("n_l_1")
     for row in rows_by_table["matrix_elements_d"]:
-        reference = states[row[1]].calc_reduced_matrix_element(states[row[0]], "electric_dipole", unit="a.u.")
+        state1, state2 = states[row[0]], states[row[1]]
+        sign1 = (-1) ** (state1.radial.n_expected - state1.radial.l_r - 1)  # type: ignore [operator]
+        sign2 = (-1) ** (state2.radial.n_expected - state2.radial.l_r - 1)  # type: ignore [operator]
+        reference = state2.calc_reduced_matrix_element(state1, "electric_dipole", unit="a.u.") * sign1 * sign2
         assert np.isclose(row[2], reference)

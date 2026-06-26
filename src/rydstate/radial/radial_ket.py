@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import math
-from typing import TYPE_CHECKING, Literal, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, overload
 
 import numpy as np
 from mpmath import whitw
@@ -29,13 +29,55 @@ WavefunctionSignConvention = Literal["positive_at_outer_bound", "n_l_1"] | None
 class RadialKet:
     r"""Class representing a radial Rydberg state."""
 
-    def __init__(self, nu: float, potential: Potential | PotentialDummy) -> None:
+    # Default values for the developer/advanced parameters
+    DEFAULT_PARAMETERS: ClassVar[dict[str, Any]] = {
+        "dz": 1e-2,
+        "x_min": None,
+        "x_max": None,
+        "run_backward": True,
+        "w0": 1e-10,
+        "use_njit": True,
+        "integration_method": "numerov",
+        "sign_convention": "positive_at_outer_bound",
+    }
+
+    def __init__(
+        self,
+        nu: float,
+        potential: Potential | PotentialDummy,
+        *,
+        n_expected: int | None = None,
+        parameters: dict[str, Any] | None = None,
+    ) -> None:
         r"""Initialize the radial ket.
 
         Args:
             nu: Effective principal quantum number of the rydberg electron,
                 which is used to calculate the energy of the state.
             potential: The potential object.
+            n_expected: Optional principal quantum number of the rydberg electron, used for additional
+                sanity checks of the radial wavefunction (e.g. checking that the number of nodes matches
+                n - l - 1). It is also required for the "n_l_1" sign convention.
+            parameters: Optional dictionary of advanced parameters that influence the wavefunction.
+                These are usually kept at their defaults and only changed for developing/debugging purposes.
+                Recognized keys (with defaults) are:
+
+                - ``dz`` (default: 1e-2): The step size of the integration in the scaled dimensionless
+                  coordinate :math:`z = \sqrt{r/a_0}`.
+                - ``x_min`` (default: None): The minimum value of the radial coordinate in dimensionless
+                  units :math:`x = r/a_0`. None means a sensible value is calculated automatically.
+                - ``x_max`` (default: None): The maximum value of the radial coordinate in dimensionless
+                  units :math:`x = r/a_0`. None means a sensible value is calculated automatically.
+                - ``run_backward`` (default: True): Whether to integrate the radial Schrödinger equation
+                  "backward" or "forward".
+                - ``w0`` (default: 1e-10): The initial magnitude of the radial wavefunction at the boundary.
+                - ``use_njit`` (default: True): Whether to use the fast njit version of the Numerov integration.
+                - ``integration_method`` (default: "numerov"): The method used to integrate the wavefunction,
+                  either "numerov" or "whittaker".
+                - ``sign_convention`` (default: "positive_at_outer_bound"): The sign convention applied to the
+                  wavefunction after the integration. One of "positive_at_outer_bound", "n_l_1" or None
+                  (see :meth:`_apply_sign_convention`). The "n_l_1" convention requires ``n_expected``
+                  to be set.
 
         """
         self.potential = potential
@@ -43,7 +85,38 @@ class RadialKet:
         if not nu > 0:
             raise ValueError(f"nu must be larger than 0, but is {nu=}")
         self.nu = nu
-        self.n: int | None = None
+
+        unknown_keys = set(parameters or {}) - set(self.DEFAULT_PARAMETERS)
+        if unknown_keys:
+            raise ValueError(
+                f"Unknown keys in parameters: {sorted(unknown_keys)}. "
+                f"Allowed keys are: {sorted(self.DEFAULT_PARAMETERS)}."
+            )
+        self._parameters: dict[str, Any] = {**self.DEFAULT_PARAMETERS, **(parameters or {})}
+
+        self.n_expected: int | None = n_expected
+        if self.n_expected is not None:
+            self._sanity_check_n_expected(self.n_expected)
+
+    def _sanity_check_n_expected(self, n_expected: int) -> None:
+        """Validate n_expected, which is used for additional sanity checks of the radial wavefunction.
+
+        E.g. if n_expected is provided, we can check whether the number of nodes in the wavefunction matches
+        n_expected - l - 1.
+
+        Args:
+            n_expected: Principal quantum number of the rydberg electron.
+
+        """
+        if not ((isinstance(n_expected, int) or n_expected.is_integer()) and n_expected >= 1):
+            raise ValueError(f"n_expected must be an integer, and larger or equal 1, but {n_expected=}")
+
+        if n_expected > 10 and n_expected < (self.nu - 1e-5):
+            # if n_expected <= 10, we use NIST energy data for low n, which sometimes results in nu > n_expected
+            # -1e-5: avoid issues due to numerical precision and due to NIST data
+            raise ValueError(f"n_expected must be larger or equal to nu, but {n_expected=}, nu={self.nu} for {self}")
+        if not is_unknown(self.l_r) and n_expected <= self.l_r:
+            raise ValueError(f"n_expected must be larger than l_r, but {n_expected=}, l_r={self.l_r} for {self}")
 
     def __repr__(self) -> str:
         nu, potential = self.nu, self.potential
@@ -62,7 +135,7 @@ class RadialKet:
         because the nodes of the wavefunction are equally spaced in this coordinate.
         """
         if not hasattr(self, "_z_list"):
-            self.create_grid_points()
+            self._create_grid_points()
         return self._z_list
 
     @property
@@ -115,43 +188,15 @@ class RadialKet:
         w_list_no_zeros = self.w_list[self.w_list != 0]
         return int(np.sum(np.abs(np.diff(np.sign(w_list_no_zeros)))) // 2)
 
-    def set_n_for_sanity_check(self, n: int) -> None:
-        """Provide n for additional sanity checks of the radial wavefunction.
-
-        E.g. if n is provided, we can check whether the number of nodes in the wavefunction matches n - l - 1.
-
-        Args:
-            n: Principal quantum number of the rydberg electron.
-
-        """
-        if not ((isinstance(n, int) or n.is_integer()) and n >= 1):
-            raise ValueError(f"n must be an integer, and larger or equal 1, but {n=}")
-
-        if n > 10 and n < (self.nu - 1e-5):
-            # if n <= 10, we use NIST energy data for low n, which sometimes results in nu > n
-            # -1e-5: avoid issues due to numerical precision and due to NIST data
-            raise ValueError(f"n must be larger or equal to nu, but {n=}, nu={self.nu} for {self}")
-        if not is_unknown(self.l_r) and n <= self.l_r:
-            raise ValueError(f"n must be larger than l_r, but {n=}, l_r={self.l_r} for {self}")
-        self.n = n
-
-    def create_grid_points(
-        self,
-        x_min: float | None = None,
-        x_max: float | None = None,
-        dz: float = 1e-2,
-    ) -> None:
+    def _create_grid_points(self) -> None:
         r"""Create the grid points for the integration of the radial Schrödinger equation.
 
-        Args:
-            x_min: The minimum value of the radial coordinate in dimensionless units :math:`x = r/a_0`.
-                Default: Automatically calculate sensible value.
-            x_max: The maximum value of the radial coordinate in dimensionless units :math:`x = r/a_0`.
-                Default: Automatically calculate sensible value.
-            dz: The step size of the integration in the scaled dimensionless coordinate :math:`z = \sqrt{r/a_0}`.
-                Default: 1e-2.
-
+        The grid is controlled by the ``x_min``, ``x_max`` and ``dz`` entries of the ``parameters``
+        dictionary passed to :meth:`__init__` (see there for details).
         """
+        x_min = self._parameters["x_min"]
+        x_max = self._parameters["x_max"]
+        dz = self._parameters["dz"]
         if hasattr(self, "_z_list"):
             raise RuntimeError("The grid points were already created, you should not create them again.")
         l_r = self.l_r if not is_unknown(self.l_r) else 0  # used for limit estimations
@@ -185,21 +230,17 @@ class RadialKet:
         # because of floating point errors
         self._z_list: NDArray = np.arange(0, z_max + dz / 2, dz)[round(z_min / dz) :]
 
-    def integrate_wavefunction(self, method: Literal["numerov", "whittaker"] = "numerov") -> None:
+    def integrate_wavefunction(self) -> None:
+        """Integrate the wavefunction using the method given by the ``integration_method`` parameter."""
+        method = self._parameters["integration_method"]
         if method == "numerov":
-            self.integrate_numerov()
+            self._integrate_numerov()
         elif method == "whittaker":
-            self.integrate_whittaker()
+            self._integrate_whittaker()
         else:
             raise ValueError(f"Unknown integration method: {method}")
 
-    def integrate_numerov(
-        self,
-        run_backward: bool = True,
-        w0: float = 1e-10,
-        *,
-        _use_njit: bool = True,
-    ) -> None:
+    def _integrate_numerov(self) -> None:
         r"""Run the Numerov integration of the radial Schrödinger equation.
 
         The resulting radial wavefunctions are then stored as attributes, where
@@ -226,14 +267,17 @@ class RadialKet:
             = \int_{0}^{\infty} 2 z^2 |w(z)|^2 dz
             = 1
 
-        Args:
-            run_backward (default: True): Whether to integrate the radial Schrödinger equation "backward" or "forward".
-            w0 (default: 1e-10): The initial magnitude of the radial wavefunction at the outer boundary.
-                For forward integration we set w[0] = 0 and w[1] = w0,
-                for backward integration we set w[-1] = 0 and w[-2] = (-1)^{(n - l - 1) % 2} * w0.
-            _use_njit (default: True): Whether to use the fast njit version of the Numerov integration.
+        The integration is controlled by the ``run_backward``, ``w0`` and ``use_njit`` entries of the
+        ``parameters`` dictionary passed to :meth:`__init__`:
 
+        - ``run_backward``: Whether to integrate the radial Schrödinger equation "backward" or "forward".
+        - ``w0``: The initial magnitude of the wavefunction at the inner/outer boundary for forward/backward integration
+        - ``use_njit``: Whether to use the fast njit version of the Numerov integration.
         """
+        run_backward = self._parameters["run_backward"]
+        w0 = self._parameters["w0"]
+        use_njit = self._parameters["use_njit"]
+
         if hasattr(self, "_w_list"):
             raise RuntimeError("The wavefunction was already integrated, you should not create it again.")
         if is_unknown(self.l_r):
@@ -247,11 +291,10 @@ class RadialKet:
         glist = 8 * element_properties.reduced_mass_au * self.z_list * self.z_list * (energy_au - v_eff)
 
         if run_backward:
-            # During the Numerov integration we define the wavefunction such that it should always stop
-            # at the inner boundary with positive weight
+            # During the Numerov integration we start the wavefunction at the outer boundary with +w0.
             # Note: n - l - 1 is the number of nodes of the radial wavefunction
-            # Thus, the sign of the wavefunction at the outer boundary is (-1)^{(n - l - 1) % 2}
-            # You can choose a different sign convention by calling the method apply_sign_convention() afterwards.
+            # Thus, the sign of the wavefunction at the inner boundary is (-1)^{(n - l - 1) % 2}
+            # You can choose a different sign convention via the sign_convention parameter
             y0, y1 = 0, w0
             x_start, x_stop, dx = self.z_list[-1], self.z_list[0], -self.dz
             g_list_directed = glist[::-1]
@@ -272,7 +315,7 @@ class RadialKet:
             g_list_directed = glist
             x_min = math.sqrt(self.nu * (self.nu + 15))
 
-        if _use_njit:
+        if use_njit:
             w_list_list = run_numerov_integration(x_start, x_stop, dx, y0, y1, g_list_directed, x_min)
         else:
             logger.warning("Using python implementation of Numerov integration, this is much slower!")
@@ -287,10 +330,10 @@ class RadialKet:
         # normalize the wavefunction, see docstring
         self._w_list /= self.norm
 
-        self.apply_sign_convention("positive_at_outer_bound")
-        self.sanity_check(x_stop, run_backward)
+        self._apply_sign_convention()
+        self._sanity_check_wavefunction(x_stop, run_backward)
 
-    def integrate_whittaker(self) -> None:
+    def _integrate_whittaker(self) -> None:
         if hasattr(self, "_w_list"):
             raise RuntimeError("The wavefunction was already integrated, you should not create it again.")
         if is_unknown(self.l_r):
@@ -308,9 +351,9 @@ class RadialKet:
         w_list: NDArray = u_list / np.sqrt(self.z_list)
 
         self._w_list = w_list
-        self.apply_sign_convention("positive_at_outer_bound")
+        self._apply_sign_convention()
 
-    def sanity_check(self, z_force_stop: float, run_backward: bool) -> bool:  # noqa: C901, PLR0915, PLR0912
+    def _sanity_check_wavefunction(self, z_force_stop: float, run_backward: bool) -> bool:  # noqa: C901, PLR0915, PLR0912
         """Do some sanity checks on the wavefunction.
 
         Check if the wavefuntion fulfills the following conditions:
@@ -407,8 +450,10 @@ class RadialKet:
             "l_r should not be Unknown at this point, otherwise the integration would not work"
         )
         nodes = self.nodes
-        if self.n is not None and nodes != self.n - self.l_r - 1:
-            warning_msgs.append(f"The wavefunction has {nodes} nodes, but should have {self.n - self.l_r - 1} nodes.")
+        if self.n_expected is not None and nodes != self.n_expected - self.l_r - 1:
+            warning_msgs.append(
+                f"The wavefunction has {nodes} nodes, but should have {self.n_expected - self.l_r - 1} nodes."
+            )
 
         # Check that numerov stopped and did not run until z_force_stop
         if run_backward:
@@ -433,16 +478,16 @@ class RadialKet:
 
         return True
 
-    def apply_sign_convention(self, sign_convention: WavefunctionSignConvention) -> None:
-        """Set the sign of the wavefunction according to the sign convention.
+    def _apply_sign_convention(self) -> None:
+        """Set the sign of the wavefunction according to the ``sign_convention`` parameter.
 
-        Args:
-            sign_convention: The sign convention for the wavefunction.
-                - None: Leave the wavefunction as it is.
-                - "n_l_1": The wavefunction is defined to have the sign of (-1)^{(n - l - 1)} at the outer boundary.
-                - "positive_at_outer_bound": The wavefunction is defined to be positive at the outer boundary.
-
+        The sign convention is taken from the ``sign_convention`` entry of the ``parameters`` dictionary
+        passed to :meth:`__init__`:
+            - None: Leave the wavefunction as it is.
+            - "n_l_1": The wavefunction is defined to have the sign of (-1)^{(n_expected - l - 1)} at the outer boundary
+            - "positive_at_outer_bound": The wavefunction is defined to be positive at the outer boundary.
         """
+        sign_convention: WavefunctionSignConvention = self._parameters["sign_convention"]
         if sign_convention is None:
             return
 
@@ -457,9 +502,9 @@ class RadialKet:
                 self._w_list = -self._w_list
         elif sign_convention == "n_l_1":
             assert not is_unknown(self.l_r), "l_r should not be Unknown at this point"
-            if self.n is None:
-                raise ValueError("n must be given to apply the 'n_l_1' sign convention.")
-            if current_outer_sign * (-1) ** (self.n - self.l_r - 1) < 0:
+            if self.n_expected is None:
+                raise ValueError("n_expected must be given to apply the 'n_l_1' sign convention.")
+            if current_outer_sign * (-1) ** (self.n_expected - self.l_r - 1) < 0:
                 self._w_list = -self._w_list
         else:
             raise ValueError(f"Unknown sign convention: {sign_convention}")
