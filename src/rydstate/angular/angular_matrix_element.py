@@ -34,7 +34,7 @@ def calc_reduced_spherical_matrix_element(l_r_final: int, l_r_initial: int, kapp
         The reduced matrix element :math:`(l_r_final || \hat{Y}_{k} || l_r_initial)`.
 
     """
-    prefactor: float = minus_one_pow(l_r_final)
+    prefactor: float = minus_one_pow(l_r_initial)
     prefactor *= math.sqrt((2 * l_r_final + 1) * (2 * l_r_initial + 1) * (2 * kappa + 1) / (4 * np.pi))
     wigner_3j = calc_wigner_3j(l_r_final, kappa, l_r_initial, 0, 0, 0)
     return prefactor * wigner_3j
