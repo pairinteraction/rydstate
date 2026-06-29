@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from rydstate.rydberg_state.rydberg_ket import RydbergKet
+    from rydstate.species import MQDT, Potential
     from rydstate.units import NDArray
 
 
@@ -29,12 +30,16 @@ class RydbergStateMQDT(RydbergStateBase):
         rydberg_kets: Sequence[RydbergKet],
         nu: float,
         energy_au: float,
+        mqdt: MQDT,
+        potential_class: type[Potential],
     ) -> None:
         self.species = species
         self.coefficients = np.array(coefficients)
         self.rydberg_kets = list(rydberg_kets)
         self.nu = float(nu)
         self._energy_au = float(energy_au)
+        self.mqdt = mqdt
+        self.potential_class = potential_class
 
         if len(rydberg_kets) == 0:
             raise ValueError("RydbergStateMQDT must be initialized with at least one state.")

@@ -208,6 +208,16 @@ def get_mqdt_states_from_fmodel(  # noqa: C901
                 RydbergKet(angular_ket.replace_m(m), radial_ket)
                 for angular_ket, radial_ket in zip(model.outer_channels, radial_kets, strict=True)
             ]
-            states.append(RydbergStateMQDT(model.species, coefficients, rydberg_kets, nu=nu, energy_au=energy_au))
+            states.append(
+                RydbergStateMQDT(
+                    model.species,
+                    coefficients,
+                    rydberg_kets,
+                    nu=nu,
+                    energy_au=energy_au,
+                    mqdt=model.mqdt,
+                    potential_class=potential_class,
+                )
+            )
 
     return states
