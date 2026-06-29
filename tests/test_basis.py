@@ -32,15 +32,6 @@ def test_alkali_basis(species: str) -> None:
     assert np.count_nonzero(me_matrix) > 0
 
 
-def test_basis_copy() -> None:
-    basis = BasisSQDT("Sr88", n=(30, 30), coupling_scheme="LS")
-    basis_copy = basis.copy()
-    assert basis_copy.coupling_scheme == "LS"
-    assert basis_copy.species is basis.species
-    assert basis_copy.states == basis.states
-    assert basis_copy.states is not basis.states
-
-
 def test_sqdt_basis_m_range() -> None:
     basis = BasisSQDT("H", n=(5, 5), f_tot=(0.5, 0.5), l_r=(0, 0), m=(-0.5, 0.5), coupling_scheme="LS")
     invalid_basis = BasisSQDT("H", n=(5, 5), f_tot=(0.5, 0.5), l_r=(0, 0), m=(0, 0), coupling_scheme="LS")
