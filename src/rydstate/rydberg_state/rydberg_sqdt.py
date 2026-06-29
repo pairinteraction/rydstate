@@ -218,7 +218,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
     @cached_property
     def radial(self) -> RadialKet:
         """The radial part of the Rydberg electron."""
-        return RadialKet(self.nu, self.potential, n_expected=self.n)
+        return RadialKet(self.nu, self.potential, n_expected=self.n, sign_convention="n_l_1")
 
     @cached_property
     def coefficients(self) -> NDArray:  # type: ignore [override]
