@@ -80,7 +80,7 @@ def test_generate_matrix_elements_table(species_specifier: str, conn: sqlite3.Co
         basis = BasisSQDT(species, n=(50, 52), l_r=(0, 2), coupling_scheme="LS")
     basis.sort_states("nu")
 
-    rows_by_table = generate_matrix_elements_tables(basis, conn=conn)
+    rows_by_table = generate_matrix_elements_tables(basis, conn=conn, free_memory=False)
 
     for rows in rows_by_table.values():
         assert len(rows) > 2

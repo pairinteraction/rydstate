@@ -50,6 +50,16 @@ class RydbergStateBase(ABC):
     def __iter__(self) -> Iterator[tuple[float, RydbergKet]]:
         return zip(self.coefficients, self.rydberg_kets, strict=True).__iter__()
 
+    def free_memory(self) -> None:
+        """Release the cached radial and angular data to reduce memory usage.
+
+        This drops the references to the (potentially large) radial wavefunctions of the rydberg kets.
+        After calling this, matrix elements and overlaps can no longer be calculated for this state.
+        """
+        for rydberg_ket in self.rydberg_kets:
+            rydberg_ket.__dict__.pop("radial", None)
+            rydberg_ket.__dict__.pop("angular", None)
+
     @property
     def norm(self) -> float:
         """Return the norm of the state (should be 1)."""

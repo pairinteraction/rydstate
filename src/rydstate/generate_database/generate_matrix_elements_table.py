@@ -64,6 +64,8 @@ def generate_matrix_elements_tables(  # noqa: C901
     conn: sqlite3.Connection | None = None,
     max_delta_nu: float = float("inf"),
     all_nu_up_to: float = float("inf"),
+    *,
+    free_memory: bool = False,
 ) -> dict[str, list[tuple[int, int, float]]]:
     """Populate matrix element tables for all relevant pairs of states."""
     k_angular_max = max(MatrixElementOperatorRanks[op][1] for op in MATRIX_ELEMENTS_OF_INTEREST.values())
@@ -100,6 +102,9 @@ def generate_matrix_elements_tables(  # noqa: C901
                 me_one_pair = calc_matrix_elements_one_pair(states[1], states[0], MATRIX_ELEMENTS_OF_INTEREST)
                 for tkey, me in me_one_pair.items():
                     matrix_elements[tkey].append((id_tuple[1], id_tuple[0], me))
+
+        if free_memory:
+            state1.free_memory()
 
     for key, mes in matrix_elements.items():
         matrix_elements[key] = sorted(mes)

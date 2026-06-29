@@ -56,7 +56,7 @@ def create_tables_for_one_species(
             if nu is not None:
                 basis.filter_states("nu", nu)
         generate_states_table(basis, conn)
-        generate_matrix_elements_tables(basis, conn, max_delta_nu, all_nu_up_to)
+        generate_matrix_elements_tables(basis, conn, max_delta_nu, all_nu_up_to, free_memory=True)
     logger.info("Size of %s: %.6f megabytes", db_file, db_file.stat().st_size * 1e-6)
 
     # convert the tables to parquet files

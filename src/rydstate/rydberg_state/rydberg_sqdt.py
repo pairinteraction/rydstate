@@ -228,6 +228,13 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
     def rydberg_kets(self) -> list[RydbergKet]:  # type: ignore [override]
         return [RydbergKet(self.angular, self.radial)]
 
+    def free_memory(self) -> None:
+        super().free_memory()
+        # For SQDT the radial ket is held by these cached properties of the state itself,
+        # so they have to be dropped as well to actually release the radial wavefunction.
+        self.__dict__.pop("rydberg_kets", None)
+        self.__dict__.pop("radial", None)
+
     @overload
     def get_radial_energy(self, unit: None = None) -> PintFloat: ...
 
