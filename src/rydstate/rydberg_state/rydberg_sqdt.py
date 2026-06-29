@@ -5,7 +5,6 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
 import numpy as np
-from scipy.special import exprel
 
 from rydstate.angular import NotSet
 from rydstate.angular.angular_ket import AngularKetBase, AngularKetLS
@@ -17,13 +16,11 @@ from rydstate.species import get_element_properties, get_sqdt
 from rydstate.species.potential import Potential, get_potential_class
 from rydstate.species.sqdt import SQDT
 from rydstate.species.utils import calc_energy_from_nu
-from rydstate.units import BaseQuantities, ureg
+from rydstate.units import BaseQuantities
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
-
     from rydstate.angular.angular_ket import AngularKetFJ, AngularKetJJ
-    from rydstate.units import NDArray, PintArray, PintFloat
+    from rydstate.units import NDArray, PintFloat
 
 GenericT_AngularKet = TypeVar("GenericT_AngularKet", bound=AngularKetBase[AllKnown])
 T_AngularKet = TypeVar("T_AngularKet", bound=AngularKetBase[AllKnown])
@@ -258,208 +255,6 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         if unit is None:
             return energy
         return energy.to(unit, "spectroscopy").magnitude
-
-    @overload
-    def get_spontaneous_transition_rates(self: Self, unit: None = None) -> tuple[list[Self], PintArray]: ...
-
-    @overload
-    def get_spontaneous_transition_rates(self: Self, unit: str) -> tuple[list[Self], NDArray]: ...
-
-    def get_spontaneous_transition_rates(self: Self, unit: str | None = None) -> tuple[list[Self], NDArray | PintArray]:
-        """Calculate the spontaneous transition rates for the Rydberg state.
-
-        The spontaneous transition rates are given by the Einstein A coefficients.
-
-        Args:
-            unit: The unit to which to convert the result.
-                Default None will return a `pint.Quantity`.
-
-        Returns:
-            The relevant states and the transition rates.
-
-        """
-        relevant_states_masked, transition_rates_au = self._get_transition_rates_au(only_spontaneous=True)
-
-        if unit == "a.u.":
-            return relevant_states_masked, transition_rates_au
-        transition_rates = ureg.Quantity(transition_rates_au, "1/atomic_unit_of_time")
-        if unit is None:
-            return relevant_states_masked, transition_rates
-        return relevant_states_masked, transition_rates.to(unit).magnitude
-
-    @overload
-    def get_black_body_transition_rates(
-        self: Self, temperature: float | PintFloat, temperature_unit: str | None = None, unit: None = None
-    ) -> tuple[list[Self], PintArray]: ...
-
-    @overload
-    def get_black_body_transition_rates(
-        self: Self, temperature: PintFloat, *, unit: str
-    ) -> tuple[list[Self], NDArray]: ...
-
-    @overload
-    def get_black_body_transition_rates(
-        self: Self, temperature: float, temperature_unit: str, unit: str
-    ) -> tuple[list[Self], NDArray]: ...
-
-    def get_black_body_transition_rates(
-        self: Self, temperature: float | PintFloat, temperature_unit: str | None = None, unit: str | None = None
-    ) -> tuple[list[Self], NDArray | PintArray]:
-        """Calculate the black body transition rates of the Rydberg state.
-
-        The black body transition rates are given by the Einstein B coefficients,
-        with a weight factor given by Planck's law.
-
-        Args:
-            temperature: The temperature, for which to calculate the black body transition rates.
-            temperature_unit: The unit of the temperature.
-                Default None will assume the temperature is given as `pint.Quantity`.
-            unit: The unit to which to convert the result.
-                Default None will return a `pint.Quantity`.
-
-        Returns:
-            The relevant states and the transition rates.
-
-        """
-        temperature_au = ureg.Quantity(temperature, temperature_unit).to_base_units().magnitude
-        relevant_states_masked, transition_rates_au = self._get_transition_rates_au(
-            temperature_au, only_spontaneous=False
-        )
-
-        if unit == "a.u.":
-            return relevant_states_masked, transition_rates_au
-        transition_rates = ureg.Quantity(transition_rates_au, "1/atomic_unit_of_time")
-        if unit is None:
-            return relevant_states_masked, transition_rates
-        return relevant_states_masked, transition_rates.to(unit).magnitude
-
-    def _get_transition_rates_au(
-        self: Self,
-        temperature_au: float | None = None,
-        *,
-        only_spontaneous: bool = False,
-    ) -> tuple[list[Self], NDArray]:
-        r"""Calculate the transition rates in atomic units.
-
-        The transition rates are given by the Einstein A coefficients for spontaneous transitions,
-        and by the Einstein B coefficients with a weight factor given by Planck's law for black body transitions.
-
-        Concretely the transition rates are calculated as
-
-        .. math::
-            \Gamma^{spontaneous}_{self \to other} = \frac{4}{3} \frac{\alpha}{c^2} \omega^3
-                |\langle self || r^k_{radial} \hat{d}_q || other \rangle|^2
-
-        where :math:`\alpha = 1/c` in atomic units.
-
-        and
-
-        .. math::
-            \Gamma^{blackbody}_{self \to other} = \Gamma^{spontaneous}_{self \to other} \frac{1}{\exp(\omega / T) - 1}
-
-        """
-        if self.angular.coupling_scheme != "LS":
-            raise NotImplementedError("Transition rates are currently only implemented for LS coupled states.")
-        from rydstate.basis import BasisSQDT  # noqa: PLC0415
-
-        m = self.angular.m
-        if is_not_set(m):
-            raise RuntimeError("m quantum number must be defined to calculate transition rates.")
-
-        basis = BasisSQDT(
-            self.species, n=(1, int(self.nu + 35)), m=(m - 1, m + 1), coupling_scheme=self.angular.coupling_scheme
-        )
-        basis.filter_states("l_r", (self.angular.l_r - 1, self.angular.l_r + 1))
-
-        if only_spontaneous:
-            basis.filter_states("nu", (0, self.nu))
-
-        relevant_states = basis.states
-        energy_differences_au = self.get_energy("a.u.") - np.array([s.get_energy("a.u.") for s in relevant_states])
-        electric_dipole_moments_au = np.zeros(len(relevant_states))
-        for q in [-1, 0, 1]:
-            el_di_m = np.array(
-                [s.calc_matrix_element(self, "electric_dipole", q, unit="a.u.") for s in relevant_states]
-            )
-            electric_dipole_moments_au += np.abs(el_di_m) ** 2
-
-        transition_rates_au = (
-            (4 / 3) * electric_dipole_moments_au / ureg.Quantity(1, "speed_of_light").to_base_units().magnitude ** 3
-        )
-
-        if only_spontaneous:
-            transition_rates_au *= energy_differences_au**3
-        else:
-            assert temperature_au is not None, "Temperature must be given for black body transitions."
-            if temperature_au == 0:
-                transition_rates_au *= 0
-            else:  # for numerical stability we use 1 / exprel(x) = x / (exp(x) - 1)
-                transition_rates_au *= (
-                    energy_differences_au**2 * temperature_au / exprel(energy_differences_au / temperature_au)
-                )
-
-        mask = transition_rates_au != 0
-        relevant_states_masked = [ket for ket, is_relevant in zip(relevant_states, mask, strict=True) if is_relevant]
-        transition_rates_au = transition_rates_au[mask]
-
-        if np.any(transition_rates_au < 0):
-            raise RuntimeError("Got negative transition rates, which should not happen.")
-
-        return relevant_states_masked, transition_rates_au  # type: ignore [return-value]
-
-    @overload
-    def get_lifetime(
-        self,
-        temperature: float | PintFloat | None = None,
-        temperature_unit: str | None = None,
-        unit: None = None,
-    ) -> PintFloat: ...
-
-    @overload
-    def get_lifetime(self, *, unit: str) -> float: ...
-
-    @overload
-    def get_lifetime(self, temperature: PintFloat, *, unit: str) -> float: ...
-
-    @overload
-    def get_lifetime(self, temperature: float, temperature_unit: str, unit: str) -> float: ...
-
-    def get_lifetime(
-        self,
-        temperature: float | PintFloat | None = None,
-        temperature_unit: str | None = None,
-        unit: str | None = None,
-    ) -> float | PintFloat:
-        """Calculate the lifetime of the Rydberg state.
-
-        The lifetime is the inverse of the sum of all transition rates.
-
-        Args:
-            temperature: The temperature, for which to calculate the black body transition rates.
-                Default None will not include black body transitions.
-            temperature_unit: The unit of the temperature.
-                Default None will assume the temperature is given as `pint.Quantity`.
-            unit: The unit to which to convert the result.
-                Default None will return a `pint.Quantity`.
-
-        Returns:
-            The lifetime of the state.
-
-        """
-        _, transition_rates = self.get_spontaneous_transition_rates()
-        transition_rates_au = transition_rates.to_base_units().magnitude
-        if temperature is not None:
-            _, black_body_transition_rates = self.get_black_body_transition_rates(temperature, temperature_unit)
-            transition_rates_au = np.append(transition_rates_au, black_body_transition_rates.to_base_units().magnitude)
-
-        lifetime_au: float = 1 / np.sum(transition_rates_au)
-
-        if unit == "a.u.":
-            return lifetime_au
-        lifetime = ureg.Quantity(lifetime_au, "atomic_unit_of_time")
-        if unit is None:
-            return lifetime
-        return lifetime.to(unit).magnitude
 
 
 class RydbergStateSQDTAlkali(RydbergStateSQDT[AngularKetLS[AllKnown]]):
