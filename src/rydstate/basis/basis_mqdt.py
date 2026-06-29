@@ -200,7 +200,7 @@ def get_mqdt_states_from_fmodel(  # noqa: C901
                 potential = potential_class(angular_ket.l_r)
             else:
                 potential = PotentialDummy(model.species, angular_ket.l_r)
-            radial_kets.append(RadialKet(float(nui), potential))
+            radial_kets.append(RadialKet(float(nui), potential, sign_convention="positive_at_outer_bound"))
 
         energy_au = model.calc_energy_au(nu)
         for m in get_m_range(model.f_tot, m_range):
