@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING, Any, overload
 import numpy as np
 from scipy.special import exprel
 
-from rydstate.angular.utils import is_angular_momentum_quantum_number, is_not_set
+from rydstate.angular.angular_ket import AngularKetBase
+from rydstate.angular.angular_state import AngularState
+from rydstate.angular.utils import is_angular_momentum_quantum_number, is_not_set, is_unknown
 from rydstate.units import BaseQuantities, ureg
 
 if TYPE_CHECKING:
@@ -16,8 +18,6 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from rydstate.angular.angular_ket import AngularKetBase
-    from rydstate.angular.angular_state import AngularState
     from rydstate.rydberg_state.rydberg_ket import RydbergKet
     from rydstate.units import MatrixElementOperator, NDArray, PintArray, PintFloat
 
@@ -321,18 +321,43 @@ class RydbergStateBase(ABC):
             \Gamma^{blackbody}_{self \to other} = \Gamma^{spontaneous}_{self \to other} \frac{1}{\exp(\omega / T) - 1}
 
         """
-        if self.angular.coupling_scheme != "LS":
-            raise NotImplementedError("Transition rates are currently only implemented for LS coupled states.")
-        from rydstate.basis import BasisSQDT  # noqa: PLC0415
+        from rydstate.basis import BasisMQDT, BasisSQDT  # noqa: PLC0415
+        from rydstate.rydberg_state import RydbergStateMQDT, RydbergStateSQDT  # noqa: PLC0415
 
         m = self.angular.m
         if is_not_set(m):
             raise RuntimeError("m quantum number must be defined to calculate transition rates.")
 
-        basis = BasisSQDT(
-            self.species, n=(1, int(self.nu + 35)), m=(m - 1, m + 1), coupling_scheme=self.angular.coupling_scheme
-        )
-        basis.filter_states("l_r", (self.angular.l_r - 1, self.angular.l_r + 1))
+        basis: BasisMQDT | BasisSQDT[Any]
+        if isinstance(self, RydbergStateSQDT):
+            assert isinstance(self.angular, AngularKetBase)
+            if self.angular.coupling_scheme != "LS":
+                raise NotImplementedError("Transition rates are currently only implemented for LS coupled states.")
+            l_r = int(self.angular.get_qn("l_r"))
+            basis = BasisSQDT(
+                self.species,
+                n=(1, int(self.n + 35)),
+                l_r=(l_r - 1, l_r + 1),
+                m=(m - 1, m + 1),
+                coupling_scheme=self.angular.coupling_scheme,
+                sqdt=self.sqdt,
+                potential_class=type(self.potential),
+            )
+        elif isinstance(self, RydbergStateMQDT):
+            assert isinstance(self.angular, AngularState)
+            l_r_list = [
+                angular_ket.l_r for angular_ket in self.angular.to("LS").kets if not is_unknown(angular_ket.l_r)
+            ]
+            basis = BasisMQDT(
+                self.species,
+                nu=(0, int(self.nu + 35)),
+                l_r=(min(l_r_list) - 1, max(l_r_list) + 1),
+                m=(m - 1, m + 1),
+                mqdt=self.mqdt,
+                potential_class=self.potential_class,
+            )
+        else:
+            raise NotImplementedError(f"Transition rates are not implemented for {type(self)}.")
 
         if only_spontaneous:
             basis.filter_states("nu", (0, self.nu))
