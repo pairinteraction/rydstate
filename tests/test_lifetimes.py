@@ -1,8 +1,16 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 import pytest
-from rydstate import RydbergStateSQDT, RydbergStateSQDTAlkali
+from rydstate import BasisMQDT, RydbergStateSQDT, RydbergStateSQDTAlkali
 from rydstate.angular import AngularKetLS
-from rydstate.species import ElementProperties, get_all_subclasses, get_element_properties
+from rydstate.species import ElementProperties, get_all_subclasses, get_element_properties, get_mqdt
+from rydstate.species.potential import get_potential_class
+
+if TYPE_CHECKING:
+    from rydstate import RydbergStateMQDT
 
 ALL_AVAILABLE_SPECIES = sorted([cls.species for cls in get_all_subclasses(ElementProperties)])
 
@@ -60,3 +68,51 @@ def test_lifetime_n_scaling(species: str) -> None:
     nu2 = state2.nu
     expected_ratio = (nu2 / nu1) ** 3
     np.testing.assert_allclose(tau2 / tau1, expected_ratio, rtol=0.05)
+
+
+def _get_mqdt_state(nu_range: tuple[float, float]) -> RydbergStateMQDT:
+    """Return a single Sr88 S (l_r=0, f_tot=1) MQDT state in the given nu range."""
+    basis = BasisMQDT("Sr88", nu=nu_range, l_r=(0, 0), f_tot=(1, 1), m=(0, 0))
+    assert len(basis.states) >= 1
+    return basis.states[0]
+
+
+def test_mqdt_lifetime_is_finite_and_positive() -> None:
+    """The spontaneous lifetime of an MQDT state can be computed and is finite and positive."""
+    state = _get_mqdt_state((29.5, 29.8))
+    tau = state.get_lifetime(unit="mus")
+    assert np.isfinite(tau)
+    assert tau > 0
+
+
+def test_mqdt_bbr_shortens_lifetime() -> None:
+    """Black body radiation at 300 K shortens the lifetime of an MQDT state relative to T=0."""
+    state = _get_mqdt_state((29.5, 29.8))
+    tau_0 = state.get_lifetime(unit="mus")
+    tau_300 = state.get_lifetime(300, temperature_unit="K", unit="mus")
+    assert tau_300 < tau_0
+
+
+def test_mqdt_lifetime_nu_scaling() -> None:
+    """MQDT Rydberg state lifetimes scale as nu^3 (effective quantum number)."""
+    state1 = _get_mqdt_state((29.5, 29.8))
+    state2 = _get_mqdt_state((49.5, 49.8))
+    tau1 = state1.get_lifetime(unit="mus")
+    tau2 = state2.get_lifetime(unit="mus")
+    expected_ratio = (state2.nu / state1.nu) ** 3
+    np.testing.assert_allclose(tau2 / tau1, expected_ratio, rtol=0.05)
+
+
+def test_mqdt_transition_rate_basis_reuses_state_model_and_potential() -> None:
+    """The internal basis used for transition rates reuses the state's own mqdt model and potential."""
+    state = _get_mqdt_state((29.5, 29.8))
+
+    # the state retains the model and potential it was built from ...
+    assert state.mqdt is get_mqdt("Sr88")
+    assert state.potential_class is get_potential_class("Sr88")
+
+    # ... and these are forwarded into the basis built inside _get_transition_rates_au
+    relevant_states, _ = state.get_spontaneous_transition_rates()
+    assert len(relevant_states) > 0
+    assert all(other.mqdt is state.mqdt for other in relevant_states)
+    assert all(other.potential_class is state.potential_class for other in relevant_states)
