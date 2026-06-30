@@ -3,16 +3,13 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any
 
-import numpy as np
-
-from rydstate.angular.angular_ket import AngularKetBase
-from rydstate.angular.utils import is_unknown
+from rydstate.basis import BasisSQDT
 from rydstate.units import MatrixElementOperatorRanks
 
 if TYPE_CHECKING:
     import sqlite3
 
-    from rydstate.basis import BasisMQDT, BasisSQDT
+    from rydstate.basis import BasisMQDT
     from rydstate.rydberg_state.rydberg_base import RydbergStateBase
     from rydstate.units import MatrixElementOperator
 
@@ -33,30 +30,15 @@ MATRIX_ELEMENTS_OF_INTEREST: dict[str, MatrixElementOperator] = {
 }
 
 
-def get_l_r_difference(state1: RydbergStateBase, state2: RydbergStateBase) -> int:
-    """Calculate the minimal difference in l_r between two states."""
-    angular1, angular2 = state1.angular, state2.angular
-    if isinstance(angular1, AngularKetBase) and isinstance(angular2, AngularKetBase):
-        return abs(angular1.l_r - angular2.l_r)  # type: ignore [no-any-return]
-
-    if isinstance(angular1, AngularKetBase):
-        angular1 = angular1.to_state()
-    if isinstance(angular2, AngularKetBase):
-        angular2 = angular2.to_state()
-
-    if any(ket1 == ket2 for ket1 in angular1.kets for ket2 in angular2.kets):
-        # this also checks states with l_r = unknown
-        return 0
-
-    all_diffs = [
-        ket1.l_r - ket2.l_r
-        for ket1 in angular1.kets
-        for ket2 in angular2.kets
-        if not is_unknown(ket1.l_r) and not is_unknown(ket2.l_r)
-    ]
-    if len(all_diffs) == 0:
+def get_min_l_r_difference(state1: RydbergStateBase, state2: RydbergStateBase, *, is_sqdt: bool) -> int:
+    """Minimal difference in l_r between two states."""
+    if not is_sqdt:  # noqa: SIM102
+        if not set(state1.angular.kets).isdisjoint(state2.angular.kets):  # type: ignore [union-attr]
+            # the states share a ket (this also covers states with l_r = unknown)
+            return 0
+    if not state1._known_l_r or not state2._known_l_r:  # noqa: SLF001
         raise RuntimeError("Could not calculate l_r difference, this should not happen.")
-    return int(np.min(np.abs(all_diffs)))
+    return min(abs(a - b) for a in state1._known_l_r for b in state2._known_l_r)  # noqa: SLF001
 
 
 def generate_matrix_elements_tables(  # noqa: C901
@@ -68,6 +50,7 @@ def generate_matrix_elements_tables(  # noqa: C901
     free_memory: bool = False,
 ) -> dict[str, list[tuple[int, int, float]]]:
     """Populate matrix element tables for all relevant pairs of states."""
+    is_sqdt = isinstance(basis, BasisSQDT)
     k_angular_max = max(MatrixElementOperatorRanks[op][1] for op in MATRIX_ELEMENTS_OF_INTEREST.values())
 
     basis.sort_states("nu")  # sort by nu == sort by energy
@@ -77,7 +60,7 @@ def generate_matrix_elements_tables(  # noqa: C901
     matrix_elements: dict[str, list[tuple[int, int, float]]] = {tkey: [] for tkey in MATRIX_ELEMENTS_OF_INTEREST}
     for i, (id1, state1) in enumerate(list_of_id_state):
         for id2, state2 in list_of_id_state[i:]:
-            if get_l_r_difference(state1, state2) > k_angular_max:
+            if get_min_l_r_difference(state1, state2, is_sqdt=is_sqdt) > k_angular_max:
                 # If the difference in l is larger than k_angular_max, no matrix elements have to be calculated
                 continue
             if (
