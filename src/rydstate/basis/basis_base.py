@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from abc import ABC
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
@@ -27,6 +28,12 @@ class BasisBase(ABC, Generic[_RydbergState]):
 
     def __len__(self) -> int:
         return len(self.states)
+
+    def shallow_copy(self) -> Self:
+        """Return a shallow copy of the basis (with its own independent list of states)."""
+        new_basis = copy.copy(self)
+        new_basis.states = self.states.copy()
+        return new_basis
 
     @overload
     def filter_states(

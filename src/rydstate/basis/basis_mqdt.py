@@ -15,6 +15,8 @@ from rydstate.rydberg_state import RydbergKet, RydbergStateMQDT
 from rydstate.species import MQDT, FModelSQDT, Potential, get_mqdt, get_potential_class
 
 if TYPE_CHECKING:
+    from typing_extensions import Self
+
     from rydstate.species import FModel
 
 
@@ -74,6 +76,12 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         max_l_r = int(nu[1])
         self._init_models(max_l_r, f_tot, l_r, include_sqdt_fallback_models=include_sqdt_fallback_models)
         self._init_states(nu, m)
+
+    def shallow_copy(self) -> Self:
+        """Return a shallow copy of the basis (with its own independent list of states)."""
+        new_basis = super().shallow_copy()
+        new_basis.models = self.models.copy()
+        return new_basis
 
     def _init_models(
         self,
