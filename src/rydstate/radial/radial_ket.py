@@ -562,7 +562,9 @@ class RadialKet(metaclass=CachedABCMeta):
         if other not in self._matrix_element_cache and self in other._matrix_element_cache:
             return other.calc_matrix_element(self, k_radial=k_radial, unit=unit, integration_method=integration_method)
 
-        cache = self._matrix_element_cache.setdefault(other, {})
+        cache = self._matrix_element_cache.get(other)
+        if cache is None:
+            cache = self._matrix_element_cache[other] = {}
         cache_key = (k_radial, integration_method)
         if cache_key not in cache:
             cache[cache_key] = calc_radial_matrix_element_from_w_z(

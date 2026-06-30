@@ -61,6 +61,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         "_allow_unknown",
         "_initialized",
         "_reduced_matrix_element_cache",
+        "_hash",
         "__weakref__",
     )
 
@@ -182,6 +183,8 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
 
     def _post_init(self) -> None:
         self.quantum_numbers = tuple(getattr(self, qn) for qn in self.quantum_number_names)
+        # Precompute the hash once: the ket is immutable after initialization (see __setattr__)
+        self._hash = hash((self.quantum_number_names, self.quantum_numbers, self.m, self.label, self.parity))
         self._initialized = True
         self.sanity_check()
 
@@ -245,15 +248,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         return self.quantum_numbers == other.quantum_numbers
 
     def __hash__(self) -> int:
-        return hash(
-            (
-                self.quantum_number_names,
-                self.quantum_numbers,
-                self.m,
-                self.label,
-                self.parity,
-            )
-        )
+        return self._hash
 
     def replace_m(self, m: float | NotSet) -> Self:
         """Return a copy of this ket with the given magnetic quantum number m."""
@@ -618,7 +613,9 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
             \left\langle self || \hat{O}^{(\kappa)} || other \right\rangle
 
         """
-        cache = self._reduced_matrix_element_cache.setdefault(other, {})
+        cache = self._reduced_matrix_element_cache.get(other)
+        if cache is None:
+            cache = self._reduced_matrix_element_cache[other] = {}
         cache_key = (operator, kappa)
         if cache_key not in cache:
             cache[cache_key] = self._calc_reduced_matrix_element(other, operator, kappa)
