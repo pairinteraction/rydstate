@@ -51,7 +51,7 @@ class RydbergStateBase(ABC):
             )
 
     def __iter__(self) -> Iterator[tuple[float, RydbergKet]]:
-        return zip(self.coefficients, self.rydberg_kets, strict=True).__iter__()
+        return zip(self.coefficients.tolist(), self.rydberg_kets, strict=True)
 
     def free_memory(self) -> None:
         """Release the cached radial and angular data to reduce memory usage.
@@ -100,9 +100,11 @@ class RydbergStateBase(ABC):
     def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
         ov = 0.0
-        for coeff1, ket1 in self:
-            for coeff2, ket2 in other:
-                ov += np.conjugate(coeff1) * coeff2 * ket1.calc_reduced_overlap(ket2)
+        conj_coeffs = np.conjugate(self.coefficients).tolist()
+        other_coeffs = other.coefficients.tolist()
+        for coeff1, ket1 in zip(conj_coeffs, self.rydberg_kets, strict=True):
+            for coeff2, ket2 in zip(other_coeffs, other.rydberg_kets, strict=True):
+                ov += coeff1 * coeff2 * ket1.calc_reduced_overlap(ket2)
         return ov
 
     @overload
@@ -145,9 +147,11 @@ class RydbergStateBase(ABC):
             return me * np.conjugate(self.coefficients[0]) * other.coefficients[0]  # type: ignore [no-any-return]
 
         value = 0.0
-        for coeff1, ket1 in self:
-            for coeff2, ket2 in other:
-                value += np.conjugate(coeff1) * coeff2 * ket1.calc_reduced_matrix_element(ket2, operator, unit=unit)
+        conj_coeffs = np.conjugate(self.coefficients).tolist()
+        other_coeffs = other.coefficients.tolist()
+        for coeff1, ket1 in zip(conj_coeffs, self.rydberg_kets, strict=True):
+            for coeff2, ket2 in zip(other_coeffs, other.rydberg_kets, strict=True):
+                value += coeff1 * coeff2 * ket1.calc_reduced_matrix_element(ket2, operator, unit=unit)
         return value
 
     @overload
@@ -187,9 +191,11 @@ class RydbergStateBase(ABC):
 
         """
         value = 0.0
-        for coeff1, ket1 in self:
-            for coeff2, ket2 in other:
-                value += np.conjugate(coeff1) * coeff2 * ket1.calc_matrix_element(ket2, operator, q=q, unit=unit)
+        conj_coeffs = np.conjugate(self.coefficients).tolist()
+        other_coeffs = other.coefficients.tolist()
+        for coeff1, ket1 in zip(conj_coeffs, self.rydberg_kets, strict=True):
+            for coeff2, ket2 in zip(other_coeffs, other.rydberg_kets, strict=True):
+                value += coeff1 * coeff2 * ket1.calc_matrix_element(ket2, operator, q=q, unit=unit)
         return value
 
     def calc_exp_qn(self, qn: str) -> float:

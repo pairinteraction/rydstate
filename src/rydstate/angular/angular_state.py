@@ -65,7 +65,7 @@ class AngularState(Generic[GenericT_AngularKet]):
         return f"{', '.join(terms)}"
 
     def __iter__(self) -> Iterator[tuple[float, GenericT_AngularKet]]:
-        return zip(self.coefficients, self.kets, strict=True).__iter__()
+        return zip(self.coefficients.tolist(), self.kets, strict=True)
 
     @property
     def coupling_scheme(self) -> CouplingScheme:
@@ -209,9 +209,11 @@ class AngularState(Generic[GenericT_AngularKet]):
             other = other.to_state()
 
         ov = 0
-        for coeff1, ket1 in self:
-            for coeff2, ket2 in other:
-                ov += np.conjugate(coeff1) * coeff2 * ket1.calc_reduced_overlap(ket2)
+        conj_coeffs = np.conjugate(self.coefficients).tolist()
+        other_coeffs = other.coefficients.tolist()
+        for coeff1, ket1 in zip(conj_coeffs, self.kets, strict=True):
+            for coeff2, ket2 in zip(other_coeffs, other.kets, strict=True):
+                ov += coeff1 * coeff2 * ket1.calc_reduced_overlap(ket2)
         return ov
 
     def calc_reduced_matrix_element(
@@ -230,15 +232,18 @@ class AngularState(Generic[GenericT_AngularKet]):
         if is_angular_momentum_quantum_number(operator) and operator not in self.kets[0].quantum_number_names:
             for ket_class in (AngularKetLS, AngularKetJJ, AngularKetFJ):
                 if operator in ket_class.quantum_number_names:
-                    return self.to(ket_class.coupling_scheme).calc_reduced_matrix_element(other, operator, kappa)
+                    state = self.to(ket_class.coupling_scheme)
+                    return state.calc_reduced_matrix_element(other, operator, kappa)
 
         if self.coupling_scheme != other.coupling_scheme:
             other = other.to(self.coupling_scheme)
 
         value = 0
-        for coeff1, ket1 in self:
-            for coeff2, ket2 in other:
-                value += np.conjugate(coeff1) * coeff2 * ket1.calc_reduced_matrix_element(ket2, operator, kappa)
+        conj_coeffs = np.conjugate(self.coefficients).tolist()
+        other_coeffs = other.coefficients.tolist()
+        for coeff1, ket1 in zip(conj_coeffs, self.kets, strict=True):
+            for coeff2, ket2 in zip(other_coeffs, other.kets, strict=True):
+                value += coeff1 * coeff2 * ket1.calc_reduced_matrix_element(ket2, operator, kappa)
         return value
 
     def calc_matrix_element(
