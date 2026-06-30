@@ -14,12 +14,12 @@ def test_angular_reduced_matrix_element_is_cached() -> None:
 
     value = bra.calc_reduced_matrix_element(ket, "spherical", 1)
 
-    # the result is stored in the cache keyed by the other ket
-    assert ket in bra._reduced_matrix_element_cache
-    assert bra._reduced_matrix_element_cache[ket][("spherical", 1)] == value
+    # the result is stored in the cache keyed by a weakref to the other ket
+    assert ket._ref in bra._reduced_matrix_element_cache
+    assert bra._reduced_matrix_element_cache[ket._ref][("spherical", 1)] == value
 
     # overwriting the cached value proves the second call reads from the cache
-    bra._reduced_matrix_element_cache[ket][("spherical", 1)] = value + 1
+    bra._reduced_matrix_element_cache[ket._ref][("spherical", 1)] = value + 1
     assert bra.calc_reduced_matrix_element(ket, "spherical", 1) == value + 1
 
 

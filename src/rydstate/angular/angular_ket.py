@@ -62,6 +62,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         "_initialized",
         "_reduced_matrix_element_cache",
         "_hash",
+        "_ref",
         "__weakref__",
     )
 
@@ -122,9 +123,10 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         Atomic species, e.g. 'Rb87', will not be used for calculation,
         only for convenience to infer the core electron spin and nuclear spin quantum numbers.
         """
-        self._reduced_matrix_element_cache: weakref.WeakKeyDictionary[
-            AngularKetBase[Any], dict[tuple[AngularOperatorType, int], float]
-        ] = weakref.WeakKeyDictionary()
+        # Fast + weakref-friendly cache: a plain dict keyed by a *cached* weakref to the other ket
+        self._reduced_matrix_element_cache: dict[
+            weakref.ref[AngularKetBase[Any]], dict[tuple[AngularOperatorType, int], float]
+        ] = {}
 
         if species is not None:
             from rydstate.species.element_properties import get_element_properties  # noqa: PLC0415
@@ -185,8 +187,18 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         self.quantum_numbers = tuple(getattr(self, qn) for qn in self.quantum_number_names)
         # Precompute the hash once: the ket is immutable after initialization (see __setattr__)
         self._hash = hash((self.quantum_number_names, self.quantum_numbers, self.m, self.label, self.parity))
+        # Cache a single weakref to self, reused as a key in other kets' matrix-element caches.
+        self._ref: weakref.ref[AngularKetBase[Any]] = weakref.ref(self)
         self._initialized = True
         self.sanity_check()
+
+    def _get_cache_dict(self, other: AngularKetBase[Any]) -> dict[tuple[AngularOperatorType, int], float]:
+        cache = self._reduced_matrix_element_cache.get(other._ref)
+        if cache is None:
+            cache = self._reduced_matrix_element_cache[other._ref] = {}
+            # auto-cleanup the cache entry for this other ket when it is garbage collected, to free memory
+            weakref.finalize(other, self._reduced_matrix_element_cache.pop, other._ref, None)
+        return cache
 
     def sanity_check(self, msgs: list[str] | None = None) -> None:
         """Check that the quantum numbers are valid."""
@@ -613,9 +625,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
             \left\langle self || \hat{O}^{(\kappa)} || other \right\rangle
 
         """
-        cache = self._reduced_matrix_element_cache.get(other)
-        if cache is None:
-            cache = self._reduced_matrix_element_cache[other] = {}
+        cache = self._get_cache_dict(other)
         cache_key = (operator, kappa)
         if cache_key not in cache:
             cache[cache_key] = self._calc_reduced_matrix_element(other, operator, kappa)
