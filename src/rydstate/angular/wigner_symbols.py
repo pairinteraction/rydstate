@@ -63,7 +63,7 @@ def calc_wigner_6j(j1: float, j2: float, j3: float, j4: float, j5: float, j6: fl
     return float(sympy_wigner_6j(j1, j2, j3, j4, j5, j6).evalf())
 
 
-@lru_cache(maxsize=10_000)
+@lru_cache(maxsize=100_000)
 @sympify_args
 def calc_wigner_9j(
     j1: float, j2: float, j3: float, j4: float, j5: float, j6: float, j7: float, j8: float, j9: float
