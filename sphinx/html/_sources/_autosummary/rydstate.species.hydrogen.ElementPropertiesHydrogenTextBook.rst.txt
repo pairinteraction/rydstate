@@ -1,0 +1,42 @@
+ElementPropertiesHydrogenTextBook
+=================================
+
+.. currentmodule:: rydstate.species.hydrogen
+
+
+
+
+.. rubric:: Class Methods
+
+.. autosummary::
+   
+      ~ElementPropertiesHydrogenTextBook.__init__
+      ~ElementPropertiesHydrogenTextBook.get_corrected_rydberg_constant
+
+
+
+.. rubric:: Class Attributes and Properties
+
+.. autosummary::
+
+   ~ElementPropertiesHydrogenTextBook.Z
+   ~ElementPropertiesHydrogenTextBook.additional_allowed_shells
+   ~ElementPropertiesHydrogenTextBook.core_electron_configuration
+   ~ElementPropertiesHydrogenTextBook.corrected_rydberg_constant
+   ~ElementPropertiesHydrogenTextBook.ground_state_shell
+   ~ElementPropertiesHydrogenTextBook.i_c
+   ~ElementPropertiesHydrogenTextBook.number_valence_electrons
+   ~ElementPropertiesHydrogenTextBook.reduced_mass_au
+   ~ElementPropertiesHydrogenTextBook.s_c
+   ~ElementPropertiesHydrogenTextBook.s_r
+   ~ElementPropertiesHydrogenTextBook.species
+   ~ElementPropertiesHydrogenTextBook.nuclear_dipole
+
+
+
+.. autoclass:: rydstate.species.hydrogen.ElementPropertiesHydrogenTextBook
+   :members:
+   :member-order: bysource
+   :inherited-members:
+   :undoc-members:
+   :class-doc-from: init

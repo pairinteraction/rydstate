@@ -1,0 +1,42 @@
+ElementPropertiesPotassium
+==========================
+
+.. currentmodule:: rydstate.species.potassium
+
+
+
+
+.. rubric:: Class Methods
+
+.. autosummary::
+   
+      ~ElementPropertiesPotassium.__init__
+      ~ElementPropertiesPotassium.get_corrected_rydberg_constant
+
+
+
+.. rubric:: Class Attributes and Properties
+
+.. autosummary::
+
+   ~ElementPropertiesPotassium.Z
+   ~ElementPropertiesPotassium.additional_allowed_shells
+   ~ElementPropertiesPotassium.core_electron_configuration
+   ~ElementPropertiesPotassium.corrected_rydberg_constant
+   ~ElementPropertiesPotassium.ground_state_shell
+   ~ElementPropertiesPotassium.i_c
+   ~ElementPropertiesPotassium.number_valence_electrons
+   ~ElementPropertiesPotassium.reduced_mass_au
+   ~ElementPropertiesPotassium.s_c
+   ~ElementPropertiesPotassium.s_r
+   ~ElementPropertiesPotassium.species
+   ~ElementPropertiesPotassium.nuclear_dipole
+
+
+
+.. autoclass:: rydstate.species.potassium.ElementPropertiesPotassium
+   :members:
+   :member-order: bysource
+   :inherited-members:
+   :undoc-members:
+   :class-doc-from: init

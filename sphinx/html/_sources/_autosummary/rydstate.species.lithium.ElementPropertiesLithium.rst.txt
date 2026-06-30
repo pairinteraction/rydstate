@@ -1,0 +1,42 @@
+ElementPropertiesLithium
+========================
+
+.. currentmodule:: rydstate.species.lithium
+
+
+
+
+.. rubric:: Class Methods
+
+.. autosummary::
+   
+      ~ElementPropertiesLithium.__init__
+      ~ElementPropertiesLithium.get_corrected_rydberg_constant
+
+
+
+.. rubric:: Class Attributes and Properties
+
+.. autosummary::
+
+   ~ElementPropertiesLithium.Z
+   ~ElementPropertiesLithium.additional_allowed_shells
+   ~ElementPropertiesLithium.core_electron_configuration
+   ~ElementPropertiesLithium.corrected_rydberg_constant
+   ~ElementPropertiesLithium.ground_state_shell
+   ~ElementPropertiesLithium.i_c
+   ~ElementPropertiesLithium.number_valence_electrons
+   ~ElementPropertiesLithium.reduced_mass_au
+   ~ElementPropertiesLithium.s_c
+   ~ElementPropertiesLithium.s_r
+   ~ElementPropertiesLithium.species
+   ~ElementPropertiesLithium.nuclear_dipole
+
+
+
+.. autoclass:: rydstate.species.lithium.ElementPropertiesLithium
+   :members:
+   :member-order: bysource
+   :inherited-members:
+   :undoc-members:
+   :class-doc-from: init

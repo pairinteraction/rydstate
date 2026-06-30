@@ -1,0 +1,43 @@
+PotentialMarinescu1994Strontium87
+=================================
+
+.. currentmodule:: rydstate.species.strontium
+
+
+
+
+.. rubric:: Class Methods
+
+.. autosummary::
+   
+      ~PotentialMarinescu1994Strontium87.__init__
+      ~PotentialMarinescu1994Strontium87.calc_effective_potential_centrifugal
+      ~PotentialMarinescu1994Strontium87.calc_effective_potential_sqrt
+      ~PotentialMarinescu1994Strontium87.calc_hydrogen_turning_point_z
+      ~PotentialMarinescu1994Strontium87.calc_model_potential
+      ~PotentialMarinescu1994Strontium87.calc_potential_coulomb
+      ~PotentialMarinescu1994Strontium87.calc_total_effective_potential
+      ~PotentialMarinescu1994Strontium87.calc_turning_point_z
+
+
+
+.. rubric:: Class Attributes and Properties
+
+.. autosummary::
+
+   ~PotentialMarinescu1994Strontium87.alpha_c_marinescu_1994
+   ~PotentialMarinescu1994Strontium87.is_default
+   ~PotentialMarinescu1994Strontium87.model_potential_parameter_marinescu_1994
+   ~PotentialMarinescu1994Strontium87.r_c_dict_marinescu_1994
+   ~PotentialMarinescu1994Strontium87.reference
+   ~PotentialMarinescu1994Strontium87.species
+   ~PotentialMarinescu1994Strontium87.tag
+
+
+
+.. autoclass:: rydstate.species.strontium.PotentialMarinescu1994Strontium87
+   :members:
+   :member-order: bysource
+   :inherited-members:
+   :undoc-members:
+   :class-doc-from: init
