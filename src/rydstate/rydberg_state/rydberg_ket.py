@@ -88,7 +88,7 @@ class RydbergKet:
                 f"Operator {operator} not supported, must be one of {list(MatrixElementOperatorRanks.keys())}."
             )
 
-        if is_unknown(self.radial.l_r) or is_unknown(other.radial.l_r):
+        if is_unknown(self.radial.potential.l_r) or is_unknown(other.radial.potential.l_r):
             return 0
 
         k_radial, k_angular = MatrixElementOperatorRanks[operator]
