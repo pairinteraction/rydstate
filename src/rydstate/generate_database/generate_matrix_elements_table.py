@@ -104,11 +104,11 @@ def generate_matrix_elements_tables(  # noqa: C901
 
 
 def calc_matrix_elements_one_pair(
-    state1: RydbergStateBase, state2: RydbergStateBase, matrix_elements_of_interest: dict[str, MatrixElementOperator]
+    initial: RydbergStateBase, final: RydbergStateBase, matrix_elements_of_interest: dict[str, MatrixElementOperator]
 ) -> dict[str, float]:
     matrix_elements: dict[str, float] = {}
     for tkey, operator in matrix_elements_of_interest.items():
-        me = state2.calc_reduced_matrix_element(state1, operator, unit="a.u.")
+        me = final.calc_reduced_matrix_element(initial, operator, unit="a.u.")
         if me != 0:
             matrix_elements[tkey] = me
     return matrix_elements

@@ -619,10 +619,19 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         r"""Calculate the reduced angular matrix element.
 
         We follow equation (7.1.7) from Edmonds 1985 "Angular Momentum in Quantum Mechanics".
-        This means, calculate the following matrix element:
+        This means, calculate the following matrix element (self is the bra, other is the ket):
 
         .. math::
             \left\langle self || \hat{O}^{(\kappa)} || other \right\rangle
+
+        Args:
+            other: The other AngularKet :math:`|other>` (used as the ket).
+            operator: The operator type :math:`\hat{O}^{(\kappa)}` for which to calculate the matrix element.
+                E.g. 'spherical', 's_tot', 'l_r', etc.
+            kappa: The rank :math:`\kappa` of the angular momentum operator.
+
+        Returns:
+            The reduced dimensionless angular matrix element.
 
         """
         cache = self._get_cache_dict(other)
