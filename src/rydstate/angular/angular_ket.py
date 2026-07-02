@@ -61,6 +61,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         "_allow_unknown",
         "_initialized",
         "_reduced_matrix_element_cache",
+        "_to_state_cache",
         "_hash",
         "_ref",
         "__weakref__",
@@ -127,6 +128,8 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         self._reduced_matrix_element_cache: dict[
             weakref.ref[AngularKetBase[Any]], dict[tuple[AngularOperatorType, int], float]
         ] = {}
+        # Cache for to_state conversions: the ket is immutable, so the conversion is deterministic
+        self._to_state_cache: dict[CouplingScheme, AngularState[Any]] = {}
 
         if species is not None:
             from rydstate.species.element_properties import get_element_properties  # noqa: PLC0415
@@ -368,15 +371,25 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
             The angular state in the specified coupling scheme.
 
         """
-        if coupling_scheme is None or coupling_scheme == self.coupling_scheme:
-            return self._create_angular_state([1], [self])
-        if coupling_scheme == "LS":
-            return self._to_state_ls()
-        if coupling_scheme == "JJ":
-            return self._to_state_jj()
-        if coupling_scheme == "FJ":
-            return self._to_state_fj()
-        raise ValueError(f"Unknown coupling scheme {coupling_scheme!r}.")
+        if coupling_scheme is None:
+            coupling_scheme = self.coupling_scheme
+        state = self._to_state_cache.get(coupling_scheme)
+        if state is not None:
+            return state
+
+        if coupling_scheme == self.coupling_scheme:
+            state = self._create_angular_state([1], [self])
+        elif coupling_scheme == "LS":
+            state = self._to_state_ls()
+        elif coupling_scheme == "JJ":
+            state = self._to_state_jj()
+        elif coupling_scheme == "FJ":
+            state = self._to_state_fj()
+        else:
+            raise ValueError(f"Unknown coupling scheme {coupling_scheme!r}.")
+
+        self._to_state_cache[coupling_scheme] = state
+        return state
 
     def _to_state_ls(self: AngularKetBase[T_Unknown]) -> AngularState[AngularKetLS[T_Unknown]]:
         """Convert a single ket to state in LS coupling."""
