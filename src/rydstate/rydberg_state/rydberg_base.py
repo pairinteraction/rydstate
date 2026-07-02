@@ -75,9 +75,9 @@ class RydbergStateBase(ABC):
         return [rydberg_ket.radial.nu for rydberg_ket in self.rydberg_kets]
 
     @cached_property
-    def _known_l_r(self) -> set[int]:
-        """Return the known l_r values of the different channels."""
-        return {ket.angular.l_r for ket in self.rydberg_kets if not is_unknown(ket.angular.l_r)}
+    def coefficients_conjugate(self) -> NDArray:
+        """Return the conjugate of the coefficients."""
+        return np.conjugate(self.coefficients)
 
     @overload
     def get_energy(self, unit: None = None) -> PintFloat: ...
@@ -106,11 +106,9 @@ class RydbergStateBase(ABC):
     def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
         ov = 0.0
-        conj_coeffs = np.conjugate(self.coefficients).tolist()
-        other_coeffs = other.coefficients.tolist()
-        for coeff1, ket1 in zip(conj_coeffs, self.rydberg_kets, strict=True):
-            for coeff2, ket2 in zip(other_coeffs, other.rydberg_kets, strict=True):
-                ov += coeff1 * coeff2 * ket1.calc_reduced_overlap(ket2)
+        for id1, ket1 in enumerate(self.rydberg_kets):
+            for id2, ket2 in enumerate(other.rydberg_kets):
+                ov += self.coefficients_conjugate[id1] * other.coefficients[id2] * ket1.calc_reduced_overlap(ket2)
         return ov
 
     @overload
@@ -150,14 +148,16 @@ class RydbergStateBase(ABC):
         if len(self.rydberg_kets) == 1 and len(other.rydberg_kets) == 1:
             # fast path for sqdt states
             me = self.rydberg_kets[0].calc_reduced_matrix_element(other.rydberg_kets[0], operator, unit=unit)
-            return me * np.conjugate(self.coefficients[0]) * other.coefficients[0]  # type: ignore [no-any-return]
+            return me * self.coefficients_conjugate[0] * other.coefficients[0]  # type: ignore [no-any-return]
 
         value = 0.0
-        conj_coeffs = np.conjugate(self.coefficients).tolist()
-        other_coeffs = other.coefficients.tolist()
-        for coeff1, ket1 in zip(conj_coeffs, self.rydberg_kets, strict=True):
-            for coeff2, ket2 in zip(other_coeffs, other.rydberg_kets, strict=True):
-                value += coeff1 * coeff2 * ket1.calc_reduced_matrix_element(ket2, operator, unit=unit)
+        for id1, ket1 in enumerate(self.rydberg_kets):
+            for id2, ket2 in enumerate(other.rydberg_kets):
+                value += (
+                    self.coefficients_conjugate[id1]
+                    * other.coefficients[id2]
+                    * ket1.calc_reduced_matrix_element(ket2, operator, unit=unit)
+                )
         return value
 
     @overload
@@ -197,11 +197,13 @@ class RydbergStateBase(ABC):
 
         """
         value = 0.0
-        conj_coeffs = np.conjugate(self.coefficients).tolist()
-        other_coeffs = other.coefficients.tolist()
-        for coeff1, ket1 in zip(conj_coeffs, self.rydberg_kets, strict=True):
-            for coeff2, ket2 in zip(other_coeffs, other.rydberg_kets, strict=True):
-                value += coeff1 * coeff2 * ket1.calc_matrix_element(ket2, operator, q=q, unit=unit)
+        for id1, ket1 in enumerate(self.rydberg_kets):
+            for id2, ket2 in enumerate(other.rydberg_kets):
+                value += (
+                    self.coefficients_conjugate[id1]
+                    * other.coefficients[id2]
+                    * ket1.calc_matrix_element(ket2, operator, q=q, unit=unit)
+                )
         return value
 
     def calc_exp_qn(self, qn: str) -> float:
@@ -225,7 +227,7 @@ class RydbergStateBase(ABC):
             return 0
         if qn == "nui":
             qns = np.array(self.nui)
-            coefficients2 = np.conjugate(self.coefficients) * self.coefficients / self.norm**2
+            coefficients2 = self.coefficients_conjugate * self.coefficients / self.norm**2
             exp_q = np.sum(coefficients2 * qns)
             exp_q2 = np.sum(coefficients2 * qns * qns)
             if abs(exp_q2 - exp_q**2) < 1e-10:

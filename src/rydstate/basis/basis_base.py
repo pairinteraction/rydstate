@@ -105,7 +105,13 @@ class BasisBase(ABC, Generic[_RydbergState]):
     def calc_reduced_matrix_element(
         self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str | None = None
     ) -> PintArray | NDArray:
-        r"""Calculate the reduced matrix element."""
+        r"""Calculate the reduced matrix element :math:`\langle bra || O || other \rangle` for all states of self.
+
+        Each state of the basis self is used as the bra and the single state other is used as the ket.
+
+        Returns a 1D array values, where values[i] corresponds to the reduced matrix element
+        :math:`\langle self.states[i] || O || other \rangle`.
+        """
         values_list = [bra.calc_reduced_matrix_element(other, operator, unit=unit) for bra in self.states]
         if unit is not None:
             return np.array(values_list)
@@ -128,7 +134,13 @@ class BasisBase(ABC, Generic[_RydbergState]):
     def calc_reduced_matrix_elements(
         self, other: BasisBase[Any], operator: MatrixElementOperator, unit: str | None = None
     ) -> PintArray | NDArray:
-        r"""Calculate the reduced matrix element."""
+        r"""Calculate the reduced matrix element for all states in self and other.
+
+        The states of the basis self are used as the bra and the states of the basis other are used as the ket.
+
+        Returns a 2D array values, where values[i, j] corresponds to the reduced matrix element
+        :math:`\langle self.states[i] || O || other.states[j] \rangle`.
+        """
         values_list = [
             [bra.calc_reduced_matrix_element(ket, operator, unit=unit) for ket in other.states] for bra in self.states
         ]

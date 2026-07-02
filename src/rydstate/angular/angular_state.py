@@ -221,10 +221,19 @@ class AngularState(Generic[GenericT_AngularKet]):
     ) -> float:
         r"""Calculate the reduced angular matrix element.
 
-        This means, calculate the following matrix element:
+        This means, calculate the following matrix element (self is the bra, other is the ket):
 
         .. math::
             \left\langle self || \hat{O}^{(\kappa)} || other \right\rangle
+
+        Args:
+            other: The other AngularState (or AngularKet) :math:`|other>` (used as the ket).
+            operator: The operator type :math:`\hat{O}^{(\kappa)}` for which to calculate the matrix element.
+                E.g. 'spherical', 's_tot', 'l_r', etc.
+            kappa: The rank :math:`\kappa` of the angular momentum operator.
+
+        Returns:
+            The reduced dimensionless angular matrix element.
 
         """
         if isinstance(other, AngularKetBase):
@@ -251,10 +260,21 @@ class AngularState(Generic[GenericT_AngularKet]):
     ) -> float:
         r"""Calculate the dimensionless angular matrix element.
 
-        This means, calculate the following matrix element:
+        This means, calculate the following matrix element (self is the bra, other is the ket):
 
         .. math::
             \left\langle self | \hat{O}^{(\kappa)}_q | other \right\rangle
+
+        Args:
+            other: The other AngularState (or AngularKet) :math:`|other>` (used as the ket).
+            operator: The operator type :math:`\hat{O}^{(\kappa)}_q` for which to calculate the matrix element.
+                E.g. 'spherical', 's_tot', 'l_r', etc.
+            kappa: The rank :math:`\kappa` of the angular momentum operator.
+            q: The component :math:`q` of the angular momentum operator.
+
+        Returns:
+            The dimensionless angular matrix element.
+
         """
         if isinstance(other, AngularKetBase):
             other = other.to_state()
