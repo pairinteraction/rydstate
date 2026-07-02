@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import math
+from functools import cached_property
 from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
 
 import numpy as np
@@ -29,18 +30,12 @@ GenericT_AngularKet = TypeVar("GenericT_AngularKet", bound=AngularKetBase[Any])
 
 
 class AngularState(Generic[GenericT_AngularKet]):
-    def __init__(
-        self,
-        coefficients: Sequence[float] | NDArray,
-        kets: Sequence[GenericT_AngularKet],
-        *,
-        warn_if_not_normalized: bool = True,
-        normalize: bool = True,
-    ) -> None:
+    def __init__(self, coefficients: Sequence[float] | NDArray, kets: Sequence[GenericT_AngularKet]) -> None:
         if np.isreal(coefficients).all():
-            self.coefficients = np.array(coefficients, dtype=float)
+            coefficients = np.array(coefficients, dtype=float)
         else:
-            self.coefficients = np.array(coefficients, dtype=complex)
+            coefficients = np.array(coefficients, dtype=complex)
+        self._coefficients: list[float] = coefficients.tolist()
         self.kets = kets
 
         if len(coefficients) != len(kets):
@@ -51,10 +46,11 @@ class AngularState(Generic[GenericT_AngularKet]):
             raise ValueError("All kets must have the same coupling scheme.")
         if len(set(kets)) != len(kets):
             raise ValueError("AngularState initialized with duplicate kets.")
-        if abs(self.norm - 1) > 1e-10 and warn_if_not_normalized:
-            logger.warning("AngularState initialized with non-normalized coefficients: %s, %s", coefficients, kets)
-        if normalize:
-            self.coefficients /= self.norm
+
+        if abs(self.norm - 1) > 1e-10:
+            raise ValueError(
+                f"AngularState initialized with non-normalized coefficients: {self._coefficients}, {self.kets}"
+            )
 
     def __repr__(self) -> str:
         terms = [f"{coeff}*{ket!r}" for coeff, ket in self]
@@ -65,7 +61,7 @@ class AngularState(Generic[GenericT_AngularKet]):
         return f"{', '.join(terms)}"
 
     def __iter__(self) -> Iterator[tuple[float, GenericT_AngularKet]]:
-        return zip(self.coefficients.tolist(), self.kets, strict=True)
+        return zip(self._coefficients, self.kets, strict=True)
 
     @property
     def coupling_scheme(self) -> CouplingScheme:
@@ -75,7 +71,17 @@ class AngularState(Generic[GenericT_AngularKet]):
     @property
     def norm(self) -> float:
         """Return the norm of the state (should be 1)."""
-        return np.linalg.norm(self.coefficients)  # type: ignore [return-value]
+        return np.linalg.norm(self._coefficients)  # type: ignore [return-value]
+
+    @cached_property
+    def coefficients(self) -> NDArray:
+        """Return the coefficients as numpy array."""
+        return np.array(self._coefficients)
+
+    @cached_property
+    def _coefficients_conjugate(self) -> list[float]:
+        """Return the conjugate of the coefficients as a plain python list."""
+        return np.conjugate(self._coefficients).tolist()  # type: ignore [no-any-return]
 
     @property
     def i_c(self) -> float:
@@ -138,7 +144,7 @@ class AngularState(Generic[GenericT_AngularKet]):
                 else:
                     kets.append(scheme_ket)
                     coefficients.append(coeff * scheme_coeff)
-        return AngularState(coefficients, kets, warn_if_not_normalized=False, normalize=False)
+        return AngularState(coefficients, kets)
 
     def calc_exp_qn(self, q: AngularMomentumQuantumNumbers) -> float:
         """Calculate the expectation value of a quantum number q.
@@ -208,11 +214,9 @@ class AngularState(Generic[GenericT_AngularKet]):
         if isinstance(other, AngularKetBase):
             other = other.to_state()
 
-        ov = 0
-        conj_coeffs = np.conjugate(self.coefficients).tolist()
-        other_coeffs = other.coefficients.tolist()
-        for coeff1, ket1 in zip(conj_coeffs, self.kets, strict=True):
-            for coeff2, ket2 in zip(other_coeffs, other.kets, strict=True):
+        ov = 0.0
+        for coeff1, ket1 in zip(self._coefficients_conjugate, self.kets, strict=True):
+            for coeff2, ket2 in zip(other._coefficients, other.kets, strict=True):  # noqa: SLF001
                 ov += coeff1 * coeff2 * ket1.calc_reduced_overlap(ket2)
         return ov
 
@@ -247,11 +251,9 @@ class AngularState(Generic[GenericT_AngularKet]):
         if self.coupling_scheme != other.coupling_scheme:
             other = other.to(self.coupling_scheme)
 
-        value = 0
-        conj_coeffs = np.conjugate(self.coefficients).tolist()
-        other_coeffs = other.coefficients.tolist()
-        for coeff1, ket1 in zip(conj_coeffs, self.kets, strict=True):
-            for coeff2, ket2 in zip(other_coeffs, other.kets, strict=True):
+        value = 0.0
+        for coeff1, ket1 in zip(self._coefficients_conjugate, self.kets, strict=True):
+            for coeff2, ket2 in zip(other._coefficients, other.kets, strict=True):  # noqa: SLF001
                 value += coeff1 * coeff2 * ket1.calc_reduced_matrix_element(ket2, operator, kappa)
         return value
 

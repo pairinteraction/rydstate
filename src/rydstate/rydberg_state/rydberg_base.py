@@ -30,8 +30,8 @@ class RydbergStateBase(ABC):
     species: str
     """The species of the Rydberg state."""
 
-    coefficients: NDArray
-    """The channel coefficients of the different Rydberg ket channels that form the Rydberg state."""
+    _coefficients: list[float]
+    """The channel coefficients of the different RydbergKets that form the RydbergState stored as plain list."""
     rydberg_kets: list[RydbergKet]
     """The Rydberg kets that form the Rydberg state."""
     angular: AngularKetBase[Any] | AngularState[Any]
@@ -48,11 +48,11 @@ class RydbergStateBase(ABC):
     def __init__(self) -> None:
         if abs(self.norm - 1) > 1e-10:
             raise ValueError(
-                f"RydbergState initialized with non-normalized coefficients: {self.coefficients}, {self.rydberg_kets}"
+                f"RydbergState initialized with non-normalized coefficients: {self._coefficients}, {self.rydberg_kets}"
             )
 
     def __iter__(self) -> Iterator[tuple[float, RydbergKet]]:
-        return zip(self.coefficients.tolist(), self.rydberg_kets, strict=True)
+        return zip(self._coefficients, self.rydberg_kets, strict=True)
 
     def free_memory(self) -> None:
         """Release the cached radial and angular data to reduce memory usage.
@@ -67,7 +67,7 @@ class RydbergStateBase(ABC):
     @property
     def norm(self) -> float:
         """Return the norm of the state (should be 1)."""
-        return float(np.linalg.norm(self.coefficients))
+        return float(np.linalg.norm(self._coefficients))
 
     @property
     def nui(self) -> list[float]:
@@ -78,6 +78,16 @@ class RydbergStateBase(ABC):
     def _known_l_r(self) -> set[int]:
         """Return the known l_r values of the different channels."""
         return {ket.angular.l_r for ket in self.rydberg_kets if not is_unknown(ket.angular.l_r)}
+
+    @cached_property
+    def coefficients(self) -> NDArray:
+        """Return the channel coefficients as numpy array."""
+        return np.array(self._coefficients)
+
+    @cached_property
+    def _coefficients_conjugate(self) -> list[float]:
+        """Return the cached conjugate of the coefficients as a plain python list."""
+        return np.conjugate(self._coefficients).tolist()  # type: ignore [no-any-return]
 
     @overload
     def get_energy(self, unit: None = None) -> PintFloat: ...
@@ -106,10 +116,8 @@ class RydbergStateBase(ABC):
     def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
         ov = 0.0
-        conj_coeffs = np.conjugate(self.coefficients).tolist()
-        other_coeffs = other.coefficients.tolist()
-        for coeff1, ket1 in zip(conj_coeffs, self.rydberg_kets, strict=True):
-            for coeff2, ket2 in zip(other_coeffs, other.rydberg_kets, strict=True):
+        for coeff1, ket1 in zip(self._coefficients_conjugate, self.rydberg_kets, strict=True):
+            for coeff2, ket2 in zip(other._coefficients, other.rydberg_kets, strict=True):
                 ov += coeff1 * coeff2 * ket1.calc_reduced_overlap(ket2)
         return ov
 
@@ -150,13 +158,11 @@ class RydbergStateBase(ABC):
         if len(self.rydberg_kets) == 1 and len(other.rydberg_kets) == 1:
             # fast path for sqdt states
             me = self.rydberg_kets[0].calc_reduced_matrix_element(other.rydberg_kets[0], operator, unit=unit)
-            return me * np.conjugate(self.coefficients[0]) * other.coefficients[0]  # type: ignore [no-any-return]
+            return me * self._coefficients_conjugate[0] * other._coefficients[0]
 
         value = 0.0
-        conj_coeffs = np.conjugate(self.coefficients).tolist()
-        other_coeffs = other.coefficients.tolist()
-        for coeff1, ket1 in zip(conj_coeffs, self.rydberg_kets, strict=True):
-            for coeff2, ket2 in zip(other_coeffs, other.rydberg_kets, strict=True):
+        for coeff1, ket1 in zip(self._coefficients_conjugate, self.rydberg_kets, strict=True):
+            for coeff2, ket2 in zip(other._coefficients, other.rydberg_kets, strict=True):
                 value += coeff1 * coeff2 * ket1.calc_reduced_matrix_element(ket2, operator, unit=unit)
         return value
 
@@ -197,10 +203,8 @@ class RydbergStateBase(ABC):
 
         """
         value = 0.0
-        conj_coeffs = np.conjugate(self.coefficients).tolist()
-        other_coeffs = other.coefficients.tolist()
-        for coeff1, ket1 in zip(conj_coeffs, self.rydberg_kets, strict=True):
-            for coeff2, ket2 in zip(other_coeffs, other.rydberg_kets, strict=True):
+        for coeff1, ket1 in zip(self._coefficients_conjugate, self.rydberg_kets, strict=True):
+            for coeff2, ket2 in zip(other._coefficients, other.rydberg_kets, strict=True):
                 value += coeff1 * coeff2 * ket1.calc_matrix_element(ket2, operator, q=q, unit=unit)
         return value
 
@@ -215,7 +219,7 @@ class RydbergStateBase(ABC):
                 raise ValueError(f"{self} has no quantum number n")
             return n  # type: ignore [no-any-return]
         if qn == "nui":
-            return float(sum([np.abs(coeff) ** 2 * ket.radial.nu / self.norm**2 for coeff, ket in self]))
+            return float(sum([abs(coeff) ** 2 * ket.radial.nu / self.norm**2 for coeff, ket in self]))
         raise ValueError(f"Unknown quantum number {qn}")
 
     def calc_std_qn(self, qn: str) -> float:

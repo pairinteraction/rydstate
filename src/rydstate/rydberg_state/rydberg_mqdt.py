@@ -34,7 +34,7 @@ class RydbergStateMQDT(RydbergStateBase):
         potential_class: type[Potential],
     ) -> None:
         self.species = species
-        self.coefficients = np.array(coefficients)
+        self._coefficients = np.asarray(coefficients).tolist()
         self.rydberg_kets = list(rydberg_kets)
         self.nu = float(nu)
         self._energy_au = float(energy_au)
@@ -50,12 +50,7 @@ class RydbergStateMQDT(RydbergStateBase):
         if len(set(rydberg_kets)) != len(rydberg_kets):
             raise ValueError("RydbergStateMQDT initialized with duplicate rydberg_kets.")
 
-        self.angular = AngularState(
-            self.coefficients.tolist(),
-            [ket.angular for ket in rydberg_kets],  # type: ignore [misc]
-            normalize=False,
-            warn_if_not_normalized=False,
-        )
+        self.angular = AngularState(self._coefficients, [ket.angular for ket in rydberg_kets])  # type: ignore [misc]
 
         super().__init__()
 

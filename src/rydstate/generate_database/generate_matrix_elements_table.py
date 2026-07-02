@@ -64,7 +64,8 @@ def generate_matrix_elements_tables(  # noqa: C901
                 # If the difference in l is larger than k_angular_max, no matrix elements have to be calculated
                 continue
             if (
-                all(nu > all_nu_up_to for nu in [state1.nu, state2.nu])
+                state1.nu > all_nu_up_to
+                and state2.nu > all_nu_up_to
                 and abs(state1.nu - state2.nu) > max_delta_nu + 0.5
             ):
                 # If delta_nu is larger than max_delta_nu (+0.5 to not lose states compared to previous max_delta_n)

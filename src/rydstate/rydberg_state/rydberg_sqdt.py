@@ -4,8 +4,6 @@ import logging
 from functools import cached_property
 from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
-import numpy as np
-
 from rydstate.angular import NotSet
 from rydstate.angular.angular_ket import AngularKetBase, AngularKetLS
 from rydstate.angular.utils import AllKnown, is_not_set, quantum_numbers_to_angular_ket
@@ -20,7 +18,7 @@ from rydstate.units import BaseQuantities
 
 if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetFJ, AngularKetJJ
-    from rydstate.units import NDArray, PintFloat
+    from rydstate.units import PintFloat
 
 GenericT_AngularKet = TypeVar("GenericT_AngularKet", bound=AngularKetBase[AllKnown])
 T_AngularKet = TypeVar("T_AngularKet", bound=AngularKetBase[AllKnown])
@@ -218,8 +216,8 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
         return RadialKet(self.nu, self.potential, n_expected=self.n, sign_convention="n_l_1")
 
     @cached_property
-    def coefficients(self) -> NDArray:  # type: ignore [override]
-        return np.array([1.0])
+    def _coefficients(self) -> list[float]:  # type: ignore [override]
+        return [1.0]
 
     @cached_property
     def rydberg_kets(self) -> list[RydbergKet]:  # type: ignore [override]
