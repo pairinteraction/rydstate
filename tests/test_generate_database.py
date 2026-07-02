@@ -1,20 +1,14 @@
 from __future__ import annotations
 
-import sqlite3
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import numpy as np
 import pytest
 from rydstate import RydbergStateSQDTAlkali
 from rydstate.basis import BasisMQDT, BasisSQDT
-from rydstate.generate_database.generate_database import DATABASE_SQL_FILE
 from rydstate.generate_database.generate_matrix_elements_table import generate_matrix_elements_tables
 from rydstate.generate_database.generate_misc_table import generate_wigner_table
 from rydstate.generate_database.generate_states_table import generate_states_table, get_state_data
-
-if TYPE_CHECKING:
-    from collections.abc import Generator
-
 
 TEST_SPECIES_SPECIFIER = [
     *["H", "Li", "Na", "K", "Rb", "Cs"],
@@ -23,21 +17,18 @@ TEST_SPECIES_SPECIFIER = [
 ]
 
 
-@pytest.fixture
-def conn() -> Generator[sqlite3.Connection, None, None]:
-    connection = sqlite3.connect(":memory:")
-    connection.executescript(DATABASE_SQL_FILE.read_text(encoding="utf-8"))
-    try:
-        yield connection
-    finally:
-        connection.close()
+def test_generate_wigner_table_returns_rows() -> None:
+    table = generate_wigner_table(f_max=0, kappa_max=0)
 
-
-def test_generate_wigner_table_returns_and_inserts_rows(conn: sqlite3.Connection) -> None:
-    rows = generate_wigner_table(f_max=0, kappa_max=0, conn=conn)
-
-    assert rows == [(0.0, 0.0, 0.0, 0.0, 0, 0, 1.0)]
-    assert conn.execute("SELECT * FROM wigner").fetchall() == rows
+    assert table == {
+        "f_initial": [0.0],
+        "f_final": [0.0],
+        "m_initial": [0.0],
+        "m_final": [0.0],
+        "kappa": [0],
+        "q": [0],
+        "val": [1.0],
+    }
 
 
 def test_get_state_data_for_sqdt_alkali_state() -> None:
@@ -50,7 +41,7 @@ def test_get_state_data_for_sqdt_alkali_state() -> None:
 
 
 @pytest.mark.parametrize("species_specifier", TEST_SPECIES_SPECIFIER)
-def test_generate_states_table(species_specifier: str, conn: sqlite3.Connection) -> None:
+def test_generate_states_table(species_specifier: str) -> None:
     species = species_specifier.removesuffix("_mqdt").removesuffix("_sqdt")
     basis: BasisMQDT | BasisSQDT[Any]
     if species_specifier.endswith("_mqdt"):
@@ -59,19 +50,18 @@ def test_generate_states_table(species_specifier: str, conn: sqlite3.Connection)
         basis = BasisSQDT(species, n=(50, 52), l_r=(0, 2), coupling_scheme="LS")
     basis.sort_states("nu")
 
-    rows = generate_states_table(basis, conn=conn)
+    table = generate_states_table(basis)
 
     assert len(basis.states) > 2
-    assert len(rows) == len(basis.states)
+    assert all(len(values) == len(basis.states) for values in table.values())
 
-    data = np.array(conn.execute("SELECT nu, exp_l_ryd, exp_s FROM states").fetchall())
-    assert np.allclose(data[:, 0], basis.calc_exp_qn("nu"))
-    assert np.allclose(data[:, 1], basis.calc_exp_qn("l_r"))
-    assert np.allclose(data[:, 2], basis.calc_exp_qn("s_tot"))
+    assert np.allclose(table["nu"], basis.calc_exp_qn("nu"))
+    assert np.allclose(table["exp_l_ryd"], basis.calc_exp_qn("l_r"))
+    assert np.allclose(table["exp_s"], basis.calc_exp_qn("s_tot"))
 
 
 @pytest.mark.parametrize("species_specifier", TEST_SPECIES_SPECIFIER)
-def test_generate_matrix_elements_table(species_specifier: str, conn: sqlite3.Connection) -> None:
+def test_generate_matrix_elements_table(species_specifier: str) -> None:
     species = species_specifier.removesuffix("_mqdt").removesuffix("_sqdt")
     basis: BasisMQDT | BasisSQDT[Any]
     if species_specifier.endswith("_mqdt"):
@@ -80,12 +70,15 @@ def test_generate_matrix_elements_table(species_specifier: str, conn: sqlite3.Co
         basis = BasisSQDT(species, n=(50, 52), l_r=(0, 2), coupling_scheme="LS")
     basis.sort_states("nu")
 
-    rows_by_table = generate_matrix_elements_tables(basis, conn=conn, free_memory=False)
+    tables = generate_matrix_elements_tables(basis, free_memory=False)
 
-    for rows in rows_by_table.values():
-        assert len(rows) > 2
+    for table in tables.values():
+        assert all(len(values) > 2 for values in table.values())
 
     states = basis.states
-    for row in rows_by_table["matrix_elements_d"]:
-        reference = states[row[1]].calc_reduced_matrix_element(states[row[0]], "electric_dipole", unit="a.u.")
-        assert np.isclose(row[2], reference)
+    table = tables["matrix_elements_d"]
+    for id_initial, id_final, val in zip(table["id_initial"], table["id_final"], table["val"], strict=True):
+        reference = states[int(id_final)].calc_reduced_matrix_element(
+            states[int(id_initial)], "electric_dipole", unit="a.u."
+        )
+        assert np.isclose(val, reference)
