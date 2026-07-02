@@ -3,11 +3,11 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any
 
-from rydstate.basis import BasisSQDT
+from rydstate.angular.utils import is_unknown
 from rydstate.units import MatrixElementOperatorRanks
 
 if TYPE_CHECKING:
-    from rydstate.basis import BasisMQDT
+    from rydstate.basis import BasisMQDT, BasisSQDT
     from rydstate.rydberg_state.rydberg_base import RydbergStateBase
     from rydstate.units import MatrixElementOperator
 
@@ -28,18 +28,7 @@ MATRIX_ELEMENTS_OF_INTEREST: dict[str, MatrixElementOperator] = {
 }
 
 
-def get_min_l_r_difference(state1: RydbergStateBase, state2: RydbergStateBase, *, is_sqdt: bool) -> int:
-    """Minimal difference in l_r between two states."""
-    if not is_sqdt:  # noqa: SIM102
-        if not set(state1.angular.kets).isdisjoint(state2.angular.kets):  # type: ignore [union-attr]
-            # the states share a ket (this also covers states with l_r = unknown)
-            return 0
-    if not state1._known_l_r or not state2._known_l_r:  # noqa: SLF001
-        raise RuntimeError("Could not calculate l_r difference, this should not happen.")
-    return min(abs(a - b) for a in state1._known_l_r for b in state2._known_l_r)  # noqa: SLF001
-
-
-def generate_matrix_elements_tables(  # noqa: C901
+def generate_matrix_elements_tables(
     basis: BasisMQDT | BasisSQDT[Any],
     max_delta_nu: float = float("inf"),
     all_nu_up_to: float = float("inf"),
@@ -47,18 +36,32 @@ def generate_matrix_elements_tables(  # noqa: C901
     free_memory: bool = False,
 ) -> dict[str, dict[str, list[int | float]]]:
     """Calculate matrix element tables for all relevant pairs of states."""
-    is_sqdt = isinstance(basis, BasisSQDT)
     k_angular_max = max(MatrixElementOperatorRanks[op][1] for op in MATRIX_ELEMENTS_OF_INTEREST.values())
 
     basis.sort_states("nu")  # sort by nu == sort by energy
     list_of_id_state = list(enumerate(basis.states))
     list_of_id_state = sorted(list_of_id_state, key=lambda x: (x[1].angular.calc_exp_qn("l_r"), x[1].nu, x[0]))
 
+    # precomupte l_r values for efficient k_angular_max filtering
+    unknown_angular_kets = [
+        {ket.angular for ket in state.rydberg_kets if is_unknown(ket.angular.l_r)} for _, state in list_of_id_state
+    ]
+    l_r_sets = [
+        {ket.angular.l_r for ket in state.rydberg_kets if not is_unknown(ket.angular.l_r)}
+        for _, state in list_of_id_state
+    ]
+    l_r_min = [min(l_r_set) for l_r_set in l_r_sets]
+    l_r_max = [max(l_r_set) for l_r_set in l_r_sets]
+
     matrix_elements: dict[str, list[tuple[int, int, float]]] = {tkey: [] for tkey in MATRIX_ELEMENTS_OF_INTEREST}
-    for i, (id1, state1) in enumerate(list_of_id_state):
-        for id2, state2 in list_of_id_state[i:]:
-            if get_min_l_r_difference(state1, state2, is_sqdt=is_sqdt) > k_angular_max:
-                # If the difference in l is larger than k_angular_max, no matrix elements have to be calculated
+    for i1, (id1, state1) in enumerate(list_of_id_state):
+        for i2, (id2, state2) in enumerate(list_of_id_state[i1:], start=i1):
+            if l_r_min[i2] - l_r_max[i1] > k_angular_max and unknown_angular_kets[i1].isdisjoint(
+                unknown_angular_kets[i2]
+            ):
+                # If the difference in l_r is larger than k_angular_max
+                # and the states dont share a common unknown angular ket
+                # no matrix elements have to be calculated
                 continue
             if (
                 state1.nu > all_nu_up_to

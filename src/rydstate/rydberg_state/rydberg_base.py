@@ -75,11 +75,6 @@ class RydbergStateBase(ABC):
         return [rydberg_ket.radial.nu for rydberg_ket in self.rydberg_kets]
 
     @cached_property
-    def _known_l_r(self) -> set[int]:
-        """Return the known l_r values of the different channels."""
-        return {ket.angular.l_r for ket in self.rydberg_kets if not is_unknown(ket.angular.l_r)}
-
-    @cached_property
     def coefficients(self) -> NDArray:
         """Return the channel coefficients as numpy array."""
         return np.array(self._coefficients)
