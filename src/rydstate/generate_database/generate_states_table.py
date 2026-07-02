@@ -8,44 +8,41 @@ import numpy as np
 from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT
 
 if TYPE_CHECKING:
-    import sqlite3
-
     from rydstate.basis import BasisMQDT, BasisSQDT
     from rydstate.rydberg_state.rydberg_base import RydbergStateBase
 
 
 logger = logging.getLogger(__name__)
 
-COLUMNS = [
-    "id",
-    "energy",
-    "parity",
-    "n",
-    "nu",
-    "f",
-    "exp_nui",
-    "exp_l",
-    "exp_j",
-    "exp_s",
-    "exp_l_ryd",
-    "exp_j_ryd",
-    "std_nui",
-    "std_l",
-    "std_j",
-    "std_s",
-    "std_l_ryd",
-    "std_j_ryd",
-    "is_j_total_momentum",
-    "is_calculated_with_mqdt",
-    "underspecified_channel_contribution",
-]
+COLUMNS: dict[str, type] = {
+    "id": int,
+    "energy": float,
+    "parity": int,
+    "n": int,
+    "nu": float,
+    "f": float,
+    "exp_nui": float,
+    "exp_l": float,
+    "exp_j": float,
+    "exp_s": float,
+    "exp_l_ryd": float,
+    "exp_j_ryd": float,
+    "std_nui": float,
+    "std_l": float,
+    "std_j": float,
+    "std_s": float,
+    "std_l_ryd": float,
+    "std_j_ryd": float,
+    "is_j_total_momentum": bool,
+    "is_calculated_with_mqdt": bool,
+    "underspecified_channel_contribution": float,
+}
 
 
 def generate_states_table(
     basis: BasisMQDT | BasisSQDT[Any],
-    conn: sqlite3.Connection | None = None,
-) -> list[tuple[float | int | str | bool, ...]]:
-    """Populate the states table for a given species and n-range using BasisSQDT."""
+) -> dict[str, list[float | int | str | bool]]:
+    """Calculate the states table for a given Basis."""
     basis.sort_states("nu")  # sort by nu == sort by energy
 
     states_data: list[tuple[float | int | str | bool, ...]] = []
@@ -53,14 +50,9 @@ def generate_states_table(
         states_data.append(get_state_data(ids, state))
 
     assert len(states_data) == 0 or len(COLUMNS) == len(states_data[0])
+    logger.info("Created the 'states' table (%s rows)", len(states_data))
 
-    if conn is not None:
-        stmt = f"INSERT INTO states ({', '.join(COLUMNS)}) VALUES ({', '.join(['?'] * len(COLUMNS))})"  # noqa: S608
-        conn.executemany(stmt, states_data)
-        num_rows = conn.execute("SELECT COUNT(*) FROM states").fetchone()[0]
-        logger.info("Created the 'states' table (%s rows)", num_rows)
-
-    return states_data
+    return {column: [dtype(row[i]) for row in states_data] for i, (column, dtype) in enumerate(COLUMNS.items())}
 
 
 def get_state_data(ids: int, state: RydbergStateBase) -> tuple[float | int | str | bool, ...]:

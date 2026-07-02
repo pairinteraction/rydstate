@@ -7,19 +7,17 @@ from rydstate.basis import BasisSQDT
 from rydstate.units import MatrixElementOperatorRanks
 
 if TYPE_CHECKING:
-    import sqlite3
-
     from rydstate.basis import BasisMQDT
     from rydstate.rydberg_state.rydberg_base import RydbergStateBase
     from rydstate.units import MatrixElementOperator
 
 logger = logging.getLogger(__name__)
 
-COLUMNS = [
-    "id_initial",
-    "id_final",
-    "val",
-]
+COLUMNS: dict[str, type] = {
+    "id_initial": int,
+    "id_final": int,
+    "val": float,
+}
 
 MATRIX_ELEMENTS_OF_INTEREST: dict[str, MatrixElementOperator] = {
     "matrix_elements_d": "electric_dipole",
@@ -43,13 +41,12 @@ def get_min_l_r_difference(state1: RydbergStateBase, state2: RydbergStateBase, *
 
 def generate_matrix_elements_tables(  # noqa: C901
     basis: BasisMQDT | BasisSQDT[Any],
-    conn: sqlite3.Connection | None = None,
     max_delta_nu: float = float("inf"),
     all_nu_up_to: float = float("inf"),
     *,
     free_memory: bool = False,
-) -> dict[str, list[tuple[int, int, float]]]:
-    """Populate matrix element tables for all relevant pairs of states."""
+) -> dict[str, dict[str, list[int | float]]]:
+    """Calculate matrix element tables for all relevant pairs of states."""
     is_sqdt = isinstance(basis, BasisSQDT)
     k_angular_max = max(MatrixElementOperatorRanks[op][1] for op in MATRIX_ELEMENTS_OF_INTEREST.values())
 
@@ -90,18 +87,16 @@ def generate_matrix_elements_tables(  # noqa: C901
         if free_memory:
             state1.free_memory()
 
-    for key, mes in matrix_elements.items():
-        matrix_elements[key] = sorted(mes)
-        assert len(mes) == 0 or len(COLUMNS) == len(mes[0])
+    tables: dict[str, dict[str, list[int | float]]] = {}
+    for tkey, mes in matrix_elements.items():
+        mes_sorted = sorted(mes)
+        assert len(mes_sorted) == 0 or len(COLUMNS) == len(mes_sorted[0])
+        tables[tkey] = {
+            column: [dtype(row[i]) for row in mes_sorted] for i, (column, dtype) in enumerate(COLUMNS.items())
+        }
+        logger.info("Created the '%s' table (%s rows)", tkey, len(mes_sorted))
 
-    if conn is not None:
-        for tkey, mes in matrix_elements.items():
-            stmt = f"INSERT INTO {tkey} ({', '.join(COLUMNS)}) VALUES ({', '.join(['?'] * len(COLUMNS))})"  # noqa: S608
-            conn.executemany(stmt, mes)
-            num_rows = conn.execute(f"SELECT COUNT(*) FROM {tkey}").fetchone()[0]  # noqa: S608
-            logger.info("Created the '%s' table (%s rows)", tkey, num_rows)
-
-    return matrix_elements
+    return tables
 
 
 def calc_matrix_elements_one_pair(

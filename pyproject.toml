@@ -92,8 +92,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 rydstate = [
-  "species/**/nist_data.txt",
-  "generate_database/database.sql"
+  "species/**/nist_data.txt"
 ]
 
 [tool.check-wheel-contents]
