@@ -80,6 +80,7 @@ def write_table_to_parquet(table: pd.DataFrame, tkey: str) -> None:
     table.to_parquet(parquet_file, index=False, compression="zstd")
 
     logger.info("Size of %s: %.6f megabytes", parquet_file, parquet_file.stat().st_size * 1e-6)
+    logger.info("Number of rows in %s: %d", parquet_file, len(table))
     if logging.getLogger().isEnabledFor(logging.INFO):
         table.info(verbose=True)
         with Path("log").open("a") as buf:

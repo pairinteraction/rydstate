@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import shutil
+import sys
 import time
 from pathlib import Path
 
@@ -143,6 +144,26 @@ def main() -> None:  # noqa: C901, PLR0912, PLR0915
             args.species, n=n, nu=nu, max_delta_nu=args.max_delta_nu, all_nu_up_to=args.all_nu_up_to
         )
     logger.info("Time taken: %.2f seconds", time.perf_counter() - time_start)
+    log_memory_usage()
+
+
+def log_memory_usage() -> None:
+    """Log the peak and current memory usage (resident set size) of this process."""
+    try:
+        import resource  # noqa: PLC0415
+    except ImportError:
+        # the resource module is not available on some platforms (e.g. Windows), so we skip the peak memory logging
+        pass
+    else:
+        ru_maxrss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss  # kilobytes on Linux, bytes on macOS
+        peak_memory = ru_maxrss * (1e-6 if sys.platform == "darwin" else 1e-3)
+        logger.info("Peak memory usage: %.2f megabytes", peak_memory)
+
+    statm = Path("/proc/self/statm")
+    if statm.exists():
+        resident_pages = int(statm.read_text().split()[1])
+        current_memory = resident_pages * os.sysconf("SC_PAGE_SIZE") * 1e-6
+        logger.info("Memory usage at end of run: %.2f megabytes", current_memory)
 
 
 def configure_logging(
