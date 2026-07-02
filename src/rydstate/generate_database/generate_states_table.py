@@ -52,7 +52,10 @@ def generate_states_table(
     assert len(states_data) == 0 or len(COLUMNS) == len(states_data[0])
     logger.info("Created the 'states' table (%s rows)", len(states_data))
 
-    return {column: [dtype(row[i]) for row in states_data] for i, (column, dtype) in enumerate(COLUMNS.items())}
+    table = {column: [dtype(row[i]) for row in states_data] for i, (column, dtype) in enumerate(COLUMNS.items())}
+    if np.any(np.diff(table["energy"]) < 0):
+        raise ValueError("The energy of the states must be increasing with the id.")
+    return table
 
 
 def get_state_data(ids: int, state: RydbergStateBase) -> tuple[float | int | str | bool, ...]:
