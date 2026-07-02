@@ -1,26 +1,27 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
 
 import numpy as np
 
 from rydstate.angular.wigner_symbols import calc_wigner_3j_with_symmetries
 
-if TYPE_CHECKING:
-    import sqlite3
-
-
 logger = logging.getLogger(__name__)
 
 
-COLUMNS = ["f_initial", "f_final", "m_initial", "m_final", "kappa", "q", "val"]
+COLUMNS: dict[str, type] = {
+    "f_initial": float,
+    "f_final": float,
+    "m_initial": float,
+    "m_final": float,
+    "kappa": int,
+    "q": int,
+    "val": float,
+}
 
 
-def generate_wigner_table(
-    f_max: float, kappa_max: int, conn: sqlite3.Connection | None = None
-) -> list[tuple[float | int, ...]]:
-    """Populate the wigner table with data for all wigner symbols up to f_max and kappa_max."""
+def generate_wigner_table(f_max: float, kappa_max: int) -> dict[str, list[float | int]]:
+    """Calculate the wigner table with data for all wigner symbols up to f_max and kappa_max."""
     wigner_data: list[tuple[float | int, ...]] = []
     for start_f_max in [0, 0.5]:  # for better caching
         for kappa in range(kappa_max + 1):
@@ -38,11 +39,6 @@ def generate_wigner_table(
                             wigner_data.append((f_initial, f_final, m_initial, m_final, kappa, q, wigner))
 
     assert len(wigner_data) == 0 or len(COLUMNS) == len(wigner_data[0])
+    logger.info("Created the 'wigner' table (%s rows)", len(wigner_data))
 
-    if conn is not None:
-        stmt = f"INSERT INTO wigner ({', '.join(COLUMNS)}) VALUES ({', '.join(['?'] * len(COLUMNS))})"  # noqa: S608
-        conn.executemany(stmt, wigner_data)
-        num_rows = conn.execute("SELECT COUNT(*) FROM wigner").fetchone()[0]
-        logger.info("Created the 'wigner' table (%s rows)", num_rows)
-
-    return wigner_data
+    return {column: [dtype(row[i]) for row in wigner_data] for i, (column, dtype) in enumerate(COLUMNS.items())}
