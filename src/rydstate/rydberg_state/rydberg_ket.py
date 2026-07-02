@@ -4,8 +4,6 @@ import logging
 import math
 from typing import TYPE_CHECKING, Any, overload
 
-import numpy as np
-
 from rydstate.angular.utils import is_unknown
 from rydstate.units import MatrixElementOperatorRanks, ureg
 
@@ -16,6 +14,11 @@ if TYPE_CHECKING:
 
 
 logger = logging.getLogger(__name__)
+
+
+ELECTRIC_MULTIPOLE_PREFACTORS: dict[int, float] = {
+    k_angular: math.sqrt(4 * math.pi / (2 * k_angular + 1)) for _, k_angular in MatrixElementOperatorRanks.values()
+}
 
 
 class RydbergKet:
@@ -83,15 +86,16 @@ class RydbergKet:
             The reduced matrix element for the given operator.
 
         """
-        if operator not in MatrixElementOperatorRanks:
+        try:
+            k_radial, k_angular = MatrixElementOperatorRanks[operator]
+        except KeyError as err:
             raise ValueError(
                 f"Operator {operator} not supported, must be one of {list(MatrixElementOperatorRanks.keys())}."
-            )
+            ) from err
 
-        if is_unknown(self.radial.potential.l_r) or is_unknown(other.radial.potential.l_r):
+        if self.radial.potential.is_dummy or other.radial.potential.is_dummy:
+            # a dummy potential means the l_r of the channel is unknown, so no matrix element can be calculated
             return 0
-
-        k_radial, k_angular = MatrixElementOperatorRanks[operator]
 
         if operator == "magnetic_dipole":
             # Magnetic dipole operator: mu = - mu_B (g_l <l_tot> + g_s <s_tot>)
@@ -108,7 +112,8 @@ class RydbergKet:
         elif operator in ["electric_dipole", "electric_quadrupole", "electric_octupole", "electric_quadrupole_zero"]:
             # Electric multipole operator: p_{k,q} = e r^k_radial * sqrt(4pi / (2k+1)) * Y_{k_angular,q}(\theta, phi)
             angular_matrix_element = self.angular.calc_reduced_matrix_element(other.angular, "spherical", k_angular)
-            prefactor = math.sqrt(4 * np.pi / (2 * k_angular + 1))
+            # Prefactor sqrt(4 pi / (2 k_angular + 1)) for the electric multipole operators, precomputed for performance
+            prefactor = ELECTRIC_MULTIPOLE_PREFACTORS[k_angular]
 
         else:
             raise NotImplementedError(f"Operator {operator} not implemented.")

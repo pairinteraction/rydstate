@@ -31,6 +31,8 @@ class Potential(ABC, metaclass=CachedABCMeta):
     """The tag for these potential parameters."""
     is_default: ClassVar[bool] = False
     """Whether this potential is the default potential for the species."""
+    is_dummy: ClassVar[bool] = False
+    """Whether this potential is a dummy potential (with unknown l_r)."""
 
     def __init__(self, l_r: int) -> None:
         r"""Initialize the potential.
@@ -359,6 +361,7 @@ class PotentialDummy(Potential):
     """Dummy potential, which can be used when the potential is unknown."""
 
     tag = "dummy"
+    is_dummy = True
     l_r: int | Unknown  # type: ignore [assignment]
 
     def __init__(self, species: str, l_r: int | Unknown) -> None:
