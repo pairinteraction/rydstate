@@ -205,7 +205,7 @@ def get_mqdt_states_from_fmodel(  # noqa: C901
         energy_au = model.calc_energy_au(nu)
         for m in get_m_range(model.f_tot, m_range):
             rydberg_kets = [
-                RydbergKet(angular_ket.replace_m(m), radial_ket)
+                RydbergKet(model.species, angular_ket.replace_m(m), radial_ket)
                 for angular_ket, radial_ket in zip(model.outer_channels, radial_kets, strict=True)
             ]
             states.append(

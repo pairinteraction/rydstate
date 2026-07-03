@@ -221,7 +221,7 @@ class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
 
     @cached_property
     def rydberg_kets(self) -> list[RydbergKet]:  # type: ignore [override]
-        return [RydbergKet(self.angular, self.radial)]
+        return [RydbergKet(self.species, self.angular, self.radial)]
 
     def free_memory(self) -> None:
         super().free_memory()
