@@ -77,7 +77,9 @@ def write_table_to_parquet(table: pd.DataFrame, tkey: str) -> None:
         return
 
     parquet_file = Path(f"{tkey}.parquet")
-    table.to_parquet(parquet_file, index=False, compression="zstd")
+    # use_dictionary=False, since plain encoding compresses much better for our tables
+    # (zstd level 3 beats higher levels here, in addition to being faster)
+    table.to_parquet(parquet_file, index=False, compression="zstd", compression_level=3, use_dictionary=False)
 
     logger.info("Size of %s: %.6f megabytes", parquet_file, parquet_file.stat().st_size * 1e-6)
     logger.info("Number of rows in %s: %d", parquet_file, len(table))

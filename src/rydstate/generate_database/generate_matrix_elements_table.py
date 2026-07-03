@@ -92,7 +92,9 @@ def generate_matrix_elements_tables(
 
     tables: dict[str, dict[str, list[int | float]]] = {}
     for tkey, mes in matrix_elements.items():
-        mes_sorted = sorted(mes)
+        # sort such that (i, j) is directly followed by (j, i); their values are identical up to the sign,
+        # so keeping them adjacent roughly halves the parquet file size after compression
+        mes_sorted = sorted(mes, key=lambda row: (min(row[0], row[1]), max(row[0], row[1]), row[0]))
         assert len(mes_sorted) == 0 or len(COLUMNS) == len(mes_sorted[0])
         tables[tkey] = {
             column: [dtype(row[i]) for row in mes_sorted] for i, (column, dtype) in enumerate(COLUMNS.items())
