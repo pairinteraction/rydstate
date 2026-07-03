@@ -26,20 +26,22 @@ class RydbergKet:
 
     def __init__(
         self,
+        species: str,
         angular: AngularKetBase[Any],
         radial: RadialKet,
     ) -> None:
         r"""Initialize the Rydberg state."""
         if angular.l_r != radial.l_r:
             raise ValueError("The radial ket must have the same l_r as the angular ket.")
+        self.species = species
         self.angular = angular
         self.radial = radial
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.radial!r}, {self.angular!r})"
+        return f"{self.__class__.__name__}({self.species}, {self.radial!r}, {self.angular!r})"
 
     def __str__(self) -> str:
-        return f"({self.radial}, {self.angular})"
+        return f"({self.species}, {self.radial}, {self.angular})"
 
     def calc_reduced_overlap(self, other: RydbergKet) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
