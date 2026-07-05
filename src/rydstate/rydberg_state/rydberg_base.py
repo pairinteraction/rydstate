@@ -121,15 +121,17 @@ class RydbergState:
 
         return RydbergState(self.species, coefficients, rydberg_kets, nu=self.nu, energy_au=self._energy_au)
 
-    def free_memory(self) -> None:
+    def _free_memory(self) -> None:
         """Release the cached radial and angular data to reduce memory usage.
 
         This drops the references to the (potentially large) radial wavefunctions of the rydberg kets.
-        After calling this, matrix elements and overlaps can no longer be calculated for this state.
+        After calling this, matrix elements, overlaps and expectation values can no longer be calculated for this state.
         """
         for rydberg_ket in self.rydberg_kets:
             rydberg_ket.__dict__.pop("radial", None)
             rydberg_ket.__dict__.pop("angular", None)
+        self.__dict__.pop("rydberg_kets", None)
+        self.__dict__.pop("angular_state", None)
 
     @property
     def norm(self) -> float:

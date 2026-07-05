@@ -41,7 +41,7 @@ def test_free_memory_releases_radial_kets_sqdt() -> None:
     assert all(ref() is not None for ref in radial_refs)
     assert all(key in RadialKet._instances for key in cache_keys)
 
-    state.free_memory()
+    state._free_memory()
     gc.collect()
 
     # the radial kets are no longer referenced and have been evicted from the cache
@@ -71,7 +71,7 @@ def test_free_memory_releases_radial_kets_mqdt() -> None:
 
     # drop the basis so sibling states do not keep the (potentially shared) radial kets alive
     del basis
-    state.free_memory()
+    state._free_memory()
     gc.collect()
 
     # the radial kets are no longer referenced and have been evicted from the cache
