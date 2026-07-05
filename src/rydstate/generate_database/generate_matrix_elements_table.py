@@ -88,7 +88,7 @@ def generate_matrix_elements_tables(
                     matrix_elements[tkey].append((id_tuple[1], id_tuple[0], me))
 
         if free_memory:
-            state1.free_memory()
+            state1._free_memory()  # noqa: SLF001
 
     tables: dict[str, dict[str, list[int | float]]] = {}
     for tkey, mes in matrix_elements.items():
