@@ -5,7 +5,6 @@ from rydstate.species.mqdt import MQDT, get_mqdt
 from rydstate.species.potential import (
     Potential,
     PotentialCoulomb,
-    PotentialDummy,
     PotentialFei2009,
     PotentialMarinescu1994,
     get_potential_class,
@@ -21,7 +20,6 @@ __all__ = [
     "FModelSQDT",
     "Potential",
     "PotentialCoulomb",
-    "PotentialDummy",
     "PotentialFei2009",
     "PotentialMarinescu1994",
     "cesium",

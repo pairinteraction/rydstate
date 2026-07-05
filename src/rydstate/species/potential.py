@@ -13,7 +13,6 @@ from rydstate.species.element_properties import get_element_properties
 from rydstate.species.utils import get_all_subclasses
 
 if TYPE_CHECKING:
-    from rydstate.angular.utils import Unknown
     from rydstate.units import NDArray
 
 XType = TypeVar("XType", "NDArray", float)
@@ -31,8 +30,6 @@ class Potential(ABC, metaclass=CachedABCMeta):
     """The tag for these potential parameters."""
     is_default: ClassVar[bool] = False
     """Whether this potential is the default potential for the species."""
-    is_dummy: ClassVar[bool] = False
-    """Whether this potential is a dummy potential (with unknown l_r)."""
 
     def __init__(self, l_r: int) -> None:
         r"""Initialize the potential.
@@ -43,11 +40,7 @@ class Potential(ABC, metaclass=CachedABCMeta):
         """
         self.element_properties = get_element_properties(self.species)
 
-        if is_unknown(l_r):
-            raise ValueError(
-                f"l_r cannot be unknown for {self.__class__.__name__}, use a dummy potential if l_r is unknown"
-            )
-        if not ((isinstance(l_r, int) or l_r.is_integer()) and l_r >= 0):
+        if is_unknown(l_r) or not ((isinstance(l_r, int) or l_r.is_integer()) and l_r >= 0):
             raise ValueError(f"l_r must be an integer, and larger or equal 0, but {l_r=}")
         self.l_r = int(l_r)
 
@@ -355,30 +348,6 @@ class PotentialFei2009(Potential):
         with np.errstate(over="ignore"):
             denom: XType = 1 - alpha + alpha * np.exp(beta * x**delta + gamma * x ** (2.0 * delta))
             return -1 / x - (self.element_properties.Z - 1) / (x * denom)
-
-
-class PotentialDummy(Potential):
-    """Dummy potential, which can be used when the potential is unknown."""
-
-    tag = "dummy"
-    is_dummy = True
-    l_r: int | Unknown  # type: ignore [assignment]
-
-    def __init__(self, species: str, l_r: int | Unknown) -> None:
-        r"""Initialize the dummy potential.
-
-        Args:
-            species: The species for which to initialize the dummy potential.
-            l_r: Orbital angular momentum of the Rydberg electron.
-
-        """
-        self.species = species  # type: ignore [misc]
-        self.element_properties = get_element_properties(self.species)
-
-        self.l_r = l_r
-
-    def calc_model_potential(self, x: XType) -> XType:  # noqa: ARG002
-        raise RuntimeError(f"The model potential is unknown for {self.__class__.__name__}, so it cannot be calculated.")
 
 
 def get_potential_class(species: str, tag: str | None = None) -> type[Potential]:
