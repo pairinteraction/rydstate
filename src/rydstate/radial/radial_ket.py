@@ -4,7 +4,7 @@ import logging
 import math
 import weakref
 from numbers import Number
-from typing import TYPE_CHECKING, Literal, overload
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 from mpmath import whitw
@@ -14,15 +14,13 @@ from rydstate.angular.utils import is_unknown
 from rydstate.metaclass_cache import CachedABCMeta
 from rydstate.radial.numerov import _run_numerov_integration_python, run_numerov_integration
 from rydstate.radial.radial_base import RadialBase
-from rydstate.radial.radial_matrix_element import calc_radial_matrix_element_from_w_z
 from rydstate.species.utils import calc_energy_from_nu
-from rydstate.units import ureg
 
 if TYPE_CHECKING:
     from rydstate.angular.utils import Unknown
     from rydstate.radial.radial_matrix_element import INTEGRATION_METHODS
     from rydstate.species.potential import Potential
-    from rydstate.units import NDArray, PintFloat
+    from rydstate.units import NDArray
 
 logger = logging.getLogger(__name__)
 
@@ -453,49 +451,29 @@ class RadialKet(RadialBase, metaclass=CachedABCMeta):
         else:
             raise ValueError(f"Unknown sign convention: {sign_convention}")
 
-    @overload
-    def calc_matrix_element(
-        self, other: RadialBase, k_radial: int, *, unit: None = None, integration_method: INTEGRATION_METHODS = "sum"
-    ) -> PintFloat: ...
-
-    @overload
-    def calc_matrix_element(
-        self, other: RadialBase, k_radial: int, unit: str, *, integration_method: INTEGRATION_METHODS = "sum"
-    ) -> float: ...
-
-    def calc_matrix_element(
+    def _calc_matrix_element_au(
         self,
         other: RadialBase,
         k_radial: int,
-        unit: str | None = None,
         *,
         integration_method: INTEGRATION_METHODS = "sum",
-    ) -> PintFloat | float:
+    ) -> float:
         if not isinstance(other, RadialKet):
-            return super().calc_matrix_element(
-                other, k_radial=k_radial, unit=unit, integration_method=integration_method
-            )
+            return super()._calc_matrix_element_au(other, k_radial=k_radial, integration_method=integration_method)
 
         if other not in self._matrix_element_cache and self in other._matrix_element_cache:  # noqa: SLF001
-            return other.calc_matrix_element(self, k_radial=k_radial, unit=unit, integration_method=integration_method)
+            return other._calc_matrix_element_au(self, k_radial=k_radial, integration_method=integration_method)  # noqa: SLF001
 
         cache = self._matrix_element_cache.get(other)
         if cache is None:
             cache = self._matrix_element_cache[other] = {}
         cache_key = (k_radial, integration_method)
         if cache_key not in cache:
-            cache[cache_key] = calc_radial_matrix_element_from_w_z(
-                self.z_list, self.w_list, other.z_list, other.w_list, k_radial, integration_method
+            cache[cache_key] = super()._calc_matrix_element_au(
+                other, k_radial=k_radial, integration_method=integration_method
             )
 
-        radial_matrix_element_au = cache[cache_key]
-
-        if unit == "a.u.":
-            return radial_matrix_element_au
-        radial_matrix_element: PintFloat = radial_matrix_element_au * ureg.Quantity(1, "a0") ** k_radial
-        if unit is None:
-            return radial_matrix_element
-        return radial_matrix_element.to(unit).magnitude
+        return cache[cache_key]
 
 
 class RadialDummy(RadialBase, metaclass=CachedABCMeta):

@@ -4,7 +4,6 @@ import logging
 import math
 from typing import TYPE_CHECKING, Any, overload
 
-from rydstate.radial import RadialDummy
 from rydstate.units import MatrixElementOperatorRanks, ureg
 
 if TYPE_CHECKING:
@@ -43,11 +42,6 @@ class RydbergKet:
 
     def calc_reduced_overlap(self, other: RydbergKet) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
-        if isinstance(self.radial, RadialDummy) and isinstance(other.radial, RadialDummy):
-            return 1 if abs(self.radial.nu - other.radial.nu) < 1e-10 else 0
-        if isinstance(self.radial, RadialDummy) or isinstance(other.radial, RadialDummy):
-            return 0
-
         angular_overlap = self.angular.calc_reduced_overlap(other.angular)
         if angular_overlap == 0:
             return 0
@@ -92,10 +86,6 @@ class RydbergKet:
             raise ValueError(
                 f"Operator {operator} not supported, must be one of {list(MatrixElementOperatorRanks.keys())}."
             ) from err
-
-        if self.radial._is_dummy or other.radial._is_dummy:  # noqa: SLF001
-            # no matrix element can be calculated for dummy radial wavefunctions, return 0
-            return 0
 
         if operator == "magnetic_dipole":
             # Magnetic dipole operator: mu = - mu_B (g_l <l_tot> + g_s <s_tot>)
