@@ -17,7 +17,6 @@ from rydstate.radial.radial_base import Radial
 from rydstate.species.utils import calc_energy_from_nu
 
 if TYPE_CHECKING:
-    from rydstate.angular.utils import Unknown
     from rydstate.radial.radial_matrix_element import INTEGRATION_METHODS
     from rydstate.species.potential import Potential
     from rydstate.units import NDArray
@@ -77,6 +76,7 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
         )
 
         self.potential = potential
+        self.l_r = potential.l_r
 
         if not nu > 0:
             raise ValueError(f"nu must be larger than 0, but is {nu=}")
@@ -94,6 +94,10 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
         self.n_expected: int | None = n_expected
         if self.n_expected is not None:
             self._sanity_check_n_expected(self.n_expected)
+
+    def __repr__(self) -> str:
+        nu, potential = self.nu, self.potential
+        return f"{self.__class__.__name__}({nu=}, {potential=})"
 
     @property
     def z_list(self) -> NDArray:
@@ -127,15 +131,6 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
         if not is_unknown(self.l_r) and n_expected <= self.l_r:
             raise ValueError(f"n_expected must be larger than l_r, but {n_expected=}, l_r={self.l_r} for {self}")
 
-    def __repr__(self) -> str:
-        nu, potential = self.nu, self.potential
-        return f"{self.__class__.__name__}({nu=}, {potential=})"
-
-    @property
-    def l_r(self) -> int | Unknown:
-        """Return the orbital quantum number of the rydberg electron."""
-        return self.potential.l_r
-
     def _create_grid_points(self) -> None:
         r"""Create the grid points for the integration of the radial Schrödinger equation.
 
@@ -147,12 +142,11 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
         dz = self._dz
         if hasattr(self, "_z_list"):
             raise RuntimeError("The grid points were already created, you should not create them again.")
-        l_r = self.l_r if not is_unknown(self.l_r) else 0  # used for limit estimations
         if x_min is None:
             # we set z_min explicitly too small,
             # since the integration will automatically stop after the turning point,
             # and as soon as the wavefunction is close to zero
-            if l_r <= 10:
+            if self.l_r <= 10:
                 z_min = 0.0
             else:
                 # we use reduced_mass_au=1, which overestimates the energy
@@ -168,7 +162,7 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
         if x_max is None:
             # This is an empirical formula for the maximum value of the radial coordinate
             # it takes into account that for large n but small l the wavefunction is very extended
-            x_max = 2 * self.nu * (self.nu + 20 + (self.nu - l_r) / 4) + 5
+            x_max = 2 * self.nu * (self.nu + 20 + (self.nu - self.l_r) / 4) + 5
         z_max = math.sqrt(x_max)
 
         # put all grid points on a standard grid, i.e. [dz, 2*dz, 3*dz, ...]
@@ -228,8 +222,6 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
 
         if hasattr(self, "_w_list"):
             raise RuntimeError("The wavefunction was already integrated, you should not create it again.")
-        if is_unknown(self.l_r):
-            raise ValueError("Cannot integrate wavefunction for unknown l_r, please provide a l_r to the potential.")
 
         # Note: Inside this method we use y and x like it is used in the numerov function
         # and not like in the rest of this class, i.e. y = w(z) and x = z
@@ -284,8 +276,6 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
     def _integrate_whittaker(self) -> None:
         if hasattr(self, "_w_list"):
             raise RuntimeError("The wavefunction was already integrated, you should not create it again.")
-        if is_unknown(self.l_r):
-            raise ValueError("Cannot integrate wavefunction for unknown l_r, please provide a l_r to the potential.")
 
         logger.warning("Using Whittaker to get the wavefunction is not recommended! Use this only for comparison.")
 
@@ -394,9 +384,6 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
             )
 
         # Check the number of nodes
-        assert not is_unknown(self.l_r), (
-            "l_r should not be Unknown at this point, otherwise the integration would not work"
-        )
         nodes = self.nodes
         if self.n_expected is not None and nodes != self.n_expected - self.l_r - 1:
             warning_msgs.append(
@@ -443,7 +430,6 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
             if current_outer_sign < 0:
                 self._w_list = -self._w_list
         elif sign_convention == "n_l_1":
-            assert not is_unknown(self.l_r), "l_r should not be Unknown at this point"
             if self.n_expected is None:
                 raise ValueError("n_expected must be given to apply the 'n_l_1' sign convention.")
             if current_outer_sign * (-1) ** (self.n_expected - self.l_r - 1) < 0:
