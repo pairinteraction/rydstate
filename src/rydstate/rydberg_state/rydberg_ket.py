@@ -8,7 +8,7 @@ from rydstate.units import MatrixElementOperatorRanks, ureg
 
 if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetBase
-    from rydstate.radial.radial_base import RadialBase
+    from rydstate.radial.radial_base import Radial
     from rydstate.units import MatrixElementOperator, PintFloat
 
 
@@ -27,7 +27,7 @@ class RydbergKet:
         self,
         species: str,
         angular: AngularKetBase[Any],
-        radial: RadialBase,
+        radial: Radial,
     ) -> None:
         r"""Initialize the Rydberg state."""
         self.species = species

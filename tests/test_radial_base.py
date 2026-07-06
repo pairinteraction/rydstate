@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from rydstate.radial import RadialBase, RadialDummy
+from rydstate.radial import Radial, RadialDummy
 
 
-def _make_radial(*, dz: float = 0.01, zmax: float = 6.0, center: float = 3.0, width: float = 0.5) -> RadialBase:
+def _make_radial(*, dz: float = 0.01, zmax: float = 6.0, center: float = 3.0, width: float = 0.5) -> Radial:
     """Build a normalized gaussian-shaped radial wavefunction on the standard grid [0, dz, 2*dz, ...]."""
     z = np.arange(0, zmax + dz / 2, dz)
     w = np.exp(-0.5 * ((z - center) / width) ** 2)
-    radial = RadialBase(z, w)
+    radial = Radial(z, w)
     return radial / radial.norm
 
 
@@ -21,7 +21,7 @@ def _make_radial(*, dz: float = 0.01, zmax: float = 6.0, center: float = 3.0, wi
 def test_grid_properties() -> None:
     dz = 0.1
     z = np.arange(0, 2 + dz / 2, dz)
-    radial = RadialBase(z, np.ones_like(z))
+    radial = Radial(z, np.ones_like(z))
 
     assert radial.steps == len(z)
     assert np.isclose(radial.dz, dz)
@@ -33,7 +33,7 @@ def test_norm_matches_manual_formula() -> None:
     dz = 0.1
     z = np.arange(0, 3 + dz / 2, dz)
     w = np.exp(-0.5 * (z - 1.5) ** 2)
-    radial = RadialBase(z, w)
+    radial = Radial(z, w)
 
     expected = np.sqrt(2 * np.sum(w * w * z * z) * dz)
     assert np.isclose(radial.norm, expected)
@@ -51,8 +51,8 @@ def test_normalization_yields_unit_norm() -> None:
 def test_add_on_shared_grid() -> None:
     dz = 0.1
     z = np.arange(0, 1 + dz / 2, dz)
-    a = RadialBase(z, np.ones_like(z))
-    b = RadialBase(z, 2 * np.ones_like(z))
+    a = Radial(z, np.ones_like(z))
+    b = Radial(z, 2 * np.ones_like(z))
 
     result = a + b
     assert np.allclose(result.z_list, z)
@@ -64,8 +64,8 @@ def test_add_zero_pads_onto_common_grid() -> None:
     dz = 0.1
     za = np.arange(0, 1 + dz / 2, dz)  # covers [0.0, 1.0]
     zb = np.arange(0.5, 1.5 + dz / 2, dz)  # covers [0.5, 1.5]
-    a = RadialBase(za, np.ones_like(za))
-    b = RadialBase(zb, np.ones_like(zb))
+    a = Radial(za, np.ones_like(za))
+    b = Radial(zb, np.ones_like(zb))
 
     result = a + b
     # common grid spans the union of both grids
@@ -86,8 +86,8 @@ def test_add_is_commutative() -> None:
     dz = 0.1
     za = np.arange(0, 1 + dz / 2, dz)
     zb = np.arange(0.5, 1.5 + dz / 2, dz)
-    a = RadialBase(za, np.ones_like(za))
-    b = RadialBase(zb, 2 * np.ones_like(zb))
+    a = Radial(za, np.ones_like(za))
+    b = Radial(zb, 2 * np.ones_like(zb))
 
     assert np.allclose((a + b).w_list, (b + a).w_list)
 
@@ -95,8 +95,8 @@ def test_add_is_commutative() -> None:
 def test_neg_and_sub() -> None:
     dz = 0.1
     z = np.arange(0, 1 + dz / 2, dz)
-    a = RadialBase(z, np.full_like(z, 3.0))
-    b = RadialBase(z, np.full_like(z, 1.0))
+    a = Radial(z, np.full_like(z, 3.0))
+    b = Radial(z, np.full_like(z, 1.0))
 
     assert np.allclose((-a).w_list, -3.0)
     assert np.allclose((a - b).w_list, 2.0)
@@ -107,7 +107,7 @@ def test_neg_and_sub() -> None:
 def test_add_returns_not_implemented_for_non_radial() -> None:
     dz = 0.1
     z = np.arange(0, 1 + dz / 2, dz)
-    a = RadialBase(z, np.ones_like(z))
+    a = Radial(z, np.ones_like(z))
     with pytest.raises(TypeError):
         _ = a + 5  # type: ignore[operator]
 
@@ -120,7 +120,7 @@ def test_add_returns_not_implemented_for_non_radial() -> None:
 def test_scalar_multiplication() -> None:
     dz = 0.1
     z = np.arange(0, 1 + dz / 2, dz)
-    a = RadialBase(z, np.full_like(z, 2.0))
+    a = Radial(z, np.full_like(z, 2.0))
 
     assert np.allclose((a * 3).w_list, 6.0)
     assert np.allclose((3 * a).w_list, 6.0)  # __rmul__
@@ -132,7 +132,7 @@ def test_scalar_multiplication() -> None:
 def test_mul_returns_not_implemented_for_non_number() -> None:
     dz = 0.1
     z = np.arange(0, 1 + dz / 2, dz)
-    a = RadialBase(z, np.ones_like(z))
+    a = Radial(z, np.ones_like(z))
     with pytest.raises(TypeError):
         _ = a * "x"  # type: ignore[operator]
 
@@ -149,8 +149,8 @@ def test_norm_scales_linearly_with_scalar() -> None:
 
 
 def test_align_rejects_different_dz() -> None:
-    a = RadialBase(np.arange(0, 1 + 0.05, 0.1), np.ones(11))
-    b = RadialBase(np.arange(0, 1 + 0.1, 0.2), np.ones(6))
+    a = Radial(np.arange(0, 1 + 0.05, 0.1), np.ones(11))
+    b = Radial(np.arange(0, 1 + 0.1, 0.2), np.ones(6))
     with pytest.raises(ValueError, match="different dz"):
         _ = a + b
 
@@ -158,7 +158,7 @@ def test_align_rejects_different_dz() -> None:
 def test_rejects_grids_off_the_global_lattice() -> None:
     z = np.arange(0.03, 1 + 0.03, 0.1)
     with pytest.raises(ValueError, match="z_list must start at an integer multiple of dz"):
-        RadialBase(z, np.ones_like(z))
+        Radial(z, np.ones_like(z))
 
 
 # --------------------------------------------------------------------------------------
