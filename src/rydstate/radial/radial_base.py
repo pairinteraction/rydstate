@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class RadialBase:
+class Radial:
     _z_list: NDArray
     _w_list: NDArray
     _is_dummy: bool = False
@@ -96,7 +96,7 @@ class RadialBase:
         w_list_no_zeros = self.w_list[self.w_list != 0]
         return int(np.sum(np.abs(np.diff(np.sign(w_list_no_zeros)))) // 2)
 
-    def _align(self, other: RadialBase) -> tuple[NDArray, NDArray, NDArray]:
+    def _align(self, other: Radial) -> tuple[NDArray, NDArray, NDArray]:
         """Zero-pad ``self`` and ``other`` onto a common grid covering both.
 
         Returns ``(z_common, w_self, w_other)`` where all three arrays have the same length.
@@ -121,27 +121,27 @@ class RadialBase:
 
         return z_common, w_self, w_other
 
-    def __add__(self, other: RadialBase) -> RadialBase:
-        if not isinstance(other, RadialBase):
+    def __add__(self, other: Radial) -> Radial:
+        if not isinstance(other, Radial):
             return NotImplemented
         z_common, w_self, w_other = self._align(other)
-        return RadialBase(z_common, w_self + w_other)
+        return Radial(z_common, w_self + w_other)
 
-    def __sub__(self, other: RadialBase) -> RadialBase:
+    def __sub__(self, other: Radial) -> Radial:
         return self.__add__(-other)
 
-    def __mul__(self, scalar: float) -> RadialBase:
+    def __mul__(self, scalar: float) -> Radial:
         if not isinstance(scalar, Number):
             return NotImplemented
-        return RadialBase(self.z_list, scalar * self.w_list)
+        return Radial(self.z_list, scalar * self.w_list)
 
-    def __rmul__(self, scalar: float) -> RadialBase:
+    def __rmul__(self, scalar: float) -> Radial:
         return self.__mul__(scalar)
 
-    def __truediv__(self, scalar: float) -> RadialBase:
+    def __truediv__(self, scalar: float) -> Radial:
         return self.__mul__(1 / scalar)
 
-    def __neg__(self) -> RadialBase:
+    def __neg__(self) -> Radial:
         return self.__mul__(-1)
 
     def get_outer_sign(self) -> int:
@@ -153,7 +153,7 @@ class RadialBase:
                 return int(np.sign(w))
         return 0
 
-    def calc_overlap(self, other: RadialBase, *, integration_method: INTEGRATION_METHODS = "sum") -> float:
+    def calc_overlap(self, other: Radial, *, integration_method: INTEGRATION_METHODS = "sum") -> float:
         r"""Calculate the overlap <self|other> of two radial kets.
 
         Args:
@@ -168,17 +168,17 @@ class RadialBase:
 
     @overload
     def calc_matrix_element(
-        self, other: RadialBase, k_radial: int, *, unit: None = None, integration_method: INTEGRATION_METHODS = "sum"
+        self, other: Radial, k_radial: int, *, unit: None = None, integration_method: INTEGRATION_METHODS = "sum"
     ) -> PintFloat: ...
 
     @overload
     def calc_matrix_element(
-        self, other: RadialBase, k_radial: int, unit: str, *, integration_method: INTEGRATION_METHODS = "sum"
+        self, other: Radial, k_radial: int, unit: str, *, integration_method: INTEGRATION_METHODS = "sum"
     ) -> float: ...
 
     def calc_matrix_element(
         self,
-        other: RadialBase,
+        other: Radial,
         k_radial: int,
         unit: str | None = None,
         *,
@@ -218,7 +218,7 @@ class RadialBase:
 
     def _calc_matrix_element_au(
         self,
-        other: RadialBase,
+        other: Radial,
         k_radial: int,
         *,
         integration_method: INTEGRATION_METHODS = "sum",

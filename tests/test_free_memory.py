@@ -12,10 +12,10 @@ from rydstate.basis import BasisMQDT
 from rydstate.radial import RadialDummy, RadialKet
 
 if TYPE_CHECKING:
-    from rydstate.radial.radial_base import RadialBase
+    from rydstate.radial.radial_base import Radial
 
 
-def _cache_key(radial: RadialBase) -> tuple[tuple[str, object], ...]:
+def _cache_key(radial: Radial) -> tuple[tuple[str, object], ...]:
     """Return the key under which the given radial ket is stored in RadialKet._instances."""
     with contextlib.suppress(StopIteration):
         return next(key for key, value in RadialKet._instances.items() if value is radial)
@@ -30,7 +30,7 @@ def test_free_memory_releases_radial_kets_sqdt() -> None:
     state = RydbergStateSQDTAlkali("Rb", n=50, l=0, j=0.5)
 
     # access radial and angular kets to ensure they are created (and the radial ket is cached)
-    radial_refs: list[weakref.ref[RadialBase]] = []
+    radial_refs: list[weakref.ref[Radial]] = []
     cache_keys = []
     for ket in state.rydberg_kets:
         radial, _angular = ket.radial, ket.angular
@@ -58,7 +58,7 @@ def test_free_memory_releases_radial_kets_mqdt() -> None:
     assert len(state.rydberg_kets) > 1
 
     # access radial and angular kets to ensure they are created (and the radial kets are cached)
-    radial_refs: list[weakref.ref[RadialBase]] = []
+    radial_refs: list[weakref.ref[Radial]] = []
     cache_keys = []
     for ket in state.rydberg_kets:
         radial, _angular = ket.radial, ket.angular
