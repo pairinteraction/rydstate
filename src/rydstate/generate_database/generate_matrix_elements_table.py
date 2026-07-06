@@ -8,7 +8,7 @@ from rydstate.units import MatrixElementOperatorRanks
 
 if TYPE_CHECKING:
     from rydstate.basis import BasisMQDT, BasisSQDT
-    from rydstate.rydberg_state.rydberg_base import RydbergStateBase
+    from rydstate.rydberg_state.rydberg_base import RydbergState
     from rydstate.units import MatrixElementOperator
 
 logger = logging.getLogger(__name__)
@@ -105,7 +105,7 @@ def generate_matrix_elements_tables(
 
 
 def calc_matrix_elements_one_pair(
-    initial: RydbergStateBase, final: RydbergStateBase, matrix_elements_of_interest: dict[str, MatrixElementOperator]
+    initial: RydbergState, final: RydbergState, matrix_elements_of_interest: dict[str, MatrixElementOperator]
 ) -> dict[str, float]:
     matrix_elements: dict[str, float] = {}
     for tkey, operator in matrix_elements_of_interest.items():

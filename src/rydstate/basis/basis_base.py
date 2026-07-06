@@ -8,14 +8,14 @@ import numpy as np
 from typing_extensions import Self
 
 from rydstate.angular.utils import is_angular_momentum_quantum_number, is_unknown
-from rydstate.rydberg_state.rydberg_base import RydbergStateBase
+from rydstate.rydberg_state.rydberg_base import RydbergState
 from rydstate.species import get_element_properties
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
     from rydstate.units import MatrixElementOperator, NDArray, PintArray, PintFloat
 
-_RydbergState = TypeVar("_RydbergState", bound=RydbergStateBase)
+_RydbergState = TypeVar("_RydbergState", bound=RydbergState)
 
 
 class BasisBase(ABC, Generic[_RydbergState]):
@@ -80,7 +80,7 @@ class BasisBase(ABC, Generic[_RydbergState]):
     def calc_std_qn(self, qn: str) -> NDArray:
         return np.array([state.calc_std_qn(qn) for state in self.states])
 
-    def calc_reduced_overlap(self, other: RydbergStateBase) -> NDArray:
+    def calc_reduced_overlap(self, other: RydbergState) -> NDArray:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
         return np.array([bra.calc_reduced_overlap(other) for bra in self.states])
 
@@ -94,16 +94,16 @@ class BasisBase(ABC, Generic[_RydbergState]):
 
     @overload
     def calc_reduced_matrix_element(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: None = None
+        self, other: RydbergState, operator: MatrixElementOperator, unit: None = None
     ) -> PintArray: ...
 
     @overload
     def calc_reduced_matrix_element(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str
+        self, other: RydbergState, operator: MatrixElementOperator, unit: str
     ) -> NDArray: ...
 
     def calc_reduced_matrix_element(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str | None = None
+        self, other: RydbergState, operator: MatrixElementOperator, unit: str | None = None
     ) -> PintArray | NDArray:
         r"""Calculate the reduced matrix element :math:`\langle bra || O || other \rangle` for all states of self.
 

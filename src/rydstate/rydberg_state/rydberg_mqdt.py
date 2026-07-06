@@ -4,7 +4,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from rydstate.angular import AngularKetFJ
-from rydstate.rydberg_state.rydberg_base import RydbergStateBase
+from rydstate.rydberg_state.rydberg_base import RydbergState
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class RydbergStateMQDT(RydbergStateBase):
+class RydbergStateMQDT(RydbergState):
     angular_state: AngularState[AngularKetFJ[Any]]
     """Return the angular part of the MQDT state as an AngularState."""
 
