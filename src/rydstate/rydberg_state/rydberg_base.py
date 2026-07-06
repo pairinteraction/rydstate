@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import math
-from abc import ABC
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, overload
 
@@ -26,7 +25,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class RydbergStateBase(ABC):
+class RydbergState:
     species: str
     """The species of the Rydberg state."""
 
@@ -58,11 +57,11 @@ class RydbergStateBase(ABC):
         self._energy_au = float(energy_au)
 
         if len(rydberg_kets) == 0:
-            raise ValueError("RydbergStateBase must be initialized with at least one state.")
+            raise ValueError("RydbergState must be initialized with at least one state.")
         if len(coefficients) != len(rydberg_kets):
             raise ValueError("Length of coefficients and rydberg_kets must be the same.")
         if len(set(rydberg_kets)) != len(rydberg_kets):
-            raise ValueError("RydbergStateBase initialized with duplicate rydberg_kets.")
+            raise ValueError("RydbergState initialized with duplicate rydberg_kets.")
 
         if abs(self.norm - 1) > 1e-10:
             raise ValueError(
@@ -143,7 +142,7 @@ class RydbergStateBase(ABC):
             return energy
         return energy.to(unit, "spectroscopy").magnitude
 
-    def calc_reduced_overlap(self, other: RydbergStateBase) -> float:
+    def calc_reduced_overlap(self, other: RydbergState) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
         ov = 0.0
         for coeff1, ket1 in zip(self._coefficients_conjugate, self.rydberg_kets, strict=True):
@@ -153,16 +152,14 @@ class RydbergStateBase(ABC):
 
     @overload
     def calc_reduced_matrix_element(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: None = None
+        self, other: RydbergState, operator: MatrixElementOperator, unit: None = None
     ) -> PintFloat: ...
 
     @overload
-    def calc_reduced_matrix_element(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str
-    ) -> float: ...
+    def calc_reduced_matrix_element(self, other: RydbergState, operator: MatrixElementOperator, unit: str) -> float: ...
 
     def calc_reduced_matrix_element(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, unit: str | None = None
+        self, other: RydbergState, operator: MatrixElementOperator, unit: str | None = None
     ) -> PintFloat | float:
         r"""Calculate the reduced matrix element.
 
@@ -198,16 +195,14 @@ class RydbergStateBase(ABC):
 
     @overload
     def calc_matrix_element(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, q: int, unit: None = None
+        self, other: RydbergState, operator: MatrixElementOperator, q: int, unit: None = None
     ) -> PintFloat: ...
 
     @overload
-    def calc_matrix_element(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, q: int, unit: str
-    ) -> float: ...
+    def calc_matrix_element(self, other: RydbergState, operator: MatrixElementOperator, q: int, unit: str) -> float: ...
 
     def calc_matrix_element(
-        self, other: RydbergStateBase, operator: MatrixElementOperator, q: int, unit: str | None = None
+        self, other: RydbergState, operator: MatrixElementOperator, q: int, unit: str | None = None
     ) -> PintFloat | float:
         r"""Calculate the matrix element.
 

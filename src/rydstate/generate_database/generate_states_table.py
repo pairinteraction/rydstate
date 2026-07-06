@@ -9,7 +9,7 @@ from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT
 
 if TYPE_CHECKING:
     from rydstate.basis import BasisMQDT, BasisSQDT
-    from rydstate.rydberg_state.rydberg_base import RydbergStateBase
+    from rydstate.rydberg_state.rydberg_base import RydbergState
 
 
 logger = logging.getLogger(__name__)
@@ -58,7 +58,7 @@ def generate_states_table(
     return table
 
 
-def get_state_data(ids: int, state: RydbergStateBase) -> tuple[float | int | str | bool, ...]:
+def get_state_data(ids: int, state: RydbergState) -> tuple[float | int | str | bool, ...]:
     """Get the data for a given state as a tuple."""
     angular = state.angular_state
     underspecified_channel_contribution = sum(abs(coeff) ** 2 for coeff, ket in state if ket.angular.contains_unknown)

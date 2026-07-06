@@ -8,7 +8,7 @@ from rydstate.angular import NotSet
 from rydstate.angular.angular_ket import AngularKetBase, AngularKetLS
 from rydstate.angular.utils import AllKnown, is_not_set, quantum_numbers_to_angular_ket
 from rydstate.radial import RadialKet
-from rydstate.rydberg_state.rydberg_base import RydbergStateBase
+from rydstate.rydberg_state.rydberg_base import RydbergState
 from rydstate.rydberg_state.rydberg_ket import RydbergKet
 from rydstate.species import get_element_properties, get_sqdt
 from rydstate.species.potential import Potential, get_potential_class
@@ -26,7 +26,7 @@ T_AngularKet = TypeVar("T_AngularKet", bound=AngularKetBase[AllKnown])
 logger = logging.getLogger(__name__)
 
 
-class RydbergStateSQDT(RydbergStateBase, Generic[GenericT_AngularKet]):
+class RydbergStateSQDT(RydbergState, Generic[GenericT_AngularKet]):
     """Create a Rydberg SQDT state, including the radial and angular states."""
 
     species: str
