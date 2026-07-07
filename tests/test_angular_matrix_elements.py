@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, get_args
 import numpy as np
 import pytest
 from rydstate.angular import AngularKetFJ, AngularKetJJ, AngularKetLS
-from rydstate.angular.utils import AngularMomentumQuantumNumbers
+from rydstate.angular.utils import AngularMomentumQuantumNumbers, Unknown
 
 if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetBase
@@ -62,6 +62,37 @@ def test_overlap_different_coupling_schemes(ket1: AngularKetBase[AllKnown], ket2
         assert np.isclose(ov, ket1.to_state(scheme).calc_reduced_overlap(ket2))
         assert np.isclose(1, ket1.to_state(scheme).calc_reduced_overlap(ket1))
         assert np.isclose(1, ket2.to_state(scheme).calc_reduced_overlap(ket2))
+
+
+def test_identical_unknown_kets_have_unit_overlap() -> None:
+    ket1 = AngularKetLS(
+        i_c=0,
+        s_c=0,
+        l_c=0,
+        s_r=0.5,
+        l_r=Unknown,
+        s_tot=0.5,
+        l_tot=Unknown,
+        j_tot=Unknown,
+        f_tot=0.5,
+        parity=1,
+        allow_unknown=True,
+    )
+    ket2 = AngularKetLS(
+        i_c=0,
+        s_c=0,
+        l_c=0,
+        s_r=0.5,
+        l_r=Unknown,
+        s_tot=0.5,
+        l_tot=Unknown,
+        j_tot=Unknown,
+        f_tot=0.5,
+        parity=1,
+        allow_unknown=True,
+    )
+    assert ket1.calc_reduced_overlap(ket2) == 1.0
+    assert ket2.calc_reduced_overlap(ket1) == 1.0
 
 
 @pytest.mark.parametrize("ket", TEST_KETS)

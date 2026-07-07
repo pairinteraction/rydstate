@@ -585,30 +585,21 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
             if self.get_qn(q) != other.get_qn(q):
                 return 0.0
 
+        if any(is_unknown(qn) for qn in self.quantum_numbers) or any(is_unknown(qn) for qn in other.quantum_numbers):
+            return 0.0  # TODO, ignore Unknown contributions for now
+
         kets = [self, other]
 
         # JJ - FJ overlaps
         if any(isinstance(s, AngularKetJJ) for s in kets) and any(isinstance(s, AngularKetFJ) for s in kets):
             jj = next(s for s in kets if isinstance(s, AngularKetJJ))
             fj = next(s for s in kets if isinstance(s, AngularKetFJ))
-            if is_unknown(fj.j_r) or is_unknown(fj.j_c) or is_unknown(jj.j_tot) or is_unknown(fj.f_c):
-                raise RuntimeError("Cannot calculate overlap between JJ and FJ ket, due to Unknown quantum numbers.")
             return clebsch_gordan_6j(fj.j_r, fj.j_c, fj.i_c, jj.j_tot, fj.f_c, fj.f_tot)
 
         # JJ - LS overlaps
         if any(isinstance(s, AngularKetJJ) for s in kets) and any(isinstance(s, AngularKetLS) for s in kets):
             jj = next(s for s in kets if isinstance(s, AngularKetJJ))
             ls = next(s for s in kets if isinstance(s, AngularKetLS))
-            if (
-                is_unknown(ls.l_r)
-                or is_unknown(ls.l_c)
-                or is_unknown(ls.l_tot)
-                or is_unknown(ls.s_tot)
-                or is_unknown(jj.j_r)
-                or is_unknown(jj.j_c)
-                or is_unknown(jj.j_tot)
-            ):
-                raise RuntimeError("Cannot calculate overlap between JJ and LS ket, due to Unknown quantum numbers.")
             # NOTE: it matters, whether you first put all 3 l's and then all 3 s's or the other way round
             # (see symmetry properties of 9j symbol)
             # this convention is used, such that all matrix elements work out correctly, no matter in which
@@ -619,7 +610,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         if any(isinstance(s, AngularKetFJ) for s in kets) and any(isinstance(s, AngularKetLS) for s in kets):
             fj = next(s for s in kets if isinstance(s, AngularKetFJ))
             ls = next(s for s in kets if isinstance(s, AngularKetLS))
-            ov: float = 0
+            ov = 0.0
             for coeff, jj_ket in fj.to_state("JJ"):
                 ov += coeff * ls.calc_reduced_overlap(jj_ket)
             return float(ov)
