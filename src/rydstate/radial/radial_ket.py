@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import math
 import weakref
+from numbers import Number
 from typing import TYPE_CHECKING, Literal, overload
 
 import numpy as np
@@ -12,6 +13,7 @@ from scipy.special import gamma
 from rydstate.angular.utils import is_unknown
 from rydstate.metaclass_cache import CachedABCMeta
 from rydstate.radial.numerov import _run_numerov_integration_python, run_numerov_integration
+from rydstate.radial.radial_base import RadialBase
 from rydstate.radial.radial_matrix_element import calc_radial_matrix_element_from_w_z
 from rydstate.species.utils import calc_energy_from_nu
 from rydstate.units import ureg
@@ -19,7 +21,7 @@ from rydstate.units import ureg
 if TYPE_CHECKING:
     from rydstate.angular.utils import Unknown
     from rydstate.radial.radial_matrix_element import INTEGRATION_METHODS
-    from rydstate.species.potential import Potential, PotentialDummy
+    from rydstate.species.potential import Potential
     from rydstate.units import NDArray, PintFloat
 
 logger = logging.getLogger(__name__)
@@ -28,13 +30,13 @@ logger = logging.getLogger(__name__)
 WavefunctionSignConvention = Literal["positive_at_outer_bound", "n_l_1"] | None
 
 
-class RadialKet(metaclass=CachedABCMeta):
+class RadialKet(RadialBase, metaclass=CachedABCMeta):
     r"""Class representing a radial Rydberg state."""
 
     def __init__(
         self,
         nu: float,
-        potential: Potential | PotentialDummy,
+        potential: Potential,
         *,
         n_expected: int | None = None,
         dz: float = 1e-2,
@@ -95,6 +97,18 @@ class RadialKet(metaclass=CachedABCMeta):
         if self.n_expected is not None:
             self._sanity_check_n_expected(self.n_expected)
 
+    @property
+    def z_list(self) -> NDArray:
+        if not hasattr(self, "_z_list"):
+            self._create_grid_points()
+        return self._z_list
+
+    @property
+    def w_list(self) -> NDArray:
+        if not hasattr(self, "_w_list"):
+            self.integrate_wavefunction()
+        return self._w_list
+
     def _sanity_check_n_expected(self, n_expected: int) -> None:
         """Validate n_expected, which is used for additional sanity checks of the radial wavefunction.
 
@@ -123,67 +137,6 @@ class RadialKet(metaclass=CachedABCMeta):
     def l_r(self) -> int | Unknown:
         """Return the orbital quantum number of the rydberg electron."""
         return self.potential.l_r
-
-    @property
-    def z_list(self) -> NDArray:
-        r"""The grid in the scaled dimensionless coordinate :math:`z = \sqrt{r/a_0}`.
-
-        In this coordinate the grid points are chosen equidistant,
-        because the nodes of the wavefunction are equally spaced in this coordinate.
-        """
-        if not hasattr(self, "_z_list"):
-            self._create_grid_points()
-        return self._z_list
-
-    @property
-    def x_list(self) -> NDArray:
-        r"""The grid in the dimensionless coordinate :math:`x = r/a_0`."""
-        return self.z_list**2
-
-    @property
-    def dz(self) -> float:
-        r"""The grid step size in the scaled dimensionless coordinate :math:`z = \sqrt{r/a_0}`."""
-        return float(self.z_list[1] - self.z_list[0])
-
-    @property
-    def steps(self) -> int:
-        """The number of grid points."""
-        return len(self.z_list)
-
-    @property
-    def w_list(self) -> NDArray:
-        r"""The dimensionless scaled wavefunction :math:`w(z)`.
-
-        The scaled wavefunction is defined as
-
-        .. math::
-            w(z) = z^{-1/2} \tilde{u}(x=z^2) = (r/a_0)^{-1/4} \sqrt{a_0} r R(r)
-
-        """
-        if not hasattr(self, "_w_list"):
-            self.integrate_wavefunction()
-        return self._w_list
-
-    @property
-    def u_list(self) -> NDArray:
-        r"""The dimensionless wavefunction :math:`\tilde{u}(x) = \sqrt{a_0} r R(r)`."""
-        return np.sqrt(self.z_list) * self.w_list
-
-    @property
-    def r_list(self) -> NDArray:
-        r"""The radial wavefunction in atomic units :math:`\tilde{R}(r) = a_0^{-3/2} R(r)`."""
-        return self.u_list / self.x_list
-
-    @property
-    def norm(self) -> float:
-        """The norm of the wavefunction."""
-        return math.sqrt(2 * np.sum(self.w_list * self.w_list * self.z_list * self.z_list) * self.dz)
-
-    @property
-    def nodes(self) -> int:
-        """The number of nodes (i.e. zero-crossings) of the wavefunction."""
-        w_list_no_zeros = self.w_list[self.w_list != 0]
-        return int(np.sum(np.abs(np.diff(np.sign(w_list_no_zeros)))) // 2)
 
     def _create_grid_points(self) -> None:
         r"""Create the grid points for the integration of the radial Schrödinger equation.
@@ -487,12 +440,7 @@ class RadialKet(metaclass=CachedABCMeta):
         if sign_convention is None:
             return
 
-        current_outer_sign = 1
-        for w in self.w_list[::-1]:
-            if w != 0 and not np.isnan(w):
-                current_outer_sign = np.sign(w)
-                break
-
+        current_outer_sign = self.get_outer_sign()
         if sign_convention == "positive_at_outer_bound":
             if current_outer_sign < 0:
                 self._w_list = -self._w_list
@@ -505,61 +453,30 @@ class RadialKet(metaclass=CachedABCMeta):
         else:
             raise ValueError(f"Unknown sign convention: {sign_convention}")
 
-    def calc_overlap(self, other: RadialKet, *, integration_method: INTEGRATION_METHODS = "sum") -> float:
-        r"""Calculate the overlap <self|other> of two radial kets.
-
-        Args:
-            other: Other radial ket
-            integration_method: Integration method to use
-
-        Returns:
-            The overlap integral between self and other.
-
-        """
-        return self.calc_matrix_element(other, k_radial=0, unit="a.u.", integration_method=integration_method)
-
     @overload
     def calc_matrix_element(
-        self, other: RadialKet, k_radial: int, *, unit: None = None, integration_method: INTEGRATION_METHODS = "sum"
+        self, other: RadialBase, k_radial: int, *, unit: None = None, integration_method: INTEGRATION_METHODS = "sum"
     ) -> PintFloat: ...
 
     @overload
     def calc_matrix_element(
-        self, other: RadialKet, k_radial: int, unit: str, *, integration_method: INTEGRATION_METHODS = "sum"
+        self, other: RadialBase, k_radial: int, unit: str, *, integration_method: INTEGRATION_METHODS = "sum"
     ) -> float: ...
 
     def calc_matrix_element(
         self,
-        other: RadialKet,
+        other: RadialBase,
         k_radial: int,
         unit: str | None = None,
         *,
         integration_method: INTEGRATION_METHODS = "sum",
     ) -> PintFloat | float:
-        r"""Calculate the radial matrix element <self | r^k_radial | other>.
+        if not isinstance(other, RadialKet):
+            return super().calc_matrix_element(
+                other, k_radial=k_radial, unit=unit, integration_method=integration_method
+            )
 
-        Computes the integral
-
-        .. math::
-            \int_{0}^{\infty} dr r^2 r^k_{radial} R_1(r) R_2(r)
-            = a_0^{k_{radial}} \int_{0}^{\infty} dx x^k_{radial} \tilde{u}_1(x) \tilde{u}_2(x)
-            = a_0^{k_{radial}} \int_{0}^{\infty} dz 2 z^{2 + 2k_{radial}} w_1(z) w_2(z)
-
-        where R_1 and R_2 are the radial wavefunctions of self and other,
-        and w(z) = z^{-1/2} \tilde{u}(z^2) = (r/_a_0)^{1/4} \sqrt{a_0} r R(r).
-
-        Args:
-            other: Other radial ket
-            k_radial: Power of r in the matrix element
-                (default=0, this corresponds to the overlap integral \int dr r^2 R_1(r) R_2(r))
-            unit: Unit of the returned matrix element, default None returns a Pint quantity.
-            integration_method: Integration method to use
-
-        Returns:
-            The radial matrix element in the desired unit.
-
-        """
-        if other not in self._matrix_element_cache and self in other._matrix_element_cache:
+        if other not in self._matrix_element_cache and self in other._matrix_element_cache:  # noqa: SLF001
             return other.calc_matrix_element(self, k_radial=k_radial, unit=unit, integration_method=integration_method)
 
         cache = self._matrix_element_cache.get(other)
@@ -579,3 +496,23 @@ class RadialKet(metaclass=CachedABCMeta):
         if unit is None:
             return radial_matrix_element
         return radial_matrix_element.to(unit).magnitude
+
+
+class RadialDummy(RadialBase, metaclass=CachedABCMeta):
+    _is_dummy = True
+
+    def __init__(self, coeff: float, nu: float) -> None:
+        self.nu = nu
+        self._coeff = coeff
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self._coeff}, nu={self.nu})"
+
+    @property
+    def norm(self) -> float:
+        return abs(self._coeff)
+
+    def __mul__(self, scalar: float) -> RadialDummy:
+        if not isinstance(scalar, Number):
+            return NotImplemented
+        return RadialDummy(scalar * self._coeff, self.nu)
