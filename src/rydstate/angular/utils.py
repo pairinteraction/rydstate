@@ -166,6 +166,22 @@ def get_possible_quantum_number_values(
     return [float(s) for s in np.arange(abs(s_1 - s_2), s_1 + s_2 + 1, 1)]
 
 
+def get_coupling_scheme_for_quantum_number(qn: AngularMomentumQuantumNumbers) -> CouplingScheme:
+    """Return the coupling scheme, in which the given quantum number is a good quantum number."""
+    if qn in ("i_c", "s_c", "l_c", "s_r", "l_r", "f_tot"):
+        raise ValueError(
+            f"Quantum number {qn} is always a good quantum number, "
+            "callers should never invoke get_coupling_scheme_for_quantum_number for it."
+        )
+    if qn in ("s_tot", "l_tot", "j_tot"):
+        return "LS"
+    if qn in ("j_c", "j_r"):
+        return "JJ"
+    if qn in ("f_c",):  # noqa: FURB171
+        return "FJ"
+    raise ValueError(f"Invalid quantum number {qn} for coupling scheme.")
+
+
 @lru_cache(maxsize=1_000)
 def quantum_numbers_to_angular_ket(
     species: str,
