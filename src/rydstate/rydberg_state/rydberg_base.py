@@ -9,7 +9,12 @@ from scipy.special import exprel
 
 from rydstate.angular.angular_ket import AngularKetBase
 from rydstate.angular.angular_state import AngularState
-from rydstate.angular.utils import is_angular_momentum_quantum_number, is_not_set, is_unknown
+from rydstate.angular.utils import (
+    get_coupling_scheme_for_quantum_number,
+    is_angular_momentum_quantum_number,
+    is_not_set,
+    is_unknown,
+)
 from rydstate.rydberg_state.rydberg_ket import RydbergKet
 from rydstate.units import BaseQuantities, ureg
 
@@ -267,6 +272,9 @@ class RydbergState:
             return self.nu
 
         if is_angular_momentum_quantum_number(qn):
+            if qn not in self.rydberg_kets[0].angular.quantum_number_names:
+                coupling_scheme = get_coupling_scheme_for_quantum_number(qn)
+                return self.to_coupling_scheme(coupling_scheme).calc_exp_qn(qn)
             return self.angular_state.calc_exp_qn(qn)
 
         raise ValueError(f"Unknown quantum number {qn}")
@@ -276,6 +284,9 @@ class RydbergState:
             return 0
 
         if is_angular_momentum_quantum_number(qn):
+            if qn not in self.rydberg_kets[0].angular.quantum_number_names:
+                coupling_scheme = get_coupling_scheme_for_quantum_number(qn)
+                return self.to_coupling_scheme(coupling_scheme).calc_std_qn(qn)
             return self.angular_state.calc_std_qn(qn)
 
         raise ValueError(f"Unknown quantum number {qn}")
