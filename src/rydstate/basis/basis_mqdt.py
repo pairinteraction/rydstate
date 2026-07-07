@@ -115,6 +115,8 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         self.states = []
         for model in self.models:
             logger.debug("  calculating states for model %s with nu_range=%s", model.name, nu_range)
+            if "sqdt" in model.name.lower():
+                nu_range = (max(25, nu_range[0]), nu_range[1])
             _states = get_mqdt_states_from_fmodel(model, nu_range, m_range, self.potential_class)
             if len(_states) == 0:
                 logger.debug("  no states found for model %s", model.name)
