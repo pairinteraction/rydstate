@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import math
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, overload
 
@@ -138,14 +137,6 @@ class RydbergState:
         """Return the norm of the state (should be 1)."""
         return float(np.linalg.norm(self._coefficients))
 
-    @property
-    def nui(self) -> list[float]:
-        """Return the effective principal quantum numbers nui of the different channels."""
-        nuis = [getattr(rydberg_ket.radial, "nu", None) for rydberg_ket in self.rydberg_kets]
-        if any(nui is None for nui in nuis):
-            raise ValueError("One or more radial wavefunctions do not have a 'nu' attribute.")
-        return nuis  # type: ignore [return-value]
-
     @cached_property
     def coefficients(self) -> NDArray:
         """Return the channel coefficients as numpy array."""
@@ -272,34 +263,20 @@ class RydbergState:
         return value
 
     def calc_exp_qn(self, qn: str) -> float:
-        if is_angular_momentum_quantum_number(qn):
-            return self.angular_state.calc_exp_qn(qn)
         if qn == "nu":
             return self.nu
-        if qn == "n":
-            n = getattr(self, "n", None)
-            if n is None:
-                raise ValueError(f"{self} has no quantum number n")
-            return n  # type: ignore [no-any-return]
-        if qn == "nui":
-            qns = np.array(self.nui)
-            coefficients2 = np.conjugate(self.coefficients) * self.coefficients / self.norm**2
-            return float(np.sum(coefficients2 * qns))
+
+        if is_angular_momentum_quantum_number(qn):
+            return self.angular_state.calc_exp_qn(qn)
+
         raise ValueError(f"Unknown quantum number {qn}")
 
     def calc_std_qn(self, qn: str) -> float:
+        if qn == "nu":
+            return 0
+
         if is_angular_momentum_quantum_number(qn):
             return self.angular_state.calc_std_qn(qn)
-        if qn in ("n", "nu"):
-            return 0
-        if qn == "nui":
-            qns = np.array(self.nui)
-            coefficients2 = np.conjugate(self.coefficients) * self.coefficients / self.norm**2
-            exp_q = np.sum(coefficients2 * qns)
-            exp_q2 = np.sum(coefficients2 * qns * qns)
-            if abs(exp_q2 - exp_q**2) < 1e-10:
-                return 0
-            return math.sqrt(exp_q2 - exp_q**2)
 
         raise ValueError(f"Unknown quantum number {qn}")
 
