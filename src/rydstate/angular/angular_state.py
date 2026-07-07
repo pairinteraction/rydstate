@@ -31,10 +31,7 @@ GenericT_AngularKet = TypeVar("GenericT_AngularKet", bound=AngularKetBase[Any])
 
 class AngularState(Generic[GenericT_AngularKet]):
     def __init__(self, coefficients: Sequence[float] | NDArray, kets: Sequence[GenericT_AngularKet]) -> None:
-        if np.isreal(coefficients).all():
-            coefficients = np.array(coefficients, dtype=float)
-        else:
-            coefficients = np.array(coefficients, dtype=complex)
+        coefficients = np.real_if_close(coefficients)
         self._coefficients: list[float] = coefficients.tolist()
         self.kets = kets
 
