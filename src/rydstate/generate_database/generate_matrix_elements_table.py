@@ -40,7 +40,7 @@ def generate_matrix_elements_tables(
 
     basis.sort_states("nu")  # sort by nu == sort by energy
     list_of_id_state = list(enumerate(basis.states))
-    list_of_id_state = sorted(list_of_id_state, key=lambda x: (x[1].angular.calc_exp_qn("l_r"), x[1].nu, x[0]))
+    list_of_id_state = sorted(list_of_id_state, key=lambda x: (x[1].calc_exp_qn("l_r"), x[1].nu, x[0]))
 
     # precomupte l_r values for efficient k_angular_max filtering
     unknown_angular_kets = [

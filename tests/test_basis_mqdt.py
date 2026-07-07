@@ -22,7 +22,7 @@ def test_mqdt_basis_f_tot_filter() -> None:
     basis = BasisMQDT("Sr88", nu=(25, 30), f_tot=(0, 0))
     assert len(basis) > 0
     for state in basis.states:
-        assert abs(state.angular.calc_exp_qn("f_tot") - 0.0) < 1e-10
+        assert abs(state.calc_exp_qn("f_tot") - 0.0) < 1e-10
 
 
 def test_mqdt_basis_m_range() -> None:
