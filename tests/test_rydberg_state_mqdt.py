@@ -20,12 +20,11 @@ def basis() -> BasisMQDT:
 def _find_state(basis: BasisMQDT, *, l_r: int, f_tot: float, s_tot: float | None = None) -> RydbergStateMQDT:
     """Return the first MQDT state matching the given (expectation value) quantum numbers."""
     for state in basis.states:
-        angular = state.angular
-        if abs(angular.calc_exp_qn("l_r") - l_r) > 1e-6:
+        if abs(state.calc_exp_qn("l_r") - l_r) > 1e-6:
             continue
-        if abs(angular.calc_exp_qn("f_tot") - f_tot) > 1e-6:
+        if abs(state.calc_exp_qn("f_tot") - f_tot) > 1e-6:
             continue
-        if s_tot is not None and abs(angular.calc_exp_qn("s_tot") - s_tot) > 1e-2:
+        if s_tot is not None and abs(state.calc_exp_qn("s_tot") - s_tot) > 1e-2:
             continue
         return state
     raise AssertionError(f"No MQDT state found for l_r={l_r}, f_tot={f_tot}, s_tot={s_tot}")
@@ -34,31 +33,28 @@ def _find_state(basis: BasisMQDT, *, l_r: int, f_tot: float, s_tot: float | None
 def test_quantum_number_expectation_values(basis: BasisMQDT) -> None:
     """f_tot is a good quantum number; l_r/s_tot/j_tot have sensible expectation values."""
     for state in basis.states:
-        angular = state.angular
-
         # f_tot is conserved within an MQDT model, so it is exact (zero spread).
-        f_tot = angular.calc_exp_qn("f_tot")
-        assert angular.calc_std_qn("f_tot") == 0
+        f_tot = state.calc_exp_qn("f_tot")
+        assert state.calc_std_qn("f_tot") == 0
         # f_tot must be a (half-)integer >= 0.
         assert f_tot >= 0
         assert abs(2 * f_tot - round(2 * f_tot)) < 1e-12
 
         # l_r expectation value must lie within the range spanned by the channels.
         l_r_channels = [ket.angular.l_r for ket in state.rydberg_kets]
-        l_r_exp = angular.calc_exp_qn("l_r")
+        l_r_exp = state.calc_exp_qn("l_r")
         assert min(l_r_channels) <= l_r_exp <= max(l_r_channels)
 
         # s_tot expectation value is between 0 and 1 (singlet/triplet mixing).
-        s_tot_exp = angular.calc_exp_qn("s_tot")
+        s_tot_exp = state.calc_exp_qn("s_tot")
         assert 0 <= s_tot_exp <= 1
 
 
 def test_single_channel_state_has_sharp_quantum_numbers(basis: BasisMQDT) -> None:
     """A single-channel MQDT state behaves like a pure SQDT-like state with sharp qn."""
     state = next(s for s in basis.states if len(s.rydberg_kets) == 1)
-    angular = state.angular
     for qn in ("l_r", "j_r", "f_c", "f_tot", "s_tot", "j_tot"):
-        assert angular.calc_std_qn(qn) < 1e-12
+        assert state.calc_std_qn(qn) < 1e-12
 
 
 def test_self_overlap_is_one(basis: BasisMQDT) -> None:

@@ -49,7 +49,7 @@ class BasisBase(ABC, Generic[_RydbergState]):
         if is_angular_momentum_quantum_number(qn):
             new_states: list[_RydbergState] = []
             for state in self.states:
-                qn_value = state.angular.calc_exp_qn(qn)
+                qn_value = state.calc_exp_qn(qn)
                 if is_unknown(qn_value):
                     if keep_unknown:
                         new_states.append(state)

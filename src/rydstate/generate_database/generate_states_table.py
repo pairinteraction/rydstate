@@ -73,17 +73,17 @@ def get_state_data(ids: int, state: RydbergStateBase) -> tuple[float | int | str
         state.nu,  # nu
         angular.f_tot,  # f_tot
         state.calc_exp_qn("nui"),  # exp_nui
-        angular.calc_exp_qn("l_tot"),  # exp_l
-        angular.calc_exp_qn("j_tot"),  # exp_j
-        angular.calc_exp_qn("s_tot"),  # exp_s
-        angular.calc_exp_qn("l_r"),  # exp_l_ryd
-        angular.calc_exp_qn("j_r"),  # exp_j_ryd = j for sqdt only one valence electron
+        state.calc_exp_qn("l_tot"),  # exp_l
+        state.calc_exp_qn("j_tot"),  # exp_j
+        state.calc_exp_qn("s_tot"),  # exp_s
+        state.calc_exp_qn("l_r"),  # exp_l_ryd
+        state.calc_exp_qn("j_r"),  # exp_j_ryd = j for sqdt only one valence electron
         state.calc_std_qn("nui"),  # std_nui = 0
-        angular.calc_std_qn("l_tot"),  # std_l
-        angular.calc_std_qn("j_tot"),  # std_j
-        angular.calc_std_qn("s_tot"),  # std_s
-        angular.calc_std_qn("l_r"),  # std_l_ryd
-        angular.calc_std_qn("j_r"),  # std_j_ryd
+        state.calc_std_qn("l_tot"),  # std_l
+        state.calc_std_qn("j_tot"),  # std_j
+        state.calc_std_qn("s_tot"),  # std_s
+        state.calc_std_qn("l_r"),  # std_l_ryd
+        state.calc_std_qn("j_r"),  # std_j_ryd
         bool(angular.i_c == 0),  # is_j_total_momentum
         bool(len(state.rydberg_kets) > 1),  # is_calculated_with_mqdt
         underspecified_channel_contribution,  # underspecified_channel_contribution = 0 for sqdt
