@@ -109,7 +109,7 @@ def test_calc_exp_qn_uses_conversion_for_foreign_quantum_number(ls_state: Rydber
     assert "j_r" not in ls_state.rydberg_kets[0].angular.quantum_number_names
 
     exp_via_calc = ls_state.calc_exp_qn("j_r")
-    exp_via_manual_conversion = ls_state.to_coupling_scheme("JJ").angular_state.calc_exp_qn("j_r")
+    exp_via_manual_conversion = ls_state.to_coupling_scheme("JJ").calc_exp_qn("j_r")
     assert np.isclose(exp_via_calc, exp_via_manual_conversion)
 
 

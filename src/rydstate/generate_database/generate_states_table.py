@@ -60,7 +60,6 @@ def generate_states_table(
 
 def get_state_data(ids: int, state: RydbergState) -> tuple[float | int | str | bool, ...]:
     """Get the data for a given state as a tuple."""
-    angular = state.angular_state
     underspecified_channel_contribution = sum(abs(coeff) ** 2 for coeff, ket in state if ket.angular.contains_unknown)
 
     n = state.n if isinstance(state, RydbergStateSQDT) else 0
@@ -68,10 +67,10 @@ def get_state_data(ids: int, state: RydbergState) -> tuple[float | int | str | b
     data = (
         ids,  # id
         state.get_energy("a.u."),  # energy
-        angular.parity,  # parity = (-1)^l_tot
+        state.parity,  # parity = (-1)^l_tot
         n,  # n: quantum number
         state.nu,  # nu
-        angular.f_tot,  # f_tot
+        state.f_tot,  # f_tot
         state.calc_exp_qn("nui"),  # exp_nui
         state.calc_exp_qn("l_tot"),  # exp_l
         state.calc_exp_qn("j_tot"),  # exp_j
@@ -84,7 +83,7 @@ def get_state_data(ids: int, state: RydbergState) -> tuple[float | int | str | b
         state.calc_std_qn("s_tot"),  # std_s
         state.calc_std_qn("l_r"),  # std_l_ryd
         state.calc_std_qn("j_r"),  # std_j_ryd
-        bool(angular.i_c == 0),  # is_j_total_momentum
+        bool(state.element_properties.i_c == 0),  # is_j_total_momentum
         bool(len(state.rydberg_kets) > 1),  # is_calculated_with_mqdt
         underspecified_channel_contribution,  # underspecified_channel_contribution = 0 for sqdt
     )

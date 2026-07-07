@@ -199,6 +199,10 @@ class RydbergStateSQDT(RydbergState, Generic[GenericT_AngularKet]):
                 f"RydbergState initialized with non-normalized coefficients: {self._coefficients}, {self.rydberg_kets}"
             )
 
+        self.f_tot = self.angular.f_tot
+        self.parity = self.angular.parity
+        self.m = self.angular.m
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.species}, n={self.n}, {self.angular!r})"
 
