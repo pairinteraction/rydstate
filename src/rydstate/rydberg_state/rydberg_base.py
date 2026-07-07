@@ -15,7 +15,7 @@ from rydstate.angular.utils import is_angular_momentum_quantum_number, is_not_se
 from rydstate.units import BaseQuantities, ureg
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterator, Sequence
 
     from typing_extensions import Self
 
@@ -34,8 +34,6 @@ class RydbergStateBase(ABC):
     """The channel coefficients of the different RydbergKets that form the RydbergState stored as plain list."""
     rydberg_kets: list[RydbergKet]
     """The Rydberg kets that form the Rydberg state."""
-    angular: AngularKetBase[Any] | AngularState[Any]
-    """The angular part of the Rydberg state, i.e. the radial part is traced out."""
 
     nu: float
     """The effective principal quantum number nu.
@@ -45,11 +43,45 @@ class RydbergStateBase(ABC):
     _energy_au: float
     """The energy of the Rydberg state in atomic units (Hartree)."""
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        species: str,
+        coefficients: Sequence[float] | NDArray,
+        rydberg_kets: Sequence[RydbergKet],
+        nu: float,
+        energy_au: float,
+    ) -> None:
+        self.species = species
+        self._coefficients = np.asarray(coefficients).tolist()
+        self.rydberg_kets = list(rydberg_kets)
+        self.nu = float(nu)
+        self._energy_au = float(energy_au)
+
+        if len(rydberg_kets) == 0:
+            raise ValueError("RydbergStateBase must be initialized with at least one state.")
+        if len(coefficients) != len(rydberg_kets):
+            raise ValueError("Length of coefficients and rydberg_kets must be the same.")
+        if len(set(rydberg_kets)) != len(rydberg_kets):
+            raise ValueError("RydbergStateBase initialized with duplicate rydberg_kets.")
+
         if abs(self.norm - 1) > 1e-10:
             raise ValueError(
-                f"RydbergState initialized with non-normalized coefficients: {self._coefficients}, {self.rydberg_kets}"
+                "RydbergState initialized with non-normalized coefficients: "
+                f"{self.norm=} {self.coefficients=}, {self.rydberg_kets=}"
             )
+
+    def __repr__(self) -> str:
+        terms = [f"{coeff}*{rydberg_ket!r}" for coeff, rydberg_ket in self]
+        return f"{self.__class__.__name__}({', '.join(terms)})"
+
+    def __str__(self) -> str:
+        terms = [f"{coeff}*{rydberg_ket!s}" for coeff, rydberg_ket in self]
+        return f"{', '.join(terms)}"
+
+    @cached_property
+    def angular_state(self) -> AngularState[Any]:
+        """The angular part of the Rydberg state, i.e. the radial part is traced out."""
+        return AngularState(self._coefficients, [ket.angular for ket in self.rydberg_kets])
 
     def __iter__(self) -> Iterator[tuple[float, RydbergKet]]:
         return zip(self._coefficients, self.rydberg_kets, strict=True)
@@ -208,7 +240,7 @@ class RydbergStateBase(ABC):
 
     def calc_exp_qn(self, qn: str) -> float:
         if is_angular_momentum_quantum_number(qn):
-            return self.angular.calc_exp_qn(qn)
+            return self.angular_state.calc_exp_qn(qn)
         if qn == "nu":
             return self.nu
         if qn == "n":
@@ -224,7 +256,7 @@ class RydbergStateBase(ABC):
 
     def calc_std_qn(self, qn: str) -> float:
         if is_angular_momentum_quantum_number(qn):
-            return self.angular.calc_std_qn(qn)
+            return self.angular_state.calc_std_qn(qn)
         if qn in ("n", "nu"):
             return 0
         if qn == "nui":
@@ -340,7 +372,7 @@ class RydbergStateBase(ABC):
         from rydstate.basis import BasisMQDT, BasisSQDT  # noqa: PLC0415
         from rydstate.rydberg_state import RydbergStateMQDT, RydbergStateSQDT  # noqa: PLC0415
 
-        m = self.angular.m
+        m = self.angular_state.m
         if is_not_set(m):
             raise RuntimeError("m quantum number must be defined to calculate transition rates.")
 
@@ -360,9 +392,9 @@ class RydbergStateBase(ABC):
                 potential_class=type(self.potential),
             )
         elif isinstance(self, RydbergStateMQDT):
-            assert isinstance(self.angular, AngularState)
+            assert isinstance(self.angular_state, AngularState)
             l_r_list = [
-                angular_ket.l_r for angular_ket in self.angular.to("LS").kets if not is_unknown(angular_ket.l_r)
+                angular_ket.l_r for angular_ket in self.angular_state.to("LS").kets if not is_unknown(angular_ket.l_r)
             ]
             basis = BasisMQDT(
                 self.species,
