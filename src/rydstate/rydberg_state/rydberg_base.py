@@ -11,6 +11,7 @@ from scipy.special import exprel
 from rydstate.angular.angular_ket import AngularKetBase
 from rydstate.angular.angular_state import AngularState
 from rydstate.angular.utils import is_angular_momentum_quantum_number, is_not_set, is_unknown
+from rydstate.rydberg_state.rydberg_ket import RydbergKet
 from rydstate.units import BaseQuantities, ureg
 
 if TYPE_CHECKING:
@@ -18,7 +19,8 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from rydstate.rydberg_state.rydberg_ket import RydbergKet
+    from rydstate.angular.utils import CouplingScheme
+    from rydstate.radial import Radial
     from rydstate.units import MatrixElementOperator, NDArray, PintArray, PintFloat
 
 
@@ -84,6 +86,40 @@ class RydbergState:
 
     def __iter__(self) -> Iterator[tuple[float, RydbergKet]]:
         return zip(self._coefficients, self.rydberg_kets, strict=True)
+
+    def to_coupling_scheme(self, coupling_scheme: CouplingScheme) -> RydbergState:
+        """Convert the Rydberg state to a different coupling scheme.
+
+        Args:
+            coupling_scheme: The coupling scheme to which to convert the Rydberg state.
+
+        Returns:
+            The Rydberg state in the new coupling scheme.
+
+        """
+        angular_ket: AngularKetBase[Any]
+        angular_radial_wf: dict[AngularKetBase[Any], Radial] = {}
+        for coeff_r, rydberg_ket in self:
+            angular_state = rydberg_ket.angular.to_state(coupling_scheme)
+            for coeff_a, angular_ket in angular_state:
+                if angular_ket in angular_radial_wf:
+                    angular_radial_wf[angular_ket] += (coeff_r * coeff_a) * rydberg_ket.radial
+                else:
+                    angular_radial_wf[angular_ket] = (coeff_r * coeff_a) * rydberg_ket.radial
+
+        rydberg_kets: list[RydbergKet] = []
+        coefficients: list[float] = []
+        for angular_ket, radial_wf in angular_radial_wf.items():
+            norm = radial_wf.norm
+            if norm < 1e-12:
+                # if channels cancel almost completely, we ignore them to avoid numerical issues
+                continue
+            outer_sign = radial_wf.get_outer_sign()
+            rydberg_ket = RydbergKet(self.species, angular_ket, radial_wf / (outer_sign * norm))
+            rydberg_kets.append(rydberg_ket)
+            coefficients.append(outer_sign * norm)
+
+        return RydbergState(self.species, coefficients, rydberg_kets, nu=self.nu, energy_au=self._energy_au)
 
     def free_memory(self) -> None:
         """Release the cached radial and angular data to reduce memory usage.
