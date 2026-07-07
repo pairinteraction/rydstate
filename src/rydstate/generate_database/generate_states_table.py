@@ -60,7 +60,7 @@ def generate_states_table(
 
 def get_state_data(ids: int, state: RydbergStateBase) -> tuple[float | int | str | bool, ...]:
     """Get the data for a given state as a tuple."""
-    angular = state.angular
+    angular = state.angular_state
     underspecified_channel_contribution = sum(abs(coeff) ** 2 for coeff, ket in state if ket.angular.contains_unknown)
 
     n = state.n if isinstance(state, RydbergStateSQDT) else 0
