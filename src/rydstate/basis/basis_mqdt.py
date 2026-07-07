@@ -10,9 +10,9 @@ from rydstate.angular.utils import NotSet, is_unknown
 from rydstate.basis.basis_base import BasisBase
 from rydstate.basis.utils import get_m_range, is_allowed_qn
 from rydstate.linalg import calc_nullvector, find_roots
-from rydstate.radial.radial_ket import RadialKet
+from rydstate.radial import RadialDummy, RadialKet
 from rydstate.rydberg_state import RydbergKet, RydbergStateMQDT
-from rydstate.species import MQDT, FModelSQDT, Potential, PotentialDummy, get_mqdt, get_potential_class
+from rydstate.species import MQDT, FModelSQDT, Potential, get_mqdt, get_potential_class
 
 if TYPE_CHECKING:
     from rydstate.species import FModel
@@ -194,13 +194,15 @@ def get_mqdt_states_from_fmodel(  # noqa: C901
         arg_max = np.argmax(np.abs(coefficients))
         coefficients *= np.sign(coefficients[arg_max])
 
-        radial_kets: list[RadialKet] = []
+        radial_kets: list[RadialKet | RadialDummy] = []
         for nui, angular_ket in zip(nuis, model.outer_channels, strict=True):
+            radial: RadialKet | RadialDummy
             if not is_unknown(angular_ket.l_r):
                 potential = potential_class(angular_ket.l_r)
+                radial = RadialKet(float(nui), potential, sign_convention="positive_at_outer_bound")
             else:
-                potential = PotentialDummy(model.species, angular_ket.l_r)
-            radial_kets.append(RadialKet(float(nui), potential, sign_convention="positive_at_outer_bound"))
+                radial = RadialDummy(1.0, nui)
+            radial_kets.append(radial)
 
         energy_au = model.calc_energy_au(nu)
         for m in get_m_range(model.f_tot, m_range):

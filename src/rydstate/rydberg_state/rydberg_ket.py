@@ -4,12 +4,12 @@ import logging
 import math
 from typing import TYPE_CHECKING, Any, overload
 
-from rydstate.angular.utils import is_unknown
+from rydstate.radial import RadialDummy
 from rydstate.units import MatrixElementOperatorRanks, ureg
 
 if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetBase
-    from rydstate.radial import RadialKet
+    from rydstate.radial.radial_base import RadialBase
     from rydstate.units import MatrixElementOperator, PintFloat
 
 
@@ -28,11 +28,9 @@ class RydbergKet:
         self,
         species: str,
         angular: AngularKetBase[Any],
-        radial: RadialKet,
+        radial: RadialBase,
     ) -> None:
         r"""Initialize the Rydberg state."""
-        if angular.l_r != radial.l_r:
-            raise ValueError("The radial ket must have the same l_r as the angular ket.")
         self.species = species
         self.angular = angular
         self.radial = radial
@@ -45,9 +43,9 @@ class RydbergKet:
 
     def calc_reduced_overlap(self, other: RydbergKet) -> float:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
-        if is_unknown(self.radial.l_r) and is_unknown(other.radial.l_r):
+        if isinstance(self.radial, RadialDummy) and isinstance(other.radial, RadialDummy):
             return 1 if abs(self.radial.nu - other.radial.nu) < 1e-10 else 0
-        if is_unknown(self.radial.l_r) or is_unknown(other.radial.l_r):
+        if isinstance(self.radial, RadialDummy) or isinstance(other.radial, RadialDummy):
             return 0
 
         angular_overlap = self.angular.calc_reduced_overlap(other.angular)
@@ -95,8 +93,8 @@ class RydbergKet:
                 f"Operator {operator} not supported, must be one of {list(MatrixElementOperatorRanks.keys())}."
             ) from err
 
-        if self.radial.potential.is_dummy or other.radial.potential.is_dummy:
-            # a dummy potential means the l_r of the channel is unknown, so no matrix element can be calculated
+        if self.radial._is_dummy or other.radial._is_dummy:  # noqa: SLF001
+            # no matrix element can be calculated for dummy radial wavefunctions, return 0
             return 0
 
         if operator == "magnetic_dipole":

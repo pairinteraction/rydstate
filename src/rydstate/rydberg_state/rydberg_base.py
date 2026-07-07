@@ -72,7 +72,10 @@ class RydbergStateBase(ABC):
     @property
     def nui(self) -> list[float]:
         """Return the effective principal quantum numbers nui of the different channels."""
-        return [rydberg_ket.radial.nu for rydberg_ket in self.rydberg_kets]
+        nuis = [getattr(rydberg_ket.radial, "nu", None) for rydberg_ket in self.rydberg_kets]
+        if any(nui is None for nui in nuis):
+            raise ValueError("One or more radial wavefunctions do not have a 'nu' attribute.")
+        return nuis  # type: ignore [return-value]
 
     @cached_property
     def coefficients(self) -> NDArray:
@@ -214,7 +217,9 @@ class RydbergStateBase(ABC):
                 raise ValueError(f"{self} has no quantum number n")
             return n  # type: ignore [no-any-return]
         if qn == "nui":
-            return float(sum([abs(coeff) ** 2 * ket.radial.nu / self.norm**2 for coeff, ket in self]))
+            qns = np.array(self.nui)
+            coefficients2 = np.conjugate(self.coefficients) * self.coefficients / self.norm**2
+            return float(np.sum(coefficients2 * qns))
         raise ValueError(f"Unknown quantum number {qn}")
 
     def calc_std_qn(self, qn: str) -> float:
