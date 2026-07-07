@@ -9,17 +9,24 @@ import numpy as np
 
 from rydstate.angular.angular_ket import (
     AngularKetBase,
-    AngularKetFJ,
-    AngularKetJJ,
-    AngularKetLS,
 )
-from rydstate.angular.utils import is_angular_momentum_quantum_number, is_not_set, is_unknown
+from rydstate.angular.utils import (
+    get_coupling_scheme_for_quantum_number,
+    is_angular_momentum_quantum_number,
+    is_not_set,
+    is_unknown,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
     from typing_extensions import Self
 
+    from rydstate.angular.angular_ket import (
+        AngularKetFJ,
+        AngularKetJJ,
+        AngularKetLS,
+    )
     from rydstate.angular.utils import AngularMomentumQuantumNumbers, AngularOperatorType, CouplingScheme, NotSet
     from rydstate.units import NDArray
 
@@ -151,9 +158,8 @@ class AngularState(Generic[GenericT_AngularKet]):
 
         """
         if q not in self.kets[0].quantum_number_names:
-            for ket_class in (AngularKetLS, AngularKetJJ, AngularKetFJ):
-                if q in ket_class.quantum_number_names:
-                    return self.to(ket_class.coupling_scheme).calc_exp_qn(q)
+            coupling_scheme = get_coupling_scheme_for_quantum_number(q)
+            return self.to(coupling_scheme).calc_exp_qn(q)
 
         qns = [ket.get_qn(q) for ket in self.kets]
         if all(q_val == qns[0] for q_val in qns):
@@ -180,9 +186,8 @@ class AngularState(Generic[GenericT_AngularKet]):
 
         """
         if q not in self.kets[0].quantum_number_names:
-            for ket_class in (AngularKetLS, AngularKetJJ, AngularKetFJ):
-                if q in ket_class.quantum_number_names:
-                    return self.to(ket_class.coupling_scheme).calc_std_qn(q)
+            coupling_scheme = get_coupling_scheme_for_quantum_number(q)
+            return self.to(coupling_scheme).calc_std_qn(q)
 
         qns = np.array([ket.get_qn(q) for ket in self.kets])
         if all(qn == qns[0] for qn in qns):
@@ -240,10 +245,8 @@ class AngularState(Generic[GenericT_AngularKet]):
         if isinstance(other, AngularKetBase):
             other = other.to_state()
         if is_angular_momentum_quantum_number(operator) and operator not in self.kets[0].quantum_number_names:
-            for ket_class in (AngularKetLS, AngularKetJJ, AngularKetFJ):
-                if operator in ket_class.quantum_number_names:
-                    state = self.to(ket_class.coupling_scheme)
-                    return state.calc_reduced_matrix_element(other, operator, kappa)
+            coupling_scheme = get_coupling_scheme_for_quantum_number(operator)
+            return self.to(coupling_scheme).calc_reduced_matrix_element(other, operator, kappa)
 
         if self.coupling_scheme != other.coupling_scheme:
             other = other.to(self.coupling_scheme)
