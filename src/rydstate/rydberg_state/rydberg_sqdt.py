@@ -255,6 +255,21 @@ class RydbergStateSQDT(RydbergState, Generic[GenericT_AngularKet]):
             return energy
         return energy.to(unit, "spectroscopy").magnitude
 
+    def calc_exp_qn(self, qn: str) -> float:
+        if qn == "n":
+            return self.n
+
+        if qn == "nui":
+            return self.nu
+
+        return super().calc_exp_qn(qn)
+
+    def calc_std_qn(self, qn: str) -> float:
+        if qn == "nui":
+            return 0
+
+        return super().calc_std_qn(qn)
+
 
 class RydbergStateSQDTAlkali(RydbergStateSQDT[AngularKetLS[AllKnown]]):
     """Create an Alkali Rydberg state, including the radial and angular states."""
