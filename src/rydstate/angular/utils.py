@@ -45,6 +45,20 @@ IdentityOperators = Literal[
     "identity_f_c",
     "identity_f_tot",
 ]
+SquaredSpinOperators = Literal[
+    "squared_i_c",
+    "squared_s_c",
+    "squared_l_c",
+    "squared_s_r",
+    "squared_l_r",
+    "squared_s_tot",
+    "squared_l_tot",
+    "squared_j_c",
+    "squared_j_r",
+    "squared_j_tot",
+    "squared_f_c",
+    "squared_f_tot",
+]
 RawValueOperators = Literal[
     "raw_value_i_c",
     "raw_value_s_c",
@@ -79,6 +93,7 @@ AngularOperatorType = Literal[
     "spherical_core",
     AngularMomentumQuantumNumbers,
     IdentityOperators,
+    SquaredSpinOperators,
     RawValueOperators,
     RawValueOperators2,
 ]
@@ -238,6 +253,8 @@ def get_qn_name_from_operator(operator: AngularOperatorType) -> AngularMomentumQ
         qn = "l_c"
     elif operator.startswith("identity_"):
         qn = operator.removeprefix("identity_")
+    elif operator.startswith("squared_"):
+        qn = operator.removeprefix("squared_")
     elif operator.startswith("raw_value_"):
         qn = operator.removeprefix("raw_value_")
         qn = qn.removesuffix("_2")
