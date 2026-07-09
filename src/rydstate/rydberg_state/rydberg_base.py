@@ -388,15 +388,16 @@ class RydbergState:
         Concretely the transition rates are calculated as
 
         .. math::
-            \Gamma^{spontaneous}_{self \to other} = \frac{4}{3} \frac{\alpha}{c^2} \omega^3
+            \Gamma^{spontaneous}_{self \to other} = \frac{4}{3} \frac{\alpha}{c^2} |\omega|^3
                 |\langle self || r^k_{radial} \hat{d}_q || other \rangle|^2
 
-        where :math:`\alpha = 1/c` in atomic units.
+        where :math:`\alpha = 1/c` in atomic units and :math:`\omega = E_{self} - E_{other}` is the transition frequency
+        (spontaneous transitions only occur for :math:`\omega > 0`).
 
         and
 
         .. math::
-            \Gamma^{blackbody}_{self \to other} = \Gamma^{spontaneous}_{self \to other} \frac{1}{\exp(\omega / T) - 1}
+            \Gamma^{blackbody}_{self \to other} = \Gamma^{spontaneous}_{self \to other} \frac{1}{\exp(|\omega| / T) - 1}
 
         """
         from rydstate.basis import BasisMQDT, BasisSQDT  # noqa: PLC0415
@@ -440,7 +441,9 @@ class RydbergState:
             basis.filter_states("nu", (0, self.nu))
 
         relevant_states = basis.states
-        energy_differences_au = self.get_energy("a.u.") - np.array([s.get_energy("a.u.") for s in relevant_states])
+        energy_differences_au = np.abs(
+            self.get_energy("a.u.") - np.array([s.get_energy("a.u.") for s in relevant_states])
+        )
         electric_dipole_moments_au = np.zeros(len(relevant_states))
         for q in [-1, 0, 1]:
             el_di_m = np.array(
