@@ -130,3 +130,31 @@ def test_matrix_element_between_mqdt_and_sqdt_state(basis: BasisMQDT) -> None:
     me = s_mqdt.calc_reduced_matrix_element(p_sqdt, "electric_dipole", unit="e a0")
     assert np.isfinite(me)
     assert abs(me) > 0.0
+
+
+@pytest.mark.parametrize(
+    ("species", "f_tot_soi", "f_tot_low"),
+    [("Yb174", 0.0, (0.0, 1.0)), ("Yb171", 0.5, (0.5, 1.5))],
+)
+def test_core_dipole_comparable_to_rydberg_dipole(
+    species: str, f_tot_soi: float, f_tot_low: tuple[float, float]
+) -> None:
+    low_lying = BasisMQDT(species, nu=(0, 4), l_r=(1, 1), f_tot=f_tot_low)
+    state_of_interest = BasisMQDT(species, nu=(40, 50), l_r=(0, 0), f_tot=(f_tot_soi, f_tot_soi)).states[0]
+
+    ratios = []
+    for low in low_lying.states:
+        core = low.calc_reduced_matrix_element(state_of_interest, "electric_dipole_core", unit="e a0")
+        rydberg = low.calc_reduced_matrix_element(state_of_interest, "electric_dipole_rydberg", unit="e a0")
+        assert np.isfinite(core)
+        assert np.isfinite(rydberg)
+        # collect states with a sizeable core dipole that also have a sizeable Rydberg dipole
+        if abs(core) > 1e-3 and abs(rydberg) > 1e-3:
+            ratios.append(abs(core) / abs(rydberg))
+
+    # at least one low-lying state has a non-negligible core dipole ...
+    assert ratios, f"no low-lying state with a sizeable core dipole found for {species}"
+    # ... and for at least one of them the core dipole is comparable (within an order of magnitude)
+    assert any(0.1 < ratio < 10 for ratio in ratios), (
+        f"core dipole not comparable to rydberg dipole for {species}: |core/rydberg| ratios={ratios}"
+    )
