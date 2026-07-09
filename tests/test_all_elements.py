@@ -12,6 +12,8 @@ ALL_AVAILABLE_SQDT_SPECIES = sorted([cls.species for cls in get_all_subclasses(S
 def test_sqdt_species(species: str) -> None:
     element_properties = get_element_properties(species)
     sqdt = get_sqdt(species)
+    if sqdt.quantum_defects is None:
+        pytest.skip(f"Species {species} does not have quantum defects defined.")
     i_c = element_properties.i_c
 
     state: RydbergStateSQDT[Any]

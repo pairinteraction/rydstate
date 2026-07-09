@@ -92,7 +92,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 rydstate = [
-  "species/**/nist_data.txt"
+  "species/**/nist_data*.txt"
 ]
 
 [tool.check-wheel-contents]
