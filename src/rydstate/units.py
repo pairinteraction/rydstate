@@ -21,6 +21,8 @@ ureg: UnitRegistry[float] = UnitRegistry(system="atomic")
 MatrixElementOperator = Literal[
     "magnetic_dipole",
     "electric_dipole",
+    "electric_dipole_rydberg",
+    "electric_dipole_core",
     "electric_quadrupole",
     "electric_octupole",
     "electric_quadrupole_zero",
@@ -28,7 +30,9 @@ MatrixElementOperator = Literal[
 MatrixElementOperatorRanks: dict[MatrixElementOperator, tuple[int, int]] = {
     # "operator": (k_radial, k_angular)
     "magnetic_dipole": (0, 1),
-    "electric_dipole": (1, 1),
+    "electric_dipole": (1, 1),  # composed of "electric_dipole_rydberg" and "electric_dipole_core"
+    "electric_dipole_rydberg": (1, 1),
+    "electric_dipole_core": (1, 1),
     "electric_quadrupole": (2, 2),
     "electric_octupole": (3, 3),
     "electric_quadrupole_zero": (2, 0),

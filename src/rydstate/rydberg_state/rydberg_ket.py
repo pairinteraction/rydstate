@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import logging
 import math
-from typing import TYPE_CHECKING, Any, overload
+from typing import TYPE_CHECKING, Any, Literal, overload
 
+from rydstate.angular.angular_ket import AngularKetLS
+from rydstate.angular.utils import is_unknown
+from rydstate.species.element_properties import get_element_properties
+from rydstate.species.sqdt import get_sqdt
 from rydstate.units import MatrixElementOperatorRanks, ureg
 
 if TYPE_CHECKING:
@@ -31,6 +35,7 @@ class RydbergKet:
     ) -> None:
         r"""Initialize the Rydberg state."""
         self.species = species
+        self.element_properties = get_element_properties(species)
         self.angular = angular
         self.radial = radial
 
@@ -56,7 +61,7 @@ class RydbergKet:
     @overload
     def calc_reduced_matrix_element(self, other: RydbergKet, operator: MatrixElementOperator, unit: str) -> float: ...
 
-    def calc_reduced_matrix_element(
+    def calc_reduced_matrix_element(  # noqa: C901, PLR0912
         self, other: RydbergKet, operator: MatrixElementOperator, unit: str | None = None
     ) -> PintFloat | float:
         r"""Calculate the reduced matrix element.
@@ -69,6 +74,9 @@ class RydbergKet:
         where \hat{O}^{(k_{angular})} is the operator of rank k_angular for which to calculate the matrix element.
         k_radial and k_angular are determined from the operator automatically.
 
+        For the "electric_dipole" operator, the matrix element of "electric_dipole_rydberg" and "electric_dipole_core"
+        are calculated separately and added together.
+
         Args:
             other: The other Rydberg state for which to calculate the matrix element.
             operator: The operator for which to calculate the matrix element.
@@ -80,6 +88,12 @@ class RydbergKet:
             The reduced matrix element for the given operator.
 
         """
+        if operator == "electric_dipole":
+            matrix_element = self.calc_reduced_matrix_element(other, "electric_dipole_rydberg", unit)
+            if self.element_properties.number_valence_electrons == 2:
+                matrix_element += self.calc_reduced_matrix_element(other, "electric_dipole_core", unit)
+            return matrix_element
+
         try:
             k_radial, k_angular = MatrixElementOperatorRanks[operator]
         except KeyError as err:
@@ -99,9 +113,13 @@ class RydbergKet:
             # as the same dimensionality as the Bohr magneton (mu = - mu_B (g_l l + g_s s_tot))
             # such that - mu * B (where the magnetic field B is given in dimension Tesla) is an energy
 
-        elif operator in ["electric_dipole", "electric_quadrupole", "electric_octupole", "electric_quadrupole_zero"]:
+        elif operator.startswith("electric_"):
+            angular_operator: Literal["spherical", "spherical_core"]
+            angular_operator = "spherical" if "core" not in operator else "spherical_core"
             # Electric multipole operator: p_{k,q} = e r^k_radial * sqrt(4pi / (2k+1)) * Y_{k_angular,q}(\theta, phi)
-            angular_matrix_element = self.angular.calc_reduced_matrix_element(other.angular, "spherical", k_angular)
+            angular_matrix_element = self.angular.calc_reduced_matrix_element(
+                other.angular, angular_operator, k_angular
+            )
             # Prefactor sqrt(4 pi / (2 k_angular + 1)) for the electric multipole operators, precomputed for performance
             prefactor = ELECTRIC_MULTIPOLE_PREFACTORS[k_angular]
 
@@ -109,10 +127,17 @@ class RydbergKet:
             raise NotImplementedError(f"Operator {operator} not implemented.")
 
         if angular_matrix_element == 0:
-            matrix_element = 0.0
-        else:
+            return 0
+
+        if "core" not in operator:
             radial_matrix_element = self.radial.calc_matrix_element(other.radial, k_radial, unit="a.u.")
-            matrix_element = prefactor * radial_matrix_element * angular_matrix_element
+            matrix_element = prefactor * angular_matrix_element * radial_matrix_element
+        else:
+            core_radial_matrix_element = self._calc_core_radial_matrix_element_au(other, k_radial)
+            if core_radial_matrix_element == 0:
+                return 0
+            rydberg_radial_overlap = self.radial.calc_overlap(other.radial)
+            matrix_element = prefactor * angular_matrix_element * core_radial_matrix_element * rydberg_radial_overlap
 
         if unit == "a.u.":
             return matrix_element
@@ -121,7 +146,7 @@ class RydbergKet:
         matrix_element_unit: PintFloat
         if operator == "magnetic_dipole":
             matrix_element_unit = radial_unit * ureg.Quantity(2, "bohr_magneton")
-        elif operator in ["electric_dipole", "electric_quadrupole", "electric_octupole", "electric_quadrupole_zero"]:
+        elif operator.startswith("electric_"):
             matrix_element_unit = radial_unit * ureg.Quantity(1, "e")
         else:
             raise NotImplementedError(f"Operator {operator} not implemented.")
@@ -129,6 +154,52 @@ class RydbergKet:
         if unit is None:
             return matrix_element * matrix_element_unit.to_base_units()  # type: ignore [no-any-return]
         return matrix_element * matrix_element_unit.to(unit).magnitude
+
+    def _calc_core_radial_matrix_element_au(self, other: RydbergKet, k_radial: int) -> float:
+        r"""Calculate the radial matrix element :math:`\langle self_c | r^{k_{radial}} | other_c \rangle` in a.u.
+
+        The core electron is treated as the low-lying valence electron of the corresponding singly charged SQDT ion
+        (e.g. Yb174_ion for Yb174):
+        the Rydberg electron is ignored and the radial matrix element is calculated between the two ion states,
+        where the principal quantum number of each core electron is given by the lowest allowed shell of the ion
+        for the given l_c.
+        """
+        from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT  # noqa: PLC0415
+
+        species = self.species
+        ion_species = f"{species}_ion"
+        try:
+            ion_sqdt = get_sqdt(ion_species)
+        except ValueError:
+            logger.warning(
+                "No SQDT data available for the ion species of %s "
+                "returning 0 for the dipole matrix element core contribution.",
+                species,
+            )
+            return 0.0
+
+        kets = {"self": self, "other": other}
+        ion_states: dict[str, RydbergStateSQDT[Any]] = {}
+        for ket_name, ket in kets.items():
+            l_c = ket.angular.l_c
+            j_c = ket.angular.get_qn("j_c", allow_unknown=True)
+            f_c = ket.angular.get_qn("f_c", allow_unknown=True)
+            if is_unknown(l_c) or is_unknown(j_c) or is_unknown(f_c):
+                return 0.0
+
+            angular_ket = AngularKetLS(l_r=l_c, j_tot=j_c, f_tot=f_c, species=ion_species)
+
+            # TODO: we should probably also store n_c for the core angular ket in the future
+            # for now, it is correct to assume that the core electron is
+            # in the lowest allowed shell of the ion for the given l_c
+            for n_c in range(l_c + 1, l_c + 15):
+                if ion_sqdt.is_allowed_shell(n_c, l_c, 0.5):
+                    ion_states[ket_name] = RydbergStateSQDT(ion_species, n_c, angular_ket=angular_ket, sqdt=ion_sqdt)
+                    break
+            else:  # no break
+                raise ValueError(f"No allowed shell found for ion species {ion_species} with l_c={l_c}.")
+
+        return ion_states["self"].radial.calc_matrix_element(ion_states["other"].radial, k_radial, unit="a.u.")
 
     @overload
     def calc_matrix_element(
