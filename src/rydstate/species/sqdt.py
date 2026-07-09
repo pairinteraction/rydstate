@@ -244,7 +244,9 @@ class SQDT(ABC, metaclass=CachedABCMeta):
             if (n, l_r, j_tot, s_tot) in self._nist_energy_levels:
                 energy_au = self._nist_energy_levels[(n, l_r, j_tot, s_tot)]
                 energy_au -= self.ionization_energy_au  # use the cached ionization energy for better performance
-                return calc_nu_from_energy(self.element_properties.reduced_mass_au, energy_au)
+                return calc_nu_from_energy(
+                    self.element_properties.reduced_mass_au, energy_au, self.element_properties.net_charge
+                )
             logger.debug(
                 "NIST energy levels for (n=%d, l_r=%d, j_tot=%s, s_tot=%s) not found, using quantum defect theory.",
                 *(n, l_r, j_tot, s_tot),

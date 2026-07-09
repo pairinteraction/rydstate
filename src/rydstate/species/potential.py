@@ -53,9 +53,9 @@ class Potential(ABC, metaclass=CachedABCMeta):
         The Coulomb potential is given as
 
         .. math::
-            V_{Col}(x) = -1 / x
+            V_{Col}(x) = -Z / x
 
-        where x = r / a_0.
+        where x = r / a_0 and Z is the net charge of the ionic core seen by the Rydberg electron.
 
         Args:
             x: The dimensionless radial coordinate x = r / a_0, for which to calculate the potential.
@@ -64,7 +64,7 @@ class Potential(ABC, metaclass=CachedABCMeta):
             V_Col: The Coulomb potential V_Col(x) in atomic units.
 
         """
-        return -1 / x
+        return -self.element_properties.net_charge / x
 
     def calc_effective_potential_centrifugal(self, x: XType) -> XType:
         r"""Calculate the effective centrifugal potential V_l(x) in atomic units.
@@ -153,14 +153,14 @@ class Potential(ABC, metaclass=CachedABCMeta):
         r"""Calculate the classical turning point z_i of the state if it would be a hydrogen atom.
 
         The hydrogen turning point is defined as the point,
-        where for the idealized hydrogen atom the potential equals the energy,
+        where for the idealized hydrogen(-like) atom the potential equals the energy,
         i.e. V_Col(r_i) + V_l(r_i) = E.
         This is exactly the case at
 
         .. math::
-            r_i = n^2 - n \sqrt{n^2 - l_r(l_r + 1)}
+            r_i = \frac{n^2 - n \sqrt{n^2 - l_r(l_r + 1)}}{Z}
 
-        and z_i = sqrt{r_i / a_0}.
+        and z_i = sqrt{r_i / a_0}, where Z is the net charge of the ionic core seen by the Rydberg electron.
 
         Args:
             n: Principal quantum number of the state.
@@ -169,7 +169,8 @@ class Potential(ABC, metaclass=CachedABCMeta):
             z_i: The inner hydrogen turning point z_i in the scaled dimensionless coordinate z_i = sqrt{r_i / a_0}.
 
         """
-        return math.sqrt(n * n - n * math.sqrt(n * n - self.l_r * (self.l_r + 1)))
+        net_charge = self.element_properties.net_charge
+        return math.sqrt((n * n - n * math.sqrt(n * n - self.l_r * (self.l_r + 1))) / net_charge)
 
     def calc_turning_point_z(self, energy_au: float, dz: float = 1e-3) -> float:
         r"""Calculate the classical inner turning point z_i for the given state.
@@ -192,8 +193,8 @@ class Potential(ABC, metaclass=CachedABCMeta):
         """
         # for a given hydrogen turning point z_hyd, the classical turning point usually lies within z_hyd \pm 5
         # for a given l, the hydrogen turning point is bound by
-        # z_lower = z_hyd(n=inf, l_r)  = \sqrt{l_r * (l_r+1) / 2} <= z_hyd(n, l_r) <= z_hyd(n=l_r+1, l_r) = z_upper
-        z_lower = math.sqrt(self.l_r * (self.l_r + 1) / 2)
+        # z_lower = z_hyd(n=inf, l_r)  = \sqrt{l_r * (l_r+1) / (2 Z)} <= z_hyd(n, l_r) <= z_hyd(n=l_r+1, l_r) = z_upper
+        z_lower = math.sqrt(self.l_r * (self.l_r + 1) / (2 * self.element_properties.net_charge))
         z_upper = self.calc_hydrogen_turning_point_z(n=self.l_r + 1)
 
         z_min_orig, z_max_orig = max(z_lower - 5, dz), z_upper + 5
@@ -273,9 +274,10 @@ class PotentialMarinescu1994(Potential):
         and x_c is the effective core size.
 
         .. math::
-            Z_{l} = 1 + (Z - 1) \exp(-a_1 x) - x (a_3 + a_4 x) \exp(-a_2 x)
+            Z_{l} = Z_{net} + (Z - Z_{net}) \exp(-a_1 x) - x (a_3 + a_4 x) \exp(-a_2 x)
 
-        with the nuclear charge Z.
+        with the nuclear charge Z and the net charge :math:`Z_{net}` of the ionic core seen by the Rydberg electron.
+        The effective charge interpolates from Z (at x = 0) to :math:`Z_{net}` (at x -> infinity).
 
         Args:
             x: The dimensionless radial coordinate x = r / a_0, for which to calculate potential.
@@ -289,9 +291,10 @@ class PotentialMarinescu1994(Potential):
             raise ValueError(f"No parametric model potential parameters defined for the species {self.species}.")
         # default to parameters for the maximum l
         a1, a2, a3, a4 = parameter_dict.get(self.l_r, parameter_dict[max(parameter_dict.keys())])
+        z_net = self.element_properties.net_charge
         exp_a1 = np.exp(-a1 * x)
         exp_a2 = np.exp(-a2 * x)
-        z_nl: XType = 1 + (self.element_properties.Z - 1) * exp_a1 - x * (a3 + a4 * x) * exp_a2
+        z_nl: XType = z_net + (self.element_properties.Z - z_net) * exp_a1 - x * (a3 + a4 * x) * exp_a2
         v_c = -z_nl / x
 
         alpha_c = self.alpha_c_marinescu_1994
@@ -344,6 +347,8 @@ class PotentialFei2009(Potential):
             V_{mp,fei}: The four parameter potential V_{mp,fei}(x) in atomic units.
 
         """
+        if self.element_properties.net_charge != 1:
+            raise ValueError("PotentialFei2009 is only valid for neutral atoms with a core net charge of 1")
         delta, alpha, beta, gamma = self.model_potential_parameter_fei_2009
         with np.errstate(over="ignore"):
             denom: XType = 1 - alpha + alpha * np.exp(beta * x**delta + gamma * x ** (2.0 * delta))

@@ -107,7 +107,8 @@ class FModel:
         which is defined with reference to the lowest ionization threshold of the MQDT model.
         """
         return (
-            calc_energy_from_nu(self.element_properties.reduced_mass_au, nu) + self.mqdt.reference_ionization_energy_au
+            calc_energy_from_nu(self.element_properties.reduced_mass_au, nu, self.element_properties.net_charge)
+            + self.mqdt.reference_ionization_energy_au
         )
 
     def calc_channel_nuis(self, nu: float) -> NDArray:
@@ -126,8 +127,10 @@ class FModel:
 
         """
         energy_au = self.calc_energy_au(nu)
+        reduced_mass_au = self.element_properties.reduced_mass_au
+        net_charge = self.element_properties.net_charge
         nuis = [
-            calc_nu_from_energy(self.element_properties.reduced_mass_au, energy_au - threshold)
+            calc_nu_from_energy(reduced_mass_au, energy_au - threshold, net_charge)
             for threshold in self.ionization_thresholds_au
         ]
         return np.array(nuis)

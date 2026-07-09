@@ -142,6 +142,8 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
         dz = self._dz
         if hasattr(self, "_z_list"):
             raise RuntimeError("The grid points were already created, you should not create them again.")
+
+        net_charge = self.potential.element_properties.net_charge
         if x_min is None:
             # we set z_min explicitly too small,
             # since the integration will automatically stop after the turning point,
@@ -151,7 +153,7 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
             else:
                 # we use reduced_mass_au=1, which overestimates the energy
                 # and thus underestimates the lower turning point
-                energy_au = calc_energy_from_nu(1, self.nu)
+                energy_au = calc_energy_from_nu(1, self.nu, net_charge)
                 z_min = self.potential.calc_turning_point_z(energy_au)
                 z_min = math.sqrt(0.5) * z_min - 3  # see also compare_z_min_cutoff.ipynb
         else:
@@ -161,8 +163,9 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
 
         if x_max is None:
             # This is an empirical formula for the maximum value of the radial coordinate
-            # it takes into account that for large n but small l the wavefunction is very extended
-            x_max = 2 * self.nu * (self.nu + 20 + (self.nu - self.l_r) / 4) + 5
+            # it takes into account that for large n but small l the wavefunction is very extended.
+            # The outer classical turning point scales as ~2 nu^2 / Z, hence the division by the net charge.
+            x_max = 2 * self.nu * (self.nu + 20 + (self.nu - self.l_r) / 4) / net_charge + 5
         z_max = math.sqrt(x_max)
 
         # put all grid points on a standard grid, i.e. [dz, 2*dz, 3*dz, ...]
@@ -226,7 +229,7 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
         # Note: Inside this method we use y and x like it is used in the numerov function
         # and not like in the rest of this class, i.e. y = w(z) and x = z
         element_properties = self.potential.element_properties
-        energy_au = calc_energy_from_nu(element_properties.reduced_mass_au, self.nu)
+        energy_au = calc_energy_from_nu(element_properties.reduced_mass_au, self.nu, element_properties.net_charge)
         v_eff = self.potential.calc_total_effective_potential(self.x_list)
         glist = 8 * element_properties.reduced_mass_au * self.z_list * self.z_list * (energy_au - v_eff)
 
@@ -253,7 +256,7 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
             y0, y1 = 0, w0
             x_start, x_stop, dx = self.z_list[0], self.z_list[-1], self.dz
             g_list_directed = glist
-            x_min = math.sqrt(self.nu * (self.nu + 15))
+            x_min = math.sqrt(self.nu * (self.nu + 15) / element_properties.net_charge)
 
         if use_njit:
             w_list_list = run_numerov_integration(x_start, x_stop, dx, y0, y1, g_list_directed, x_min)
@@ -280,11 +283,16 @@ class RadialKet(Radial, metaclass=CachedABCMeta):
         logger.warning("Using Whittaker to get the wavefunction is not recommended! Use this only for comparison.")
 
         whitw_vectorized = np.vectorize(whitw, otypes=[float])
-        m_star = self.potential.element_properties.reduced_mass_au
-        whitw_list = whitw_vectorized(self.nu, self.l_r + 0.5, m_star * 2 * self.x_list / self.nu)
+        element_properties = self.potential.element_properties
+        m_star = element_properties.reduced_mass_au
+        net_charge = element_properties.net_charge
+        whitw_list = whitw_vectorized(self.nu, self.l_r + 0.5, m_star * 2 * net_charge * self.x_list / self.nu)
 
         # to get the correct whittaker functions, u_list should be multiplied with nu^(3/2)
-        # however, to normalize them, we divide again by nu^(3/2) and thus we can skip this step
+        # however, to normalize them, we divide again by nu^(3/2) and thus we can skip this step.
+        # Note: for net_charge != 1 (ions) the analytic normalization below is not exact; the Whittaker
+        # path is only intended for comparison (the production path is Numerov, which normalizes
+        # numerically via self.norm).
         u_list: NDArray = whitw_list / np.sqrt(self.nu**2 * gamma(self.nu + self.l_r + 1) * gamma(self.nu - self.l_r))
         w_list: NDArray = u_list / np.sqrt(self.z_list)
 
