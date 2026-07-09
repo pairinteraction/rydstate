@@ -24,6 +24,9 @@ class ElementProperties(ABC, metaclass=CachedABCMeta):
     """The short name of the atomic species."""
     Z: ClassVar[int]
     """Atomic number of the species."""
+    net_charge: ClassVar[int] = 1
+    """Net charge of the ionic core seen by the Rydberg electron
+    (1 for neutral atoms, 2 for singly-charged ions)."""
     i_c: ClassVar[float]
     """Nuclear spin."""
     number_valence_electrons: ClassVar[int]

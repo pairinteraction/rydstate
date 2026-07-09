@@ -215,7 +215,10 @@ class RydbergStateSQDT(RydbergState, Generic[GenericT_AngularKet]):
 
     @cached_property
     def _energy_au(self) -> float:  # type: ignore [override]
-        return calc_energy_from_nu(self.element_properties.reduced_mass_au, self.nu) + self.sqdt.ionization_energy_au
+        return (
+            calc_energy_from_nu(self.element_properties.reduced_mass_au, self.nu, self.element_properties.net_charge)
+            + self.sqdt.ionization_energy_au
+        )
 
     @cached_property
     def radial(self) -> RadialKet:
@@ -251,7 +254,9 @@ class RydbergStateSQDT(RydbergState, Generic[GenericT_AngularKet]):
 
         where `\mu = R_M/R_\infty` is the reduced mass and `\nu` the effective principal quantum number.
         """
-        _energy_au = calc_energy_from_nu(self.element_properties.reduced_mass_au, self.nu)
+        _energy_au = calc_energy_from_nu(
+            self.element_properties.reduced_mass_au, self.nu, self.element_properties.net_charge
+        )
         if unit == "a.u.":
             return _energy_au
         energy: PintFloat = _energy_au * BaseQuantities["energy"]
