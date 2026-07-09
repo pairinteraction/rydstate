@@ -6,6 +6,7 @@ from rydstate.species.sqdt import SQDT
 class SQDTRubidium(SQDT):
     species = "Rb"
     is_default = True
+    nist_data_file = "nist_data.txt"
 
     # https://journals.aps.org/pra/pdf/10.1103/PhysRevA.83.052515
     ionization_energy = (1_010_029.164_6, "GHz")

@@ -6,6 +6,7 @@ from rydstate.species.sqdt import SQDT
 class SQDTSodium(SQDT):
     species = "Na"
     is_default = True
+    nist_data_file = "nist_data.txt"
 
     # https://webbook.nist.gov/cgi/inchi?ID=C7440235&Mask=20
     ionization_energy = (5.139_08, "eV")

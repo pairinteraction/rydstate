@@ -6,6 +6,7 @@ from rydstate.species.sqdt import SQDT
 class SQDTYtterbium174(SQDT):
     species = "Yb174"
     is_default = True
+    nist_data_file = "nist_data.txt"
 
     # https://webbook.nist.gov/cgi/inchi?ID=C7440644&Mask=20
     ionization_energy = (6.25416, "eV")
