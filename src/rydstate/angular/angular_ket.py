@@ -658,6 +658,8 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         qn_name: AngularMomentumQuantumNumbers
         if operator == "spherical":
             qn_name = "l_r"
+        elif operator == "spherical_core":
+            qn_name = "l_c"
         elif operator in self.quantum_number_names:
             if kappa != 1:
                 raise ValueError("Only kappa=1 is supported for spin operators.")
@@ -673,7 +675,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         if is_unknown(qn_self) or is_unknown(qn_other):
             return 0  # TODO, ignore Unknown contributions for now
 
-        if operator == "spherical":
+        if operator in ("spherical", "spherical_core"):
             complete_reduced_matrix_element = calc_reduced_spherical_matrix_element(qn_self, qn_other, kappa)  # type: ignore [arg-type]
         elif operator in self.quantum_number_names:
             complete_reduced_matrix_element = calc_reduced_spin_matrix_element(qn_self, qn_other)

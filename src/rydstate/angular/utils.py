@@ -48,6 +48,7 @@ IdentityOperators = Literal[
 
 AngularOperatorType = Literal[
     "spherical",
+    "spherical_core",
     AngularMomentumQuantumNumbers,
     IdentityOperators,
 ]
