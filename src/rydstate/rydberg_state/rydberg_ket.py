@@ -61,7 +61,7 @@ class RydbergKet:
     @overload
     def calc_reduced_matrix_element(self, other: RydbergKet, operator: MatrixElementOperator, unit: str) -> float: ...
 
-    def calc_reduced_matrix_element(  # noqa: C901, PLR0912
+    def calc_reduced_matrix_element(
         self, other: RydbergKet, operator: MatrixElementOperator, unit: str | None = None
     ) -> PintFloat | float:
         r"""Calculate the reduced matrix element.
@@ -88,10 +88,30 @@ class RydbergKet:
             The reduced matrix element for the given operator.
 
         """
+        matrix_element_au = self._calc_reduced_matrix_element_au(other, operator)
+
+        if unit == "a.u.":
+            return matrix_element_au
+
+        k_radial, _k_angular = MatrixElementOperatorRanks[operator]
+        radial_unit: PintFloat = ureg.Quantity(1, "bohr_radius") ** k_radial
+        matrix_element_unit: PintFloat
+        if operator == "magnetic_dipole":
+            matrix_element_unit = radial_unit * ureg.Quantity(2, "bohr_magneton")
+        elif operator.startswith("electric_"):
+            matrix_element_unit = radial_unit * ureg.Quantity(1, "e")
+        else:
+            raise NotImplementedError(f"Operator {operator} not implemented.")
+
+        if unit is None:
+            return matrix_element_au * matrix_element_unit.to_base_units()  # type: ignore [no-any-return]
+        return matrix_element_au * matrix_element_unit.to(unit).magnitude
+
+    def _calc_reduced_matrix_element_au(self, other: RydbergKet, operator: MatrixElementOperator) -> float:
         if operator == "electric_dipole":
-            matrix_element = self.calc_reduced_matrix_element(other, "electric_dipole_rydberg", unit)
+            matrix_element = self._calc_reduced_matrix_element_au(other, "electric_dipole_rydberg")
             if self.element_properties.number_valence_electrons == 2:
-                matrix_element += self.calc_reduced_matrix_element(other, "electric_dipole_core", unit)
+                matrix_element += self._calc_reduced_matrix_element_au(other, "electric_dipole_core")
             return matrix_element
 
         try:
@@ -127,7 +147,7 @@ class RydbergKet:
             raise NotImplementedError(f"Operator {operator} not implemented.")
 
         if angular_matrix_element == 0:
-            return 0
+            return 0.0
 
         if "core" not in operator:
             radial_matrix_element = self.radial.calc_matrix_element(other.radial, k_radial, unit="a.u.")
@@ -135,25 +155,11 @@ class RydbergKet:
         else:
             core_radial_matrix_element = self._calc_core_radial_matrix_element_au(other, k_radial)
             if core_radial_matrix_element == 0:
-                return 0
+                return 0.0
             rydberg_radial_overlap = self.radial.calc_overlap(other.radial)
             matrix_element = prefactor * angular_matrix_element * core_radial_matrix_element * rydberg_radial_overlap
 
-        if unit == "a.u.":
-            return matrix_element
-
-        radial_unit: PintFloat = ureg.Quantity(1, "bohr_radius") ** k_radial
-        matrix_element_unit: PintFloat
-        if operator == "magnetic_dipole":
-            matrix_element_unit = radial_unit * ureg.Quantity(2, "bohr_magneton")
-        elif operator.startswith("electric_"):
-            matrix_element_unit = radial_unit * ureg.Quantity(1, "e")
-        else:
-            raise NotImplementedError(f"Operator {operator} not implemented.")
-
-        if unit is None:
-            return matrix_element * matrix_element_unit.to_base_units()  # type: ignore [no-any-return]
-        return matrix_element * matrix_element_unit.to(unit).magnitude
+        return matrix_element
 
     def _calc_core_radial_matrix_element_au(self, other: RydbergKet, k_radial: int) -> float:
         r"""Calculate the radial matrix element :math:`\langle self_c | r^{k_{radial}} | other_c \rangle` in a.u.
