@@ -13,9 +13,6 @@ class SQDTHydrogen(SQDT):
 
     quantum_defects: ClassVar = {}
 
-    def _setup_nist_energy_levels(self) -> None:
-        self._nist_energy_levels = {}
-
 
 class SQDTHydrogenTextBook(SQDT):
     species = "H_textbook"
@@ -24,6 +21,3 @@ class SQDTHydrogenTextBook(SQDT):
     ionization_energy = (rydberg_constant.m, str(rydberg_constant.u))
 
     quantum_defects: ClassVar = {}
-
-    def _setup_nist_energy_levels(self) -> None:
-        self._nist_energy_levels = {}

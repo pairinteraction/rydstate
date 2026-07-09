@@ -41,6 +41,9 @@ class SQDT(ABC, metaclass=CachedABCMeta):
     """The tag for these SQDT parameters."""
     is_default: ClassVar[bool] = False
     """Whether this SQDT is the default SQDT for the species."""
+    nist_data_file: ClassVar[str | None] = None
+    """Name of the file (in the species directory) with the low-lying NIST energy levels,
+    usually ``"nist_data.txt"``. Left as None for species without a NIST data file."""
 
     ionization_energy: ClassVar[tuple[float, str]]
     """Ionization energy and unit: (value, unit)."""
@@ -62,15 +65,18 @@ class SQDT(ABC, metaclass=CachedABCMeta):
         """Set up NIST energy levels.
 
         This method should be called in the constructor to load the NIST energy levels.
-        It reads the file `nist_data.txt` and prepares the data for further use.
+        It reads the file given by ``nist_data_file`` and prepares the data for further use.
 
-        The file `nist_data.txt` should be directly downloaded from https://physics.nist.gov/PhysRefData/ASD/levels_form.html
+        The file should be directly downloaded from https://physics.nist.gov/PhysRefData/ASD/levels_form.html
         in the 'Tab-delimited' format and in units of Hartree.
 
         """
         self._nist_energy_levels: dict[tuple[int, int, float, float], float] = {}
 
-        file = Path(inspect.getfile(type(self))).resolve().parent / "nist_data.txt"
+        if self.nist_data_file is None:
+            return
+
+        file = Path(inspect.getfile(type(self))).resolve().parent / self.nist_data_file
         if not file.exists():
             raise ValueError(f"NIST energy data file {file} does not exist.")
 
