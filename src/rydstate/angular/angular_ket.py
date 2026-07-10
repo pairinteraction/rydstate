@@ -18,7 +18,9 @@ from rydstate.angular.utils import (
     NotSet,
     Unknown,
     check_spin_addition_rule,
+    get_coupling_scheme_for_quantum_number,
     get_possible_quantum_number_values,
+    get_qn_name_from_operator,
     is_angular_momentum_quantum_number,
     is_angular_operator_type,
     is_not_set,
@@ -644,32 +646,25 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
             cache[cache_key] = self._calc_reduced_matrix_element(other, operator, kappa)
         return cache[cache_key]
 
-    def _calc_reduced_matrix_element(  # noqa: C901, PLR0912
+    def _calc_reduced_matrix_element(  # noqa: C901
         self: Self, other: AngularKetBase[Any], operator: AngularOperatorType, kappa: int
     ) -> float:
         if not is_angular_operator_type(operator):
             raise NotImplementedError(f"calc_reduced_matrix_element is not implemented for operator {operator}.")
 
-        if self.coupling_scheme != other.coupling_scheme:
-            return self.to_state().calc_reduced_matrix_element(other.to_state(), operator, kappa)
-        if is_angular_momentum_quantum_number(operator) and operator not in self.quantum_number_names:
-            return self.to_state().calc_reduced_matrix_element(other.to_state(), operator, kappa)
+        qn_name = get_qn_name_from_operator(operator)
+        if self.coupling_scheme != other.coupling_scheme or qn_name not in self.quantum_number_names:
+            coupling_scheme = get_coupling_scheme_for_quantum_number(
+                qn_name, [self.coupling_scheme, other.coupling_scheme]
+            )
+            return self.to_state(coupling_scheme).calc_reduced_matrix_element(
+                other.to_state(coupling_scheme), operator, kappa
+            )
 
-        qn_name: AngularMomentumQuantumNumbers
-        if operator == "spherical":
-            qn_name = "l_r"
-        elif operator == "spherical_core":
-            qn_name = "l_c"
-        elif operator in self.quantum_number_names:
-            if kappa != 1:
-                raise ValueError("Only kappa=1 is supported for spin operators.")
-            qn_name = operator
-        elif operator.startswith("identity_"):
-            if kappa != 0:
-                raise ValueError("Only kappa=0 is supported for identity operator.")
-            qn_name = operator.replace("identity_", "")  # type: ignore [assignment]
-        else:
-            raise NotImplementedError(f"calc_reduced_matrix_element is not implemented for operator {operator}.")
+        if is_angular_momentum_quantum_number(operator) and kappa != 1:
+            raise ValueError("Only kappa=1 is supported for spin operators.")
+        if operator.startswith("identity_") and kappa != 0:
+            raise ValueError("Only kappa=0 is supported for identity operators.")
 
         qn_self, qn_other = self.get_qn(qn_name), other.get_qn(qn_name)
         if is_unknown(qn_self) or is_unknown(qn_other):
@@ -677,7 +672,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
 
         if operator in ("spherical", "spherical_core"):
             complete_reduced_matrix_element = calc_reduced_spherical_matrix_element(qn_self, qn_other, kappa)  # type: ignore [arg-type]
-        elif operator in self.quantum_number_names:
+        elif is_angular_momentum_quantum_number(operator):
             complete_reduced_matrix_element = calc_reduced_spin_matrix_element(qn_self, qn_other)
         elif operator.startswith("identity_"):
             complete_reduced_matrix_element = calc_reduced_identity_matrix_element(qn_self, qn_other)

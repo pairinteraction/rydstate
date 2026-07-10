@@ -87,6 +87,9 @@ class RydbergState:
         self.m = rydberg_kets[0].angular.m
         if not all(rydberg_ket.angular.m == self.m for rydberg_ket in rydberg_kets):
             raise ValueError("All rydberg_kets must have the same m.")
+        self.coupling_scheme = rydberg_kets[0].angular.coupling_scheme
+        if not all(rydberg_ket.angular.coupling_scheme == self.coupling_scheme for rydberg_ket in rydberg_kets):
+            raise ValueError("All rydberg_kets must have the same coupling_scheme.")
 
     def __repr__(self) -> str:
         terms = [f"{coeff}*{rydberg_ket!r}" for coeff, rydberg_ket in self]
@@ -280,7 +283,7 @@ class RydbergState:
 
         if is_angular_momentum_quantum_number(qn):
             if qn not in self.rydberg_kets[0].angular.quantum_number_names:
-                coupling_scheme = get_coupling_scheme_for_quantum_number(qn)
+                coupling_scheme = get_coupling_scheme_for_quantum_number(qn, [self.coupling_scheme])
                 return self.to_coupling_scheme(coupling_scheme).calc_exp_qn(qn)
             angular_state = AngularState(self._coefficients, [ket.angular for ket in self.rydberg_kets])
             return angular_state.calc_exp_qn(qn)
@@ -293,7 +296,7 @@ class RydbergState:
 
         if is_angular_momentum_quantum_number(qn):
             if qn not in self.rydberg_kets[0].angular.quantum_number_names:
-                coupling_scheme = get_coupling_scheme_for_quantum_number(qn)
+                coupling_scheme = get_coupling_scheme_for_quantum_number(qn, [self.coupling_scheme])
                 return self.to_coupling_scheme(coupling_scheme).calc_std_qn(qn)
             angular_state = AngularState(self._coefficients, [ket.angular for ket in self.rydberg_kets])
             return angular_state.calc_std_qn(qn)
