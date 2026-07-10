@@ -167,20 +167,51 @@ def get_possible_quantum_number_values(
     return [float(s) for s in np.arange(abs(s_1 - s_2), s_1 + s_2 + 1, 1)]
 
 
-def get_coupling_scheme_for_quantum_number(qn: AngularMomentumQuantumNumbers) -> CouplingScheme:
+def get_coupling_scheme_for_quantum_number(
+    qn: AngularMomentumQuantumNumbers, preferred_schemes: list[CouplingScheme] | None = None
+) -> CouplingScheme:
     """Return the coupling scheme, in which the given quantum number is a good quantum number."""
-    if qn in ("i_c", "s_c", "l_c", "s_r", "l_r", "f_tot"):
-        raise ValueError(
-            f"Quantum number {qn} is always a good quantum number, "
-            "callers should never invoke get_coupling_scheme_for_quantum_number for it."
-        )
-    if qn in ("s_tot", "l_tot", "j_tot"):
-        return "LS"
-    if qn in ("j_c", "j_r"):
-        return "JJ"
-    if qn in ("f_c",):  # noqa: FURB171
-        return "FJ"
-    raise ValueError(f"Invalid quantum number {qn} for coupling scheme.")
+    preferred_schemes = preferred_schemes if preferred_schemes is not None else []
+    preferred_schemes = [*preferred_schemes, "LS", "JJ", "FJ"]
+    preferred_schemes = list(dict.fromkeys(preferred_schemes))  # remove duplicates while preserving order
+    for scheme in preferred_schemes:
+        if qn in get_quantum_number_names_for_coupling_scheme(scheme):
+            return scheme
+    raise ValueError(f"Quantum number {qn} is not a good quantum number in any of the coupling schemes.")
+
+
+def get_quantum_number_names_for_coupling_scheme(
+    coupling_scheme: CouplingScheme,
+) -> tuple[AngularMomentumQuantumNumbers, ...]:
+    """Return a list of quantum number names that are good quantum numbers in the given coupling scheme."""
+    if coupling_scheme == "LS":
+        from rydstate.angular.angular_ket import AngularKetLS  # noqa: PLC0415
+
+        return AngularKetLS.quantum_number_names
+    if coupling_scheme == "JJ":
+        from rydstate.angular.angular_ket import AngularKetJJ  # noqa: PLC0415
+
+        return AngularKetJJ.quantum_number_names
+    if coupling_scheme == "FJ":
+        from rydstate.angular.angular_ket import AngularKetFJ  # noqa: PLC0415
+
+        return AngularKetFJ.quantum_number_names
+    raise ValueError(f"Invalid coupling scheme {coupling_scheme}.")
+
+
+def get_qn_name_from_operator(operator: AngularOperatorType) -> AngularMomentumQuantumNumbers:
+    """Return the quantum number name corresponding to the given operator."""
+    qn: str = operator
+    if operator == "spherical":
+        qn = "l_r"
+    elif operator == "spherical_core":
+        qn = "l_c"
+    elif operator.startswith("identity_"):
+        qn = operator.removeprefix("identity_")
+
+    if not is_angular_momentum_quantum_number(qn):
+        raise ValueError(f"Invalid operator {operator}.")
+    return qn
 
 
 @lru_cache(maxsize=1_000)

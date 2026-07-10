@@ -202,6 +202,7 @@ class RydbergStateSQDT(RydbergState, Generic[GenericT_AngularKet]):
         self.f_tot = self.angular.f_tot
         self.parity = self.angular.parity
         self.m = self.angular.m
+        self.coupling_scheme = self.angular.coupling_scheme
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.species}, n={self.n}, {self.angular!r})"

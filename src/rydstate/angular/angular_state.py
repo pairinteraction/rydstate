@@ -12,7 +12,7 @@ from rydstate.angular.angular_ket import (
 )
 from rydstate.angular.utils import (
     get_coupling_scheme_for_quantum_number,
-    is_angular_momentum_quantum_number,
+    get_qn_name_from_operator,
     is_not_set,
     is_unknown,
 )
@@ -158,7 +158,7 @@ class AngularState(Generic[GenericT_AngularKet]):
 
         """
         if q not in self.kets[0].quantum_number_names:
-            coupling_scheme = get_coupling_scheme_for_quantum_number(q)
+            coupling_scheme = get_coupling_scheme_for_quantum_number(q, [self.coupling_scheme])
             return self.to(coupling_scheme).calc_exp_qn(q)
 
         qns = [ket.get_qn(q) for ket in self.kets]
@@ -186,7 +186,7 @@ class AngularState(Generic[GenericT_AngularKet]):
 
         """
         if q not in self.kets[0].quantum_number_names:
-            coupling_scheme = get_coupling_scheme_for_quantum_number(q)
+            coupling_scheme = get_coupling_scheme_for_quantum_number(q, [self.coupling_scheme])
             return self.to(coupling_scheme).calc_std_qn(q)
 
         qns = np.array([ket.get_qn(q) for ket in self.kets])
@@ -244,12 +244,13 @@ class AngularState(Generic[GenericT_AngularKet]):
         """
         if isinstance(other, AngularKetBase):
             other = other.to_state()
-        if is_angular_momentum_quantum_number(operator) and operator not in self.kets[0].quantum_number_names:
-            coupling_scheme = get_coupling_scheme_for_quantum_number(operator)
-            return self.to(coupling_scheme).calc_reduced_matrix_element(other, operator, kappa)
 
-        if self.coupling_scheme != other.coupling_scheme:
-            other = other.to(self.coupling_scheme)
+        qn_name = get_qn_name_from_operator(operator)
+        if self.coupling_scheme != other.coupling_scheme or qn_name not in self.kets[0].quantum_number_names:
+            coupling_scheme = get_coupling_scheme_for_quantum_number(
+                qn_name, [self.coupling_scheme, other.coupling_scheme]
+            )
+            return self.to(coupling_scheme).calc_reduced_matrix_element(other.to(coupling_scheme), operator, kappa)
 
         value = 0.0
         for coeff1, ket1 in zip(self._coefficients_conjugate, self.kets, strict=True):
