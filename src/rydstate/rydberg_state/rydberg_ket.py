@@ -51,7 +51,7 @@ class RydbergKet:
         """Calculate the reduced overlap <self|other> (ignoring the magnetic quantum number m)."""
         angular_overlap = self.angular.calc_reduced_overlap(other.angular)
         if angular_overlap == 0:
-            return 0
+            return 0.0
         radial_overlap = self.radial.calc_overlap(other.radial)
         return radial_overlap * angular_overlap
 

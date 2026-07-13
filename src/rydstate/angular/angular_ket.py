@@ -668,7 +668,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
 
         qn_self, qn_other = self.get_qn(qn_name), other.get_qn(qn_name)
         if is_unknown(qn_self) or is_unknown(qn_other):
-            return 0  # TODO, ignore Unknown contributions for now
+            return 0.0  # TODO, ignore Unknown contributions for now
 
         if operator in ("spherical", "spherical_core"):
             complete_reduced_matrix_element = calc_reduced_spherical_matrix_element(qn_self, qn_other, kappa)  # type: ignore [arg-type]
@@ -680,9 +680,9 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
             raise NotImplementedError(f"calc_reduced_matrix_element is not implemented for operator {operator}.")
 
         if complete_reduced_matrix_element == 0:
-            return 0
+            return 0.0
         if self._kronecker_delta_non_involved_spins(other, qn_name) == 0:
-            return 0
+            return 0.0
         prefactor = self._calc_prefactor_of_operator_in_coupled_scheme(other, qn_name, kappa)
         return prefactor * complete_reduced_matrix_element
 
@@ -787,7 +787,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         i1, i2, i_tot = (other.get_qn(qn1), other.get_qn(qn2), other.get_qn(qn_combined))
 
         if (operator_acts_on == "first" and f2 != i2) or (operator_acts_on == "second" and f1 != i1):
-            return 0
+            return 0.0
         if (
             is_unknown(f1)
             or is_unknown(f2)
@@ -796,7 +796,7 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
             or is_unknown(i2)
             or is_unknown(i_tot)
         ):
-            return 0  # TODO, ignore Unknown contributions for now
+            return 0.0  # TODO, ignore Unknown contributions for now
         prefactor = calc_prefactor_of_operator_in_coupled_scheme(f1, f2, f_tot, i1, i2, i_tot, kappa, operator_acts_on)
         return prefactor * self._calc_prefactor_of_operator_in_coupled_scheme(other, qn_combined, kappa)
 

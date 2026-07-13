@@ -53,7 +53,7 @@ def calc_radial_matrix_element_from_w_z(
     z_max = min(z1[-1], z2[-1])
     if z_max <= z_min:
         logger.debug("No overlapping grid points between states, returning 0")
-        return 0
+        return 0.0
 
     # Select overlapping points
     dz = z1[1] - z1[0]
