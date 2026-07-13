@@ -31,19 +31,9 @@ class Yb171_S05_HighN(FModel):
     outer_channels = [
         AngularKetFJ(l_c=0, l_r=0, j_c=0.5, f_c=0, j_r=0.5, f_tot=0.5, species="Yb171"),
         AngularKetFJ(f_tot=0.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl a", species="Yb171"),
-        AngularKetFJ(l_c=1, l_r=1, j_c=1.5, f_c=1, j_r=1.5, f_tot=0.5, species="Yb171"),
+        AngularKetJJ(l_c=1, l_r=1, j_c=1.5, j_r=1.5, j_tot=0, f_tot=0.5, species="Yb171"),
         AngularKetFJ(f_tot=0.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl b", species="Yb171"),
-        AngularKetFJ(
-            l_c=1,
-            l_r=1,
-            j_c=0.5,
-            j_r=0.5,
-            f_tot=0.5,
-            parity=1,
-            allow_unknown=True,
-            label="f_c unknown",
-            species="Yb171",
-        ),  # just add two states f_c = 0 and f_c = 1?
+        AngularKetJJ(l_c=1, l_r=1, j_c=0.5, j_r=0.5, j_tot=0, f_tot=0.5, species="Yb171"),
         AngularKetFJ(f_tot=0.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl c", species="Yb171"),
         AngularKetFJ(l_c=0, l_r=0, j_c=0.5, f_c=1, j_r=0.5, f_tot=0.5, species="Yb171"),
     ]
@@ -255,9 +245,7 @@ class Yb171_D15_HighN(FModel):
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, f_c=1, j_r=1.5, f_tot=1.5, species="Yb171"),
         AngularKetFJ(f_tot=1.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl a", species="Yb171"),
         AngularKetFJ(f_tot=1.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl b", species="Yb171"),
-        AngularKetFJ(
-            l_c=1, l_r=1, f_tot=1.5, parity=1, allow_unknown=True, label="j_c and j_r unknown", species="Yb171"
-        ),
+        AngularKetLS(l_c=1, l_r=1, l_tot=2, s_tot=0, j_tot=2, f_tot=1.5, species="Yb171"),
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, f_c=0, j_r=1.5, f_tot=1.5, species="Yb171"),
     ]
     manual_frame_transformation_outer_inner = np.array(
@@ -309,7 +297,7 @@ class Yb171_D25_HighN(FModel):
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, f_c=1, j_r=1.5, f_tot=2.5, species="Yb171"),
         AngularKetFJ(f_tot=2.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl a", species="Yb171"),
         AngularKetFJ(f_tot=2.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl b", species="Yb171"),
-        AngularKetFJ(l_c=1, l_r=1, f_tot=2.5, allow_unknown=True, label="j_c and j_r unknown", species="Yb171"),
+        AngularKetLS(l_c=1, l_r=1, l_tot=2, s_tot=0, j_tot=2, f_tot=2.5, species="Yb171"),  # "6pnp 1D2"
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, f_c=0, j_r=2.5, f_tot=2.5, species="Yb171"),
     ]
     manual_frame_transformation_outer_inner = np.array(
@@ -623,11 +611,9 @@ class Yb171_S05_LowN(FModel):
     outer_channels = [
         AngularKetFJ(l_c=0, l_r=0, j_c=0.5, f_c=0, j_r=0.5, f_tot=0.5, species="Yb171"),
         AngularKetFJ(f_tot=0.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl a", species="Yb171"),
-        AngularKetFJ(l_c=1, l_r=1, j_c=1.5, f_c=1, j_r=1.5, f_tot=0.5, species="Yb171"),
+        AngularKetJJ(l_c=1, l_r=1, j_c=1.5, j_r=1.5, j_tot=0, f_tot=0.5, species="Yb171"),
         AngularKetFJ(f_tot=0.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl b", species="Yb171"),
-        AngularKetFJ(
-            l_c=1, l_r=1, j_c=0.5, j_r=0.5, f_tot=0.5, allow_unknown=True, label="f_c unknown", species="Yb171"
-        ),  # just add two states f_c = 0 and f_c = 1?
+        AngularKetJJ(l_c=1, l_r=1, j_c=0.5, j_r=0.5, j_tot=0, f_tot=0.5, species="Yb171"),
         AngularKetFJ(f_tot=0.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl c", species="Yb171"),
         AngularKetFJ(l_c=0, l_r=0, j_c=0.5, f_c=1, j_r=0.5, f_tot=0.5, species="Yb171"),
     ]
@@ -918,7 +904,7 @@ class Yb171_D15_LowN(FModel):
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, f_c=1, j_r=1.5, f_tot=1.5, species="Yb171"),
         AngularKetFJ(f_tot=1.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl a", species="Yb171"),
         AngularKetFJ(f_tot=1.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl b", species="Yb171"),
-        AngularKetFJ(l_c=1, l_r=1, f_tot=1.5, allow_unknown=True, label="j_c and j_r unknown", species="Yb171"),
+        AngularKetLS(l_c=1, l_r=1, l_tot=2, s_tot=0, j_tot=2, f_tot=1.5, species="Yb171"),  # "6pnp 1D2"
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, f_c=0, j_r=1.5, f_tot=1.5, species="Yb171"),
     ]
     manual_frame_transformation_outer_inner = np.array(
@@ -970,7 +956,7 @@ class Yb171_D25_LowN(FModel):
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, f_c=1, j_r=1.5, f_tot=2.5, species="Yb171"),
         AngularKetFJ(f_tot=2.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl a", species="Yb171"),
         AngularKetFJ(f_tot=2.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl b", species="Yb171"),
-        AngularKetFJ(l_c=1, l_r=1, f_tot=2.5, allow_unknown=True, label="j_c and j_r unknown", species="Yb171"),
+        AngularKetLS(l_c=1, l_r=1, l_tot=2, s_tot=0, j_tot=2, f_tot=2.5, species="Yb171"),  # "6pnp 1D2"
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, f_c=0, j_r=2.5, f_tot=2.5, species="Yb171"),
     ]
     manual_frame_transformation_outer_inner = np.array(

@@ -219,9 +219,7 @@ class Yb174_D2_HighN(FModel):
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, j_r=1.5, f_tot=2, species="Yb174"),
         AngularKetFJ(f_tot=2, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl a", species="Yb174"),
         AngularKetFJ(f_tot=2, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl b", species="Yb174"),
-        AngularKetFJ(
-            l_c=1, l_r=1, f_tot=2, allow_unknown=True, label="j_c and j_r unknown", species="Yb174"
-        ),  # Jc could be either 1/2 or 3/2
+        AngularKetLS(l_c=1, l_r=1, l_tot=2, s_tot=0, j_tot=2, species="Yb174"),  # "6pnp 1D2"
     ]
     manual_frame_transformation_outer_inner = np.array(
         [

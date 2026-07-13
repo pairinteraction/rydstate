@@ -800,6 +800,15 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         prefactor = calc_prefactor_of_operator_in_coupled_scheme(f1, f2, f_tot, i1, i2, i_tot, kappa, operator_acts_on)
         return prefactor * self._calc_prefactor_of_operator_in_coupled_scheme(other, qn_combined, kappa)
 
+    def get_core_ket(self) -> CoreKet:
+        """Get the core ket corresponding to this ket, j_c and f_c might be unknown dependent on the coupling scheme."""
+        j_c = self.get_qn("j_c", allow_unknown=True)
+        f_c = self.get_qn("f_c", allow_unknown=True)
+        label = self.label
+        if label is None and (is_unknown(f_c) or is_unknown(j_c)):
+            label = Unknown
+        return CoreKet(i_c=self.i_c, s_c=self.s_c, l_c=self.l_c, j_c=j_c, f_c=f_c, label=label)
+
 
 class AngularKetLS(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
     """Spin ket in LS coupling."""
@@ -1128,7 +1137,3 @@ class AngularKetFJ(AngularKetBase[GenericT_Unknown], Generic[GenericT_Unknown]):
             msgs.append(f"{self.f_c=}, {self.j_r=}, {self.f_tot=} don't satisfy spin addition rule.")
 
         super().sanity_check(msgs)
-
-    def get_core_ket(self) -> CoreKet:
-        """Get the core ket corresponding to this FJ ket."""
-        return CoreKet(i_c=self.i_c, s_c=self.s_c, l_c=self.l_c, j_c=self.j_c, f_c=self.f_c, label=self.label)
