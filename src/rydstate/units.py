@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from pint import UnitRegistry
 
+from rydstate.angular.utils import AngularOperatorType
+
 if TYPE_CHECKING:
     from typing import TypeAlias
 
@@ -26,6 +28,7 @@ MatrixElementOperator = Literal[
     "electric_quadrupole",
     "electric_octupole",
     "electric_quadrupole_zero",
+    AngularOperatorType,
 ]
 MatrixElementOperatorRanks: dict[MatrixElementOperator, tuple[int, int]] = {
     # "operator": (k_radial, k_angular)
