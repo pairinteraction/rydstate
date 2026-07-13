@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from rydstate.angular.angular_ket import AngularKetFJ, AngularKetLS
+from rydstate.angular.angular_ket import AngularKetFJ, AngularKetJJ, AngularKetLS
 from rydstate.angular.utils import Unknown
 from rydstate.species.fmodel import FModel
 
@@ -48,11 +48,9 @@ class Yb173_S25_HighN(FModel):
     outer_channels = [
         AngularKetFJ(l_c=0, l_r=0, j_c=0.5, f_c=2, j_r=0.5, f_tot=2.5, species="Yb173"),
         AngularKetFJ(f_tot=2.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl a", species="Yb173"),
-        AngularKetFJ(l_c=1, l_r=1, j_c=1.5, f_c=3, j_r=1.5, f_tot=2.5, species="Yb173"),
+        AngularKetJJ(l_c=1, l_r=1, j_c=1.5, j_r=1.5, j_tot=0, f_tot=2.5, species="Yb173"),
         AngularKetFJ(f_tot=2.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl b", species="Yb173"),
-        AngularKetFJ(
-            l_c=1, l_r=1, j_c=0.5, j_r=0.5, f_tot=2.5, allow_unknown=True, label="f_c unknown", species="Yb173"
-        ),  # just add two states f_c = 2 and f_c = 3?
+        AngularKetJJ(l_c=1, l_r=1, j_c=0.5, j_r=0.5, j_tot=0, f_tot=2.5, species="Yb173"),
         AngularKetFJ(f_tot=2.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl c", species="Yb173"),
         AngularKetFJ(l_c=0, l_r=0, j_c=0.5, f_c=3, j_r=0.5, f_tot=2.5, species="Yb173"),
     ]

@@ -13,7 +13,7 @@ from rydstate.species.utils import calc_energy_from_nu, calc_modified_ritz_formu
 if TYPE_CHECKING:
     from types import ModuleType
 
-    from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ
+    from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKetJJ, AngularKetLS
     from rydstate.angular.utils import AllKnown
     from rydstate.species.mqdt import MQDT
     from rydstate.species.utils import RydbergRitzParameters
@@ -40,7 +40,7 @@ class FModel:
     inner_channels: ClassVar[list[AngularKetBase[Any]]]
     """List of inner channels in the MQDT model."""
 
-    outer_channels: ClassVar[list[AngularKetFJ[Any]]]
+    outer_channels: ClassVar[list[AngularKetFJ[Any] | AngularKetJJ[Any] | AngularKetLS[Any]]]
     """List of outer channels in the MQDT model."""
 
     eigen_quantum_defects: ClassVar[list[RydbergRitzParameters]]
