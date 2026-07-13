@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, overload
 
@@ -284,6 +285,9 @@ class RydbergState:
         if qn == "nu":
             return self.nu
 
+        if qn.startswith("raw_value_"):
+            return self.calc_matrix_element(self, qn, q=0, unit="a.u.")  # type: ignore [call-overload,no-any-return]
+
         if is_angular_momentum_quantum_number(qn):
             if qn not in self.rydberg_kets[0].angular.quantum_number_names:
                 coupling_scheme = get_coupling_scheme_for_quantum_number(qn, [self.coupling_scheme])
@@ -296,6 +300,16 @@ class RydbergState:
     def calc_std_qn(self, qn: str) -> float:
         if qn == "nu":
             return 0
+
+        if qn.startswith("raw_value_"):
+            exp_q = self.calc_matrix_element(self, qn, q=0, unit="a.u.")  # type: ignore [call-overload]
+            exp_q2 = self.calc_matrix_element(self, qn + "_2", q=0, unit="a.u.")  # type: ignore [call-overload]
+            if abs(exp_q2 - exp_q**2) < 1e-10:
+                return 0
+            if exp_q2 - exp_q**2 < 0:
+                logger.warning("Got negative variance for quantum number %s: %.3e. Returning 0.", qn, exp_q2 - exp_q**2)
+                return 0
+            return math.sqrt(exp_q2 - exp_q**2)
 
         if is_angular_momentum_quantum_number(qn):
             if qn not in self.rydberg_kets[0].angular.quantum_number_names:
