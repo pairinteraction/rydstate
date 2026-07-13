@@ -5,7 +5,7 @@ import math
 from typing import TYPE_CHECKING, Any, Literal, overload
 
 from rydstate.angular.angular_ket import AngularKetLS
-from rydstate.angular.utils import is_unknown
+from rydstate.angular.utils import is_angular_momentum_quantum_number, is_angular_operator_type, is_unknown
 from rydstate.species.element_properties import get_element_properties
 from rydstate.species.sqdt import get_sqdt
 from rydstate.units import MatrixElementOperatorRanks, ureg
@@ -93,13 +93,15 @@ class RydbergKet:
         if unit == "a.u.":
             return matrix_element_au
 
-        k_radial, _k_angular = MatrixElementOperatorRanks[operator]
+        k_radial, _k_angular = self._get_ks(operator)
         radial_unit: PintFloat = ureg.Quantity(1, "bohr_radius") ** k_radial
         matrix_element_unit: PintFloat
         if operator == "magnetic_dipole":
             matrix_element_unit = radial_unit * ureg.Quantity(2, "bohr_magneton")
         elif operator.startswith("electric_"):
             matrix_element_unit = radial_unit * ureg.Quantity(1, "e")
+        elif is_angular_operator_type(operator):
+            matrix_element_unit = ureg.Quantity(1, "dimensionless")
         else:
             raise NotImplementedError(f"Operator {operator} not implemented.")
 
@@ -114,12 +116,7 @@ class RydbergKet:
                 matrix_element += self._calc_reduced_matrix_element_au(other, "electric_dipole_core")
             return matrix_element
 
-        try:
-            k_radial, k_angular = MatrixElementOperatorRanks[operator]
-        except KeyError as err:
-            raise ValueError(
-                f"Operator {operator} not supported, must be one of {list(MatrixElementOperatorRanks.keys())}."
-            ) from err
+        k_radial, k_angular = self._get_ks(operator)
 
         if operator == "magnetic_dipole":
             # Magnetic dipole operator: mu = - mu_B (g_l <l_tot> + g_s <s_tot>)
@@ -142,7 +139,9 @@ class RydbergKet:
             )
             # Prefactor sqrt(4 pi / (2 k_angular + 1)) for the electric multipole operators, precomputed for performance
             prefactor = ELECTRIC_MULTIPOLE_PREFACTORS[k_angular]
-
+        elif is_angular_operator_type(operator):
+            prefactor = 1
+            angular_matrix_element = self.angular.calc_reduced_matrix_element(other.angular, operator, k_angular)
         else:
             raise NotImplementedError(f"Operator {operator} not implemented.")
 
@@ -241,7 +240,19 @@ class RydbergKet:
             The matrix element for the given operator.
 
         """
-        _k_radial, k_angular = MatrixElementOperatorRanks[operator]
+        _k_radial, k_angular = self._get_ks(operator)
         prefactor = self.angular._calc_wigner_eckart_prefactor(other.angular, k_angular, q)  # noqa: SLF001
         reduced_matrix_element = self.calc_reduced_matrix_element(other, operator, unit)
         return prefactor * reduced_matrix_element
+
+    def _get_ks(self, operator: MatrixElementOperator) -> tuple[int, int]:
+        """Get the k_radial and k_angular for the given operator."""
+        if operator in MatrixElementOperatorRanks:
+            return MatrixElementOperatorRanks[operator]
+        if is_angular_operator_type(operator):
+            k_radial = 0
+            if operator.startswith("identity_"):
+                return k_radial, 0
+            if is_angular_momentum_quantum_number(operator):
+                return k_radial, 1
+        raise ValueError(f"Operator {operator} not supported.")
