@@ -130,7 +130,7 @@ def try_trivial_spin_addition(
 ) -> float | Unknown:
     """Try to determine s_tot from s_1 and s_2 if it is not given.
 
-    If s_tot is None and cannot be uniquely determined from s_1 and s_2, raise an error.
+    If s_tot is None and cannot be uniquely determined from s_1 and s_2, return Unknown.
     Otherwise return s_tot or the trivial sum s_1 + s_2.
     """
     if s_tot is not None and not is_unknown(s_tot):
