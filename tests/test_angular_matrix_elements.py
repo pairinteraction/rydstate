@@ -124,6 +124,27 @@ def test_scalar_matrix_element_independent_of_m(ket: AngularKetBase[AllKnown]) -
             assert np.isclose(val_m, val_not_set), f"{operator=}, {m=}, {val_m=}, {val_not_set=}"
 
 
+@pytest.mark.parametrize("ket", TEST_KETS)
+def test_reduced_raw_value(ket: AngularKetBase[AllKnown]) -> None:
+    # In its native coupling scheme every quantum number is definite, so raw_value_x = x^exponent * identity and its
+    # reduced matrix element is x^exponent * sqrt(2 * f_tot + 1). This pins down the Wigner-Eckart normalization: the
+    # full matrix element <ket| raw_value_x |ket> then evaluates to the raw value of x (and raw_value_x_2 to x^2).
+    reduced_identity = np.sqrt(2 * ket.f_tot + 1)
+
+    op: AngularMomentumQuantumNumbers
+    for op in ket.quantum_number_names:
+        raw = ket.get_qn(op)
+        assert np.isclose(raw * reduced_identity, ket.calc_reduced_matrix_element(ket, "raw_value_" + op, kappa=0))  # type: ignore [arg-type]
+        assert np.isclose(
+            raw**2 * reduced_identity,
+            ket.calc_reduced_matrix_element(ket, "raw_value_" + op + "_2", kappa=0),  # type: ignore [arg-type]
+        )
+        for m in np.arange(-ket.f_tot, ket.f_tot + 1):
+            ket_m = ket.replace_m(m)
+            assert np.isclose(raw, ket_m.calc_matrix_element(ket_m, "raw_value_" + op, kappa=0, q=0))  # type: ignore [arg-type]
+            assert np.isclose(raw**2, ket_m.calc_matrix_element(ket_m, "raw_value_" + op + "_2", kappa=0, q=0))  # type: ignore [arg-type]
+
+
 @pytest.mark.parametrize(("ket1", "ket2"), TEST_KET_PAIRS)
 def test_matrix_elements_in_different_coupling_schemes(
     ket1: AngularKetBase[AllKnown], ket2: AngularKetBase[AllKnown], coupling_scheme: CouplingScheme

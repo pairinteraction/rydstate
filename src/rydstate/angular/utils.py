@@ -45,12 +45,42 @@ IdentityOperators = Literal[
     "identity_f_c",
     "identity_f_tot",
 ]
+RawValueOperators = Literal[
+    "raw_value_i_c",
+    "raw_value_s_c",
+    "raw_value_l_c",
+    "raw_value_s_r",
+    "raw_value_l_r",
+    "raw_value_s_tot",
+    "raw_value_l_tot",
+    "raw_value_j_c",
+    "raw_value_j_r",
+    "raw_value_j_tot",
+    "raw_value_f_c",
+    "raw_value_f_tot",
+]
+RawValueOperators2 = Literal[
+    "raw_value_i_c_2",
+    "raw_value_s_c_2",
+    "raw_value_l_c_2",
+    "raw_value_s_r_2",
+    "raw_value_l_r_2",
+    "raw_value_s_tot_2",
+    "raw_value_l_tot_2",
+    "raw_value_j_c_2",
+    "raw_value_j_r_2",
+    "raw_value_j_tot_2",
+    "raw_value_f_c_2",
+    "raw_value_f_tot_2",
+]
 
 AngularOperatorType = Literal[
     "spherical",
     "spherical_core",
     AngularMomentumQuantumNumbers,
     IdentityOperators,
+    RawValueOperators,
+    RawValueOperators2,
 ]
 
 
@@ -208,6 +238,9 @@ def get_qn_name_from_operator(operator: AngularOperatorType) -> AngularMomentumQ
         qn = "l_c"
     elif operator.startswith("identity_"):
         qn = operator.removeprefix("identity_")
+    elif operator.startswith("raw_value_"):
+        qn = operator.removeprefix("raw_value_")
+        qn = qn.removesuffix("_2")
 
     if not is_angular_momentum_quantum_number(qn):
         raise ValueError(f"Invalid operator {operator}.")

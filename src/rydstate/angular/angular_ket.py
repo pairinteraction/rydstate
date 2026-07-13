@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, TypeVar, over
 
 from rydstate.angular.angular_matrix_element import (
     calc_prefactor_of_operator_in_coupled_scheme,
-    calc_reduced_identity_matrix_element,
+    calc_reduced_raw_quantum_number_matrix_element,
     calc_reduced_spherical_matrix_element,
     calc_reduced_spin_matrix_element,
 )
@@ -663,8 +663,8 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
 
         if is_angular_momentum_quantum_number(operator) and kappa != 1:
             raise ValueError("Only kappa=1 is supported for spin operators.")
-        if operator.startswith("identity_") and kappa != 0:
-            raise ValueError("Only kappa=0 is supported for identity operators.")
+        if operator.startswith(("identity_", "raw_value_")) and kappa != 0:
+            raise ValueError("Only kappa=0 is supported for identity/raw_value operators.")
 
         qn_self, qn_other = self.get_qn(qn_name), other.get_qn(qn_name)
         if is_unknown(qn_self) or is_unknown(qn_other):
@@ -675,7 +675,15 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         elif is_angular_momentum_quantum_number(operator):
             complete_reduced_matrix_element = calc_reduced_spin_matrix_element(qn_self, qn_other)
         elif operator.startswith("identity_"):
-            complete_reduced_matrix_element = calc_reduced_identity_matrix_element(qn_self, qn_other)
+            complete_reduced_matrix_element = calc_reduced_raw_quantum_number_matrix_element(qn_self, qn_other, 0)
+        elif operator.startswith("raw_value_"):
+            # raw_value_x is the diagonal scalar operator x^exponent; reusing the same reduced matrix element as
+            # identity (exponent=0) ensures the coupled-scheme prefactor and Wigner-Eckart normalization are applied,
+            # so <state| raw_value_x |state> yields the raw value of x (and raw_value_x_2 yields x^2).
+            exponent = 2 if operator.endswith("_2") else 1
+            complete_reduced_matrix_element = calc_reduced_raw_quantum_number_matrix_element(
+                qn_self, qn_other, exponent
+            )
         else:
             raise NotImplementedError(f"calc_reduced_matrix_element is not implemented for operator {operator}.")
 
