@@ -42,7 +42,7 @@ class ElementProperties(ABC, metaclass=CachedABCMeta):
     core_electron_configuration: ClassVar[str]
     """Electron configuration of the core electrons, e.g. 4p6 for Rb or 5s for Sr."""
 
-    nuclear_dipole: ClassVar[float]
+    nuclear_dipole: ClassVar[float] = 0.0
     """Nuclear dipole moment of the species."""
 
     def __repr__(self) -> str:

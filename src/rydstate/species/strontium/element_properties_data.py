@@ -23,7 +23,8 @@ class ElementPropertiesStrontium87(_ElementPropertiesStrontiumAbstract):
         str(rydberg_constant.u),
     )
 
-    nuclear_dipole = -1.0936030
+    # https://nds.iaea.org/nuclearmoments/isotope_measurement_results.php?A=87&Z=38
+    nuclear_dipole = -1.09316
 
 
 class ElementPropertiesStrontium88(_ElementPropertiesStrontiumAbstract):
@@ -35,5 +36,3 @@ class ElementPropertiesStrontium88(_ElementPropertiesStrontiumAbstract):
         rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass_u),
         str(rydberg_constant.u),
     )
-
-    nuclear_dipole = 2.3

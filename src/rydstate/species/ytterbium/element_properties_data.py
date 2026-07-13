@@ -23,7 +23,8 @@ class ElementPropertiesYtterbium171(_ElementPropertiesYtterbiumAbstract):
         str(rydberg_constant.u),
     )
 
-    nuclear_dipole = 0.49367
+    # https://nds.iaea.org/nuclearmoments/isotope_measurement_results.php?A=171&Z=70
+    nuclear_dipole = 0.4923
 
 
 class ElementPropertiesYtterbium173(_ElementPropertiesYtterbiumAbstract):
@@ -36,7 +37,8 @@ class ElementPropertiesYtterbium173(_ElementPropertiesYtterbiumAbstract):
         str(rydberg_constant.u),
     )
 
-    nuclear_dipole = -0.68
+    # https://nds.iaea.org/nuclearmoments/isotope_measurement_results.php?A=173&Z=70
+    nuclear_dipole = -0.6780
 
 
 class ElementPropertiesYtterbium174(_ElementPropertiesYtterbiumAbstract):
@@ -48,5 +50,3 @@ class ElementPropertiesYtterbium174(_ElementPropertiesYtterbiumAbstract):
         rydberg_constant.m / (1 + electron_mass.to("u").m / _isotope_mass_u),
         str(rydberg_constant.u),
     )
-
-    nuclear_dipole = 2.1
