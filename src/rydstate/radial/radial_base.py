@@ -225,11 +225,11 @@ class Radial:
     ) -> float:
         if self._is_dummy or other._is_dummy:
             if self._is_dummy is not other._is_dummy:
-                return 0
+                return 0.0
             if k_radial == 0 and abs(self.nu - other.nu) < 1e-10:  # type: ignore [attr-defined]
                 return self._coeff.conjugate() * other._coeff  # type: ignore [attr-defined,no-any-return]
             # if not k_radial == 0 or nu are not the same we cant compute the matrix element and simply return 0
-            return 0
+            return 0.0
 
         return calc_radial_matrix_element_from_w_z(
             self.z_list, self.w_list, other.z_list, other.w_list, k_radial, integration_method
