@@ -137,6 +137,15 @@ def test_at_least_one_real_channel(model: FModel) -> None:
     assert len(real_channels) >= 1, f"{model.full_name}: no real (non-dummy) channels"
 
 
+@pytest.mark.parametrize("channel_type", ["inner", "outer"])
+def test_channels_are_orthonormal(model: FModel, channel_type: str) -> None:
+    """The channels of a model must form an orthonormal set."""
+    channels = model.inner_channels if channel_type == "inner" else model.outer_channels
+    overlaps = np.array([[ket1.calc_reduced_overlap(ket2) for ket2 in channels] for ket1 in channels])
+    msg = f"{model.full_name}: {channel_type} channels are not orthonormal"
+    np.testing.assert_allclose(overlaps, np.eye(len(channels)), atol=1e-10, err_msg=msg)
+
+
 def test_inner_outer_unitary(model: FModel) -> None:
     """The frame transformation matrix from inner to outer channels must be unitary."""
     unitary = model.calc_frame_transformation_outer_inner()
