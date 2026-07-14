@@ -4,19 +4,21 @@ import re
 
 import numpy as np
 import pytest
-from rydstate.species import FModel, get_mqdt
+from rydstate.angular import AngularKetFJ
+from rydstate.angular.utils import is_unknown
+from rydstate.species import MQDT, FModel, get_all_subclasses, get_element_properties, get_mqdt
 
-
-def _all_fmodels() -> list[FModel]:
-    """Collect all concrete FModel subclasses."""
-    return [cls(get_mqdt(cls.species)) for cls in FModel.__subclasses__() if getattr(cls, "name", None) is not None]
-
-
-ALL_MODELS = _all_fmodels()
+ALL_MODELS = [cls(get_mqdt(cls.species)) for cls in FModel.__subclasses__() if getattr(cls, "name", None) is not None]
+ALL_MQDTS = [cls() for cls in get_all_subclasses(MQDT)]
 
 
 @pytest.fixture(params=ALL_MODELS, ids=lambda cls: cls.full_name)
 def model(request: pytest.FixtureRequest) -> FModel:
+    return request.param  # type: ignore[no-any-return]
+
+
+@pytest.fixture(params=ALL_MQDTS, ids=lambda mqdt: f"{mqdt.species}_{mqdt.tag}")
+def mqdt(request: pytest.FixtureRequest) -> MQDT:
     return request.param  # type: ignore[no-any-return]
 
 
@@ -148,3 +150,42 @@ def test_inner_outer_unitary(model: FModel) -> None:
     full = model.calc_frame_transformation(nu=30.5)
     msg = f"{model.full_name}: full frame transformation U=QR is not unitary"
     np.testing.assert_allclose(full.conj().T @ full, np.eye(full.shape[0]), atol=1e-10, err_msg=msg)
+
+
+def test_all_models_found_by_get_mqdt_models(mqdt: MQDT) -> None:
+    """Looping over all channels like BasisMQDT._init_models must find every model of the species."""
+    element_properties = get_element_properties(mqdt.species)
+    i_c = element_properties.i_c
+    s_c = element_properties.s_c
+    j_c = s_c
+    s_r = 0.5
+
+    known_l_r = [
+        ch.l_r
+        for model in ALL_MODELS
+        if model.species == mqdt.species
+        for ch in model.outer_channels
+        if not is_unknown(ch.l_r)
+    ]
+    max_l_r = max(known_l_r)
+
+    found_models: list[FModel] = []
+    for l_r in range(max_l_r + 1):
+        for j_r in np.arange(abs(l_r - s_r), l_r + s_r + 1):
+            for f_c in np.arange(abs(j_c - i_c), j_c + i_c + 1):
+                for f_tot in np.arange(abs(f_c - j_r), f_c + j_r + 1):
+                    channel = AngularKetFJ(
+                        l_r=l_r, j_r=float(j_r), f_c=float(f_c), f_tot=float(f_tot), species=mqdt.species
+                    )
+                    for model in mqdt.get_mqdt_models(channel):
+                        if model not in found_models:
+                            found_models.append(model)
+
+    # FModel instances are not cached, so compare the models by their (unique) full_name
+    found_model_names = [model.full_name for model in found_models]
+    missing = [
+        model.full_name
+        for model in ALL_MODELS
+        if model.species == mqdt.species and model.full_name not in found_model_names
+    ]
+    assert not missing, f"{mqdt!r}: {len(missing)} models not reachable via get_mqdt_models: {missing}"
