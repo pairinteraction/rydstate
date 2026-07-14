@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -131,7 +131,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         self.states.sort(key=lambda state: state.nu)
 
 
-def get_mqdt_states_from_fmodel(  # noqa: C901
+def get_mqdt_states_from_fmodel(  # noqa: C901, PLR0912
     model: FModel,
     nu_range: tuple[float, float],
     m_range: tuple[float, float] | None | NotSet,
@@ -171,6 +171,15 @@ def get_mqdt_states_from_fmodel(  # noqa: C901
         )
         return []
 
+    coefficients_fj: list[float] = []
+    angular_kets_fj: list[AngularKetFJ[Any]] = []
+    number_kets_fj: list[int] = [0] * len(model.outer_channels)
+    for i, angular_ket in enumerate(model.outer_channels):
+        for coeff_fj, ket_fj in angular_ket.to_state("FJ"):
+            coefficients_fj.append(coeff_fj)
+            angular_kets_fj.append(ket_fj)
+            number_kets_fj[i] += 1
+
     states: list[RydbergStateMQDT] = []
     for nu in nu_list:
         det_mmat = model.calc_det_m_matrix(nu)
@@ -204,16 +213,24 @@ def get_mqdt_states_from_fmodel(  # noqa: C901
                 radial = RadialDummy(1.0, nui)
             radial_kets.append(radial)
 
+        radial_kets_fj = [
+            radial for radial, number in zip(radial_kets, number_kets_fj, strict=True) for _ in range(number)
+        ]
+        coefficients_all = [
+            coeff for coeff, number in zip(coefficients, number_kets_fj, strict=True) for _ in range(number)
+        ]
+        coefficients_all = np.array(coefficients_all) * np.array(coefficients_fj)
+
         energy_au = model.calc_energy_au(nu)
         for m in get_m_range(model.f_tot, m_range):
             rydberg_kets = [
                 RydbergKet(model.species, angular_ket.replace_m(m), radial_ket)
-                for angular_ket, radial_ket in zip(model.outer_channels, radial_kets, strict=True)
+                for angular_ket, radial_ket in zip(angular_kets_fj, radial_kets_fj, strict=True)
             ]
             states.append(
                 RydbergStateMQDT(
                     model.species,
-                    coefficients,
+                    coefficients_all,
                     rydberg_kets,
                     nu=nu,
                     energy_au=energy_au,
