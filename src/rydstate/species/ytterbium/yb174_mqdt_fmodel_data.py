@@ -221,15 +221,6 @@ class Yb174_D2_HighN(FModel):
         AngularKetFJ(f_tot=2, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl b", species="Yb174"),
         AngularKetLS(l_c=1, l_r=1, l_tot=2, s_tot=0, j_tot=2, species="Yb174"),  # "6pnp 1D2"
     ]
-    manual_frame_transformation_outer_inner = np.array(
-        [
-            [np.sqrt(3 / 5), np.sqrt(2 / 5), 0, 0, 0],
-            [-np.sqrt(2 / 5), np.sqrt(3 / 5), 0, 0, 0],
-            [0, 0, 1, 0, 0],
-            [0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 1],
-        ]
-    )
 
     eigen_quantum_defects = [
         [0.729513646, -0.0377841183],

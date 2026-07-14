@@ -54,17 +54,6 @@ class Yb173_S25_HighN(FModel):
         AngularKetFJ(f_tot=2.5, l_c=Unknown, parity=1, allow_unknown=True, label="4f13 5d 6snl c", species="Yb173"),
         AngularKetFJ(l_c=0, l_r=0, j_c=0.5, f_c=3, j_r=0.5, f_tot=2.5, species="Yb173"),
     ]
-    manual_frame_transformation_outer_inner = np.array(
-        [
-            [np.sqrt(5) / 2 / np.sqrt(3), 0, 0, 0, 0, 0, np.sqrt(7) / 2 / np.sqrt(3)],
-            [0, 1, 0, 0, 0, 0, 0],
-            [0, 0, -np.sqrt(2 / 3), 0, np.sqrt(1 / 3), 0, 0],
-            [0, 0, 0, 1, 0, 0, 0],
-            [0, 0, np.sqrt(1 / 3), 0, np.sqrt(2 / 3), 0, 0],
-            [0, 0, 0, 0, 0, 1, 0],
-            [np.sqrt(7) / 2 / np.sqrt(3), 0, 0, 0, 0, 0, -np.sqrt(5) / 2 / np.sqrt(3)],
-        ]
-    )
 
     eigen_quantum_defects = [
         [0.357519763, 0.298712849, 0, 0, 0],
