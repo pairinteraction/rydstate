@@ -92,7 +92,11 @@ class MQDT(ABC, metaclass=CachedABCMeta):
 
     def get_mqdt_models(self, outer_channel: AngularKetFJ[Any]) -> list[FModel]:
         """Return a list of MQDT models for the outer_channel."""
-        models = [model for model in self.models if any(ket == outer_channel for ket in model.outer_channels)]
+        models = [
+            model
+            for model in self.models
+            if any(abs(outer_channel.calc_reduced_overlap(ket)) > 0 for ket in model.outer_channels)
+        ]
         if len(models) == 0:
             models = [FModelSQDT(self.species, outer_channel, mqdt=self)]
         return models
