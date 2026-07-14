@@ -292,21 +292,10 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         if qn in self.quantum_number_names:
             qn_value = getattr(self, qn)
         else:
-            for coupled_quantum_numbers in (
-                self.coupled_quantum_numbers,
-                AngularKetLS.coupled_quantum_numbers,
-                AngularKetJJ.coupled_quantum_numbers,
-                AngularKetFJ.coupled_quantum_numbers,
-            ):
-                if qn not in coupled_quantum_numbers:
-                    continue
-
-                qn_1, qn_2 = coupled_quantum_numbers[qn]
-                qn_1_value = self.get_qn(qn_1, allow_unknown=True)
-                qn_2_value = self.get_qn(qn_2, allow_unknown=True)
-                qn_value = try_trivial_spin_addition(qn_1_value, qn_2_value, None)
-                if not is_unknown(qn_value):
-                    break
+            coupling_scheme = get_coupling_scheme_for_quantum_number(qn)
+            state = self.to_state(coupling_scheme)
+            if state.calc_std_qn(qn) == 0:
+                qn_value = state.calc_exp_qn(qn)
 
         allow_unknown = self._allow_unknown if allow_unknown is None else allow_unknown
         if not allow_unknown and is_unknown(qn_value):
