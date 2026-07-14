@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import math
+from functools import cached_property
 from typing import TYPE_CHECKING, Any, Literal, overload
 
 from rydstate.angular.angular_ket import AngularKetLS
@@ -13,6 +14,7 @@ from rydstate.units import MatrixElementOperatorRanks, ureg
 if TYPE_CHECKING:
     from rydstate.angular.angular_ket import AngularKetBase
     from rydstate.radial.radial_base import Radial
+    from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT
     from rydstate.units import MatrixElementOperator, PintFloat
 
 
@@ -165,46 +167,47 @@ class RydbergKet:
 
         The core electron is treated as the low-lying valence electron of the corresponding singly charged SQDT ion
         (e.g. Yb174_ion for Yb174):
-        the Rydberg electron is ignored and the radial matrix element is calculated between the two ion states,
+        the Rydberg electron is ignored and the radial matrix element is calculated between the two core states,
         where the principal quantum number of each core electron is given by the lowest allowed shell of the ion
         for the given l_c.
         """
+        if self.core_state is None or other.core_state is None:
+            return 0.0
+
+        return self.core_state.radial.calc_matrix_element(other.core_state.radial, k_radial, unit="a.u.")
+
+    @cached_property
+    def core_state(self) -> RydbergStateSQDT[Any] | None:
+        """Get the corresponding ion state of the Rydberg ket."""
         from rydstate.rydberg_state.rydberg_sqdt import RydbergStateSQDT  # noqa: PLC0415
 
-        species = self.species
-        ion_species = f"{species}_ion"
+        ion_species = f"{self.species}_ion"
         try:
             ion_sqdt = get_sqdt(ion_species)
         except ValueError:
             logger.warning(
-                "No SQDT data available for the ion species of %s "
-                "returning 0 for the dipole matrix element core contribution.",
-                species,
+                "No SQDT data available for the ion species of %s, "
+                "thus we cannot calculate the ion state and its matrix elements.",
+                self.species,
             )
-            return 0.0
+            return None
 
-        kets = {"self": self, "other": other}
-        ion_states: dict[str, RydbergStateSQDT[Any]] = {}
-        for ket_name, ket in kets.items():
-            l_c = ket.angular.l_c
-            j_c = ket.angular.get_qn("j_c", allow_unknown=True)
-            f_c = ket.angular.get_qn("f_c", allow_unknown=True)
-            if is_unknown(l_c) or is_unknown(j_c) or is_unknown(f_c):
-                return 0.0
+        l_c = self.angular.l_c
+        j_c = self.angular.get_qn("j_c", allow_unknown=True)
+        f_c = self.angular.get_qn("f_c", allow_unknown=True)
+        if is_unknown(l_c) or is_unknown(j_c) or is_unknown(f_c):
+            return None
 
-            angular_ket = AngularKetLS(l_r=l_c, j_tot=j_c, f_tot=f_c, species=ion_species)
+        angular_ket = AngularKetLS(l_r=l_c, j_tot=j_c, f_tot=f_c, species=ion_species)
 
-            # TODO: we should probably also store n_c for the core angular ket in the future
-            # for now, it is correct to assume that the core electron is
-            # in the lowest allowed shell of the ion for the given l_c
-            for n_c in range(l_c + 1, l_c + 15):
-                if ion_sqdt.is_allowed_shell(n_c, l_c, 0.5):
-                    ion_states[ket_name] = RydbergStateSQDT(ion_species, n_c, angular_ket=angular_ket, sqdt=ion_sqdt)
-                    break
-            else:  # no break
-                raise ValueError(f"No allowed shell found for ion species {ion_species} with l_c={l_c}.")
+        # TODO: we should probably also store n_c for the core angular ket in the future
+        # for now, it is correct to assume that the core electron is
+        # in the lowest allowed shell of the ion for the given l_c
+        for n_c in range(l_c + 1, l_c + 15):
+            if ion_sqdt.is_allowed_shell(n_c, l_c, 0.5):
+                return RydbergStateSQDT(ion_species, n_c, angular_ket=angular_ket, sqdt=ion_sqdt)
 
-        return ion_states["self"].radial.calc_matrix_element(ion_states["other"].radial, k_radial, unit="a.u.")
+        raise ValueError(f"No allowed shell found for ion species {ion_species} with l_c={l_c}.")
 
     @overload
     def calc_matrix_element(
