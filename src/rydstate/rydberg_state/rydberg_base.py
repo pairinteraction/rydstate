@@ -69,8 +69,9 @@ class RydbergState:
             raise ValueError("RydbergState must be initialized with at least one state.")
         if len(coefficients) != len(rydberg_kets):
             raise ValueError("Length of coefficients and rydberg_kets must be the same.")
-        if len(set(rydberg_kets)) != len(rydberg_kets):
-            raise ValueError("RydbergState initialized with duplicate rydberg_kets.")
+        angular_kets = [rydberg_ket.angular for rydberg_ket in rydberg_kets]
+        if len(set(angular_kets)) != len(angular_kets):
+            raise ValueError("RydbergState initialized with duplicate angular kets.")
 
         if abs(self.norm - 1) > 1e-10:
             raise ValueError(
