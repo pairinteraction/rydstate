@@ -13,7 +13,6 @@ from rydstate.angular.angular_ket import (
 from rydstate.angular.utils import (
     get_coupling_scheme_for_quantum_number,
     get_qn_name_from_operator,
-    is_not_set,
     is_unknown,
 )
 
@@ -292,9 +291,6 @@ class AngularState(Generic[GenericT_AngularKet]):
                 raise NotImplementedError(
                     "Different m values are not supported yet for AngularState.calc_matrix_element."
                 )
-
-        if is_not_set(self.kets[0].m) or is_not_set(other.kets[0].m):
-            raise RuntimeError("m must be set for all kets to calculate the matrix element.")
 
         prefactor = self.kets[0]._calc_wigner_eckart_prefactor(other.kets[0], kappa, q)  # noqa: SLF001
         reduced_matrix_element = self.calc_reduced_matrix_element(other, operator, kappa)

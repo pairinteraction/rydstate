@@ -716,17 +716,17 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
             The dimensionless angular matrix element.
 
         """
-        if is_not_set(self.m) or is_not_set(other.m):
-            raise RuntimeError("m must be set to calculate the matrix element.")
-
         prefactor = self._calc_wigner_eckart_prefactor(other, kappa, q)
         reduced_matrix_element = self.calc_reduced_matrix_element(other, operator, kappa)
         return prefactor * reduced_matrix_element
 
     def _calc_wigner_eckart_prefactor(self, other: AngularKetBase[Any], kappa: int, q: int) -> float:
-        if is_not_set(self.m) or is_not_set(other.m):
-            raise RuntimeError("m must be set to calculate the Wigner-Eckart prefactor.")
-        return minus_one_pow(self.f_tot - self.m) * calc_wigner_3j(self.f_tot, kappa, other.f_tot, -self.m, q, other.m)
+        m_self, m_other = self.m, other.m
+        if is_not_set(m_self) and is_not_set(m_other) and kappa == 0 and q == 0:
+            m_self = m_other = self.f_tot  # choose m = f_tot, since the result is independent of m for kappa=0, q=0
+        if is_not_set(m_self) or is_not_set(m_other):
+            raise RuntimeError("m must be set to calculate concrete matrix elements.")
+        return minus_one_pow(self.f_tot - m_self) * calc_wigner_3j(self.f_tot, kappa, other.f_tot, -m_self, q, m_other)
 
     def _kronecker_delta_non_involved_spins(self, other: AngularKetBase[Any], qn: AngularMomentumQuantumNumbers) -> int:
         """Calculate the Kronecker delta for non involved angular momentum quantum numbers.

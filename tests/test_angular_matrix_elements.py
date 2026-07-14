@@ -102,6 +102,28 @@ def test_reduced_identity(ket: AngularKetBase[AllKnown], coupling_scheme: Coupli
         assert np.isclose(reduced_identity, state.calc_reduced_matrix_element(state, "identity_" + op, kappa=0))  # type: ignore [arg-type]
 
 
+@pytest.mark.parametrize("ket", TEST_KETS)
+def test_scalar_matrix_element_independent_of_m(ket: AngularKetBase[AllKnown]) -> None:
+    """For a scalar operator (kappa=q=0) the matrix element is independent of m.
+
+    This also checks that calc_matrix_element works when m is NotSet, in which case
+    _calc_wigner_eckart_prefactor may pick an arbitrary m (see angular_ket.py).
+    """
+    operators: list[AngularOperatorType] = [
+        "identity_" + op  # type: ignore [misc]
+        for op in ket.quantum_number_names
+    ]
+    m_values = np.arange(-ket.f_tot, ket.f_tot + 1)
+
+    for operator in operators:
+        val_not_set = ket.calc_matrix_element(ket, operator, kappa=0, q=0)
+        assert np.isclose(val_not_set, 1.0), f"{operator=}, {val_not_set=}"
+        for m in m_values:
+            ket_m = ket.replace_m(m)
+            val_m = ket_m.calc_matrix_element(ket_m, operator, kappa=0, q=0)
+            assert np.isclose(val_m, val_not_set), f"{operator=}, {m=}, {val_m=}, {val_not_set=}"
+
+
 @pytest.mark.parametrize(("ket1", "ket2"), TEST_KET_PAIRS)
 def test_matrix_elements_in_different_coupling_schemes(
     ket1: AngularKetBase[AllKnown], ket2: AngularKetBase[AllKnown], coupling_scheme: CouplingScheme
