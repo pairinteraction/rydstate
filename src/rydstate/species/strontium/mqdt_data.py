@@ -16,7 +16,6 @@ class MQDTStrontium87(MQDT):
         CoreKet(4.5, 0.5, 0, 0.5, 4): (45932.287373577, "1/cm"),
         CoreKet(4.5, 0.5, 0, 0.5, 5): (45932.120512528, "1/cm"),
     }
-    reference_core_ket = CoreKet(4.5, 0.5, 0, 0.5, 4)
     model_classes = get_fmodels(sr87_mqdt_fmodel_data, species)
 
 

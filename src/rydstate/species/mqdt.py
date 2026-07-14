@@ -30,10 +30,6 @@ class MQDT(ABC, metaclass=CachedABCMeta):
     """Dictionary containing the ionization thresholds for the different core states.
     The thresholds are given in the form of a tuple (ionization_threshold, unit).
     """
-    reference_core_ket: ClassVar[CoreKet | None] = None
-    """The core ket to use as reference for the ionization energy.
-    If None, the reference ionization energy is defined as the smallest ionization energy
-    in the ionization_threshold_dict."""
 
     model_classes: ClassVar[list[type[FModel]]]
     """List of the MQDT :class:`~rydstate.species.fmodel.FModel` models available for this species.
@@ -83,11 +79,9 @@ class MQDT(ABC, metaclass=CachedABCMeta):
     def reference_ionization_energy_au(self) -> float:
         """Reference ionization energy in atomic units (Hartree).
 
-        If no reference_core_ket is defined, we define the reference ionization energy as the smallest ionization energy
-        in the ionization_threshold_dict.
+        The reference ionization energy is defined as the smallest ionization energy
+        in the ionization_threshold_dict, i.e. the lowest (energetically first) ionization threshold.
         """
-        if self.reference_core_ket is not None:
-            return self.get_ionization_threshold(self.reference_core_ket, unit="a.u.")
         return min(self.get_ionization_threshold(core_ket, unit="a.u.") for core_ket in self.ionization_threshold_dict)
 
     def get_mqdt_models(self, outer_channel: AngularKetFJ[Any]) -> list[FModel]:
