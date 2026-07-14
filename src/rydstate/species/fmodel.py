@@ -52,12 +52,6 @@ class FModel:
     Each entry is a tuple (i_idx, j_idx, params) where i_idx and j_idx are the indices of the involved channels
     and params are the parameters for the energy dependence of the angle (constant or polynomial coefficients)."""
 
-    manual_frame_transformation_outer_inner: ClassVar[NDArray | None] = None
-    """Optional manually specified frame transformation matrix Q mapping inner to outer channels.
-    This is mainly needed for models with unknown quantum numbers,
-    where the frame transformation cannot (yet) be computed from Wigner coefficients.
-    """
-
     def __init__(self, mqdt: MQDT) -> None:
         self.mqdt = mqdt
         self.element_properties = get_element_properties(self.species)
@@ -176,9 +170,6 @@ class FModel:
             Unitary transformation matrix Q (n_outer, n_inner).
 
         """
-        if self.manual_frame_transformation_outer_inner is not None:
-            return self.manual_frame_transformation_outer_inner
-
         n = len(self.inner_channels)
         u = np.zeros((n, n))
 

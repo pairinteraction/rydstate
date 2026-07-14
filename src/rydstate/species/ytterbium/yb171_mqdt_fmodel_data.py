@@ -55,17 +55,6 @@ class Yb171_S05_HighN(FModel):
         (2, 4, 0.103123032),
         (0, 5, 0.137753117),
     ]
-    manual_frame_transformation_outer_inner = np.array(
-        [
-            [1 / 2, 0, 0, 0, 0, 0, np.sqrt(3) / 2],
-            [0, 1, 0, 0, 0, 0, 0],
-            [0, 0, np.sqrt(2 / 3), 0, -np.sqrt(1 / 3), 0, 0],
-            [0, 0, 0, 1, 0, 0, 0],
-            [0, 0, np.sqrt(1 / 3), 0, np.sqrt(2 / 3), 0, 0],
-            [0, 0, 0, 0, 0, 1, 0],
-            [np.sqrt(3) / 2, 0, 0, 0, 0, 0, -1 / 2],
-        ]
-    )
 
 
 class Yb171_S15_HighN(FModel):
@@ -248,16 +237,6 @@ class Yb171_D15_HighN(FModel):
         AngularKetLS(l_c=1, l_r=1, l_tot=2, s_tot=0, j_tot=2, f_tot=1.5, species="Yb171"),
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, f_c=0, j_r=1.5, f_tot=1.5, species="Yb171"),
     ]
-    manual_frame_transformation_outer_inner = np.array(
-        [
-            [-np.sqrt(3 / 5), -np.sqrt(2 / 5), 0, 0, 0, 0],
-            [np.sqrt(3 / 5) / 2, -3 / (2 * np.sqrt(10)), 0, 0, 0, np.sqrt(5 / 2) / 2],
-            [0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 1, 0],
-            [-1 / 2, np.sqrt(3 / 2) / 2, 0, 0, 0, np.sqrt(3 / 2) / 2],
-        ]
-    )
 
     eigen_quantum_defects = [
         [0.73056016, -0.108286264, 0],
@@ -300,16 +279,6 @@ class Yb171_D25_HighN(FModel):
         AngularKetLS(l_c=1, l_r=1, l_tot=2, s_tot=0, j_tot=2, f_tot=2.5, species="Yb171"),  # "6pnp 1D2"
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, f_c=0, j_r=2.5, f_tot=2.5, species="Yb171"),
     ]
-    manual_frame_transformation_outer_inner = np.array(
-        [
-            [np.sqrt(7 / 5) / 2, np.sqrt(7 / 30), 0, 0, 0, -np.sqrt(5 / 3) / 2],
-            [-np.sqrt(2 / 5), np.sqrt(3 / 5), 0, 0, 0, 0],
-            [0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 1, 0],
-            [1 / 2, np.sqrt(1 / 6), 0, 0, 0, np.sqrt(7 / 3) / 2],
-        ]
-    )
 
     eigen_quantum_defects = [
         [0.73056016, -0.108286264, 0],
@@ -636,18 +605,6 @@ class Yb171_S05_LowN(FModel):
         (0, 5, 0.137709223),
     ]
 
-    manual_frame_transformation_outer_inner = np.array(
-        [
-            [1 / 2, 0, 0, 0, 0, 0, np.sqrt(3) / 2],
-            [0, 1, 0, 0, 0, 0, 0],
-            [0, 0, np.sqrt(2 / 3), 0, -np.sqrt(1 / 3), 0, 0],
-            [0, 0, 0, 1, 0, 0, 0],
-            [0, 0, np.sqrt(1 / 3), 0, np.sqrt(2 / 3), 0, 0],
-            [0, 0, 0, 0, 0, 1, 0],
-            [np.sqrt(3) / 2, 0, 0, 0, 0, 0, -1 / 2],
-        ]
-    )
-
 
 class Yb171_S15_LowN(FModel):
     species = "Yb171"
@@ -907,16 +864,6 @@ class Yb171_D15_LowN(FModel):
         AngularKetLS(l_c=1, l_r=1, l_tot=2, s_tot=0, j_tot=2, f_tot=1.5, species="Yb171"),  # "6pnp 1D2"
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, f_c=0, j_r=1.5, f_tot=1.5, species="Yb171"),
     ]
-    manual_frame_transformation_outer_inner = np.array(
-        [
-            [-np.sqrt(3 / 5), -np.sqrt(2 / 5), 0, 0, 0, 0],
-            [np.sqrt(3 / 5) / 2, -3 / (2 * np.sqrt(10)), 0, 0, 0, np.sqrt(5 / 2) / 2],
-            [0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 1, 0],
-            [-1 / 2, np.sqrt(3 / 2) / 2, 0, 0, 0, np.sqrt(3 / 2) / 2],
-        ]
-    )
 
     eigen_quantum_defects = [
         [0.730541589, -0.0967938662, 0],
@@ -959,16 +906,6 @@ class Yb171_D25_LowN(FModel):
         AngularKetLS(l_c=1, l_r=1, l_tot=2, s_tot=0, j_tot=2, f_tot=2.5, species="Yb171"),  # "6pnp 1D2"
         AngularKetFJ(l_c=0, l_r=2, j_c=0.5, f_c=0, j_r=2.5, f_tot=2.5, species="Yb171"),
     ]
-    manual_frame_transformation_outer_inner = np.array(
-        [
-            [np.sqrt(7 / 5) / 2, np.sqrt(7 / 30), 0, 0, 0, -np.sqrt(5 / 3) / 2],
-            [-np.sqrt(2 / 5), np.sqrt(3 / 5), 0, 0, 0, 0],
-            [0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 1, 0],
-            [1 / 2, np.sqrt(1 / 6), 0, 0, 0, np.sqrt(7 / 3) / 2],
-        ]
-    )
 
     eigen_quantum_defects = [
         [0.730541589, -0.0967938662, 0],

@@ -1,14 +1,10 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
 
 import numpy as np
 import pytest
 from rydstate.species import FModel, get_mqdt
-
-if TYPE_CHECKING:
-    from rydstate.units import NDArray
 
 
 def _all_fmodels() -> list[FModel]:
@@ -152,57 +148,3 @@ def test_inner_outer_unitary(model: FModel) -> None:
     full = model.calc_frame_transformation(nu=30.5)
     msg = f"{model.full_name}: full frame transformation U=QR is not unitary"
     np.testing.assert_allclose(full.conj().T @ full, np.eye(full.shape[0]), atol=1e-10, err_msg=msg)
-
-
-def _equal_up_to_channel_signs(a: NDArray, b: NDArray, atol: float = 1e-10) -> bool:
-    """Check whether a = diag(row_signs) @ b @ diag(col_signs) for some sign vectors row_signs, col_signs.
-
-    Such sign flips only correspond to a different phase convention of the individual inner and outer channel kets.
-    The signs of the columns (inner channels) drop out of K = U Kbar U^T,
-    the signs of the rows (outer channels) only flip the sign of the corresponding channel coefficients.
-    """
-    if not np.allclose(np.abs(a), np.abs(b), atol=atol):
-        return False
-
-    ratios = np.where(np.abs(b) > atol, np.sign(a * b), 0)  # a[i, j] = row_signs[i] * b[i, j] * col_signs[j]
-    row_signs = np.zeros(a.shape[0])
-    col_signs = np.zeros(a.shape[1])
-    for start in range(a.shape[0]):
-        if row_signs[start] != 0:  # already fixed via a previous connected component
-            continue
-        row_signs[start] = 1  # the overall sign of each connected component is arbitrary
-        stack = [start]
-        while stack:  # propagate the sign through the connected component
-            i = stack.pop()
-            for j in np.flatnonzero(ratios[i]):
-                col_signs[j] = ratios[i, j] * row_signs[i]
-                for k in np.flatnonzero(ratios[:, j]):
-                    sign = ratios[k, j] * col_signs[j]
-                    if row_signs[k] == 0:
-                        row_signs[k] = sign
-                        stack.append(int(k))
-                    elif row_signs[k] != sign:
-                        return False
-    return True
-
-
-def test_manual_frame_transformation_matches_calculated(model: FModel) -> None:
-    """A manually specified frame transformation must agree with the one calculated from the channel overlaps.
-
-    The two may only differ by the sign convention of the individual inner and outer channel kets.
-    """
-    manual = model.manual_frame_transformation_outer_inner
-    if manual is None:
-        pytest.skip(f"{model.full_name}: no manual_frame_transformation_outer_inner defined")
-
-    n = len(model.inner_channels)
-    assert np.shape(manual) == (n, n), (
-        f"{model.full_name}: manual_frame_transformation_outer_inner has shape {np.shape(manual)}, expected {(n, n)}"
-    )
-    calculated = np.array(
-        [[outer.calc_reduced_overlap(inner) for inner in model.inner_channels] for outer in model.outer_channels]
-    )
-    assert _equal_up_to_channel_signs(np.asarray(manual), calculated), (
-        f"{model.full_name}: manual_frame_transformation_outer_inner does not match the calculated one\n"
-        f"manual:\n{np.round(manual, 4)}\ncalculated:\n{np.round(calculated, 4)}"
-    )
