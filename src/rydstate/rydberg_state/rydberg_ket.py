@@ -183,7 +183,7 @@ class RydbergKet:
 
         ion_species = f"{self.species}_ion"
         try:
-            ion_sqdt = get_sqdt(ion_species)
+            core_sqdt = get_sqdt(ion_species)
         except ValueError:
             logger.warning(
                 "No SQDT data available for the ion species of %s, "
@@ -198,14 +198,15 @@ class RydbergKet:
         if is_unknown(l_c) or is_unknown(j_c) or is_unknown(f_c):
             return None
 
-        angular_ket = AngularKetLS(l_r=l_c, j_tot=j_c, f_tot=f_c, species=ion_species)
+        # The core electron of the neutral atom is the valence electron of the ion, with total angular momentum j_c.
+        core_angular_ket = AngularKetLS(l_r=l_c, j_tot=j_c, f_tot=f_c, species=ion_species)
 
         # TODO: we should probably also store n_c for the core angular ket in the future
         # for now, it is correct to assume that the core electron is
         # in the lowest allowed shell of the ion for the given l_c
         for n_c in range(l_c + 1, l_c + 15):
-            if ion_sqdt.is_allowed_shell(n_c, l_c, 0.5):
-                return RydbergStateSQDT(ion_species, n_c, angular_ket=angular_ket, sqdt=ion_sqdt)
+            if core_sqdt.is_allowed_shell(n_c, l_c, 0.5):
+                return RydbergStateSQDT(ion_species, n_c, angular_ket=core_angular_ket, sqdt=core_sqdt)
 
         raise ValueError(f"No allowed shell found for ion species {ion_species} with l_c={l_c}.")
 
