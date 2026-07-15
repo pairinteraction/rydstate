@@ -25,7 +25,6 @@ class MQDTYtterbium171(MQDT):
         CoreKet(0.5, 0.5, 1, 1.5, Unknown, label=Unknown): (80835.39, "1/cm"),
         CoreKet(0.5, 0.5, Unknown, Unknown, Unknown, label="4f13 5d 6s"): (83967.7, "1/cm"),
     }
-    reference_core_ket = CoreKet(0.5, 0.5, 0, 0.5, 1)
     model_classes = get_fmodels(yb171_mqdt_fmodel_data, species)
 
 
@@ -40,7 +39,6 @@ class MQDTYtterbium173(MQDT):
         CoreKet(2.5, 0.5, 1, 1.5, Unknown, label=Unknown): (80835.39, "1/cm"),
         CoreKet(2.5, 0.5, Unknown, Unknown, Unknown, label="4f13 5d 6s"): (83967.7, "1/cm"),
     }
-    reference_core_ket = CoreKet(2.5, 0.5, 0, 0.5, 2)
     model_classes = get_fmodels(yb173_mqdt_fmodel_data, species)
 
 
