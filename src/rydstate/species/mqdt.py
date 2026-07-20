@@ -104,6 +104,13 @@ class MQDT(ABC, metaclass=CachedABCMeta):
             models = [FModelSQDT(self.species, outer_channel, mqdt=self)]
         return models
 
+    def get_core_kets(self) -> list[CoreKet]:
+        """Return a list of relevant core kets of all FModels."""
+        core_kets = set()
+        for model in self.models:
+            core_kets.update(model.get_core_kets())
+        return sorted(core_kets, key=lambda ket: (ket.l_c, ket.j_c, ket.f_c, str(ket.label)))
+
 
 def get_mqdt(species: str, tag: str | None = None) -> MQDT:
     """Get an instance of the subclass of MQDT for the given species and tag."""

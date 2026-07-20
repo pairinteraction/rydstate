@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from types import ModuleType
 
     from rydstate.angular.angular_ket import AngularKetBase
+    from rydstate.angular.core_ket import CoreKet
     from rydstate.angular.utils import AllKnown
     from rydstate.species.mqdt import MQDT
     from rydstate.species.utils import RydbergRitzParameters
@@ -71,6 +72,11 @@ class FModel:
     def nu_max(self) -> float:
         """Maximum nu for which the model is valid."""
         return self.nu_range[1]
+
+    def get_core_kets(self) -> list[CoreKet]:
+        """Return a list of relevant core kets of the model."""
+        core_kets = {channel.get_core_ket() for channel in self.outer_channels}
+        return sorted(core_kets, key=lambda ket: (ket.l_c, ket.j_c, ket.f_c, str(ket.label)))
 
     @overload
     def get_ionization_thresholds(self, unit: None = None) -> list[PintFloat]: ...
