@@ -283,6 +283,8 @@ class RydbergState:
     def calc_exp_qn(self, qn: str) -> float:
         if qn == "nu":
             return self.nu
+        if qn == "parity":
+            return self.parity
 
         if is_angular_momentum_quantum_number(qn):
             if qn not in self.rydberg_kets[0].angular.quantum_number_names:
@@ -295,6 +297,8 @@ class RydbergState:
 
     def calc_std_qn(self, qn: str) -> float:
         if qn == "nu":
+            return 0
+        if qn == "parity":
             return 0
 
         if is_angular_momentum_quantum_number(qn):

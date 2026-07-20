@@ -8,12 +8,12 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
 import numpy as np
 from typing_extensions import Self
 
-from rydstate.angular.utils import is_angular_momentum_quantum_number, is_unknown
 from rydstate.rydberg_state.rydberg_base import RydbergState
 from rydstate.species import get_element_properties
 from rydstate.units import ureg
 
 if TYPE_CHECKING:
+    from rydstate.angular.utils import Unknown
     from rydstate.units import MatrixElementOperator, NDArray, PintArray, PintFloat
 
 _RydbergState = TypeVar("_RydbergState", bound=RydbergState)
@@ -35,39 +35,24 @@ class BasisBase(ABC, Generic[_RydbergState]):
         new_basis.states = self.states.copy()
         return new_basis
 
-    @overload
-    def filter_states(
-        self, qn: str, value: tuple[float, float], *, delta: float = 1e-10, keep_unknown: bool = False
-    ) -> Self: ...
-
-    @overload
-    def filter_states(self, qn: str, value: float, *, delta: float = 1e-10, keep_unknown: bool = False) -> Self: ...
-
-    def filter_states(
-        self, qn: str, value: float | tuple[float, float], *, delta: float = 1e-10, keep_unknown: bool = False
-    ) -> Self:
+    def filter_states(self, qn: str, value: float | Unknown | tuple[float, float], *, delta: float = 1e-10) -> Self:
         if isinstance(value, Sequence) and len(value) == 2:
             qn_min = value[0] - delta
             qn_max = value[1] + delta
         else:
-            qn_min = value - delta
-            qn_max = value + delta
+            qn_min = value - delta  # type: ignore [operator]
+            qn_max = value + delta  # type: ignore [operator]
 
-        if is_angular_momentum_quantum_number(qn):
-            new_states: list[_RydbergState] = []
-            for state in self.states:
-                qn_value = state.calc_exp_qn(qn)
-                if is_unknown(qn_value):
-                    if keep_unknown:
-                        new_states.append(state)
-                elif qn_min <= qn_value <= qn_max:
-                    new_states.append(state)
-            self.states = new_states
-        elif qn in ["n", "nu"]:
-            self.states = [state for state in self.states if qn_min <= getattr(state, qn) <= qn_max]
-        else:
-            raise ValueError(f"Unknown quantum number {qn}")
+        self.states = [state for state in self.states if qn_min <= state.calc_exp_qn(qn) <= qn_max]
+        return self
 
+    def filter_states_label(self, substring: str) -> Self:
+        """Filter the basis states by a substring in their label."""
+        self.states = [
+            state
+            for state in self.states
+            if any(substring in ket.angular.label for ket in state.rydberg_kets if ket.angular.label is not None)
+        ]
         return self
 
     def sort_states(self, *qns: str) -> Self:
