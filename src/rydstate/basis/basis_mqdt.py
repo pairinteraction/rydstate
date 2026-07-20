@@ -123,29 +123,27 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         self.states = []
         for model in self.models:
             logger.debug("  calculating states for model %s with nu_range=%s", model.name, nu_range)
-            _states = get_mqdt_states_from_fmodel(model, nu_range, m_range, self.potential_class)
-            if len(_states) == 0:
+            states = get_mqdt_states_from_fmodel(model, nu_range, m_range, self.potential_class)
+            if len(states) == 0:
                 logger.debug("  no states found for model %s", model.name)
             else:
                 logger.debug(
                     "  model %s: nu_min=%s, nu_max=%s, total states=%d",
                     model.name,
-                    _states[0].nu,
-                    _states[-1].nu,
-                    len(_states),
+                    states[0].nu,
+                    states[-1].nu,
+                    len(states),
                 )
-            self.states.extend(_states)
+            self.states.extend(states)
 
         self.states.sort(key=lambda state: state.nu)
 
 
-def get_mqdt_states_from_fmodel(  # noqa: C901, PLR0912
+def get_mqdt_states_from_fmodel(  # noqa: C901
     model: FModel,
     nu_range: tuple[float, float],
     m_range: tuple[float, float] | None | NotSet,
     potential_class: type[Potential],
-    *,
-    overwrite_model_limits: bool = False,
 ) -> list[RydbergStateMQDT]:
     """Calculate MQDT states from an FModel by finding zeros of det(M-matrix).
 
@@ -155,24 +153,19 @@ def get_mqdt_states_from_fmodel(  # noqa: C901, PLR0912
         m_range: Tuple of (m_min, m_max) for the magnetic quantum number range.
             NotSet will only include states with m=NotSet.
         potential_class: The potential class to use for the radial ket.
-        overwrite_model_limits: If True, use nu_min/nu_max directly without clamping to
-            the model's validity range.
 
     Returns:
         List of :class:`RydbergStateMQDT` objects, one per root of det(M).
 
     """
-    nu_min, nu_max = nu_range
-    if overwrite_model_limits:
-        if nu_min is None or nu_max is None:
-            raise ValueError("nu_min and nu_max must be given if overwrite_model_limits is True.")
-    else:
-        nu_min = model.nu_min if nu_min is None else max(nu_min, model.nu_min)
-        nu_max = model.nu_max if nu_max is None else min(nu_max, model.nu_max)
+    nu_min = max(nu_range[0], model.nu_min)
+    nu_max = min(nu_range[1], model.nu_max)
     if np.isinf(nu_max):
         raise ValueError("nu_max must be finite to calculate MQDT states.")
+    if nu_min > nu_max:
+        return []
 
-    nu_list = find_roots(model.calc_det_scaled_m_matrix, nu_min, nu_max)
+    nu_list = find_roots(lambda nu: np.linalg.det(model.calc_scaled_m_matrix(nu)), nu_min, nu_max)
     if len(nu_list) == 0:
         logger.warning(
             "No MQDT states found in the range nu_min=%s, nu_max=%s for model %s", nu_min, nu_max, model.name
@@ -190,7 +183,8 @@ def get_mqdt_states_from_fmodel(  # noqa: C901, PLR0912
 
     states: list[RydbergStateMQDT] = []
     for nu in nu_list:
-        det_mmat = model.calc_det_m_matrix(nu)
+        mmat = model.calc_m_matrix(nu)
+        det_mmat = np.linalg.det(mmat)
         if abs(det_mmat) > 1e-6:
             # this can happen, because we use the scaled M-matrix to find roots ...
             logger.warning(
@@ -200,7 +194,7 @@ def get_mqdt_states_from_fmodel(  # noqa: C901, PLR0912
             )
 
         nuis = model.calc_channel_nuis(nu)
-        coefficients = calc_nullvector(model.calc_m_matrix(nu))
+        coefficients = calc_nullvector(mmat)
         if coefficients is None:
             logger.warning("Failed to calculate nullvector for nu=%s, skipping this state.", nu)
             continue

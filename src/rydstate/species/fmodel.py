@@ -292,30 +292,6 @@ class FModel:
         nuis = self.calc_channel_nuis(nu)
         return np.array(np.diag(np.sin(np.pi * nuis)) + np.diag(np.cos(np.pi * nuis)) @ kmat)
 
-    def calc_det_m_matrix(self, nu: float) -> float:
-        """Calculate the determinant of the M-matrix at a given nu value.
-
-        Args:
-            nu: Effective principal quantum number with reference to the lowest ionization threshold.
-
-        Returns:
-            Determinant of the M-matrix at the given nu value.
-
-        """
-        return float(np.linalg.det(self.calc_m_matrix(nu)))
-
-    def calc_det_scaled_m_matrix(self, nu: float) -> float:
-        """Calculate the determinant of the scaled M-matrix at a given nu value.
-
-        Args:
-            nu: Effective principal quantum number with reference to the lowest ionization threshold.
-
-        Returns:
-            Determinant of the scaled M-matrix at the given nu value.
-
-        """
-        return float(np.linalg.det(self.calc_scaled_m_matrix(nu)))
-
 
 def get_fmodels(module: ModuleType, species: str) -> list[type[FModel]]:
     """Return all FModel subclasses defined in ``module`` that match the given species.
