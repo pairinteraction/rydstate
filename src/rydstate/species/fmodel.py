@@ -7,13 +7,14 @@ from typing import TYPE_CHECKING, Any, ClassVar, overload
 
 import numpy as np
 
+from rydstate.angular.utils import is_not_set
 from rydstate.species.element_properties import get_element_properties
 from rydstate.species.utils import calc_energy_from_nu, calc_modified_ritz_formula_in_nu, calc_nu_from_energy
 
 if TYPE_CHECKING:
     from types import ModuleType
 
-    from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ, AngularKetJJ, AngularKetLS
+    from rydstate.angular.angular_ket import AngularKetBase
     from rydstate.angular.utils import AllKnown
     from rydstate.species.mqdt import MQDT
     from rydstate.species.utils import RydbergRitzParameters
@@ -40,7 +41,7 @@ class FModel:
     inner_channels: ClassVar[list[AngularKetBase[Any]]]
     """List of inner channels in the MQDT model."""
 
-    outer_channels: ClassVar[list[AngularKetFJ[Any] | AngularKetJJ[Any] | AngularKetLS[Any]]]
+    outer_channels: ClassVar[list[AngularKetBase[Any]]]
     """List of outer channels in the MQDT model."""
 
     eigen_quantum_defects: ClassVar[list[RydbergRitzParameters]]
@@ -344,9 +345,11 @@ def get_fmodels(module: ModuleType, species: str) -> list[type[FModel]]:
 
 
 class FModelSQDT(FModel):
-    def __init__(self, species: str, channel: AngularKetFJ[AllKnown], mqdt: MQDT) -> None:
+    def __init__(self, species: str, channel: AngularKetBase[AllKnown], mqdt: MQDT) -> None:
+        if not is_not_set(channel.m):
+            raise ValueError("The m quantum number of the channel must be NotSet.")
         self.species = species  # type: ignore [misc]
-        self.name = f"SQDT l_r={channel.l_r}, j_r={channel.j_r}, f_tot={channel.f_tot}, nu > {channel.l_r + 1}"  # type: ignore [misc]
+        self.name = f"SQDT {channel}, nu >= {channel.l_r + 1}"  # type: ignore [misc]
         self.f_tot = channel.f_tot  # type: ignore [misc]
         self.nu_range = (channel.l_r + 1, math.inf)  # type: ignore [misc]
         self.inner_channels = [channel]  # type: ignore [misc]
