@@ -241,6 +241,8 @@ class AngularKetBase(ABC, Generic[GenericT_Unknown], metaclass=CachedABCMeta):
         args = ", ".join(f"{qn}={val}" for qn, val in zip(self.quantum_number_names, self.quantum_numbers, strict=True))
         if not is_not_set(self.m):
             args += f", m={self.m}"
+        if is_unknown(self.l_r) or is_unknown(self.l_c):
+            args += f", parity={self.parity}"
         if self.label is not None:
             args += f", label={self.label}"
         return f"{self.__class__.__name__}({args})"
