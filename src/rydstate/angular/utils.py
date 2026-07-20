@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import functools
+import numbers
 import typing as t
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias, TypeVar, get_args
 
@@ -54,9 +55,32 @@ AngularOperatorType = Literal[
 ]
 
 
+@functools.total_ordering
 class _Meta(type(t.Protocol)):  # type: ignore [misc]
     def __repr__(cls) -> str:
         return str(cls.__name__)
+
+    def __lt__(cls, other: object) -> bool:
+        if other is cls:
+            return False
+        if isinstance(other, numbers.Real):
+            return False  # objects derived from this metaclass always sort above every real number
+        return NotImplemented
+
+    def _binary_operation(cls, other: object) -> Any:  # noqa: ANN401
+        if other is cls or isinstance(other, numbers.Real):
+            return cls
+        return NotImplemented
+
+    __add__ = __radd__ = _binary_operation
+    __sub__ = __rsub__ = _binary_operation
+    __mul__ = __rmul__ = _binary_operation
+    __truediv__ = __rtruediv__ = _binary_operation
+
+    def _unary_operation(cls) -> Any:  # noqa: ANN401
+        return cls
+
+    __pos__ = __neg__ = _unary_operation
 
 
 @t.runtime_checkable
