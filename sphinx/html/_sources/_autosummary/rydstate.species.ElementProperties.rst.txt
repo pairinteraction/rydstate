@@ -1,0 +1,43 @@
+﻿ElementProperties
+=================
+
+.. currentmodule:: rydstate.species
+
+
+
+
+.. rubric:: Class Methods
+
+.. autosummary::
+   
+      ~ElementProperties.__init__
+      ~ElementProperties.get_corrected_rydberg_constant
+
+
+
+.. rubric:: Class Attributes and Properties
+
+.. autosummary::
+
+   ~ElementProperties.additional_allowed_shells
+   ~ElementProperties.net_charge
+   ~ElementProperties.nuclear_dipole
+   ~ElementProperties.reduced_mass_au
+   ~ElementProperties.s_c
+   ~ElementProperties.s_r
+   ~ElementProperties.species
+   ~ElementProperties.Z
+   ~ElementProperties.i_c
+   ~ElementProperties.number_valence_electrons
+   ~ElementProperties.corrected_rydberg_constant
+   ~ElementProperties.ground_state_shell
+   ~ElementProperties.core_electron_configuration
+
+
+
+.. autoclass:: rydstate.species.ElementProperties
+   :members:
+   :member-order: bysource
+   :inherited-members:
+   :undoc-members:
+   :class-doc-from: init

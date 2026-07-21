@@ -1,0 +1,6 @@
+﻿create\_tables\_for\_one\_species
+=================================
+
+.. currentmodule:: rydstate.generate_database
+
+.. autofunction:: create_tables_for_one_species

@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rydstate.rydberg_state.rydberg_ket &mdash; RydState 0.12.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=c5b435e8"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            RydState
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples.html#radialket">RadialKet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../examples/radial/hydrogen_wavefunction.html">Hydrogen radial wavefunction via numerov and from sympy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../examples/radial/rubidium_wavefunction.html">Rubidium wavefunction and potential</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples.html#angularstate">AngularState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../examples/angular/angular_state.html">Using AngularKets and AngularStates in different spin coupling schemes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples.html#rydbergstate">RydbergState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../examples/dipole_matrix_elements.html">Calculating dipole matrix elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../examples/lifetimes.html">Lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples.html#mqdt">MQDT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../examples/mqdt/mqdt_exp_qn.html">Labeling the angular character of Yb 171</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples.html#comparisons">Comparisons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../examples/comparisons/compare_z_min_cutoff.html">Comparison of the z_min values for circular states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../examples/comparisons/compare_nist_energy_levels_data.html">Compare NIST energy levels data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../examples/comparisons/compare_model_potentials.html">Compare different effective model potentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../examples/comparisons/compare_whittaker.html">Comparison: Numerov - Whittaker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../examples/benchmark/benchmark_njit.html">Benchmark of Numerov integration with and without using numba.njit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/rydberg_state.html">Rydberg States</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.rydberg_state.RydbergStateSQDT.html">RydbergStateSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.rydberg_state.RydbergStateSQDTAlkali.html">RydbergStateSQDTAlkali</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.rydberg_state.RydbergStateMQDT.html">RydbergStateMQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.rydberg_state.RydbergKet.html">RydbergKet</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/basis.html">Rydberg Basis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.BasisSQDT.html">BasisSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.BasisMQDT.html">BasisMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/angular.html">Angular module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.angular.AngularKetLS.html">AngularKetLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.angular.AngularKetJJ.html">AngularKetJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.angular.AngularKetFJ.html">AngularKetFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.angular.AngularState.html">AngularState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.angular.CoreKet.html">CoreKet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.angular.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/radial.html">Radial module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.radial.RadialKet.html">RadialKet</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/species.html">Species Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.ElementProperties.html">ElementProperties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.PotentialCoulomb.html">PotentialCoulomb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.PotentialMarinescu1994.html">PotentialMarinescu1994</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.PotentialFei2009.html">PotentialFei2009</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.SQDT.html">SQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.MQDT.html">MQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.cesium.html">cesium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.hydrogen.html">hydrogen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.lithium.html">lithium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.potassium.html">potassium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.rubidium.html">rubidium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.sodium.html">sodium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.strontium.html">strontium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.species.ytterbium.html">ytterbium</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/generate_database.html">Generate Database module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.generate_database.create_tables_for_one_species.html">create_tables_for_one_species</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../_autosummary/rydstate.generate_database.create_tables_for_misc.html">create_tables_for_misc</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style>
+a.gitbutton {
+  display: block;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #fff;
+  padding-top: 10px;
+  padding-left: 85px;
+  padding-right: 0px;
+  margin: 22px;
+  width: 240px;
+  height: 60px;
+  background: transparent url("../../../_static/buttons/github.svg") 0 0 no-repeat;
+}
+a.gitbutton small {
+  display: block;
+  font-size: 11px;
+}
+button.toctree-expand {
+  display: none;
+}
+</style>
+<a href="https://github.com/pairinteraction/rydstate" class="gitbutton">Explore<small>the GitHub repository</small></a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">RydState</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rydstate.rydberg_state.rydberg_ket</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rydstate.rydberg_state.rydberg_ket</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">overload</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.angular.angular_ket</span><span class="w"> </span><span class="kn">import</span> <span class="n">AngularKetLS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.angular.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_angular_momentum_quantum_number</span><span class="p">,</span> <span class="n">is_angular_operator_type</span><span class="p">,</span> <span class="n">is_unknown</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.species.element_properties</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_element_properties</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.species.sqdt</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_sqdt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">MatrixElementOperatorRanks</span><span class="p">,</span> <span class="n">ureg</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.angular.angular_ket</span><span class="w"> </span><span class="kn">import</span> <span class="n">AngularKetBase</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.radial.radial_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Radial</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.rydberg_state.rydberg_sqdt</span><span class="w"> </span><span class="kn">import</span> <span class="n">RydbergStateSQDT</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">MatrixElementOperator</span><span class="p">,</span> <span class="n">PintFloat</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="n">ELECTRIC_MULTIPOLE_PREFACTORS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">k_angular</span><span class="p">:</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k_angular</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">k_angular</span> <span class="ow">in</span> <span class="n">MatrixElementOperatorRanks</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="RydbergKet">
+<a class="viewcode-back" href="../../../_autosummary/rydstate.rydberg_state.RydbergKet.html#rydstate.rydberg_state.RydbergKet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RydbergKet</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a Rydberg ket, i.e. a tensor product of a radial ket and an angular ket.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">species</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">angular</span><span class="p">:</span> <span class="n">AngularKetBase</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="n">radial</span><span class="p">:</span> <span class="n">Radial</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize the Rydberg state.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">species</span> <span class="o">=</span> <span class="n">species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">element_properties</span> <span class="o">=</span> <span class="n">get_element_properties</span><span class="p">(</span><span class="n">species</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">angular</span> <span class="o">=</span> <span class="n">angular</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radial</span> <span class="o">=</span> <span class="n">radial</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">radial</span><span class="si">!r}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">angular</span><span class="si">!r}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">radial</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">angular</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+<div class="viewcode-block" id="RydbergKet.calc_reduced_overlap">
+<a class="viewcode-back" href="../../../_autosummary/rydstate.rydberg_state.RydbergKet.html#rydstate.rydberg_state.RydbergKet.calc_reduced_overlap">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_reduced_overlap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">RydbergKet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the reduced overlap &lt;self|other&gt; (ignoring the magnetic quantum number m).&quot;&quot;&quot;</span>
+        <span class="n">angular_overlap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">angular</span><span class="o">.</span><span class="n">calc_reduced_overlap</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">angular</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">angular_overlap</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="n">radial_overlap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radial</span><span class="o">.</span><span class="n">calc_overlap</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">radial</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">radial_overlap</span> <span class="o">*</span> <span class="n">angular_overlap</span></div>
+
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_reduced_matrix_element</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">RydbergKet</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">MatrixElementOperator</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PintFloat</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_reduced_matrix_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">RydbergKet</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">MatrixElementOperator</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span> <span class="o">...</span>
+
+<div class="viewcode-block" id="RydbergKet.calc_reduced_matrix_element">
+<a class="viewcode-back" href="../../../_autosummary/rydstate.rydberg_state.RydbergKet.html#rydstate.rydberg_state.RydbergKet.calc_reduced_matrix_element">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_reduced_matrix_element</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">RydbergKet</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">MatrixElementOperator</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PintFloat</span> <span class="o">|</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate the reduced matrix element.</span>
+
+<span class="sd">        Calculate the reduced matrix element between self and other (ignoring m quantum numbers)</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            \left\langle self || r^k_radial \hat{O}^{(k_{angular})} || other \right\rangle</span>
+
+<span class="sd">        where \hat{O}^{(k_{angular})} is the operator of rank k_angular for which to calculate the matrix element.</span>
+<span class="sd">        k_radial and k_angular are determined from the operator automatically.</span>
+
+<span class="sd">        For the &quot;electric_dipole&quot; operator, the matrix element of &quot;electric_dipole_rydberg&quot; and &quot;electric_dipole_core&quot;</span>
+<span class="sd">        are calculated separately and added together.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other: The other Rydberg state for which to calculate the matrix element.</span>
+<span class="sd">            operator: The operator for which to calculate the matrix element.</span>
+<span class="sd">            unit: The unit to which to convert the radial matrix element.</span>
+<span class="sd">                Can be &quot;a.u.&quot; for atomic units (so no conversion is done), or a specific unit.</span>
+<span class="sd">                Default None will return a pint quantity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The reduced matrix element for the given operator.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">matrix_element_au</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_reduced_matrix_element_au</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">operator</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;a.u.&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">matrix_element_au</span>
+
+        <span class="n">k_radial</span><span class="p">,</span> <span class="n">_k_angular</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ks</span><span class="p">(</span><span class="n">operator</span><span class="p">)</span>
+        <span class="n">radial_unit</span><span class="p">:</span> <span class="n">PintFloat</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;bohr_radius&quot;</span><span class="p">)</span> <span class="o">**</span> <span class="n">k_radial</span>
+        <span class="n">matrix_element_unit</span><span class="p">:</span> <span class="n">PintFloat</span>
+        <span class="k">if</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;magnetic_dipole&quot;</span><span class="p">:</span>
+            <span class="n">matrix_element_unit</span> <span class="o">=</span> <span class="n">radial_unit</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;bohr_magneton&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">operator</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;electric_&quot;</span><span class="p">):</span>
+            <span class="n">matrix_element_unit</span> <span class="o">=</span> <span class="n">radial_unit</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">is_angular_operator_type</span><span class="p">(</span><span class="n">operator</span><span class="p">):</span>
+            <span class="n">matrix_element_unit</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;dimensionless&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Operator </span><span class="si">{</span><span class="n">operator</span><span class="si">}</span><span class="s2"> not implemented.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">matrix_element_au</span> <span class="o">*</span> <span class="n">matrix_element_unit</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">()</span>  <span class="c1"># type: ignore [no-any-return]</span>
+        <span class="k">return</span> <span class="n">matrix_element_au</span> <span class="o">*</span> <span class="n">matrix_element_unit</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calc_reduced_matrix_element_au</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">RydbergKet</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">MatrixElementOperator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;electric_dipole&quot;</span><span class="p">:</span>
+            <span class="n">matrix_element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_reduced_matrix_element_au</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;electric_dipole_rydberg&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">element_properties</span><span class="o">.</span><span class="n">number_valence_electrons</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">matrix_element</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_reduced_matrix_element_au</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;electric_dipole_core&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">matrix_element</span>
+
+        <span class="n">k_radial</span><span class="p">,</span> <span class="n">k_angular</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ks</span><span class="p">(</span><span class="n">operator</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;magnetic_dipole&quot;</span><span class="p">:</span>
+            <span class="c1"># Magnetic dipole operator: mu = - mu_B (g_l &lt;l_tot&gt; + g_s &lt;s_tot&gt;)</span>
+            <span class="n">g_s</span> <span class="o">=</span> <span class="mf">2.0023192</span>
+            <span class="n">value_s_tot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">angular</span><span class="o">.</span><span class="n">calc_reduced_matrix_element</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">angular</span><span class="p">,</span> <span class="s2">&quot;s_tot&quot;</span><span class="p">,</span> <span class="n">k_angular</span><span class="p">)</span>
+            <span class="n">g_l</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">value_l_tot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">angular</span><span class="o">.</span><span class="n">calc_reduced_matrix_element</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">angular</span><span class="p">,</span> <span class="s2">&quot;l_tot&quot;</span><span class="p">,</span> <span class="n">k_angular</span><span class="p">)</span>
+            <span class="n">angular_matrix_element</span> <span class="o">=</span> <span class="n">g_s</span> <span class="o">*</span> <span class="n">value_s_tot</span> <span class="o">+</span> <span class="n">g_l</span> <span class="o">*</span> <span class="n">value_l_tot</span>
+            <span class="n">prefactor</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span>
+            <span class="c1"># Note: we use the convention, that the magnetic dipole moments are given</span>
+            <span class="c1"># as the same dimensionality as the Bohr magneton (mu = - mu_B (g_l l + g_s s_tot))</span>
+            <span class="c1"># such that - mu * B (where the magnetic field B is given in dimension Tesla) is an energy</span>
+
+        <span class="k">elif</span> <span class="n">operator</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;electric_&quot;</span><span class="p">):</span>
+            <span class="n">angular_operator</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;spherical&quot;</span><span class="p">,</span> <span class="s2">&quot;spherical_core&quot;</span><span class="p">]</span>
+            <span class="n">angular_operator</span> <span class="o">=</span> <span class="s2">&quot;spherical&quot;</span> <span class="k">if</span> <span class="s2">&quot;core&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">operator</span> <span class="k">else</span> <span class="s2">&quot;spherical_core&quot;</span>
+            <span class="c1"># Electric multipole operator: p_{k,q} = e r^k_radial * sqrt(4pi / (2k+1)) * Y_{k_angular,q}(\theta, phi)</span>
+            <span class="n">angular_matrix_element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">angular</span><span class="o">.</span><span class="n">calc_reduced_matrix_element</span><span class="p">(</span>
+                <span class="n">other</span><span class="o">.</span><span class="n">angular</span><span class="p">,</span> <span class="n">angular_operator</span><span class="p">,</span> <span class="n">k_angular</span>
+            <span class="p">)</span>
+            <span class="c1"># Prefactor sqrt(4 pi / (2 k_angular + 1)) for the electric multipole operators, precomputed for performance</span>
+            <span class="n">prefactor</span> <span class="o">=</span> <span class="n">ELECTRIC_MULTIPOLE_PREFACTORS</span><span class="p">[</span><span class="n">k_angular</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">is_angular_operator_type</span><span class="p">(</span><span class="n">operator</span><span class="p">):</span>
+            <span class="n">prefactor</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">angular_matrix_element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">angular</span><span class="o">.</span><span class="n">calc_reduced_matrix_element</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">angular</span><span class="p">,</span> <span class="n">operator</span><span class="p">,</span> <span class="n">k_angular</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Operator </span><span class="si">{</span><span class="n">operator</span><span class="si">}</span><span class="s2"> not implemented.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">angular_matrix_element</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+
+        <span class="k">if</span> <span class="s2">&quot;core&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">operator</span><span class="p">:</span>
+            <span class="n">radial_matrix_element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radial</span><span class="o">.</span><span class="n">calc_matrix_element</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">radial</span><span class="p">,</span> <span class="n">k_radial</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;a.u.&quot;</span><span class="p">)</span>
+            <span class="n">matrix_element</span> <span class="o">=</span> <span class="n">prefactor</span> <span class="o">*</span> <span class="n">angular_matrix_element</span> <span class="o">*</span> <span class="n">radial_matrix_element</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">core_radial_matrix_element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_core_radial_matrix_element_au</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">k_radial</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">core_radial_matrix_element</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mf">0.0</span>
+            <span class="n">rydberg_radial_overlap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radial</span><span class="o">.</span><span class="n">calc_overlap</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">radial</span><span class="p">)</span>
+            <span class="n">matrix_element</span> <span class="o">=</span> <span class="n">prefactor</span> <span class="o">*</span> <span class="n">angular_matrix_element</span> <span class="o">*</span> <span class="n">core_radial_matrix_element</span> <span class="o">*</span> <span class="n">rydberg_radial_overlap</span>
+
+        <span class="k">return</span> <span class="n">matrix_element</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calc_core_radial_matrix_element_au</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">RydbergKet</span><span class="p">,</span> <span class="n">k_radial</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate the radial matrix element :math:`\langle self_c | r^{k_{radial}} | other_c \rangle` in a.u.</span>
+
+<span class="sd">        The core electron is treated as the low-lying valence electron of the corresponding singly charged SQDT ion</span>
+<span class="sd">        (e.g. Yb174_ion for Yb174):</span>
+<span class="sd">        the Rydberg electron is ignored and the radial matrix element is calculated between the two core states,</span>
+<span class="sd">        where the principal quantum number of each core electron is given by the lowest allowed shell of the ion</span>
+<span class="sd">        for the given l_c.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_state</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">core_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_state</span><span class="o">.</span><span class="n">radial</span><span class="o">.</span><span class="n">calc_matrix_element</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">core_state</span><span class="o">.</span><span class="n">radial</span><span class="p">,</span> <span class="n">k_radial</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;a.u.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">core_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RydbergStateSQDT</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the corresponding ion state of the Rydberg ket.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.rydberg_state.rydberg_sqdt</span><span class="w"> </span><span class="kn">import</span> <span class="n">RydbergStateSQDT</span>  <span class="c1"># noqa: PLC0415</span>
+
+        <span class="n">ion_species</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="si">}</span><span class="s2">_ion&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">core_sqdt</span> <span class="o">=</span> <span class="n">get_sqdt</span><span class="p">(</span><span class="n">ion_species</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;No SQDT data available for the ion species of </span><span class="si">%s</span><span class="s2">, &quot;</span>
+                <span class="s2">&quot;thus we cannot calculate the ion state and its matrix elements.&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">l_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">angular</span><span class="o">.</span><span class="n">l_c</span>
+        <span class="n">j_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">angular</span><span class="o">.</span><span class="n">get_qn</span><span class="p">(</span><span class="s2">&quot;j_c&quot;</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">f_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">angular</span><span class="o">.</span><span class="n">get_qn</span><span class="p">(</span><span class="s2">&quot;f_c&quot;</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_unknown</span><span class="p">(</span><span class="n">l_c</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_unknown</span><span class="p">(</span><span class="n">j_c</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_unknown</span><span class="p">(</span><span class="n">f_c</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># The core electron of the neutral atom is the valence electron of the ion, with total angular momentum j_c.</span>
+        <span class="n">core_angular_ket</span> <span class="o">=</span> <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_r</span><span class="o">=</span><span class="n">l_c</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="n">j_c</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="n">f_c</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="n">ion_species</span><span class="p">)</span>
+
+        <span class="c1"># TODO: we should probably also store n_c for the core angular ket in the future</span>
+        <span class="c1"># for now, it is correct to assume that the core electron is</span>
+        <span class="c1"># in the lowest allowed shell of the ion for the given l_c</span>
+        <span class="k">for</span> <span class="n">n_c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l_c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l_c</span> <span class="o">+</span> <span class="mi">15</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">core_sqdt</span><span class="o">.</span><span class="n">is_allowed_shell</span><span class="p">(</span><span class="n">n_c</span><span class="p">,</span> <span class="n">l_c</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">RydbergStateSQDT</span><span class="p">(</span><span class="n">ion_species</span><span class="p">,</span> <span class="n">n_c</span><span class="p">,</span> <span class="n">angular_ket</span><span class="o">=</span><span class="n">core_angular_ket</span><span class="p">,</span> <span class="n">sqdt</span><span class="o">=</span><span class="n">core_sqdt</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No allowed shell found for ion species </span><span class="si">{</span><span class="n">ion_species</span><span class="si">}</span><span class="s2"> with l_c=</span><span class="si">{</span><span class="n">l_c</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_matrix_element</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">RydbergKet</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">MatrixElementOperator</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PintFloat</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_matrix_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">RydbergKet</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">MatrixElementOperator</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span> <span class="o">...</span>
+
+<div class="viewcode-block" id="RydbergKet.calc_matrix_element">
+<a class="viewcode-back" href="../../../_autosummary/rydstate.rydberg_state.RydbergKet.html#rydstate.rydberg_state.RydbergKet.calc_matrix_element">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_matrix_element</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">RydbergKet</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">MatrixElementOperator</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PintFloat</span> <span class="o">|</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate the matrix element.</span>
+
+<span class="sd">        Calculate the full matrix element between self and other,</span>
+<span class="sd">        also considering the magnetic quantum numbers m of self and other.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            \left\langle self | r^k_radial \hat{O}^{(k_{angular})}_q | other \right\rangle</span>
+
+<span class="sd">        where \hat{O}^{(k_{angular})}_q is the operator of rank k_angular for which to calculate the matrix element.</span>
+<span class="sd">        k_radial and k_angular are determined from the operator automatically.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other: The other Rydberg state for which to calculate the matrix element.</span>
+<span class="sd">            operator: The operator for which to calculate the matrix element.</span>
+<span class="sd">            q: The component of the operator.</span>
+<span class="sd">            unit: The unit to which to convert the radial matrix element.</span>
+<span class="sd">                Can be &quot;a.u.&quot; for atomic units (so no conversion is done), or a specific unit.</span>
+<span class="sd">                Default None will return a pint quantity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The matrix element for the given operator.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_k_radial</span><span class="p">,</span> <span class="n">k_angular</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ks</span><span class="p">(</span><span class="n">operator</span><span class="p">)</span>
+        <span class="n">prefactor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">angular</span><span class="o">.</span><span class="n">_calc_wigner_eckart_prefactor</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">angular</span><span class="p">,</span> <span class="n">k_angular</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="n">reduced_matrix_element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_reduced_matrix_element</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">operator</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">prefactor</span> <span class="o">*</span> <span class="n">reduced_matrix_element</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_ks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">MatrixElementOperator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the k_radial and k_angular for the given operator.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">operator</span> <span class="ow">in</span> <span class="n">MatrixElementOperatorRanks</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">MatrixElementOperatorRanks</span><span class="p">[</span><span class="n">operator</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">is_angular_operator_type</span><span class="p">(</span><span class="n">operator</span><span class="p">):</span>
+            <span class="n">k_radial</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">operator</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;identity_&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">k_radial</span><span class="p">,</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">is_angular_momentum_quantum_number</span><span class="p">(</span><span class="n">operator</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">k_radial</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Operator </span><span class="si">{</span><span class="n">operator</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, RydState Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

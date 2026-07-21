@@ -1,0 +1,33 @@
+﻿RydbergKet
+==========
+
+.. currentmodule:: rydstate.rydberg_state
+
+
+
+
+.. rubric:: Class Methods
+
+.. autosummary::
+   
+      ~RydbergKet.__init__
+      ~RydbergKet.calc_matrix_element
+      ~RydbergKet.calc_reduced_matrix_element
+      ~RydbergKet.calc_reduced_overlap
+
+
+
+.. rubric:: Class Attributes and Properties
+
+.. autosummary::
+
+   ~RydbergKet.core_state
+
+
+
+.. autoclass:: rydstate.rydberg_state.RydbergKet
+   :members:
+   :member-order: bysource
+   :inherited-members:
+   :undoc-members:
+   :class-doc-from: init
