@@ -75,3 +75,26 @@ def test_alkaline_basis(species: str) -> None:
     me_matrix = basis.calc_reduced_matrix_elements(basis, "electric_dipole", unit="e a0")
     assert np.shape(me_matrix) == (len(basis.states), len(basis.states))
     assert np.count_nonzero(me_matrix) > 0
+
+
+def test_shallow_copy() -> None:
+    """A shallow copy has an independent states list but shares the state objects."""
+    basis = BasisSQDT("H", n=(1, 5), coupling_scheme="LS")
+    copied = basis.shallow_copy()
+    assert copied.states is not basis.states
+    assert all(a is b for a, b in zip(copied.states, basis.states, strict=True))
+
+    n_states = len(basis)
+    copied.filter_states("l_r", 0)
+    assert len(copied) < n_states
+    assert len(basis) == n_states
+
+
+def test_filter_states_parity() -> None:
+    """filter_states("parity", ...) splits the basis into even and odd states."""
+    basis = BasisSQDT("H", n=(1, 5), coupling_scheme="LS")
+    even = basis.shallow_copy().filter_states("parity", 1)
+    odd = basis.shallow_copy().filter_states("parity", -1)
+    assert len(even) + len(odd) == len(basis)
+    assert all(state.angular.l_r % 2 == 0 for state in even.states)
+    assert all(state.angular.l_r % 2 == 1 for state in odd.states)

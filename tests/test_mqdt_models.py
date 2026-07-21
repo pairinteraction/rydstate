@@ -198,3 +198,27 @@ def test_all_models_found_by_get_mqdt_models(mqdt: MQDT) -> None:
         if model.species == mqdt.species and model.full_name not in found_model_names
     ]
     assert not missing, f"{mqdt!r}: {len(missing)} models not reachable via get_mqdt_models: {missing}"
+
+
+def test_fj_channels(model: FModel) -> None:
+    """fj_channels decomposes every outer channel into FJ kets with the model's f_tot."""
+    fj_channels = model.fj_channels
+    assert len(fj_channels) >= len(model.outer_channels)
+    assert all(isinstance(ket, AngularKetFJ) for ket in fj_channels)
+    assert all(ket.f_tot == model.f_tot for ket in fj_channels)
+
+
+def test_fmodel_get_core_kets(model: FModel) -> None:
+    """get_core_kets returns the sorted unique core kets of the outer channels."""
+    core_kets = model.get_core_kets()
+    assert len(core_kets) == len(set(core_kets))
+    assert set(core_kets) == {ch.get_core_ket() for ch in model.outer_channels}
+    sort_keys = [(ket.l_c, ket.j_c, ket.f_c, str(ket.label)) for ket in core_kets]
+    assert sort_keys == sorted(sort_keys)
+
+
+def test_mqdt_get_core_kets(mqdt: MQDT) -> None:
+    """MQDT.get_core_kets returns the union of core kets over all its models."""
+    core_kets = mqdt.get_core_kets()
+    assert len(core_kets) == len(set(core_kets))
+    assert set(core_kets) == {ck for model in mqdt.models for ck in model.get_core_kets()}

@@ -75,3 +75,15 @@ def test_mqdt_basis_sort_and_filter() -> None:
     basis.filter_states("nu", (27.0, 28.0))
     assert len(basis) < n_before
     assert all(27.0 - 1e-10 <= s.nu <= 28.0 + 1e-10 for s in basis.states)
+
+
+def test_mqdt_basis_filter_by_label() -> None:
+    """filter_states_label keeps only states with a matching channel label."""
+    basis = BasisMQDT("Yb174", nu=(25, 26), f_tot=(0, 1))
+    n_states = len(basis)
+    assert n_states > 0
+
+    labeled = basis.shallow_copy().filter_states_label("4f13 5d")
+    assert 0 < len(labeled) < n_states
+    for state in labeled.states:
+        assert any(ket.angular.label is not None and "4f13 5d" in ket.angular.label for ket in state.rydberg_kets)
