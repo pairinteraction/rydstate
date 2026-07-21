@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from rydstate.species import FModel
+    from rydstate.units import NDArray
 
 
 logger = logging.getLogger(__name__)
@@ -38,6 +39,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         # potential and mqdt parameters
         mqdt: MQDT | str | None = None,
         potential_class: type[Potential] | str | None = None,
+        scale_off_diagonal: float | None = None,
     ) -> None:
         """Initialize the MQDT basis.
 
@@ -61,6 +63,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
             potential_class: The potential class to use for the radial ket.
                 Either a a potential class
                 or a string representing the tag of the potential class to use.
+            scale_off_diagonal: If provided, scale the off-diagonal elements of the M-matrix by this factor.
 
         """
         super().__init__(species)
@@ -75,7 +78,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         # and for high l_r the quantum defects are 0, so n = nu
         max_l_r = int(nu[1])
         self._init_models(max_l_r, f_tot, l_r, include_sqdt_fallback_models=include_sqdt_fallback_models)
-        self._init_states(nu, m)
+        self._init_states(nu, m, scale_off_diagonal=scale_off_diagonal)
 
     def shallow_copy(self) -> Self:
         """Return a shallow copy of the basis (with its own independent list of states)."""
@@ -118,12 +121,16 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         self,
         nu_range: tuple[float, float],
         m_range: tuple[float, float] | None | NotSet,
+        *,
+        scale_off_diagonal: float | None = None,
     ) -> None:
         logger.debug("Calculating MQDT states...")
         self.states = []
         for model in self.models:
             logger.debug("  calculating states for model %s with nu_range=%s", model.name, nu_range)
-            states = get_mqdt_states_from_fmodel(model, nu_range, m_range, self.potential_class)
+            states = get_mqdt_states_from_fmodel(
+                model, nu_range, m_range, self.potential_class, scale_off_diagonal=scale_off_diagonal
+            )
             if len(states) == 0:
                 logger.debug("  no states found for model %s", model.name)
             else:
@@ -144,6 +151,8 @@ def get_mqdt_states_from_fmodel(  # noqa: C901
     nu_range: tuple[float, float],
     m_range: tuple[float, float] | None | NotSet,
     potential_class: type[Potential],
+    *,
+    scale_off_diagonal: float | None = None,
 ) -> list[RydbergStateMQDT]:
     """Calculate MQDT states from an FModel by finding zeros of det(M-matrix).
 
@@ -153,6 +162,7 @@ def get_mqdt_states_from_fmodel(  # noqa: C901
         m_range: Tuple of (m_min, m_max) for the magnetic quantum number range.
             NotSet will only include states with m=NotSet.
         potential_class: The potential class to use for the radial ket.
+        scale_off_diagonal: If provided, scale the off-diagonal elements of the M-matrix by this factor.
 
     Returns:
         List of :class:`RydbergStateMQDT` objects, one per root of det(M).
@@ -165,7 +175,15 @@ def get_mqdt_states_from_fmodel(  # noqa: C901
     if nu_min > nu_max:
         return []
 
-    nu_list = find_roots(lambda nu: np.linalg.det(model.calc_scaled_m_matrix(nu)), nu_min, nu_max)
+    def calc_scaled_off_diagonal(mmat: NDArray) -> NDArray:
+        if scale_off_diagonal is None:
+            return mmat
+        mmat_diag = np.diag(np.diag(mmat))
+        return scale_off_diagonal * (mmat - mmat_diag) + mmat_diag
+
+    nu_list = find_roots(
+        lambda nu: np.linalg.det(calc_scaled_off_diagonal(model.calc_scaled_m_matrix(nu))), nu_min, nu_max
+    )
     if len(nu_list) == 0:
         logger.warning(
             "No MQDT states found in the range nu_min=%s, nu_max=%s for model %s", nu_min, nu_max, model.name
@@ -183,7 +201,7 @@ def get_mqdt_states_from_fmodel(  # noqa: C901
 
     states: list[RydbergStateMQDT] = []
     for nu in nu_list:
-        mmat = model.calc_m_matrix(nu)
+        mmat = calc_scaled_off_diagonal(model.calc_m_matrix(nu))
         det_mmat = np.linalg.det(mmat)
         if abs(det_mmat) > 1e-6:
             # this can happen, because we use the scaled M-matrix to find roots ...
@@ -227,8 +245,10 @@ def get_mqdt_states_from_fmodel(  # noqa: C901
         for m in get_m_range(model.f_tot, m_range):
             rydberg_kets = [
                 RydbergKet(model.species, angular_ket.replace_m(m), radial_ket)
-                for angular_ket, radial_ket in zip(angular_kets_fj, radial_kets_fj, strict=True)
+                for i, (angular_ket, radial_ket) in enumerate(zip(angular_kets_fj, radial_kets_fj, strict=True))
+                if abs(coefficients_all[i]) > 1e-10
             ]
+            coefficients_all = [coeff for coeff in coefficients_all if abs(coeff) > 1e-10]
             states.append(
                 RydbergStateMQDT(
                     model.species,

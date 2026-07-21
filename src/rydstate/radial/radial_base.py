@@ -226,7 +226,7 @@ class Radial:
         if self._is_dummy or other._is_dummy:
             if self._is_dummy is not other._is_dummy:
                 return 0.0
-            if k_radial == 0 and abs(self.nu - other.nu) < 1e-10:  # type: ignore [attr-defined]
+            if k_radial == 0 and abs(self.nu - other.nu) < 1:  # type: ignore [attr-defined]
                 return self._coeff.conjugate() * other._coeff  # type: ignore [attr-defined,no-any-return]
             # if not k_radial == 0 or nu are not the same we cant compute the matrix element and simply return 0
             return 0.0

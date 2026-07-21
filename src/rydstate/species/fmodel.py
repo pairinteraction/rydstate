@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import logging
 import math
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, ClassVar, overload
@@ -20,6 +21,8 @@ if TYPE_CHECKING:
     from rydstate.species.mqdt import MQDT
     from rydstate.species.utils import RydbergRitzParameters
     from rydstate.units import NDArray, PintFloat
+
+logger = logging.getLogger(__name__)
 
 
 class FModel:
@@ -302,6 +305,26 @@ class FModel:
         kmat = self.calc_k_matrix(nu)
         nuis = self.calc_channel_nuis(nu)
         return np.array(np.diag(np.sin(np.pi * nuis)) + np.diag(np.cos(np.pi * nuis)) @ kmat)
+
+    def _calc_oqdt_condition(self, nu: float, ind: int) -> float:
+        """Calculate the condition for OQDT.
+
+        This is equivalent to the determinant of the scaled M-matrix for MQDT,
+        where we assume the K-matrix to be diagonal in the outer channel frame
+        (i.e. in the outer channel frame we set the off-diagonal elements of the K-matrix to zero).
+        This simplifies the determinant condition to uncoupled equations for each outer channel.
+
+        Args:
+            nu: Effective principal quantum number with reference to the lowest ionization threshold.
+            ind: Index of the channel for which to calculate the OQDT condition.
+
+        Returns:
+            OQDT condition for the specified channel at the given nu value.
+
+        """
+        k = self.calc_k_matrix(nu)[ind, ind]
+        nui = self.calc_channel_nuis(nu)[ind]
+        return float(np.sin(np.pi * nui) + np.cos(np.pi * nui) * k)
 
 
 def get_fmodels(module: ModuleType, species: str) -> list[type[FModel]]:
