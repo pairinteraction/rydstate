@@ -14,7 +14,7 @@ from rydstate.species.utils import calc_energy_from_nu, calc_modified_ritz_formu
 if TYPE_CHECKING:
     from types import ModuleType
 
-    from rydstate.angular.angular_ket import AngularKetBase
+    from rydstate.angular.angular_ket import AngularKetBase, AngularKetFJ
     from rydstate.angular.core_ket import CoreKet
     from rydstate.angular.utils import AllKnown
     from rydstate.species.mqdt import MQDT
@@ -72,6 +72,11 @@ class FModel:
     def nu_max(self) -> float:
         """Maximum nu for which the model is valid."""
         return self.nu_range[1]
+
+    @cached_property
+    def fj_channels(self) -> list[AngularKetFJ[Any]]:
+        """Return a list of FJ channels in the model."""
+        return [ket_fj for angular_ket in self.outer_channels for ket_fj in angular_ket.to_state("FJ").kets]
 
     def get_core_kets(self) -> list[CoreKet]:
         """Return a list of relevant core kets of the model."""
