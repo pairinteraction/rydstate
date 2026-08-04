@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
-from rydstate.angular.utils import is_unknown
+from rydstate.angular.utils import is_unknown, minus_one_pow
 from rydstate.units import MatrixElementOperatorRanks
 
 if TYPE_CHECKING:
@@ -98,12 +98,12 @@ def generate_matrix_elements_tables(
                 columns["val"].append(me)
 
             if id1 != id2:
-                me_one_pair = calc_matrix_elements_one_pair(states[1], states[0], MATRIX_ELEMENTS_OF_INTEREST)
+                sign = minus_one_pow(states[0].f_tot - states[1].f_tot)
                 for tkey, me in me_one_pair.items():
                     columns = matrix_elements[tkey]
                     columns["id_initial"].append(id_tuple[1])
                     columns["id_final"].append(id_tuple[0])
-                    columns["val"].append(me)
+                    columns["val"].append(sign * me)
 
         if free_memory:
             state1.free_memory()
