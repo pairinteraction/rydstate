@@ -286,7 +286,7 @@ class RydbergKet:
             return MatrixElementOperatorRanks[stripped]
         if is_angular_operator_type(operator):
             k_radial = 0
-            if operator.startswith("identity_"):
+            if operator.startswith(("identity_", "raw_value_", "squared_")):
                 return k_radial, 0
             if is_angular_momentum_quantum_number(operator):
                 return k_radial, 1

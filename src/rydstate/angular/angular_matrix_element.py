@@ -67,9 +67,36 @@ def calc_reduced_spin_matrix_element(s_final: float, s_initial: float) -> float:
     return math.sqrt((2 * s_final + 1) * (s_final + 1) * s_final)
 
 
+def calc_reduced_spin_squared_matrix_element(s_final: float, s_initial: float) -> float:
+    r"""Calculate the reduced squared spin matrix element (s_final || \hat{s}^2 || s_initial).
+
+    The squared spin operator \hat{s}^2 = \hat{s} \cdot \hat{s} is a scalar (rank kappa=0) operator.
+    Within a subspace of fixed spin quantum number s it is proportional to the identity,
+    \hat{s}^2 = s(s+1) \id, so with the convention from Edmonds 1985 "Angular Momentum in Quantum Mechanics"
+    (using equation (5.4.1) and (3.7.9)) its reduced matrix element is given by:
+
+    .. math::
+        (s_final || \hat{s}^2 || s_initial)
+            = s_initial (s_initial + 1) \sqrt{2 * s_initial + 1} * \delta_{s_final, s_initial}
+
+    Args:
+        s_final: The spin quantum number of the final state.
+        s_initial: The spin quantum number of the initial state.
+
+    Returns:
+        The reduced matrix element :math:`(s_final || \hat{s}^2 || s_initial)`.
+
+    """
+    if s_final != s_initial:
+        return 0
+    return s_initial * (s_initial + 1) * math.sqrt(2 * s_initial + 1)
+
+
 @lru_cache(maxsize=1_000)
-def calc_reduced_identity_matrix_element(s_final: float, s_initial: float) -> float:
-    r"""Calculate the reduced identity matrix element (s_final || \id || s_initial).
+def calc_reduced_raw_quantum_number_matrix_element(s_final: float, s_initial: float, exponent: int) -> float:
+    r"""Calculate the reduced matrix element (s_final || s_final^exponent || s_initial).
+
+    For exponent = 0, this is the reduced matrix element of the identity operator (s_final || \id || s_initial).
 
     We follow the convention from Edmonds 1985 "Angular Momentum in Quantum Mechanics"
     (using equation (5.4.1) and (3.7.9)).
@@ -82,14 +109,17 @@ def calc_reduced_identity_matrix_element(s_final: float, s_initial: float) -> fl
     Args:
         s_final: The spin quantum number of the final state.
         s_initial: The spin quantum number of the initial state.
+        exponent: The exponent of the quantum number (0 for the identity operator).
 
     Returns:
-        The reduced matrix element :math:`(s_final || \id || s_initial)`.
+        The reduced matrix element :math:`(s_final || s_final^exponent || s_initial)`.
 
     """
     if s_final != s_initial:
         return 0
-    return math.sqrt(2 * s_final + 1)
+    if exponent == 0:
+        return math.sqrt(2 * s_final + 1)
+    return math.sqrt(2 * s_final + 1) * s_final**exponent
 
 
 @lru_cache(maxsize=100_000)

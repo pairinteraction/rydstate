@@ -124,6 +124,67 @@ def test_scalar_matrix_element_independent_of_m(ket: AngularKetBase[AllKnown]) -
             assert np.isclose(val_m, val_not_set), f"{operator=}, {m=}, {val_m=}, {val_not_set=}"
 
 
+@pytest.mark.parametrize("ket", TEST_KETS)
+def test_reduced_raw_value(ket: AngularKetBase[AllKnown]) -> None:
+    # In its native coupling scheme every quantum number is definite, so raw_value_x = x^exponent * identity and its
+    # reduced matrix element is x^exponent * sqrt(2 * f_tot + 1). This pins down the Wigner-Eckart normalization: the
+    # full matrix element <ket| raw_value_x |ket> then evaluates to the raw value of x (and raw_value_x_2 to x^2).
+    reduced_identity = np.sqrt(2 * ket.f_tot + 1)
+
+    op: AngularMomentumQuantumNumbers
+    for op in ket.quantum_number_names:
+        raw = ket.get_qn(op)
+        assert np.isclose(raw * reduced_identity, ket.calc_reduced_matrix_element(ket, "raw_value_" + op, kappa=0))  # type: ignore [arg-type]
+        assert np.isclose(
+            raw**2 * reduced_identity,
+            ket.calc_reduced_matrix_element(ket, "raw_value_" + op + "_2", kappa=0),  # type: ignore [arg-type]
+        )
+        for m in np.arange(-ket.f_tot, ket.f_tot + 1):
+            ket_m = ket.replace_m(m)
+            assert np.isclose(raw, ket_m.calc_matrix_element(ket_m, "raw_value_" + op, kappa=0, q=0))  # type: ignore [arg-type]
+            assert np.isclose(raw**2, ket_m.calc_matrix_element(ket_m, "raw_value_" + op + "_2", kappa=0, q=0))  # type: ignore [arg-type]
+
+
+@pytest.mark.parametrize("ket", TEST_KETS)
+def test_reduced_spin_squared(ket: AngularKetBase[AllKnown]) -> None:
+    op: AngularMomentumQuantumNumbers
+    coupling_schemes: list[CouplingScheme] = ["LS", "JJ", "FJ"]
+    for scheme in coupling_schemes:
+        state = ket.to_state(scheme)
+        for op in state.kets[0].quantum_number_names:
+            # the squared spin operator is diagonal in the scheme's own basis with eigenvalue qn * (qn + 1),
+            # so for a superposition the reduced matrix element is the weighted average over the components
+            exp_squared = sum(coeff**2 * s_ket.get_qn(op) * (s_ket.get_qn(op) + 1) for coeff, s_ket in state)
+            reduced_squared = exp_squared * np.sqrt(2 * ket.f_tot + 1)
+            assert np.isclose(reduced_squared, state.calc_reduced_matrix_element(state, "squared_" + op, kappa=0))  # type: ignore [arg-type]
+
+
+def test_spin_squared_expectation_value() -> None:
+    """The expectation value of s^2 must be s(s+1) for good quantum numbers and match the sum rule otherwise."""
+    ket = AngularKetFJ(l_r=0, j_r=0.5, f_c=1, m=0.5, f_tot=0.5, species="Yb171")
+
+    # s_r and s_c are good quantum numbers in every ket, so <s^2> = s(s+1) = 3/4
+    assert np.isclose(ket.calc_matrix_element(ket, "squared_s_r", 0, q=0), 0.75)
+    assert np.isclose(ket.calc_matrix_element(ket, "squared_s_c", 0, q=0), 0.75)
+
+    # s_tot is not a good quantum number of an FJ ket, so <s_tot^2> is a weighted average
+    # over the LS decomposition: sum_i |c_i|^2 * s_tot_i * (s_tot_i + 1)
+    expected = sum(coeff**2 * ls_ket.s_tot * (ls_ket.s_tot + 1) for coeff, ls_ket in ket.to_state("LS"))
+    assert np.isclose(ket.calc_matrix_element(ket, "squared_s_tot", 0, q=0), expected)
+
+    # <s^2> must also equal the sum over all final states and components q of the squared
+    # matrix elements of the (rank-1) spin operator: <s^2> = sum_{f,q} |<f|s_q|ket>|^2
+    finals = [
+        AngularKetFJ(l_r=0, j_r=0.5, f_c=f_c, m=m / 2, f_tot=f_tot, species="Yb171")
+        for f_c in (0, 1)
+        for f_tot in {abs(f_c - 0.5), f_c + 0.5}
+        for m in range(-int(2 * f_tot), int(2 * f_tot) + 1, 2)
+    ]
+    for op in ("s_r", "s_c"):
+        sum_rule = sum(f.calc_matrix_element(ket, op, 1, q=q) ** 2 for f in finals for q in (-1, 0, 1))
+        assert np.isclose(sum_rule, ket.calc_matrix_element(ket, "squared_" + op, 0, q=0))  # type: ignore [arg-type]
+
+
 @pytest.mark.parametrize(("ket1", "ket2"), TEST_KET_PAIRS)
 def test_matrix_elements_in_different_coupling_schemes(
     ket1: AngularKetBase[AllKnown], ket2: AngularKetBase[AllKnown], coupling_scheme: CouplingScheme
