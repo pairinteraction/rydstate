@@ -12,7 +12,7 @@ from rydstate.basis.utils import get_m_range, is_allowed_qn
 from rydstate.linalg import calc_nullvector, find_roots
 from rydstate.radial import RadialDummy, RadialKet
 from rydstate.rydberg_state import RydbergKet, RydbergStateMQDT
-from rydstate.species import MQDT, Potential, get_mqdt, get_potential_class
+from rydstate.species import MQDT, FModelSQDT, Potential, get_mqdt, get_potential_class
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -33,7 +33,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
         *,
         l_r: tuple[int, int] | None = None,
         f_tot: tuple[float, float] | None = None,
-        m: tuple[float, float] | None | NotSet = NotSet,
+        m: tuple[float, float] | NotSet | None = NotSet,
         # potential and mqdt parameters
         mqdt: MQDT | str | None = None,
         potential_class: type[Potential] | str | None = None,
@@ -109,7 +109,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
     def _init_states(
         self,
         nu_range: tuple[float, float],
-        m_range: tuple[float, float] | None | NotSet,
+        m_range: tuple[float, float] | NotSet | None,
     ) -> None:
         logger.debug("Calculating MQDT states...")
         self.states = []
@@ -134,7 +134,7 @@ class BasisMQDT(BasisBase[RydbergStateMQDT]):
 def get_mqdt_states_from_fmodel(
     model: FModel,
     nu_range: tuple[float, float],
-    m_range: tuple[float, float] | None | NotSet,
+    m_range: tuple[float, float] | NotSet | None,
     potential_class: type[Potential],
 ) -> list[RydbergStateMQDT]:
     """Calculate MQDT states from an FModel by finding zeros of det(M-matrix).
@@ -174,6 +174,10 @@ def get_mqdt_states_from_fmodel(
 
     states: list[RydbergStateMQDT] = []
     for nu in nu_list:
+        n = None
+        if isinstance(model, FModelSQDT):
+            n = round(nu)
+
         nuis = model.calc_channel_nuis(nu)
         coefficients = calc_nullvector(model.calc_scaled_m_matrix(nu))
         coefficients = np.array(
@@ -204,7 +208,7 @@ def get_mqdt_states_from_fmodel(
         energy_au = model.calc_energy_au(nu)
         for m in get_m_range(model.f_tot, m_range):
             rydberg_kets = [
-                RydbergKet(model.species, angular_ket.replace_m(m), radial_ket)
+                RydbergKet(model.species, angular_ket.replace_m(m), radial_ket, n=n)
                 for angular_ket, radial_ket in zip(angular_kets_fj, radial_kets_fj, strict=True)
             ]
             states.append(
