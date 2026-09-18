@@ -1,17 +1,25 @@
 from __future__ import annotations
 
 import re
-from itertools import pairwise
+from itertools import combinations, pairwise
 
 import numpy as np
 import pytest
 from rydstate.angular import AngularKetFJ
 from rydstate.angular.utils import is_unknown
-from rydstate.species import MQDT, EigenChannelModel, MQDTModel, get_all_subclasses, get_element_properties
+from rydstate.species import (
+    MQDT,
+    EigenChannelModel,
+    KMatrixModel,
+    MQDTModel,
+    get_all_subclasses,
+    get_element_properties,
+)
 
 ALL_MQDTS = [cls() for cls in get_all_subclasses(MQDT)]
 ALL_MODELS = [model for mqdt in ALL_MQDTS for model in mqdt.models]
 ALL_EIGEN_CHANNEL_MODELS = [model for model in ALL_MODELS if isinstance(model, EigenChannelModel)]
+ALL_K_MATRIX_MODELS = [model for model in ALL_MODELS if isinstance(model, KMatrixModel)]
 
 
 def test_all_mqdt_models_discovered() -> None:
@@ -31,6 +39,11 @@ def model(request: pytest.FixtureRequest) -> MQDTModel:
 
 @pytest.fixture(params=ALL_EIGEN_CHANNEL_MODELS, ids=lambda cls: cls.full_name)
 def eigen_channel_model(request: pytest.FixtureRequest) -> EigenChannelModel:
+    return request.param  # type: ignore[no-any-return]
+
+
+@pytest.fixture(params=ALL_K_MATRIX_MODELS, ids=lambda cls: cls.full_name)
+def k_matrix_model(request: pytest.FixtureRequest) -> KMatrixModel:
     return request.param  # type: ignore[no-any-return]
 
 
@@ -118,13 +131,7 @@ def test_all_models_found_by_get_mqdt_models(mqdt: MQDT) -> None:
     j_c = s_c
     s_r = 0.5
 
-    known_l_r = [
-        ch.l_r
-        for model in ALL_MODELS
-        if model.species == mqdt.species
-        for ch in model.outer_channels
-        if not is_unknown(ch.l_r)
-    ]
+    known_l_r = [ch.l_r for model in mqdt.models for ch in model.outer_channels if not is_unknown(ch.l_r)]
     max_l_r = max(known_l_r)
 
     found_models: list[MQDTModel] = []
@@ -141,11 +148,7 @@ def test_all_models_found_by_get_mqdt_models(mqdt: MQDT) -> None:
 
     # MQDTModel instances are not cached, so compare the models by their (unique) full_name
     found_model_names = [model.full_name for model in found_models]
-    missing = [
-        model.full_name
-        for model in ALL_MODELS
-        if model.species == mqdt.species and model.full_name not in found_model_names
-    ]
+    missing = [model.full_name for model in mqdt.models if model.full_name not in found_model_names]
     assert not missing, f"{mqdt!r}: {len(missing)} models not reachable via get_mqdt_models: {missing}"
 
 
@@ -230,6 +233,26 @@ def test_nu_ranges_match_at_boundaries(mqdt: MQDT) -> None:
     assert not errors, msg
 
 
+def test_overlapping_models_have_disjoint_nu_ranges(mqdt: MQDT) -> None:
+    """Two models of one MQDT object whose outer channels overlap must not be valid for the same nu.
+
+    A basis (e.g. BasisMQDT) collects the states of every model that has an overlap with the requested channel,
+    so two such models with a common nu range would contribute the same states twice.
+    This is a direct pairwise check, complementing the transitive tiling check of test_nu_ranges_match_at_boundaries.
+    """
+    errors: list[str] = []
+    for model_1, model_2 in combinations(mqdt.models, 2):
+        if not _share_channels(model_1, model_2):
+            continue
+        if model_1.nu_min < model_2.nu_max and model_2.nu_min < model_1.nu_max:
+            errors.append(
+                f"'{model_1.full_name}' (nu_range={model_1.nu_range}) and "
+                f"'{model_2.full_name}' (nu_range={model_2.nu_range})"
+            )
+    msg = f"{mqdt!r}: models with overlapping channels are valid for the same nu:\n" + "\n".join(errors)
+    assert not errors, msg
+
+
 def test_mixing_angles_indices_valid(eigen_channel_model: EigenChannelModel) -> None:
     """Mixing angle indices must refer to valid channel positions."""
     model = eigen_channel_model
@@ -267,3 +290,57 @@ def test_inner_outer_unitary(eigen_channel_model: EigenChannelModel) -> None:
     full = model.calc_frame_transformation(nu=30.5)
     msg = f"{model.full_name}: full frame transformation U=QR is not unitary"
     np.testing.assert_allclose(full.conj().T @ full, np.eye(full.shape[0]), atol=1e-10, err_msg=msg)
+
+
+def test_k_matrix_models_discovered() -> None:
+    """Sanity check: the Sr88 models of Vaillant 2024 are KMatrixModel models."""
+    assert len(ALL_K_MATRIX_MODELS) >= 10
+
+
+def test_k_matrix_format(k_matrix_model: KMatrixModel) -> None:
+    """Each K-matrix element must be given as (i, j, coefficients) with i <= j and a non-empty list of numbers."""
+    model = k_matrix_model
+    n = len(model.outer_channels)
+    for i, j, coefficients in model.k_matrix:
+        assert 0 <= i <= j < n, f"{model.full_name}: k_matrix element ({i}, {j}) out of range"
+        assert isinstance(coefficients, list), (
+            f"{model.full_name}: k_matrix element ({i}, {j}) must be a list, got {coefficients!r}"
+        )
+        assert len(coefficients) > 0, f"{model.full_name}: k_matrix element ({i}, {j}) must not be empty"
+        assert all(isinstance(val, (int, float)) for val in coefficients), (
+            f"{model.full_name}: k_matrix element ({i}, {j}) has non numeric coefficients {coefficients}"
+        )
+    assert {i for i, j, _ in model.k_matrix if i == j} == set(range(n)), (
+        f"{model.full_name}: k_matrix does not specify all diagonal elements"
+    )
+
+
+def test_k_matrix_channels_are_orthonormal(k_matrix_model: KMatrixModel) -> None:
+    """The outer channels of a K-matrix model must form an orthonormal set."""
+    channels = k_matrix_model.outer_channels
+    overlaps = np.array([[ket1.calc_reduced_overlap(ket2) for ket2 in channels] for ket1 in channels])
+    msg = f"{k_matrix_model.full_name}: outer channels are not orthonormal"
+    np.testing.assert_allclose(overlaps, np.eye(len(channels)), atol=1e-10, err_msg=msg)
+
+
+@pytest.mark.parametrize("nu", [4.5, 12.3, 30.5])
+def test_k_matrix_symmetric_and_energy_dependent(k_matrix_model: KMatrixModel, nu: float) -> None:
+    """The K-matrix must be real and symmetric and its elements follow the given polynomials in epsilon."""
+    model = k_matrix_model
+    kmat = model.calc_k_matrix(nu)
+    np.testing.assert_allclose(kmat, kmat.T, atol=1e-14, err_msg=f"{model.full_name}: K is not symmetric")
+
+    epsilon = model.calc_energy_variable(nu)
+    assert epsilon > 0
+    for i, j, coefficients in model.k_matrix:
+        expected = sum(coeff * epsilon**power for power, coeff in enumerate(coefficients))
+        assert kmat[i, j] == pytest.approx(expected, abs=1e-14, rel=1e-12)
+
+
+def test_k_matrix_energy_variable_definition(k_matrix_model: KMatrixModel) -> None:
+    """The energy variable is epsilon = (I_ref - E) / I_ref, with energies measured from the atomic ground state."""
+    nu = 10.0
+    energy_au = k_matrix_model.calc_energy_au(nu)
+    reference_au = k_matrix_model.mqdt.reference_ionization_threshold_au
+    expected = (reference_au - energy_au) / reference_au
+    assert k_matrix_model.calc_energy_variable(nu) == pytest.approx(expected, rel=1e-12)
