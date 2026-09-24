@@ -116,7 +116,9 @@ class Yb171_P05_HighN(EigenChannelModel):
     ]
     mixing_angles = [
         (0, 1, [-0.102285383, 153.521338, -15393.2283]),
-        (1, 6, [-0.00168607392]),
+        # opposite sign than theta_27 of the publication, since the kets 6snp 3P1 and 3P0 of the publication differ
+        # by a relative sign from the rydstate kets (see test_kuroda2025_mixing_angle_phase_convention)
+        (1, 6, [0.00168607392]),
         (0, 2, [-0.0719467433]),
         (0, 3, [-0.0673315968]),
         (0, 4, [-0.0221077377]),
@@ -638,12 +640,12 @@ class Yb171_P05_Lowest(EigenChannelModel):
     ]
 
     eigen_quantum_defects = [
-        [4.161083, 0],
         [3.920424, 0],
+        [4.161083, 0],
         [4.180701, 0],
     ]
     mixing_angles = [
-        (0, 1, [-0.426128, 6.272986]),
+        (0, 1, [1.996924, -6.272986]),
     ]
 
 
@@ -691,12 +693,12 @@ class Yb171_P15_Lowest(EigenChannelModel):
     ]
 
     eigen_quantum_defects = [
-        [4.161083, 0],
         [3.920424, 0],
+        [4.161083, 0],
         [4.110501, 0],
     ]
     mixing_angles = [
-        (0, 1, [-0.426128, 6.272986]),
+        (0, 1, [1.996924, -6.272986]),
     ]
 
 
@@ -864,7 +866,7 @@ class Yb171_D15_LowN(EigenChannelModel):
         [2.758222, -0.017906, 3.392161],
     ]
     mixing_angles = [
-        (0, 1, [0.220048245]),
+        (0, 1, [0.220048245, -14.9486]),
         (0, 2, [0.00427599]),
         (0, 3, [0.0381563093]),
         (1, 3, [-0.00700797918]),
