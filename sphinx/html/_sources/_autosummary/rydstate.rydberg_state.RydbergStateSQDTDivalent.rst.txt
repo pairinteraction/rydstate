@@ -1,0 +1,51 @@
+﻿RydbergStateSQDTDivalent
+========================
+
+.. currentmodule:: rydstate.rydberg_state
+
+
+
+
+.. rubric:: Class Methods
+
+.. autosummary::
+   
+      ~RydbergStateSQDTDivalent.__init__
+      ~RydbergStateSQDTDivalent.calc_exp_qn
+      ~RydbergStateSQDTDivalent.calc_matrix_element
+      ~RydbergStateSQDTDivalent.calc_reduced_matrix_element
+      ~RydbergStateSQDTDivalent.calc_reduced_overlap
+      ~RydbergStateSQDTDivalent.calc_std_qn
+      ~RydbergStateSQDTDivalent.get_binding_energy
+      ~RydbergStateSQDTDivalent.get_black_body_transition_rates
+      ~RydbergStateSQDTDivalent.get_energy
+      ~RydbergStateSQDTDivalent.get_label
+      ~RydbergStateSQDTDivalent.get_lifetime
+      ~RydbergStateSQDTDivalent.get_spontaneous_transition_rates
+      ~RydbergStateSQDTDivalent.to_coupling_scheme
+
+
+
+.. rubric:: Class Attributes and Properties
+
+.. autosummary::
+
+   ~RydbergStateSQDTDivalent.coefficients
+   ~RydbergStateSQDTDivalent.norm
+   ~RydbergStateSQDTDivalent.nu
+   ~RydbergStateSQDTDivalent.nui
+   ~RydbergStateSQDTDivalent.radial
+   ~RydbergStateSQDTDivalent.rydberg_kets
+   ~RydbergStateSQDTDivalent.species
+   ~RydbergStateSQDTDivalent.angular
+   ~RydbergStateSQDTDivalent.n
+   ~RydbergStateSQDTDivalent.f_tot
+
+
+
+.. autoclass:: rydstate.rydberg_state.RydbergStateSQDTDivalent
+   :members:
+   :member-order: bysource
+   :inherited-members:
+   :undoc-members:
+   :class-doc-from: init

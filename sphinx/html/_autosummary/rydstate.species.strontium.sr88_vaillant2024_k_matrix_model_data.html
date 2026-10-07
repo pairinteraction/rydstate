@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sr88_vaillant2024_k_matrix_model_data &mdash; RydState 0.14.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=9e420a66"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sr88_D1_Vaillant2024" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D1_Vaillant2024.html" />
+    <link rel="prev" title="Sr88_S1_HighN" href="rydstate.species.strontium.sr88_eigen_channel_model_data.Sr88_S1_HighN.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            RydState
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#radialket">RadialKet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/radial/hydrogen_wavefunction.html">Hydrogen radial wavefunction via numerov and from sympy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/radial/rubidium_wavefunction.html">Rubidium wavefunction and potential</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#angularstate">AngularState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/angular/angular_state.html">Using AngularKets and AngularStates in different spin coupling schemes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#rydbergstate">RydbergState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/dipole_matrix_elements.html">Calculating dipole matrix elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/lifetimes.html">Lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#mqdt">MQDT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/mqdt/mqdt_exp_qn.html">Labeling the angular character of Yb 171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/mqdt/spectrum_with_overlaps.html">MQDT Spectrum with overlaps of OSQDT states and Tunable MQDT models</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../examples.html#comparisons">Comparisons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_z_min_cutoff.html">Comparison of the z_min values for circular states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_nist_energy_levels_data.html">Compare NIST energy levels data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_nist_matrix_elements.html">Compare Rb <span class="math notranslate nohighlight">\(5s \rightarrow np_j\)</span> matrix elements with NIST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_nist_matrix_elements_Sr88_sqdt.html">Compare Sr <span class="math notranslate nohighlight">\(5s5s \rightarrow 5snl\)</span> matrix elements with NIST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_model_potentials.html">Compare different effective model potentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_whittaker.html">Comparison: Numerov - Whittaker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/comparisons/compare_sr88_models.html">Compare the Sr88 MQDT models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/benchmark/benchmark_njit.html">Benchmark of Numerov integration with and without using numba.njit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api/rydberg_state.html">Rydberg States</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.rydberg_state.RydbergStateSQDT.html">RydbergStateSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.rydberg_state.RydbergStateSQDTAlkali.html">RydbergStateSQDTAlkali</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.rydberg_state.RydbergStateSQDTDivalent.html">RydbergStateSQDTDivalent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.rydberg_state.RydbergStateMQDT.html">RydbergStateMQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.rydberg_state.RydbergKet.html">RydbergKet</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/basis.html">Rydberg Basis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.basis.BasisSQDT.html">BasisSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.basis.BasisMQDT.html">BasisMQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.basis.BasisOSQDT.html">BasisOSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.basis.BasisTunableMQDT.html">BasisTunableMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/angular.html">Angular module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.angular.AngularKetLS.html">AngularKetLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.angular.AngularKetJJ.html">AngularKetJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.angular.AngularKetFJ.html">AngularKetFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.angular.AngularState.html">AngularState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.angular.CoreKet.html">CoreKet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.angular.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/radial.html">Radial module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.radial.RadialKet.html">RadialKet</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api/species.html">Species Data</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.ElementProperties.html">ElementProperties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.PotentialCoulomb.html">PotentialCoulomb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.PotentialMarinescu1994.html">PotentialMarinescu1994</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.PotentialFei2009.html">PotentialFei2009</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.SQDT.html">SQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.MQDT.html">MQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.cesium.html">cesium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.hydrogen.html">hydrogen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.lithium.html">lithium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.potassium.html">potassium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.rubidium.html">rubidium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.sodium.html">sodium</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="rydstate.species.strontium.html">strontium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.species.ytterbium.html">ytterbium</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/generate_database.html">Generate Database module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.generate_database.create_tables_for_sqdt.html">create_tables_for_sqdt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.generate_database.create_tables_for_mqdt.html">create_tables_for_mqdt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rydstate.generate_database.create_tables_for_misc.html">create_tables_for_misc</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style>
+a.gitbutton {
+  display: block;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #fff;
+  padding-top: 10px;
+  padding-left: 85px;
+  padding-right: 0px;
+  margin: 22px;
+  width: 240px;
+  height: 60px;
+  background: transparent url("../_static/buttons/github.svg") 0 0 no-repeat;
+}
+a.gitbutton small {
+  display: block;
+  font-size: 11px;
+}
+button.toctree-expand {
+  display: none;
+}
+</style>
+<a href="https://github.com/pairinteraction/rydstate" class="gitbutton">Explore<small>the GitHub repository</small></a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">RydState</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../api/species.html">Species Data</a></li>
+          <li class="breadcrumb-item"><a href="rydstate.species.strontium.html">strontium</a></li>
+      <li class="breadcrumb-item active">sr88_vaillant2024_k_matrix_model_data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="sr88-vaillant2024-k-matrix-model-data">
+<h1>sr88_vaillant2024_k_matrix_model_data<a class="headerlink" href="#sr88-vaillant2024-k-matrix-model-data" title="Link to this heading"></a></h1>
+<p>Full module path: rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data</p>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D1_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D1_Vaillant2024" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D1_Vaillant2024"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_D1_Vaillant2024</span></code></a>(mqdt)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D2_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D2_Vaillant2024" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D2_Vaillant2024"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_D2_Vaillant2024</span></code></a>(mqdt)</p></td>
+<td><p>Combined 6-channel model for the strongly mixed 5snd 1D2 and 5snd 3D2 series.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D3_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D3_Vaillant2024" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D3_Vaillant2024"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_D3_Vaillant2024</span></code></a>(mqdt)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F2_Robertson2021.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F2_Robertson2021" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F2_Robertson2021"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_F2_Robertson2021</span></code></a>(mqdt)</p></td>
+<td><p>5snf 3F2 series, described by its Rydberg-Ritz quantum defects, since Vaillant 2024 has no triplet F models.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F3_Singlet_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F3_Singlet_Vaillant2024" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F3_Singlet_Vaillant2024"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_F3_Singlet_Vaillant2024</span></code></a>(mqdt)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F3_Triplet_Robertson2021.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F3_Triplet_Robertson2021" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F3_Triplet_Robertson2021"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_F3_Triplet_Robertson2021</span></code></a>(mqdt)</p></td>
+<td><p>5snf 3F3 series, described by its Rydberg-Ritz quantum defects, since Vaillant 2024 has no triplet F models.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F4_Robertson2021.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F4_Robertson2021" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F4_Robertson2021"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_F4_Robertson2021</span></code></a>(mqdt)</p></td>
+<td><p>5snf 3F4 series, described by its Rydberg-Ritz quantum defects, since Vaillant 2024 has no triplet F models.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P0_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P0_Vaillant2024" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P0_Vaillant2024"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_P0_Vaillant2024</span></code></a>(mqdt)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P1_Singlet_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P1_Singlet_Vaillant2024" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P1_Singlet_Vaillant2024"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_P1_Singlet_Vaillant2024</span></code></a>(mqdt)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P1_Triplet_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P1_Triplet_Vaillant2024" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P1_Triplet_Vaillant2024"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_P1_Triplet_Vaillant2024</span></code></a>(mqdt)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P2_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P2_Vaillant2024" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P2_Vaillant2024"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_P2_Vaillant2024</span></code></a>(mqdt)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_S0_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_S0_Vaillant2024" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_S0_Vaillant2024"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_S0_Vaillant2024</span></code></a>(mqdt)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_S1_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_S1_Vaillant2024" title="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_S1_Vaillant2024"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sr88_S1_Vaillant2024</span></code></a>(mqdt)</p></td>
+<td><p>5sns 3S1 model fitted to the data set (b) of the Addendum (high precision data of Couturier 2019 for n &gt;= 13).</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Module description</p>
+<p id="module-rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data">MQDT models for Sr88 in the reactance matrix (K-matrix) formulation of Vaillant, Jones and Potvliege.</p>
+<p>The models were originally published in
+C. L. Vaillant, M. P. A. Jones and R. M. Potvliege, J. Phys. B: At. Mol. Opt. Phys. 47, 155001 (2014)
+and updated in the Addendum
+J. Phys. B: At. Mol. Opt. Phys. 57, 199401 (2024), <a class="reference external" href="https://doi.org/10.1088/1361-6455/ad76f0">https://doi.org/10.1088/1361-6455/ad76f0</a> (arXiv:2403.08742)
+all K-matrix parameters below are taken from the Addendum.
+Table III of the Addendum quotes the parameters with 7 significant digits, we use the values with 9 significant
+digits from the mqdtfit scripts (https://github.com/durham-qlm/mqdtfit).</p>
+<p>The K-matrix elements are given in the frame of the dissociation channels of the paper (outer channels here):
+jj-coupled channels where the fine structure of the ionic core is resolved (5s_1/2 nl_j, 4d_5/2 nl_j, 4d_3/2 nl_j)
+and LS-coupled channels where an averaged ionization threshold is used (4dnl, 5pnp), see Table I of the Addendum.</p>
+<section id="sign-convention-of-the-off-diagonal-elements">
+<h2>Sign convention of the off-diagonal elements<a class="headerlink" href="#sign-convention-of-the-off-diagonal-elements" title="Link to this heading"></a></h2>
+<p>The channel kets of the paper and of rydstate differ by channel dependent signs, because the two valence electrons
+are coupled in the opposite order. The paper couples the core electron (1) first and the Rydberg electron (2)second,
+see the jj-&gt;LS recoupling formula in Sec. 2 of the 2014 paper (matrix U_{i alphabar} of mqdtfit):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="p">(</span><span class="n">l_c</span> <span class="n">s_c</span><span class="p">)</span> <span class="n">j_c</span><span class="p">,</span> <span class="p">(</span><span class="n">l_r</span> <span class="n">s_r</span><span class="p">)</span> <span class="n">j_r</span><span class="p">;</span> <span class="n">J</span> <span class="o">|</span> <span class="p">(</span><span class="n">l_c</span> <span class="n">l_r</span><span class="p">)</span> <span class="n">L</span><span class="p">,</span> <span class="p">(</span><span class="n">s_c</span> <span class="n">s_r</span><span class="p">)</span> <span class="n">S</span><span class="p">;</span> <span class="n">J</span><span class="o">&gt;</span>
+    <span class="o">=</span> <span class="n">sqrt</span><span class="p">((</span><span class="mi">2</span> <span class="n">j_c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="mi">2</span> <span class="n">j_r</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="mi">2</span> <span class="n">L</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="mi">2</span> <span class="n">S</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="mi">9</span><span class="n">j</span><span class="p">{</span><span class="n">l_c</span> <span class="n">s_c</span> <span class="n">j_c</span><span class="p">;</span> <span class="n">l_r</span> <span class="n">s_r</span> <span class="n">j_r</span><span class="p">;</span> <span class="n">L</span> <span class="n">S</span> <span class="n">J</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>whereas the rydstate kets couple the Rydberg electron first, see <code class="xref py py-meth docutils literal notranslate"><span class="pre">AngularKetBase.calc_reduced_overlap()</span></code>
+(note the order of the arguments of the 9j symbol):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="p">(</span><span class="n">l_r</span> <span class="n">s_r</span><span class="p">)</span> <span class="n">j_r</span><span class="p">,</span> <span class="p">(</span><span class="n">l_c</span> <span class="n">s_c</span><span class="p">)</span> <span class="n">j_c</span><span class="p">;</span> <span class="n">J</span> <span class="o">|</span> <span class="p">(</span><span class="n">l_r</span> <span class="n">l_c</span><span class="p">)</span> <span class="n">L</span><span class="p">,</span> <span class="p">(</span><span class="n">s_r</span> <span class="n">s_c</span><span class="p">)</span> <span class="n">S</span><span class="p">;</span> <span class="n">J</span><span class="o">&gt;</span>
+    <span class="o">=</span> <span class="n">sqrt</span><span class="p">((</span><span class="mi">2</span> <span class="n">j_r</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="mi">2</span> <span class="n">j_c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="mi">2</span> <span class="n">L</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="mi">2</span> <span class="n">S</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="mi">9</span><span class="n">j</span><span class="p">{</span><span class="n">l_r</span> <span class="n">s_r</span> <span class="n">j_r</span><span class="p">;</span> <span class="n">l_c</span> <span class="n">s_c</span> <span class="n">j_c</span><span class="p">;</span> <span class="n">L</span> <span class="n">S</span> <span class="n">J</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Exchanging the coupling order of two angular momenta j_1, j_2 -&gt; j_12 multiplies the coupled ket by
+(-1)^(j_1 + j_2 - j_12), so the kets of the paper are related to the rydstate kets by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|</span><span class="n">i</span><span class="o">&gt;</span><span class="n">_paper</span> <span class="o">=</span> <span class="n">d_i</span> <span class="o">|</span><span class="n">i</span><span class="o">&gt;</span><span class="n">_rydstate</span><span class="p">,</span>  <span class="k">with</span>  <span class="n">d_i</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">^</span><span class="p">(</span><span class="n">j_c</span> <span class="o">+</span> <span class="n">j_r</span> <span class="o">-</span> <span class="n">J</span><span class="p">)</span>                   <span class="k">for</span> <span class="n">jj</span><span class="o">-</span><span class="n">coupled</span> <span class="n">channels</span><span class="p">,</span>
+                                       <span class="n">d_i</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">^</span><span class="p">(</span><span class="n">l_c</span> <span class="o">+</span> <span class="n">l_r</span> <span class="o">-</span> <span class="n">L</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">^</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">S</span><span class="p">)</span>   <span class="k">for</span> <span class="n">LS</span><span class="o">-</span><span class="n">coupled</span> <span class="n">channels</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Consequently the K-matrix in the rydstate frame is K_rydstate = D K_paper D with D = diag(d_i), i.e. the off-diagonal
+elements between two channels with different d_i are multiplied by -1 compared to Table III of the Addendum
+(marked with (*) in the comments below).
+This reproduces the recoupling matrices U_{i alphabar} of mqdtfit exactly
+(see the test test_vaillant2024_recoupling_phase_convention),
+and is necessary to get the correct singlet/triplet character and matrix elements.
+The energies of all states are independent of these signs, since det(D M D) = det(M).</p>
+</section>
+<section id="validity-ranges">
+<h2>Validity ranges<a class="headerlink" href="#validity-ranges" title="Link to this heading"></a></h2>
+<p>The lower bound of nu_range of each model is chosen such that all states used in the fit are included,
+but no lower lying states, which the models do not reproduce (e.g. 5s6s 1S0 or 5s5d 1D2).</p>
+</section>
+<section id="triplet-f-series">
+<h2>Triplet F series<a class="headerlink" href="#triplet-f-series" title="Link to this heading"></a></h2>
+<p>The triplet F series are not covered by the Addendum,
+which revisited only the singlet and triplet S, P and D series and the singlet F series.
+The three-channel models of the original 2014 paper (table IX, with the 5snf 3FJ, 4dnp 3FJ and 4dnf 3FJ channels)
+are not usable instead: they are among the parameters affected by the sign error of the fitting program
+(they give quantum defects of ~0.19 instead of the measured ~0.12 for n = 10-25) and were not refitted.
+We therefore describe the triplet F series by single channel models with the Rydberg-Ritz quantum defects of
+Robertson 2021 (ARC 3.0, table B.1), fitted to the 5snf 3FJ levels of Rubbmark 1978 and Sansonetti 2010 (NIST)
+with the same ionization threshold I_s = 45932.2002 1/cm as used here.
+We use the unrounded values of the ARC source code.
+These quantum defects reproduce the NIST levels with n = 10-20
+to &lt; 0.15 1/cm (rms 0.04-0.06 1/cm, i.e. the NIST uncertainty), see test_vaillant2024_triplet_f_energies_match_nist.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rydstate.species.strontium.sr88_eigen_channel_model_data.Sr88_S1_HighN.html" class="btn btn-neutral float-left" title="Sr88_S1_HighN" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D1_Vaillant2024.html" class="btn btn-neutral float-right" title="Sr88_D1_Vaillant2024" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, RydState Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

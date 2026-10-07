@@ -1,0 +1,693 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compare the Sr88 MQDT models &mdash; RydState 0.14.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=9e420a66"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Benchmark of Numerov integration with and without using numba.njit" href="../benchmark/benchmark_njit.html" />
+    <link rel="prev" title="Comparison: Numerov - Whittaker" href="compare_whittaker.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            RydState
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#radialket">RadialKet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../radial/hydrogen_wavefunction.html">Hydrogen radial wavefunction via numerov and from sympy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../radial/rubidium_wavefunction.html">Rubidium wavefunction and potential</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#angularstate">AngularState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../angular/angular_state.html">Using AngularKets and AngularStates in different spin coupling schemes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#rydbergstate">RydbergState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../dipole_matrix_elements.html">Calculating dipole matrix elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../lifetimes.html">Lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#mqdt">MQDT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../mqdt/mqdt_exp_qn.html">Labeling the angular character of Yb 171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mqdt/spectrum_with_overlaps.html">MQDT Spectrum with overlaps of OSQDT states and Tunable MQDT models</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../examples.html#comparisons">Comparisons</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="compare_z_min_cutoff.html">Comparison of the z_min values for circular states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compare_nist_energy_levels_data.html">Compare NIST energy levels data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compare_nist_matrix_elements.html">Compare Rb <span class="math notranslate nohighlight">\(5s \rightarrow np_j\)</span> matrix elements with NIST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compare_nist_matrix_elements_Sr88_sqdt.html">Compare Sr <span class="math notranslate nohighlight">\(5s5s \rightarrow 5snl\)</span> matrix elements with NIST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compare_model_potentials.html">Compare different effective model potentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="compare_whittaker.html">Comparison: Numerov - Whittaker</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Compare the Sr88 MQDT models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../benchmark/benchmark_njit.html">Benchmark of Numerov integration with and without using numba.njit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/rydberg_state.html">Rydberg States</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.rydberg_state.RydbergStateSQDT.html">RydbergStateSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.rydberg_state.RydbergStateSQDTAlkali.html">RydbergStateSQDTAlkali</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.rydberg_state.RydbergStateSQDTDivalent.html">RydbergStateSQDTDivalent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.rydberg_state.RydbergStateMQDT.html">RydbergStateMQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.rydberg_state.RydbergKet.html">RydbergKet</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/basis.html">Rydberg Basis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.basis.BasisSQDT.html">BasisSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.basis.BasisMQDT.html">BasisMQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.basis.BasisOSQDT.html">BasisOSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.basis.BasisTunableMQDT.html">BasisTunableMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/angular.html">Angular module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetLS.html">AngularKetLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetJJ.html">AngularKetJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularKetFJ.html">AngularKetFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.angular.AngularState.html">AngularState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.angular.CoreKet.html">CoreKet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.angular.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/radial.html">Radial module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.radial.RadialKet.html">RadialKet</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/species.html">Species Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.ElementProperties.html">ElementProperties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.PotentialCoulomb.html">PotentialCoulomb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.PotentialMarinescu1994.html">PotentialMarinescu1994</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.PotentialFei2009.html">PotentialFei2009</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.SQDT.html">SQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.MQDT.html">MQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.cesium.html">cesium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.hydrogen.html">hydrogen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.lithium.html">lithium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.potassium.html">potassium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.rubidium.html">rubidium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.sodium.html">sodium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.strontium.html">strontium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.species.ytterbium.html">ytterbium</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/generate_database.html">Generate Database module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.generate_database.create_tables_for_sqdt.html">create_tables_for_sqdt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.generate_database.create_tables_for_mqdt.html">create_tables_for_mqdt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/rydstate.generate_database.create_tables_for_misc.html">create_tables_for_misc</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style>
+a.gitbutton {
+  display: block;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #fff;
+  padding-top: 10px;
+  padding-left: 85px;
+  padding-right: 0px;
+  margin: 22px;
+  width: 240px;
+  height: 60px;
+  background: transparent url("../../_static/buttons/github.svg") 0 0 no-repeat;
+}
+a.gitbutton small {
+  display: block;
+  font-size: 11px;
+}
+button.toctree-expand {
+  display: none;
+}
+</style>
+<a href="https://github.com/pairinteraction/rydstate" class="gitbutton">Explore<small>the GitHub repository</small></a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">RydState</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../examples.html">Examples</a></li>
+      <li class="breadcrumb-item active">Compare the Sr88 MQDT models</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/examples/comparisons/compare_sr88_models.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <style>
+    .nbinput .prompt,
+    .nboutput .prompt {
+        display: none;
+    }
+</style>
+
+<div class="admonition note">
+  This page was generated from the Jupyter notebook
+  <a class="reference external" href="compare_sr88_models.ipynb">compare_sr88_models.ipynb</a>.
+</div><section id="Compare-the-Sr88-MQDT-models">
+<h1>Compare the Sr88 MQDT models<a class="headerlink" href="#Compare-the-Sr88-MQDT-models" title="Link to this heading"></a></h1>
+<p>rydstate provides two sets of MQDT models for <span class="math notranslate nohighlight">\(^{88}\mathrm{Sr}\)</span>:</p>
+<ul class="simple">
+<li><p>the default models with the tag <code class="docutils literal notranslate"><span class="pre">robicheaux2019</span></code> (<code class="docutils literal notranslate"><span class="pre">get_mqdt(&quot;Sr88&quot;,</span> <span class="pre">&quot;robicheaux2019&quot;)</span></code> or simply <code class="docutils literal notranslate"><span class="pre">get_mqdt(&quot;Sr88&quot;)</span></code>) are the eigenchannel models of <a class="reference external" href="https://doi.org/10.1088/1361-6455/ab4c22">F. Robicheaux, J. Phys. B 52, 244001 (2019)</a>. They only contain the <span class="math notranslate nohighlight">\(5snl\)</span> channels and are valid for high effective principal quantum numbers.</p></li>
+<li><p>the models with the tag <code class="docutils literal notranslate"><span class="pre">vaillant2024</span></code> (<code class="docutils literal notranslate"><span class="pre">get_mqdt(&quot;Sr88&quot;,</span> <span class="pre">&quot;vaillant2024&quot;)</span></code>) are the K-matrix models of <a class="reference external" href="https://doi.org/10.1088/0953-4075/47/15/155001">C. L. Vaillant, M. P. A. Jones and R. M. Potvliege, J. Phys. B 47, 155001 (2014)</a> with the corrected parameters of their <a class="reference external" href="https://doi.org/10.1088/1361-6455/ad76f0">Addendum, J. Phys. B 57, 199401 (2024)</a>. They include the doubly excited <span class="math notranslate nohighlight">\(4dnl\)</span> and <span class="math notranslate nohighlight">\(5pnp\)</span> perturber channels explicitly and are therefore valid down to the
+lowest <span class="math notranslate nohighlight">\(5snl\)</span> states. The only series they do not cover are the <span class="math notranslate nohighlight">\(5snf\)</span> <span class="math notranslate nohighlight">\(^3F_J\)</span> series, which are described by single channel models with the Rydberg-Ritz quantum defects of <a class="reference external" href="https://doi.org/10.1016/j.cpc.2020.107814">E. J. Robertson et al., Comput. Phys. Commun. 261, 107814 (2021)</a> instead.</p></li>
+</ul>
+<p>As a baseline we also include the default SQDT model (<code class="docutils literal notranslate"><span class="pre">get_sqdt(&quot;Sr88&quot;)</span></code>), which describes each series by a single channel with Rydberg-Ritz quantum defects (pure singlet or triplet states without any channel mixing).</p>
+<p>This notebook compares the states of the three model sets for several series: their quantum defects (together with the NIST energy levels shipped with rydstate), the energy differences of the states with respect to the Vaillant models, the singlet-triplet mixing of the <span class="math notranslate nohighlight">\(5snd\)</span> <span class="math notranslate nohighlight">\(J=2\)</span> states and the perturber states, which only the Vaillant models contain.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="c1"># Uncomment the next line if you have ipympl installed and want interactive plots</span>
+<span class="c1"># %matplotlib widget</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasisMQDT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.angular.angular_ket</span><span class="w"> </span><span class="kn">import</span> <span class="n">AngularKetLS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.species</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_mqdt</span><span class="p">,</span> <span class="n">get_sqdt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.species.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">calc_energy_from_nu</span><span class="p">,</span> <span class="n">calc_nu_from_energy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">au_to_user</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.rydberg_state</span><span class="w"> </span><span class="kn">import</span> <span class="n">RydbergKet</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"rydstate"</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>  <span class="c1"># the radial wavefunctions of the closed perturber channels warn</span>
+</pre></div>
+</div>
+</div>
+<section id="Build-the-bases">
+<h2>Build the bases<a class="headerlink" href="#Build-the-bases" title="Link to this heading"></a></h2>
+<p>We compute all MQDT states with <span class="math notranslate nohighlight">\(l_r \le 3\)</span> for <span class="math notranslate nohighlight">\(2.5 \le \nu \le 40\)</span> with both model sets. The Robicheaux models start at <span class="math notranslate nohighlight">\(\nu \approx 5\)</span> to <span class="math notranslate nohighlight">\(25\)</span> depending on the series, the Vaillant models at <span class="math notranslate nohighlight">\(\nu \approx 3\)</span> to <span class="math notranslate nohighlight">\(10\)</span>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="n">bases</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"Robicheaux 2019"</span><span class="p">:</span> <span class="n">BasisMQDT</span><span class="p">(</span><span class="s2">"Sr88"</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="n">nu_range</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">mqdt</span><span class="o">=</span><span class="s2">"robicheaux2019"</span><span class="p">),</span>
+    <span class="s2">"Vaillant 2024"</span><span class="p">:</span> <span class="n">BasisMQDT</span><span class="p">(</span><span class="s2">"Sr88"</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="n">nu_range</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">mqdt</span><span class="o">=</span><span class="s2">"vaillant2024"</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="n">styles</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># larger Robicheaux squares, so that they stay visible around the Vaillant circles</span>
+    <span class="s2">"Robicheaux 2019"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"color"</span><span class="p">:</span> <span class="s2">"C1"</span><span class="p">,</span> <span class="s2">"marker"</span><span class="p">:</span> <span class="s2">"s"</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">:</span> <span class="mf">7.5</span><span class="p">,</span> <span class="s2">"mew"</span><span class="p">:</span> <span class="mf">1.3</span><span class="p">},</span>
+    <span class="s2">"Vaillant 2024"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"color"</span><span class="p">:</span> <span class="s2">"C0"</span><span class="p">,</span> <span class="s2">"marker"</span><span class="p">:</span> <span class="s2">"o"</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+<span class="p">}</span>
+
+<span class="c1"># Both model sets use the 5s ionization threshold of Couturier et al. 2019, 1_377_012_721 MHz = 45932.20024 1/cm.</span>
+<span class="c1"># The Vaillant models use it rounded to 45932.2002 1/cm, as in the original fits, i.e. the thresholds differ by 1 MHz.</span>
+<span class="c1"># This is negligible here, so the effective principal quantum numbers nu (and quantum defects) are directly comparable.</span>
+<span class="n">thresholds</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">basis</span><span class="o">.</span><span class="n">mqdt</span><span class="o">.</span><span class="n">get_ionization_threshold</span><span class="p">(</span><span class="n">basis</span><span class="o">.</span><span class="n">mqdt</span><span class="o">.</span><span class="n">get_core_kets</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"MHz"</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">basis</span> <span class="ow">in</span> <span class="n">bases</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">thresholds</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: 5s ionization threshold </span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> MHz"</span><span class="p">)</span>
+<span class="n">threshold_difference_mhz</span> <span class="o">=</span> <span class="n">thresholds</span><span class="p">[</span><span class="s2">"Robicheaux 2019"</span><span class="p">]</span> <span class="o">-</span> <span class="n">thresholds</span><span class="p">[</span><span class="s2">"Vaillant 2024"</span><span class="p">]</span>
+<span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">threshold_difference_mhz</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">,</span> <span class="n">threshold_difference_mhz</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"difference: </span><span class="si">{</span><span class="n">threshold_difference_mhz</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MHz"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">basis</span> <span class="ow">in</span> <span class="n">bases</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">basis</span><span class="o">.</span><span class="n">states</span><span class="p">)</span><span class="si">}</span><span class="s2"> states from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">basis</span><span class="o">.</span><span class="n">models</span><span class="p">)</span><span class="si">}</span><span class="s2"> models"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">basis</span><span class="o">.</span><span class="n">models</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">outer_channels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">model</span><span class="o">.</span><span class="n">nu_min</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>  <span class="c1"># skip the trivial single channel fallback models</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="si">:</span><span class="s2">40s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">outer_channels</span><span class="p">)</span><span class="si">}</span><span class="s2"> channels"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Robicheaux 2019: 5s ionization threshold 1377012721 MHz
+Vaillant 2024: 5s ionization threshold 1377012720 MHz
+difference: 1.07 MHz
+Robicheaux 2019: 389 states from 12 models
+    P J=0, nu &gt; 7                            1 channels
+    P J=1 (recombination), 1.8 &lt; nu &lt; 2.2    2 channels
+    P J=1, nu &gt; 5                            2 channels
+    P J=2, nu &gt; 5                            1 channels
+    D J=2, nu &gt; 25                           2 channels
+    F J=2, nu &gt; 9                            1 channels
+    F J=3, nu &gt; 9                            2 channels
+    F J=4, nu &gt; 9                            1 channels
+Vaillant 2024: 497 states from 13 models
+    S J=0, nu &gt; 3.7                          3 channels
+    S J=1, nu &gt; 3.4                          2 channels
+    P J=0, nu &gt; 2.8                          2 channels
+    P J=1 singlet, nu &gt; 2.8                  2 channels
+    P J=1 triplet, nu &gt; 2.8                  2 channels
+    P J=2, nu &gt; 2.8                          2 channels
+    D J=1, nu &gt; 9.5                          2 channels
+    D J=2, nu &gt; 5.7                          6 channels
+    D J=3, nu &gt; 3.9                          3 channels
+    F J=2 (Rydberg-Ritz), nu &gt; 9             1 channels
+    F J=3 singlet, nu &gt; 3.5                  2 channels
+    F J=3 triplet (Rydberg-Ritz), nu &gt; 9     1 channels
+    F J=4 (Rydberg-Ritz), nu &gt; 9             1 channels
+</pre></div></div>
+</div>
+</section>
+<section id="Select-the-Rydberg-series">
+<h2>Select the Rydberg series<a class="headerlink" href="#Select-the-Rydberg-series" title="Link to this heading"></a></h2>
+<p>A series is selected by the symmetry of its states (<span class="math notranslate nohighlight">\(F\)</span>, parity), the dominant orbital angular momentum <span class="math notranslate nohighlight">\(l_r\)</span> and the spin character (singlet or triplet). States dominated by a perturber channel (<span class="math notranslate nohighlight">\(\langle l_c \rangle &gt; 1/2\)</span>) are excluded here and shown separately below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">series</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># label: (l_r, f_tot, parity, s_tot range)</span>
+    <span class="s2">"5sns 1S0"</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="s2">"5sns 3S1"</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="s2">"5snp 1P1"</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="s2">"5snp 3P2"</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="s2">"5snd 1D2"</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+    <span class="s2">"5snd 3D2"</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="s2">"5snd 3D1"</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="s2">"5snd 3D3"</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+    <span class="s2">"5snf 1F3"</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">select_series</span><span class="p">(</span><span class="n">basis</span><span class="p">:</span> <span class="n">BasisMQDT</span><span class="p">,</span> <span class="n">l_r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">f_tot</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">parity</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">s_tot</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BasisMQDT</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">basis</span><span class="o">.</span><span class="n">shallow_copy</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">filter_states</span><span class="p">(</span><span class="s2">"f_tot"</span><span class="p">,</span> <span class="n">f_tot</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">filter_states</span><span class="p">(</span><span class="s2">"parity"</span><span class="p">,</span> <span class="n">parity</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">filter_states</span><span class="p">(</span><span class="s2">"l_c"</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+        <span class="o">.</span><span class="n">filter_states</span><span class="p">(</span><span class="s2">"l_r"</span><span class="p">,</span> <span class="p">(</span><span class="n">l_r</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">l_r</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">))</span>
+        <span class="o">.</span><span class="n">filter_states</span><span class="p">(</span><span class="s2">"s_tot"</span><span class="p">,</span> <span class="n">s_tot</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">sort_states</span><span class="p">(</span><span class="s2">"nu"</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">spin</span><span class="p">(</span><span class="n">s_tot</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">s_tot</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="mi">1</span>
+
+
+<span class="n">series_bases</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">key</span><span class="p">:</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="n">select_series</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">series</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">basis</span> <span class="ow">in</span> <span class="n">bases</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">series</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">: "</span> <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">series_bases</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">label</span><span class="p">])</span><span class="si">}</span><span class="s2"> states"</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+5sns 1S0: Robicheaux 2019: 30 states, Vaillant 2024: 36 states
+5sns 3S1: Robicheaux 2019: 29 states, Vaillant 2024: 37 states
+5snp 1P1: Robicheaux 2019: 35 states, Vaillant 2024: 38 states
+5snp 3P2: Robicheaux 2019: 35 states, Vaillant 2024: 37 states
+5snd 1D2: Robicheaux 2019: 15 states, Vaillant 2024: 35 states
+5snd 3D2: Robicheaux 2019: 15 states, Vaillant 2024: 35 states
+5snd 3D1: Robicheaux 2019: 23 states, Vaillant 2024: 31 states
+5snd 3D3: Robicheaux 2019: 15 states, Vaillant 2024: 37 states
+5snf 1F3: Robicheaux 2019: 31 states, Vaillant 2024: 36 states
+</pre></div></div>
+</div>
+</section>
+<section id="SQDT-states">
+<h2>SQDT states<a class="headerlink" href="#SQDT-states" title="Link to this heading"></a></h2>
+<p>The SQDT model gives the effective principal quantum numbers <span class="math notranslate nohighlight">\(\nu = n - \delta(n)\)</span> with the modified Rydberg-Ritz formula <span class="math notranslate nohighlight">\(\delta(n) = \delta_0 + \delta_2 / (n - \delta_0)^2 + \delta_4 / (n - \delta_0)^4\)</span>, using the parameters of <a class="reference external" href="https://doi.org/10.1103/PhysRevA.108.022815">Brienza et al., Phys. Rev. A 108, 022815 (2023)</a> for the singlet series and of <a class="reference external" href="https://doi.org/10.1016/j.cpc.2020.107814">ARC 3.0, Comput. Phys. Commun. 261, 107814 (2021)</a> for the triplet series. It uses
+the same 5s ionization threshold as the Robicheaux models (1 MHz above the rounded threshold of the Vaillant models).</p>
+<p>Two details matter for the comparison:</p>
+<ul class="simple">
+<li><p>By default, SQDT states with <span class="math notranslate nohighlight">\(n \le 15\)</span> take their energies from the NIST levels instead of the Rydberg-Ritz formula. We disable this (<code class="docutils literal notranslate"><span class="pre">use_nist_data=False</span></code>) to show the actual SQDT model; the NIST levels are plotted separately anyway.</p></li>
+<li><p>The Rydberg-Ritz parameters are fits to states at intermediate and high <span class="math notranslate nohighlight">\(n\)</span>. At low <span class="math notranslate nohighlight">\(n\)</span> the higher order terms dominate and the formula diverges (e.g. it gives <span class="math notranslate nohighlight">\(\nu \approx 2000\)</span> for the <span class="math notranslate nohighlight">\(5s4d\)</span> <span class="math notranslate nohighlight">\(^3D_2\)</span> state). We therefore only keep the states for which the correction to the leading quantum defect is small, <span class="math notranslate nohighlight">\(|\delta(n) - \delta_0| &lt; 1/2\)</span>. Deviations of the remaining low lying SQDT states reflect the limited range of the fits rather than the SQDT method
+itself.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sqdt</span> <span class="o">=</span> <span class="n">get_sqdt</span><span class="p">(</span><span class="s2">"Sr88"</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">sqdt</span><span class="o">.</span><span class="n">ionization_energy_au</span> <span class="o">==</span> <span class="n">get_mqdt</span><span class="p">(</span><span class="s2">"Sr88"</span><span class="p">)</span><span class="o">.</span><span class="n">reference_ionization_threshold_au</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sqdt_nus</span><span class="p">(</span><span class="n">l_r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">j_tot</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">s_tot</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">angular</span> <span class="o">=</span> <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_r</span><span class="o">=</span><span class="n">l_r</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="n">s_tot</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="n">j_tot</span><span class="p">,</span> <span class="n">f_tot</span><span class="o">=</span><span class="n">j_tot</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">)</span>
+    <span class="n">delta_0</span> <span class="o">=</span> <span class="n">sqdt</span><span class="o">.</span><span class="n">quantum_defects</span><span class="p">[(</span><span class="n">l_r</span><span class="p">,</span> <span class="n">j_tot</span><span class="p">,</span> <span class="n">s_tot</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">nus</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l_r</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">nu_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">delta_0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sqdt</span><span class="o">.</span><span class="n">element_properties</span><span class="o">.</span><span class="n">is_allowed_shell</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">l_r</span><span class="p">,</span> <span class="n">s_tot</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="n">sqdt</span><span class="o">.</span><span class="n">calc_nui</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">angular</span><span class="p">,</span> <span class="n">use_nist_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">nu</span> <span class="o">-</span> <span class="n">delta_0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.5</span> <span class="ow">and</span> <span class="n">nu_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">nu</span> <span class="o">&lt;=</span> <span class="n">nu_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">nus</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nu</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nus</span><span class="p">)</span>
+
+
+<span class="n">SQDT_KEY</span> <span class="o">=</span> <span class="s2">"SQDT (Rydberg-Ritz)"</span>
+<span class="n">styles</span><span class="p">[</span><span class="n">SQDT_KEY</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"color"</span><span class="p">:</span> <span class="s2">"C2"</span><span class="p">,</span> <span class="s2">"marker"</span><span class="p">:</span> <span class="s2">"^"</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">,</span> <span class="s2">"alpha"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">}</span>  <span class="c1"># less prominent than the MQDT markers</span>
+<span class="n">sqdt_series</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="n">sqdt_nus</span><span class="p">(</span><span class="n">l_r</span><span class="p">,</span> <span class="n">f_tot</span><span class="p">,</span> <span class="n">spin</span><span class="p">(</span><span class="n">s_tot</span><span class="p">))</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="n">l_r</span><span class="p">,</span> <span class="n">f_tot</span><span class="p">,</span> <span class="n">_parity</span><span class="p">,</span> <span class="n">s_tot</span><span class="p">)</span> <span class="ow">in</span> <span class="n">series</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">nus</span> <span class="ow">in</span> <span class="n">sqdt_series</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">nus</span><span class="p">)</span><span class="si">}</span><span class="s2"> SQDT states with nu &gt;= </span><span class="si">{</span><span class="n">nus</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+5sns 1S0: 38 SQDT states with nu &gt;= 2.80
+5sns 3S1: 38 SQDT states with nu &gt;= 2.58
+5snp 1P1: 35 SQDT states with nu &gt;= 5.64
+5snp 3P2: 36 SQDT states with nu &gt;= 3.76
+5snd 1D2: 30 SQDT states with nu &gt;= 11.05
+5snd 3D2: 28 SQDT states with nu &gt;= 12.74
+5snd 3D1: 29 SQDT states with nu &gt;= 11.70
+5snd 3D3: 24 SQDT states with nu &gt;= 16.78
+5snf 1F3: 37 SQDT states with nu &gt;= 3.98
+</pre></div></div>
+</div>
+</section>
+<section id="Quantum-defects">
+<h2>Quantum defects<a class="headerlink" href="#Quantum-defects" title="Link to this heading"></a></h2>
+<p>We plot the fractional part of the quantum defect, <span class="math notranslate nohighlight">\(\delta \bmod 1 = (-\nu) \bmod 1\)</span>, against <span class="math notranslate nohighlight">\(\nu\)</span>. Using the fractional part avoids having to assign principal quantum numbers <span class="math notranslate nohighlight">\(n\)</span>, which are ambiguous close to the perturbers, where the quantum defect changes by almost one within a few states (e.g. in the <span class="math notranslate nohighlight">\(5snd\)</span> triplet series). The black crosses are the NIST energy levels shipped with rydstate (available up to <span class="math notranslate nohighlight">\(n = 20\)</span>), converted to <span class="math notranslate nohighlight">\(\nu\)</span> with the 5s
+ionization threshold of the Robicheaux and SQDT models.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">threshold_au</span> <span class="o">=</span> <span class="n">get_mqdt</span><span class="p">(</span><span class="s2">"Sr88"</span><span class="p">,</span> <span class="s2">"robicheaux2019"</span><span class="p">)</span><span class="o">.</span><span class="n">reference_ionization_threshold_au</span>  <span class="c1"># Robicheaux and SQDT, see above</span>
+<span class="n">reduced_mass_au</span> <span class="o">=</span> <span class="n">sqdt</span><span class="o">.</span><span class="n">element_properties</span><span class="o">.</span><span class="n">reduced_mass_au</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">nist_nus</span><span class="p">(</span><span class="n">l_r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">j_tot</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">s_tot</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">energies_au</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">energy_au</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">_n</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">s</span><span class="p">),</span> <span class="n">energy_au</span> <span class="ow">in</span> <span class="n">sqdt</span><span class="o">.</span><span class="n">_nist_energy_levels</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">l_r</span><span class="p">,</span> <span class="n">j_tot</span><span class="p">,</span> <span class="n">s_tot</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">calc_nu_from_energy</span><span class="p">(</span><span class="n">reduced_mass_au</span><span class="p">,</span> <span class="n">e</span> <span class="o">-</span> <span class="n">threshold_au</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">energies_au</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fractional_quantum_defect</span><span class="p">(</span><span class="n">nus</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">nus</span><span class="p">))</span> <span class="o">%</span> <span class="mi">1</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="n">l_r</span><span class="p">,</span> <span class="n">f_tot</span><span class="p">,</span> <span class="n">_parity</span><span class="p">,</span> <span class="n">s_tot</span><span class="p">))</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">,</span> <span class="n">series</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">basis</span> <span class="ow">in</span> <span class="n">series_bases</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">nus</span> <span class="o">=</span> <span class="n">basis</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">calc_exp_qn</span><span class="p">(</span><span class="s2">"nu"</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nus</span><span class="p">,</span> <span class="n">fractional_quantum_defect</span><span class="p">(</span><span class="n">nus</span><span class="p">),</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">mfc</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">styles</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+    <span class="n">nus</span> <span class="o">=</span> <span class="n">sqdt_series</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nus</span><span class="p">,</span> <span class="n">fractional_quantum_defect</span><span class="p">(</span><span class="n">nus</span><span class="p">),</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">mfc</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">SQDT_KEY</span><span class="p">,</span> <span class="o">**</span><span class="n">styles</span><span class="p">[</span><span class="n">SQDT_KEY</span><span class="p">])</span>
+    <span class="n">nus</span> <span class="o">=</span> <span class="n">nist_nus</span><span class="p">(</span><span class="n">l_r</span><span class="p">,</span> <span class="n">f_tot</span><span class="p">,</span> <span class="n">spin</span><span class="p">(</span><span class="n">s_tot</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nus</span><span class="p">,</span> <span class="n">fractional_quantum_defect</span><span class="p">(</span><span class="n">nus</span><span class="p">),</span> <span class="s2">"k+"</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"NIST levels"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"effective principal quantum number $\nu$"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"$\delta \; \mathrm</span><span class="si">{mod}</span><span class="s2"> \; 1$"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/examples_comparisons_compare_sr88_models_9_0.png" src="../../_images/examples_comparisons_compare_sr88_models_9_0.png" />
+</div>
+</div>
+<p>The Vaillant models follow the NIST levels down to the lowest states of each series and reproduce the perturber signatures in the D series (the quantum defect of the <span class="math notranslate nohighlight">\(5snd\)</span> triplet series changes by almost one around <span class="math notranslate nohighlight">\(\nu \approx 12\)</span> to <span class="math notranslate nohighlight">\(18\)</span> because of the <span class="math notranslate nohighlight">\(4d6s\)</span> perturber). In the common range of validity both model sets agree closely, with visible differences in the asymptotic quantum defects of the <span class="math notranslate nohighlight">\(5snp\)</span> <span class="math notranslate nohighlight">\(^3P_2\)</span> and <span class="math notranslate nohighlight">\(5snd\)</span> <span class="math notranslate nohighlight">\(^3D_3\)</span> series, which
+the Vaillant models only fit up to <span class="math notranslate nohighlight">\(n = 15\)</span> and <span class="math notranslate nohighlight">\(n = 29\)</span>, respectively.</p>
+<p>The SQDT quantum defects agree with the MQDT models at high <span class="math notranslate nohighlight">\(\nu\)</span> for most series, with a visible offset of the asymptotic quantum defect in the <span class="math notranslate nohighlight">\(5snd\)</span> <span class="math notranslate nohighlight">\(^3D_3\)</span> series. Being single channel fits, they cannot reproduce the perturbations: in the <span class="math notranslate nohighlight">\(5snd\)</span> series they approach the perturbed region smoothly instead of following the steep rise of the quantum defect (and their range of validity ends before the region where it changes by almost one).</p>
+</section>
+<section id="Energy-differences">
+<h2>Energy differences<a class="headerlink" href="#Energy-differences" title="Link to this heading"></a></h2>
+<p>For every state of the Vaillant models we take the closest state (in energy) of the same series of the other model sets and plot the energy difference. For the Robicheaux models we only consider the Vaillant states above the lowest state of the corresponding Robicheaux model, i.e. the common range of validity. Since the ionization thresholds of the model sets agree to 1 MHz, these differences reflect the different quantum defects (a threshold difference <span class="math notranslate nohighlight">\(\Delta I\)</span> shifts all energies of a
+model set rigidly by <span class="math notranslate nohighlight">\(\Delta I\)</span>, without changing <span class="math notranslate nohighlight">\(\nu\)</span>). For the <span class="math notranslate nohighlight">\(5sns\)</span> <span class="math notranslate nohighlight">\(^1S_0\)</span> series, the two MQDT models agree to better than 35 MHz for <span class="math notranslate nohighlight">\(\nu &gt; 20\)</span> (below 10 MHz at <span class="math notranslate nohighlight">\(\nu \approx 40\)</span>).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">energies_from_nus</span><span class="p">(</span><span class="n">nus</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">energies_au</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">threshold_au</span> <span class="o">+</span> <span class="n">calc_energy_from_nu</span><span class="p">(</span><span class="n">reduced_mass_au</span><span class="p">,</span> <span class="n">nu</span><span class="p">)</span> <span class="k">for</span> <span class="n">nu</span> <span class="ow">in</span> <span class="n">nus</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">au_to_user</span><span class="p">(</span><span class="n">energies_au</span><span class="p">,</span> <span class="s2">"energy"</span><span class="p">,</span> <span class="s2">"MHz"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">closest_energy_differences</span><span class="p">(</span><span class="n">reference</span><span class="p">:</span> <span class="n">BasisMQDT</span><span class="p">,</span> <span class="n">other_energies</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">nu_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
+    <span class="n">nus</span><span class="p">,</span> <span class="n">diffs</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">reference</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">nu</span> <span class="o">&lt;</span> <span class="n">nu_min</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">(</span><span class="s2">"MHz"</span><span class="p">)</span>
+        <span class="n">nus</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">nu</span><span class="p">)</span>
+        <span class="n">diffs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">other_energies</span> <span class="o">-</span> <span class="n">energy</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">nus</span><span class="p">,</span> <span class="n">diffs</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">series</span><span class="p">):</span>
+    <span class="n">new</span> <span class="o">=</span> <span class="n">series_bases</span><span class="p">[</span><span class="s2">"Vaillant 2024"</span><span class="p">][</span><span class="n">label</span><span class="p">]</span>
+    <span class="n">old</span> <span class="o">=</span> <span class="n">series_bases</span><span class="p">[</span><span class="s2">"Robicheaux 2019"</span><span class="p">][</span><span class="n">label</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">old</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">old_energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">(</span><span class="s2">"MHz"</span><span class="p">)</span> <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">old</span><span class="o">.</span><span class="n">states</span><span class="p">])</span>
+        <span class="n">nus</span><span class="p">,</span> <span class="n">diffs</span> <span class="o">=</span> <span class="n">closest_energy_differences</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">old_energies</span><span class="p">,</span> <span class="n">old</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">nu</span> <span class="o">-</span> <span class="mf">0.4</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nus</span><span class="p">,</span> <span class="n">diffs</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">"C</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">sqdt_energies</span> <span class="o">=</span> <span class="n">energies_from_nus</span><span class="p">(</span><span class="n">sqdt_series</span><span class="p">[</span><span class="n">label</span><span class="p">])</span>
+    <span class="n">nus</span><span class="p">,</span> <span class="n">diffs</span> <span class="o">=</span> <span class="n">closest_energy_differences</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">sqdt_energies</span><span class="p">,</span> <span class="n">sqdt_series</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.4</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nus</span><span class="p">,</span> <span class="n">diffs</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">"C</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="s2">"Robicheaux 2019"</span><span class="p">,</span> <span class="n">SQDT_KEY</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"effective principal quantum number $\nu$"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Vaillant 2024 vs. </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"$|E_\mathrm</span><span class="si">{Vaillant}</span><span class="s2"> - E_\mathrm</span><span class="si">{other}</span><span class="s2">|$ (MHz)"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">ncol</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/examples_comparisons_compare_sr88_models_12_0.png" src="../../_images/examples_comparisons_compare_sr88_models_12_0.png" />
+</div>
+</div>
+<p>The SQDT energies agree with the Vaillant models to a few 10 MHz at <span class="math notranslate nohighlight">\(\nu \approx 40\)</span> for the singlet series and the <span class="math notranslate nohighlight">\(5sns\)</span> <span class="math notranslate nohighlight">\(^3S_1\)</span>, <span class="math notranslate nohighlight">\(5snd\)</span> <span class="math notranslate nohighlight">\(^3D_1\)</span> and <span class="math notranslate nohighlight">\(^3D_2\)</span> series, but deviate by about 0.8 GHz (<span class="math notranslate nohighlight">\(5snp\)</span> <span class="math notranslate nohighlight">\(^3P_2\)</span>) and 2.7 GHz (<span class="math notranslate nohighlight">\(5snd\)</span> <span class="math notranslate nohighlight">\(^3D_3\)</span>). For these two series the two MQDT model sets agree much better with each other (within about 0.3 GHz) than with the SQDT model. Towards lower <span class="math notranslate nohighlight">\(\nu\)</span> the deviations grow quickly and reach the
+THz range in the perturbed <span class="math notranslate nohighlight">\(5snd\)</span> series.</p>
+</section>
+<section id="Singlet-triplet-mixing-of-the-5snd-J=2-states">
+<h2>Singlet-triplet mixing of the <span class="math notranslate nohighlight">\(5snd\)</span> <span class="math notranslate nohighlight">\(J=2\)</span> states<a class="headerlink" href="#Singlet-triplet-mixing-of-the-5snd-J=2-states" title="Link to this heading"></a></h2>
+<p>The <span class="math notranslate nohighlight">\(5snd\)</span> <span class="math notranslate nohighlight">\(^1D_2\)</span> and <span class="math notranslate nohighlight">\(^3D_2\)</span> series are strongly mixed. The six channel Vaillant model describes the mixing including its resonant enhancement around the <span class="math notranslate nohighlight">\(4d^2\)</span> <span class="math notranslate nohighlight">\(^3P_2\)</span> perturber (<span class="math notranslate nohighlight">\(\nu \approx 9.5\)</span>, i.e. in the <span class="math notranslate nohighlight">\(5s15d\)</span> states), whereas the Robicheaux model uses a constant mixing angle and is only valid for <span class="math notranslate nohighlight">\(\nu &gt; 25\)</span>. The SQDT states are pure singlet or triplet states, i.e. SQDT neglects the mixing completely. The triplet fraction is the
+expectation value of the total spin <span class="math notranslate nohighlight">\(\langle S \rangle\)</span> of the state.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">basis</span> <span class="ow">in</span> <span class="n">bases</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">basis</span><span class="o">.</span><span class="n">shallow_copy</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">filter_states</span><span class="p">(</span><span class="s2">"f_tot"</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">filter_states</span><span class="p">(</span><span class="s2">"parity"</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">filter_states</span><span class="p">(</span><span class="s2">"l_c"</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+        <span class="o">.</span><span class="n">filter_states</span><span class="p">(</span><span class="s2">"l_r"</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">))</span>
+        <span class="o">.</span><span class="n">sort_states</span><span class="p">(</span><span class="s2">"nu"</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">d2</span><span class="o">.</span><span class="n">calc_exp_qn</span><span class="p">(</span><span class="s2">"nu"</span><span class="p">),</span> <span class="n">d2</span><span class="o">.</span><span class="n">calc_exp_qn</span><span class="p">(</span><span class="s2">"s_tot"</span><span class="p">),</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">mfc</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">styles</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+<span class="n">nus_singlet</span><span class="p">,</span> <span class="n">nus_triplet</span> <span class="o">=</span> <span class="n">sqdt_series</span><span class="p">[</span><span class="s2">"5snd 1D2"</span><span class="p">],</span> <span class="n">sqdt_series</span><span class="p">[</span><span class="s2">"5snd 3D2"</span><span class="p">]</span>  <span class="c1"># pure singlet and triplet states</span>
+<span class="n">nus</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">nus_singlet</span><span class="p">,</span> <span class="n">nus_triplet</span><span class="p">])</span>
+<span class="n">s_tots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">nus_singlet</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">nus_triplet</span><span class="p">)])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nus</span><span class="p">,</span> <span class="n">s_tots</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">mfc</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">SQDT_KEY</span><span class="p">,</span> <span class="o">**</span><span class="n">styles</span><span class="p">[</span><span class="n">SQDT_KEY</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"effective principal quantum number $\nu$"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"triplet fraction $\langle S \rangle$"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s2">"5snd $J=2$ states"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/examples_comparisons_compare_sr88_models_15_0.png" src="../../_images/examples_comparisons_compare_sr88_models_15_0.png" />
+</div>
+</div>
+</section>
+<section id="Perturber-states">
+<h2>Perturber states<a class="headerlink" href="#Perturber-states" title="Link to this heading"></a></h2>
+<p>The Vaillant models contain the doubly excited perturber channels explicitly, so they also yield the perturber states themselves, i.e. the states dominated by a channel with an excited core (<span class="math notranslate nohighlight">\(\langle l_c \rangle &gt; 1/2\)</span>). The Robicheaux models do not contain such states.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">perturbers</span> <span class="o">=</span> <span class="n">bases</span><span class="p">[</span><span class="s2">"Vaillant 2024"</span><span class="p">]</span><span class="o">.</span><span class="n">shallow_copy</span><span class="p">()</span><span class="o">.</span><span class="n">filter_states</span><span class="p">(</span><span class="s2">"l_c"</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">sort_states</span><span class="p">(</span><span class="s2">"nu"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'energy (1/cm)'</span><span class="si">:</span><span class="s2">&gt;14s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'nu'</span><span class="si">:</span><span class="s2">&gt;7s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'F'</span><span class="si">:</span><span class="s2">&gt;3s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'parity'</span><span class="si">:</span><span class="s2">&gt;6s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'&lt;l_c&gt;'</span><span class="si">:</span><span class="s2">&gt;6s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'&lt;S&gt;'</span><span class="si">:</span><span class="s2">&gt;5s</span><span class="si">}</span><span class="s2">  model"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">perturbers</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">(</span><span class="s1">'1/cm'</span><span class="p">)</span><span class="si">:</span><span class="s2">14.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">nu</span><span class="si">:</span><span class="s2">7.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">f_tot</span><span class="si">:</span><span class="s2">3.0f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">parity</span><span class="si">:</span><span class="s2">6d</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">calc_exp_qn</span><span class="p">(</span><span class="s1">'l_c'</span><span class="p">)</span><span class="si">:</span><span class="s2">6.2f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">calc_exp_qn</span><span class="p">(</span><span class="s1">'s_tot'</span><span class="p">)</span><span class="si">:</span><span class="s2">5.2f</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ energy (1/cm)      nu   F parity  &lt;l_c&gt;   &lt;S&gt;  model
+     37292.073   3.564   0     -1   1.73  1.00  P J=0, nu &gt; 2.8
+     37302.730   3.566   1     -1   1.72  1.00  P J=1 triplet, nu &gt; 2.8
+     37336.590   3.573   2     -1   1.74  1.00  P J=2, nu &gt; 2.8
+     38007.742   3.721   3     -1   0.87  0.00  F J=3 singlet, nu &gt; 3.5
+     38444.013   3.828   0      1   0.74  0.15  S J=0, nu &gt; 3.7
+     39539.013   4.143   3     -1   0.75  0.00  F J=3 singlet, nu &gt; 3.5
+     44525.838   8.833   0      1   1.97  0.59  S J=0, nu &gt; 3.7
+     44730.547   9.556   2      1   1.89  0.97  D J=2, nu &gt; 5.7
+</pre></div></div>
+</div>
+<p>These are the <span class="math notranslate nohighlight">\(4d5p\)</span> <span class="math notranslate nohighlight">\(^3P_{0,1,2}\)</span> states at <span class="math notranslate nohighlight">\(\nu \approx 3.57\)</span>, the <span class="math notranslate nohighlight">\(4d5p\)</span> <span class="math notranslate nohighlight">\(^1F_3\)</span> state at <span class="math notranslate nohighlight">\(\nu \approx 3.72\)</span>, the <span class="math notranslate nohighlight">\(4d^2\)</span> <span class="math notranslate nohighlight">\(^3P_0\)</span> state at <span class="math notranslate nohighlight">\(\nu \approx 8.83\)</span> and the <span class="math notranslate nohighlight">\(4d^2\)</span> <span class="math notranslate nohighlight">\(^3P_2\)</span> state at <span class="math notranslate nohighlight">\(\nu \approx 9.56\)</span> (the <span class="math notranslate nohighlight">\(5s7s\)</span> <span class="math notranslate nohighlight">\(^1S_0\)</span> state at <span class="math notranslate nohighlight">\(\nu \approx 3.83\)</span> also appears here, since the model gives it a predominant <span class="math notranslate nohighlight">\(4dnd\)</span> character). Note that the radial wavefunctions of the closed perturber channels
+have channel quantum numbers <span class="math notranslate nohighlight">\(\nu_i \lesssim l_r + 1\)</span>, for which rydstate warns about the inner boundary of the Numerov integration; the energies are not affected, but matrix elements involving these components should be treated with care.</p>
+</section>
+<section id="Composition-of-a-single-state">
+<h2>Composition of a single state<a class="headerlink" href="#Composition-of-a-single-state" title="Link to this heading"></a></h2>
+<p>Finally we look at the channel composition of one state in both model sets, the <span class="math notranslate nohighlight">\(5s30d\)</span> <span class="math notranslate nohighlight">\(^1D_2\)</span> state at <span class="math notranslate nohighlight">\(\nu \approx 27.67\)</span>. The bars show the squared coefficients of the state on the FJ coupled channels.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ket_label</span><span class="p">(</span><span class="n">ket</span><span class="p">:</span> <span class="n">RydbergKet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">ket</span><span class="o">.</span><span class="n">angular</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">n_c</span><span class="si">}{</span><span class="s1">'spdf'</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">l_c</span><span class="p">]</span><span class="si">}</span><span class="s2">$_</span><span class="se">{{</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="o">.</span><span class="n">j_c</span><span class="p">)</span><span class="si">}</span><span class="s2">/2</span><span class="se">}}</span><span class="s2">$ n</span><span class="si">{</span><span class="s1">'spdf'</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">l_r</span><span class="p">]</span><span class="si">}</span><span class="s2">$_</span><span class="se">{{</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="o">.</span><span class="n">j_r</span><span class="p">)</span><span class="si">}</span><span class="s2">/2</span><span class="se">}}</span><span class="s2">$"</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="n">series_bases</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">"5snd 1D2"</span><span class="p">]</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d2</span><span class="o">.</span><span class="n">states</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">nu</span> <span class="o">-</span> <span class="mf">27.67</span><span class="p">))</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">coefficients</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">ket_label</span><span class="p">(</span><span class="n">ket</span><span class="p">)</span> <span class="k">for</span> <span class="n">ket</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">rydberg_kets</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)),</span> <span class="n">weights</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">styles</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">"color"</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)),</span> <span class="n">labels</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">"right"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: nu = </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">nu</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, E = </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">get_energy</span><span class="p">(</span><span class="s1">'1/cm'</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> 1/cm"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">weights</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;</span> <span class="mf">1e-3</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">w</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">"center"</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">"bottom"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">"$|c_i|^2$"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">1e-6</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/examples_comparisons_compare_sr88_models_19_0.png" src="../../_images/examples_comparisons_compare_sr88_models_19_0.png" />
+</div>
+</div>
+<p>Both models describe the state as a superposition of the two <span class="math notranslate nohighlight">\(5s_{1/2}nd_j\)</span> channels with a small admixture of the other channel, but they differ in the size of the singlet-triplet mixing (0.3% vs 1.9% triplet admixture at <span class="math notranslate nohighlight">\(n = 30\)</span>, see the previous plot), which is why the weights of the two <span class="math notranslate nohighlight">\(5s_{1/2}nd_j\)</span> channels differ noticeably (a pure <span class="math notranslate nohighlight">\(^1D_2\)</span> state would have weights 3/5 and 2/5). The Vaillant model additionally resolves the small <span class="math notranslate nohighlight">\(4dns\)</span>, <span class="math notranslate nohighlight">\(5pnp\)</span> and
+<span class="math notranslate nohighlight">\(4dnd\)</span> perturber admixtures.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="compare_whittaker.html" class="btn btn-neutral float-left" title="Comparison: Numerov - Whittaker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../benchmark/benchmark_njit.html" class="btn btn-neutral float-right" title="Benchmark of Numerov integration with and without using numba.njit" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, RydState Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
