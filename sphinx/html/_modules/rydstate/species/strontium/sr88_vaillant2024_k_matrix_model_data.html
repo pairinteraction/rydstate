@@ -1,0 +1,657 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data &mdash; RydState 0.14.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=9e420a66"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            RydState
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#radialket">RadialKet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/radial/hydrogen_wavefunction.html">Hydrogen radial wavefunction via numerov and from sympy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/radial/rubidium_wavefunction.html">Rubidium wavefunction and potential</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#angularstate">AngularState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/angular/angular_state.html">Using AngularKets and AngularStates in different spin coupling schemes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#rydbergstate">RydbergState</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/dipole_matrix_elements.html">Calculating dipole matrix elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/lifetimes.html">Lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#mqdt">MQDT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/mqdt/mqdt_exp_qn.html">Labeling the angular character of Yb 171</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/mqdt/spectrum_with_overlaps.html">MQDT Spectrum with overlaps of OSQDT states and Tunable MQDT models</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples.html#comparisons">Comparisons</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_z_min_cutoff.html">Comparison of the z_min values for circular states</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_nist_energy_levels_data.html">Compare NIST energy levels data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_nist_matrix_elements.html">Compare Rb <span class="math notranslate nohighlight">\(5s \rightarrow np_j\)</span> matrix elements with NIST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_nist_matrix_elements_Sr88_sqdt.html">Compare Sr <span class="math notranslate nohighlight">\(5s5s \rightarrow 5snl\)</span> matrix elements with NIST</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_model_potentials.html">Compare different effective model potentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_whittaker.html">Comparison: Numerov - Whittaker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/comparisons/compare_sr88_models.html">Compare the Sr88 MQDT models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../examples/benchmark/benchmark_njit.html">Benchmark of Numerov integration with and without using numba.njit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/rydberg_state.html">Rydberg States</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.rydberg_state.RydbergStateSQDT.html">RydbergStateSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.rydberg_state.RydbergStateSQDTAlkali.html">RydbergStateSQDTAlkali</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.rydberg_state.RydbergStateSQDTDivalent.html">RydbergStateSQDTDivalent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.rydberg_state.RydbergStateMQDT.html">RydbergStateMQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.rydberg_state.RydbergKet.html">RydbergKet</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/basis.html">Rydberg Basis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.basis.BasisSQDT.html">BasisSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.basis.BasisMQDT.html">BasisMQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.basis.BasisOSQDT.html">BasisOSQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.basis.BasisTunableMQDT.html">BasisTunableMQDT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/angular.html">Angular module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.AngularKetLS.html">AngularKetLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.AngularKetJJ.html">AngularKetJJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.AngularKetFJ.html">AngularKetFJ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.AngularState.html">AngularState</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.CoreKet.html">CoreKet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.angular.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/radial.html">Radial module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.radial.RadialKet.html">RadialKet</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/species.html">Species Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.ElementProperties.html">ElementProperties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.PotentialCoulomb.html">PotentialCoulomb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.PotentialMarinescu1994.html">PotentialMarinescu1994</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.PotentialFei2009.html">PotentialFei2009</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.SQDT.html">SQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.MQDT.html">MQDT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.cesium.html">cesium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.hydrogen.html">hydrogen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.lithium.html">lithium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.potassium.html">potassium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.rubidium.html">rubidium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.sodium.html">sodium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.strontium.html">strontium</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.species.ytterbium.html">ytterbium</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/generate_database.html">Generate Database module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.generate_database.create_tables_for_sqdt.html">create_tables_for_sqdt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.generate_database.create_tables_for_mqdt.html">create_tables_for_mqdt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../_autosummary/rydstate.generate_database.create_tables_for_misc.html">create_tables_for_misc</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<style>
+a.gitbutton {
+  display: block;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #fff;
+  padding-top: 10px;
+  padding-left: 85px;
+  padding-right: 0px;
+  margin: 22px;
+  width: 240px;
+  height: 60px;
+  background: transparent url("../../../../_static/buttons/github.svg") 0 0 no-repeat;
+}
+a.gitbutton small {
+  display: block;
+  font-size: 11px;
+}
+button.toctree-expand {
+  display: none;
+}
+</style>
+<a href="https://github.com/pairinteraction/rydstate" class="gitbutton">Explore<small>the GitHub repository</small></a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">RydState</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data</h1><div class="highlight"><pre>
+<span></span><span class="c1"># ruff: noqa: RUF012, N801</span>
+<span class="sd">"""MQDT models for Sr88 in the reactance matrix (K-matrix) formulation of Vaillant, Jones and Potvliege.</span>
+
+<span class="sd">The models were originally published in</span>
+<span class="sd">C. L. Vaillant, M. P. A. Jones and R. M. Potvliege, J. Phys. B: At. Mol. Opt. Phys. 47, 155001 (2014)</span>
+<span class="sd">and updated in the Addendum</span>
+<span class="sd">J. Phys. B: At. Mol. Opt. Phys. 57, 199401 (2024), https://doi.org/10.1088/1361-6455/ad76f0 (arXiv:2403.08742)</span>
+<span class="sd">all K-matrix parameters below are taken from the Addendum.</span>
+<span class="sd">Table III of the Addendum quotes the parameters with 7 significant digits, we use the values with 9 significant</span>
+<span class="sd">digits from the mqdtfit scripts (https://github.com/durham-qlm/mqdtfit).</span>
+
+<span class="sd">The K-matrix elements are given in the frame of the dissociation channels of the paper (outer channels here):</span>
+<span class="sd">jj-coupled channels where the fine structure of the ionic core is resolved (5s_1/2 nl_j, 4d_5/2 nl_j, 4d_3/2 nl_j)</span>
+<span class="sd">and LS-coupled channels where an averaged ionization threshold is used (4dnl, 5pnp), see Table I of the Addendum.</span>
+
+<span class="sd">Sign convention of the off-diagonal elements</span>
+<span class="sd">--------------------------------------------</span>
+<span class="sd">The channel kets of the paper and of rydstate differ by channel dependent signs, because the two valence electrons</span>
+<span class="sd">are coupled in the opposite order. The paper couples the core electron (1) first and the Rydberg electron (2)second,</span>
+<span class="sd">see the jj-&gt;LS recoupling formula in Sec. 2 of the 2014 paper (matrix U_{i alphabar} of mqdtfit)::</span>
+
+<span class="sd">    &lt;(l_c s_c) j_c, (l_r s_r) j_r; J | (l_c l_r) L, (s_c s_r) S; J&gt;</span>
+<span class="sd">        = sqrt((2 j_c + 1) (2 j_r + 1) (2 L + 1) (2 S + 1)) * 9j{l_c s_c j_c; l_r s_r j_r; L S J}</span>
+
+<span class="sd">whereas the rydstate kets couple the Rydberg electron first, see :meth:`AngularKetBase.calc_reduced_overlap`</span>
+<span class="sd">(note the order of the arguments of the 9j symbol)::</span>
+
+<span class="sd">    &lt;(l_r s_r) j_r, (l_c s_c) j_c; J | (l_r l_c) L, (s_r s_c) S; J&gt;</span>
+<span class="sd">        = sqrt((2 j_r + 1) (2 j_c + 1) (2 L + 1) (2 S + 1)) * 9j{l_r s_r j_r; l_c s_c j_c; L S J}</span>
+
+<span class="sd">Exchanging the coupling order of two angular momenta j_1, j_2 -&gt; j_12 multiplies the coupled ket by</span>
+<span class="sd">(-1)^(j_1 + j_2 - j_12), so the kets of the paper are related to the rydstate kets by::</span>
+
+<span class="sd">    |i&gt;_paper = d_i |i&gt;_rydstate,  with  d_i = (-1)^(j_c + j_r - J)                   for jj-coupled channels,</span>
+<span class="sd">                                           d_i = (-1)^(l_c + l_r - L) * (-1)^(1 - S)   for LS-coupled channels.</span>
+
+<span class="sd">Consequently the K-matrix in the rydstate frame is K_rydstate = D K_paper D with D = diag(d_i), i.e. the off-diagonal</span>
+<span class="sd">elements between two channels with different d_i are multiplied by -1 compared to Table III of the Addendum</span>
+<span class="sd">(marked with (*) in the comments below).</span>
+<span class="sd">This reproduces the recoupling matrices U_{i alphabar} of mqdtfit exactly</span>
+<span class="sd">(see the test test_vaillant2024_recoupling_phase_convention),</span>
+<span class="sd">and is necessary to get the correct singlet/triplet character and matrix elements.</span>
+<span class="sd">The energies of all states are independent of these signs, since det(D M D) = det(M).</span>
+
+<span class="sd">Validity ranges</span>
+<span class="sd">---------------</span>
+<span class="sd">The lower bound of nu_range of each model is chosen such that all states used in the fit are included,</span>
+<span class="sd">but no lower lying states, which the models do not reproduce (e.g. 5s6s 1S0 or 5s5d 1D2).</span>
+
+<span class="sd">Triplet F series</span>
+<span class="sd">----------------</span>
+<span class="sd">The triplet F series are not covered by the Addendum,</span>
+<span class="sd">which revisited only the singlet and triplet S, P and D series and the singlet F series.</span>
+<span class="sd">The three-channel models of the original 2014 paper (table IX, with the 5snf 3FJ, 4dnp 3FJ and 4dnf 3FJ channels)</span>
+<span class="sd">are not usable instead: they are among the parameters affected by the sign error of the fitting program</span>
+<span class="sd">(they give quantum defects of ~0.19 instead of the measured ~0.12 for n = 10-25) and were not refitted.</span>
+<span class="sd">We therefore describe the triplet F series by single channel models with the Rydberg-Ritz quantum defects of</span>
+<span class="sd">Robertson 2021 (ARC 3.0, table B.1), fitted to the 5snf 3FJ levels of Rubbmark 1978 and Sansonetti 2010 (NIST)</span>
+<span class="sd">with the same ionization threshold I_s = 45932.2002 1/cm as used here.</span>
+<span class="sd">We use the unrounded values of the ARC source code.</span>
+<span class="sd">These quantum defects reproduce the NIST levels with n = 10-20</span>
+<span class="sd">to &lt; 0.15 1/cm (rms 0.04-0.06 1/cm, i.e. the NIST uncertainty), see test_vaillant2024_triplet_f_energies_match_nist.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.angular.angular_ket</span><span class="w"> </span><span class="kn">import</span> <span class="n">AngularKetJJ</span><span class="p">,</span> <span class="n">AngularKetLS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.species.eigen_channel_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">EigenChannelModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rydstate.species.k_matrix_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">KMatrixModel</span>
+
+<span class="n">REFERENCE_VAILLANT_2024</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"C. L. Vaillant, M. P. A. Jones and R. M. Potvliege, "</span>
+    <span class="s2">"J. Phys. B: At. Mol. Opt. Phys. 57, 199401 (2024), https://doi.org/10.1088/1361-6455/ad76f0 "</span>
+    <span class="s2">"(Addendum to J. Phys. B: At. Mol. Opt. Phys. 47, 155001 (2014), https://doi.org/10.1088/0953-4075/47/15/155001)"</span>
+<span class="p">)</span>
+<span class="n">REFERENCE_ROBERTSON_2021</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"E. J. Robertson, N. Šibalić, R. M. Potvliege and M. P. A. Jones, "</span>
+    <span class="s2">"Comput. Phys. Commun. 261, 107814 (2021), https://doi.org/10.1016/j.cpc.2020.107814 "</span>
+    <span class="s2">"(Rydberg-Ritz fit to the data of J. R. Rubbmark and S. A. Borgström, Phys. Scr. 18, 196 (1978) "</span>
+    <span class="s2">"and J. E. Sansonetti and G. Nave, J. Phys. Chem. Ref. Data 39, 033103 (2010))"</span>
+<span class="p">)</span>
+
+<span class="c1"># LS-coupled channels with a 4d core, whose j_c is fixed by the angular momentum coupling (e.g. 4dns 3D1 is purely</span>
+<span class="c1"># 4d_3/2 ns_1/2, 4dns 3D3 purely 4d_5/2 ns_1/2 and 4dnp 3P0 purely 4d_3/2 np_3/2), are labeled to use the averaged</span>
+<span class="c1"># 4d ionization threshold of the paper instead of the fine structure resolved one</span>
+<span class="c1"># (see the ionization_threshold_dict of the MQDT class).</span>
+<span class="n">LABEL_4D_AVERAGED</span> <span class="o">=</span> <span class="s2">"4d threshold averaged"</span>
+
+
+<span class="c1"># --------------------------------------------------------</span>
+<span class="c1"># S states</span>
+<span class="c1"># --------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Sr88_S0_Vaillant2024">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_S0_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_S0_Vaillant2024">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_S0_Vaillant2024</span><span class="p">(</span><span class="n">KMatrixModel</span><span class="p">):</span>
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"S J=0, nu &gt; 3.7"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">3.7</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># fitted to 5sns 1S0, n = 7-30, and the 4d2 3P0 perturber</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_VAILLANT_2024</span>
+
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetJJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5s_1/2 ns_1/2</span>
+        <span class="n">AngularKetJJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 4d_5/2 nd_5/2</span>
+        <span class="n">AngularKetJJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 4d_3/2 nd_3/2</span>
+    <span class="p">]</span>
+
+    <span class="c1"># All channels have the same phase d_i = -1 (see the module docstring), so no sign is changed.</span>
+    <span class="n">k_matrix_entries</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.05126086e0</span><span class="p">,</span> <span class="mf">8.76391110e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">3.75986417e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.36548468e-2</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">6.40092484e-1</span><span class="p">,</span> <span class="mf">4.04258438e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.06382548e-4</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mf">3.00908733e0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.72263065e1</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_S1_Vaillant2024">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_S1_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_S1_Vaillant2024">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_S1_Vaillant2024</span><span class="p">(</span><span class="n">KMatrixModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""5sns 3S1 model fitted to the data set (b) of the Addendum (high precision data of Couturier 2019 for n &gt;= 13).</span>
+
+<span class="sd">    The Addendum also gives a fit to the older data set (a) of the 2014 paper, which is not included here.</span>
+<span class="sd">    """</span>
+
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"S J=1, nu &gt; 3.4"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">3.4</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># fitted to 5sns 3S1, n = 7-23</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_VAILLANT_2024</span>
+
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5sns 3S1</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5pnp 3P1</span>
+    <span class="p">]</span>
+
+    <span class="c1"># The element marked with (*) has the opposite sign compared to Table III of the Addendum,</span>
+    <span class="c1"># due to the different phase convention of the kets (d_i = +1 for 5sns 3S1, -1 for 5pnp 3P1),</span>
+    <span class="c1"># see the module docstring.</span>
+    <span class="n">k_matrix_entries</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.03924403e2</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.76691239e1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.33451654e2</span><span class="p">]),</span>  <span class="c1"># (*)</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.68045201e2</span><span class="p">,</span> <span class="mf">5.51718438e1</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<span class="c1"># --------------------------------------------------------</span>
+<span class="c1"># P states</span>
+<span class="c1"># --------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Sr88_P1_Singlet_Vaillant2024">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P1_Singlet_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P1_Singlet_Vaillant2024">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_P1_Singlet_Vaillant2024</span><span class="p">(</span><span class="n">KMatrixModel</span><span class="p">):</span>
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"P J=1 singlet, nu &gt; 2.8"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># fitted to 5snp 1P1, n = 6-29, and the 4d5p 1P1 perturber</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_VAILLANT_2024</span>
+
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snp 1P1</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 4dnp 1P1</span>
+    <span class="p">]</span>
+
+    <span class="n">k_matrix_entries</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.11680885e1</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.09786173e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.61693288e1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">2.23961659e1</span><span class="p">,</span> <span class="mf">4.27262604e0</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_P0_Vaillant2024">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P0_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P0_Vaillant2024">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_P0_Vaillant2024</span><span class="p">(</span><span class="n">KMatrixModel</span><span class="p">):</span>
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"P J=0, nu &gt; 2.8"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># fitted to 5snp 3P0, n = 6-15, and the 4d5p 3P0 perturber</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_VAILLANT_2024</span>
+
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snp 3P0</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">LABEL_4D_AVERAGED</span><span class="p">),</span>  <span class="c1"># 4dnp 3P0</span>
+    <span class="p">]</span>
+
+    <span class="n">k_matrix_entries</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">4.00956527e-1</span><span class="p">,</span> <span class="mf">1.03992333e0</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.22056880e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">4.02518026e-1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.02169594e0</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_P1_Triplet_Vaillant2024">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P1_Triplet_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P1_Triplet_Vaillant2024">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_P1_Triplet_Vaillant2024</span><span class="p">(</span><span class="n">KMatrixModel</span><span class="p">):</span>
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"P J=1 triplet, nu &gt; 2.8"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># fitted to 5snp 3P1, n = 6-15, and the 4d5p 3P1 perturber</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_VAILLANT_2024</span>
+
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snp 3P1</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 4dnp 3P1</span>
+    <span class="p">]</span>
+
+    <span class="n">k_matrix_entries</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">4.19906665e-1</span><span class="p">,</span> <span class="mf">1.08261507e0</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.29230418e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">3.52617910e-1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.30477942e0</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_P2_Vaillant2024">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P2_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_P2_Vaillant2024">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_P2_Vaillant2024</span><span class="p">(</span><span class="n">KMatrixModel</span><span class="p">):</span>
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"P J=2, nu &gt; 2.8"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># fitted to 5snp 3P2, n = 6-15, and the 4d5p 3P2 perturber</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_VAILLANT_2024</span>
+
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snp 3P2</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 4dnp 3P2</span>
+    <span class="p">]</span>
+
+    <span class="n">k_matrix_entries</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">4.53113343e-1</span><span class="p">,</span> <span class="mf">1.05086557e0</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.17961927e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">5.28510182e-1</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.05119877e-1</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<span class="c1"># --------------------------------------------------------</span>
+<span class="c1"># D states</span>
+<span class="c1"># --------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Sr88_D2_Vaillant2024">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D2_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D2_Vaillant2024">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_D2_Vaillant2024</span><span class="p">(</span><span class="n">KMatrixModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Combined 6-channel model for the strongly mixed 5snd 1D2 and 5snd 3D2 series."""</span>
+
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"D J=2, nu &gt; 5.7"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">5.7</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># fitted to 5snd 1D2 and 3D2, n = 8-30, and the 4d2 3P2 perturber</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_VAILLANT_2024</span>
+
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetJJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5s_1/2 nd_5/2</span>
+        <span class="n">AngularKetJJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5s_1/2 nd_3/2</span>
+        <span class="n">AngularKetJJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 4d_5/2 ns_1/2</span>
+        <span class="n">AngularKetJJ</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_c</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">j_r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 4d_3/2 ns_1/2</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5pnp 1D2</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 4dnd 3P2</span>
+    <span class="p">]</span>
+
+    <span class="c1"># The elements marked with (*) have the opposite sign compared to Table III of the Addendum,</span>
+    <span class="c1"># due to the different phase convention of the kets (d_i = -1, +1, -1, +1, -1, -1), see the module docstring.</span>
+    <span class="n">k_matrix_entries</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">3.85388310e-1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.77532611e0</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.30810347e-1</span><span class="p">]),</span>  <span class="c1"># (*)</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.99689799e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">6.24839129e-1</span><span class="p">]),</span>  <span class="c1"># (*)</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.38162135e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">8.94462406e-2</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">4.88187724e-1</span><span class="p">,</span> <span class="mf">2.05255442e0</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mf">6.41169781e-1</span><span class="p">]),</span>  <span class="c1"># (*)</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mf">8.10126226e-6</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mf">4.84958202e-1</span><span class="p">]),</span>  <span class="c1"># (*)</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.42734982e-3</span><span class="p">]),</span>  <span class="c1"># (*)</span>
+        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.13622499e0</span><span class="p">,</span> <span class="mf">4.73380410e0</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.07880487e-1</span><span class="p">]),</span>  <span class="c1"># (*)</span>
+        <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.12383070e0</span><span class="p">,</span> <span class="mf">3.98916238e0</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mf">6.11787736e-1</span><span class="p">,</span> <span class="mf">5.29286844e0</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="mf">2.20539967e0</span><span class="p">,</span> <span class="mf">6.07956188e0</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_D1_Vaillant2024">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D1_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D1_Vaillant2024">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_D1_Vaillant2024</span><span class="p">(</span><span class="n">KMatrixModel</span><span class="p">):</span>
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"D J=1, nu &gt; 9.5"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">9.5</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># fitted to 5snd 3D1, n = 12-15 and 17-50</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_VAILLANT_2024</span>
+
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snd 3D1</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">LABEL_4D_AVERAGED</span><span class="p">),</span>  <span class="c1"># 4dns 3D1</span>
+    <span class="p">]</span>
+
+    <span class="n">k_matrix_entries</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">7.40335913e-1</span><span class="p">,</span> <span class="mf">9.68468100e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">5.50457207e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.46140049e0</span><span class="p">,</span> <span class="mf">2.77735257e-1</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_D3_Vaillant2024">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D3_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_D3_Vaillant2024">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_D3_Vaillant2024</span><span class="p">(</span><span class="n">KMatrixModel</span><span class="p">):</span>
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"D J=3, nu &gt; 3.9"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">3.9</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># fitted to 5snd 3D3, n = 6-8, 9-21 and 23-29</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_VAILLANT_2024</span>
+
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snd 3D3</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">LABEL_4D_AVERAGED</span><span class="p">),</span>  <span class="c1"># 4dns 3D3</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 4dnd 3D3</span>
+    <span class="p">]</span>
+
+    <span class="n">k_matrix_entries</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">7.79385678e-1</span><span class="p">,</span> <span class="mf">1.07199739e0</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">4.36019812e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mf">2.22978797e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.21231421e0</span><span class="p">,</span> <span class="mf">8.51416131e0</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.68322545e-4</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.23826516e-1</span><span class="p">,</span> <span class="mf">5.54442589e0</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<span class="c1"># --------------------------------------------------------</span>
+<span class="c1"># F states</span>
+<span class="c1"># --------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Sr88_F3_Singlet_Vaillant2024">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F3_Singlet_Vaillant2024.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F3_Singlet_Vaillant2024">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_F3_Singlet_Vaillant2024</span><span class="p">(</span><span class="n">KMatrixModel</span><span class="p">):</span>
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"F J=3 singlet, nu &gt; 3.5"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">3.5</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># fitted to 5snf 1F3, n = 4-29, and the 4d5p 1F3 perturber</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_VAILLANT_2024</span>
+
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snf 1F3</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 4dnp 1F3</span>
+    <span class="p">]</span>
+
+    <span class="n">k_matrix_entries</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.71163074e-1</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.53036781e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mf">4.50595126e-1</span><span class="p">]),</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mf">6.97829350e-1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.31850526e0</span><span class="p">]),</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_F2_Robertson2021">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F2_Robertson2021.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F2_Robertson2021">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_F2_Robertson2021</span><span class="p">(</span><span class="n">EigenChannelModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""5snf 3F2 series, described by its Rydberg-Ritz quantum defects, since Vaillant 2024 has no triplet F models."""</span>
+
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"F J=2 (Rydberg-Ritz), nu &gt; 9"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># quantum defects fitted to 5snf 3F2, n = 10-24</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_ROBERTSON_2021</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snf 3F2</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snf 3F2</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.120588</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.1847</span><span class="p">,</span> <span class="mf">102.98</span><span class="p">],</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_F3_Triplet_Robertson2021">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F3_Triplet_Robertson2021.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F3_Triplet_Robertson2021">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_F3_Triplet_Robertson2021</span><span class="p">(</span><span class="n">EigenChannelModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""5snf 3F3 series, described by its Rydberg-Ritz quantum defects, since Vaillant 2024 has no triplet F models.</span>
+
+<span class="sd">    The singlet 5snf 1F3 series of the same symmetry is described by :class:`Sr88_F3_Singlet_Vaillant2024`.</span>
+<span class="sd">    Both series are treated as independent here, which is the same approximation as in the default Sr88 models</span>
+<span class="sd">    (there, the 1F3 and 3F3 channels are the two uncoupled eigen channels of a single F J=3 model).</span>
+<span class="sd">    """</span>
+
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"F J=3 triplet (Rydberg-Ritz), nu &gt; 9"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># quantum defects fitted to 5snf 3F3, n = 10-24</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_ROBERTSON_2021</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snf 3F3</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snf 3F3</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.11899</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0446</span><span class="p">,</span> <span class="mf">103.26</span><span class="p">],</span>
+    <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Sr88_F4_Robertson2021">
+<a class="viewcode-back" href="../../../../_autosummary/rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F4_Robertson2021.html#rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data.Sr88_F4_Robertson2021">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sr88_F4_Robertson2021</span><span class="p">(</span><span class="n">EigenChannelModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""5snf 3F4 series, described by its Rydberg-Ritz quantum defects, since Vaillant 2024 has no triplet F models."""</span>
+
+    <span class="n">species</span> <span class="o">=</span> <span class="s2">"Sr88"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"F J=4 (Rydberg-Ritz), nu &gt; 9"</span>
+    <span class="n">f_tot</span><span class="p">,</span> <span class="n">parity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nu_range</span> <span class="o">=</span> <span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>  <span class="c1"># quantum defects fitted to 5snf 3F4, n = 10-28</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="n">REFERENCE_ROBERTSON_2021</span>
+
+    <span class="n">inner_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snf 3F4</span>
+    <span class="p">]</span>
+    <span class="n">outer_channels</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AngularKetLS</span><span class="p">(</span><span class="n">l_c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">l_r</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">l_tot</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">s_tot</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j_tot</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="s2">"Sr88"</span><span class="p">),</span>  <span class="c1"># 5snf 3F4</span>
+    <span class="p">]</span>
+
+    <span class="n">eigen_quantum_defects</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.12000</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.37716</span><span class="p">,</span> <span class="mf">118.97</span><span class="p">],</span>
+    <span class="p">]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, RydState Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

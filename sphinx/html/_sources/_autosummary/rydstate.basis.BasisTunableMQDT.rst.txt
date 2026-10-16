@@ -1,0 +1,40 @@
+﻿BasisTunableMQDT
+================
+
+.. currentmodule:: rydstate.basis
+
+
+
+
+.. rubric:: Class Methods
+
+.. autosummary::
+   
+      ~BasisTunableMQDT.__init__
+      ~BasisTunableMQDT.calc_exp_qn
+      ~BasisTunableMQDT.calc_reduced_matrix_element
+      ~BasisTunableMQDT.calc_reduced_matrix_elements
+      ~BasisTunableMQDT.calc_reduced_overlap
+      ~BasisTunableMQDT.calc_reduced_overlaps
+      ~BasisTunableMQDT.calc_std_qn
+      ~BasisTunableMQDT.filter_states
+      ~BasisTunableMQDT.filter_states_label
+      ~BasisTunableMQDT.shallow_copy
+      ~BasisTunableMQDT.sort_states
+
+
+
+.. rubric:: Class Attributes and Properties
+
+.. autosummary::
+
+   ~BasisTunableMQDT.states
+
+
+
+.. autoclass:: rydstate.basis.BasisTunableMQDT
+   :members:
+   :member-order: bysource
+   :inherited-members:
+   :undoc-members:
+   :class-doc-from: init

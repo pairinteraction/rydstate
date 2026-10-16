@@ -1,0 +1,85 @@
+sr88\_vaillant2024\_k\_matrix\_model\_data
+==========================================
+Full module path: rydstate.species.strontium.sr88\_vaillant2024\_k\_matrix\_model\_data
+
+.. workaround to ignore generic classes like AtomSQDT[int]
+
+
+   
+      
+   
+   
+      
+   
+   
+      
+   
+   
+      
+   
+   
+      
+   
+   
+      
+   
+   
+      
+   
+   
+      
+   
+   
+      
+   
+   
+      
+   
+   
+      
+   
+   
+      
+   
+   
+      
+   
+
+
+.. currentmodule:: rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data
+
+
+
+
+
+
+.. rubric:: Classes
+
+.. .. inheritance-diagram:: rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data
+..     :parts: 1
+
+.. autosummary::
+   :toctree: .
+   
+      Sr88_D1_Vaillant2024
+      Sr88_D2_Vaillant2024
+      Sr88_D3_Vaillant2024
+      Sr88_F2_Robertson2021
+      Sr88_F3_Singlet_Vaillant2024
+      Sr88_F3_Triplet_Robertson2021
+      Sr88_F4_Robertson2021
+      Sr88_P0_Vaillant2024
+      Sr88_P1_Singlet_Vaillant2024
+      Sr88_P1_Triplet_Vaillant2024
+      Sr88_P2_Vaillant2024
+      Sr88_S0_Vaillant2024
+      Sr88_S1_Vaillant2024
+
+
+
+
+
+
+.. rubric:: Module description
+
+.. automodule:: rydstate.species.strontium.sr88_vaillant2024_k_matrix_model_data
