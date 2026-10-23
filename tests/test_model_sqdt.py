@@ -5,8 +5,9 @@ import math
 from pathlib import Path
 
 import pytest
+import rydstate.species.rubidium
 from rydstate.angular import AngularKetJJ, AngularKetLS
-from rydstate.qdt import ModelSetSQDT, ModelSQDT, get_sqdt, register_model_set_sqdt
+from rydstate.qdt import Model, ModelSetSQDT, ModelSQDT, ModelSQDTBase, ModelSQDTNist, get_sqdt, register_model_set_sqdt
 from rydstate.qdt.sqdt.model_set_sqdt import _SQDT_MODEL_SETS
 
 
@@ -70,16 +71,16 @@ def test_model_set_uses_model_of_nu_range(monkeypatch: pytest.MonkeyPatch) -> No
         # the models are found independent of m
         angular_m = AngularKetLS(l_r=0, j_tot=0.5, f_tot=0.5, m=-0.5, species="Rb")
         assert sqdt.get_models(angular_m) == [low_n, high_n]
-        assert sqdt.calc_nui(50, angular_m, use_nist_data=False) == pytest.approx(50 - 3.2)
+        assert sqdt.calc_nui(50, angular_m) == pytest.approx(50 - 3.2)
         # kets in other coupling schemes are converted to LS by calc_nui, but not by get_models
         angular_jj = AngularKetJJ(l_r=0, j_r=0.5, j_tot=0.5, f_tot=0.5, species="Rb")
-        assert sqdt.calc_nui(50, angular_jj, use_nist_data=False) == pytest.approx(50 - 3.2)
+        assert sqdt.calc_nui(50, angular_jj) == pytest.approx(50 - 3.2)
         with pytest.raises(ValueError, match="must be in LS coupling"):
             sqdt.get_models(angular_jj)
-        assert sqdt.calc_nui(20, angular, use_nist_data=False) == pytest.approx(20 - 3.1)
-        assert sqdt.calc_nui(50, angular, use_nist_data=False) == pytest.approx(50 - 3.2)
+        assert sqdt.calc_nui(20, angular) == pytest.approx(20 - 3.1)
+        assert sqdt.calc_nui(50, angular) == pytest.approx(50 - 3.2)
         with pytest.raises(ValueError, match="None of the SQDT models"):
-            sqdt.calc_nui(120, angular, use_nist_data=False)
+            sqdt.calc_nui(120, angular)
 
         assert sqdt.get_model(20, angular) is low_n
         assert sqdt.get_model(50, angular_m) is high_n
@@ -88,9 +89,10 @@ def test_model_set_uses_model_of_nu_range(monkeypatch: pytest.MonkeyPatch) -> No
         angular_p = AngularKetLS(l_r=1, j_tot=0.5, f_tot=0.5, species="Rb")
         assert sqdt.get_models(angular_p) == []
         trivial_model = sqdt.get_model(20, angular_p)
+        assert isinstance(trivial_model, ModelSQDT)
         assert trivial_model.quantum_defects == [0.0]
         assert sqdt.get_model(30, angular_p) is trivial_model
-        assert sqdt.calc_nui(20, angular_p, use_nist_data=False) == 20
+        assert sqdt.calc_nui(20, angular_p) == 20
 
 
 def test_ionization_thresholds() -> None:
@@ -105,19 +107,32 @@ def test_ionization_thresholds() -> None:
 
 
 ALL_SQDT_MODEL_SETS = list(_SQDT_MODEL_SETS.values())
-ALL_SQDT_MODELS = [model for model_set in ALL_SQDT_MODEL_SETS for model in model_set.models or []]
+ALL_SQDT_MODELS = [(model_set, model) for model_set in ALL_SQDT_MODEL_SETS for model in model_set.models]
+RUBIDIUM_NIST_DATA_FILE = Path(rydstate.species.rubidium.__file__).parent / "nist_data.txt"
 
 
-@pytest.mark.parametrize("model", ALL_SQDT_MODELS, ids=lambda model: model.full_name)
-def test_json_round_trip(model: ModelSQDT) -> None:
+@pytest.mark.parametrize(
+    ("model_set", "model"),
+    ALL_SQDT_MODELS,
+    ids=lambda x: f"{x.full_name} ({type(x).__name__})" if isinstance(x, ModelSQDTBase) else "",
+)
+def test_json_round_trip(model_set: ModelSetSQDT, model: ModelSQDTBase) -> None:
     """A model can be stored as json and recreated from it."""
     data = json.loads(json.dumps(model.to_dict()))
-    loaded = ModelSQDT.from_dict(data)
+    directory = model_set._models_source  # noqa: SLF001
+    assert isinstance(directory, Path)
+    loaded = ModelSQDTBase.from_dict(data, directory)
+    assert type(loaded) is type(model)
     assert loaded.species == model.species
     assert loaded.channel == model.channel
-    assert loaded.quantum_defects == model.quantum_defects
     assert loaded.reference == model.reference
     assert loaded.nu_range == model.nu_range
+    if isinstance(model, ModelSQDT):
+        assert isinstance(loaded, ModelSQDT)
+        assert loaded.quantum_defects == model.quantum_defects
+    if isinstance(model, ModelSQDTNist):
+        assert isinstance(loaded, ModelSQDTNist)
+        assert loaded.energies == model.energies
     assert loaded.to_dict() == model.to_dict()
 
 
@@ -172,16 +187,17 @@ def test_from_dict_wrong_model_class() -> None:
 
 @pytest.mark.parametrize("model_set", ALL_SQDT_MODEL_SETS, ids=lambda model_set: model_set.species)
 def test_model_files(model_set: ModelSetSQDT) -> None:
-    """The json files of the models are named after their channel and stored as written by to_dict (plus a comment)."""
+    """The json files are named after the channel (plus _nist for NIST models) and stored as written by to_dict.
+
+    Only an additional comment is allowed in the json files.
+    """
     directory = model_set._models_source  # noqa: SLF001
-    if directory is None:
-        assert model_set.models is None
-        return
     assert isinstance(directory, Path)
     files = sorted(directory.glob("*.json"))
-    assert len(files) == len(model_set.models or [])
-    for file, model in zip(files, model_set.models or [], strict=True):
-        assert file.name == model.name.replace("/", "_").replace(" ", "_") + ".json"
+    assert len(files) == len(model_set.models)
+    for file, model in zip(files, model_set.models, strict=True):
+        suffix = "_nist" if isinstance(model, ModelSQDTNist) else ""
+        assert file.name == model.name.replace("/", "_").replace(" ", "_") + suffix + ".json"
         data = json.loads(file.read_text(encoding="utf-8"))
         data.pop("comment", None)
         assert data == model.to_dict()
@@ -204,7 +220,7 @@ def test_register_model_set_sqdt(monkeypatch: pytest.MonkeyPatch) -> None:
     assert register_model_set_sqdt(model_set) is model_set
     assert get_sqdt("Rb") is model_set
     with pytest.raises(ValueError, match="already registered"):
-        register_model_set_sqdt(ModelSetSQDT("Rb"))
+        register_model_set_sqdt(ModelSetSQDT("Rb", models=[]))
 
 
 def test_models_are_loaded_lazily(tmp_path: Path) -> None:
@@ -220,7 +236,6 @@ def test_models_given_directly() -> None:
     model_set = ModelSetSQDT("Rb", models=[model])
     assert model_set.models == [model]
     assert model_set.get_model(50, model.channel) is model
-    assert ModelSetSQDT("Rb").models is None
 
 
 def test_models_must_be_of_the_species(tmp_path: Path) -> None:
@@ -236,3 +251,128 @@ def test_models_must_be_of_the_species(tmp_path: Path) -> None:
 def test_load_models_missing_directory(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError, match="does not exist"):
         ModelSetSQDT.load_models(tmp_path / "missing")
+
+
+def test_nist_models_are_loaded() -> None:
+    """The NIST levels are given as ModelSQDTNist models for nu < 15, the quantum defects for nu >= 15."""
+    sqdt = get_sqdt("Rb")
+    angular = AngularKetLS(l_r=0, j_tot=0.5, f_tot=0.5, species="Rb")
+    nist_model, qd_model = sqdt.get_models(angular)
+    assert isinstance(nist_model, ModelSQDTNist)
+    assert isinstance(qd_model, ModelSQDT)
+    assert nist_model.name == "ns_1/2"
+    assert nist_model.energies[5] == 0  # 5s ground state
+    assert nist_model.nu_range == (0, 15)
+    assert qd_model.nu_range == (15, math.inf)
+
+
+def test_nist_model_of_single_channel() -> None:
+    """A NIST model can be loaded for a single channel, the NIST data file is only parsed once."""
+    model = ModelSQDTNist.from_nist_file("Rb", "ns_1/2", RUBIDIUM_NIST_DATA_FILE, nu_range=(0, 20))
+    assert model.nu_range == (0, 20)
+    nist_model = get_sqdt("Rb").get_models(model.channel)[0]
+    assert isinstance(nist_model, ModelSQDTNist)
+    assert model.energies is nist_model.energies
+    channel = AngularKetLS(l_r=20, j_tot=20.5, f_tot=20.5, species="Rb")
+    with pytest.raises(ValueError, match="has no energy levels of this channel"):
+        ModelSQDTNist.from_nist_file("Rb", channel, RUBIDIUM_NIST_DATA_FILE)
+
+
+def test_nist_model_json_round_trip(tmp_path: Path) -> None:
+    """A NIST model is stored with the path of its NIST data file, relative paths are relative to the json file."""
+    (tmp_path / "nist_data.txt").write_text(RUBIDIUM_NIST_DATA_FILE.read_text())
+    model = ModelSQDTNist.from_nist_file("Rb", "np_1/2", tmp_path / "nist_data.txt", nu_range=(0, 20))
+    assert model.to_dict()["nist_data_file"] == (tmp_path / "nist_data.txt").as_posix()
+
+    data = {
+        "model_class": "ModelSQDTNist",
+        "species": "Rb",
+        "channel": "np_1/2",
+        "nist_data_file": "nist_data.txt",
+        "nu_range": [0, 20],
+    }
+    loaded = Model.from_dict(json.loads(json.dumps(data)), tmp_path)
+    assert isinstance(loaded, ModelSQDTNist)
+    assert loaded.energies == model.energies
+    assert loaded.to_dict() == data
+    with pytest.raises(ValueError, match="only models loaded from a NIST data file"):
+        ModelSQDTNist("Rb", "np_1/2", {5: 0.0}).to_dict()
+
+
+def test_model_from_dict_dispatches_by_model_class() -> None:
+    data = {"model_class": "ModelSQDT", "species": "Rb", "channel": "ns_1/2", "quantum_defects": [3.13]}
+    assert isinstance(Model.from_dict(data), ModelSQDT)
+    assert isinstance(ModelSQDTBase.from_dict(data), ModelSQDT)
+    with pytest.raises(ValueError, match="Expected exactly one subclass of ModelSQDTBase named 'ModelEigenChannel'"):
+        ModelSQDTBase.from_dict({**data, "model_class": "ModelEigenChannel"})
+    with pytest.raises(ValueError, match="named 'ModelUnknown'"):
+        Model.from_dict({**data, "model_class": "ModelUnknown"})
+    with pytest.raises(NotImplementedError, match="ModelSQDTBase cannot be created from a dictionary"):
+        Model.from_dict({**data, "model_class": "ModelSQDTBase"})
+
+
+def test_load_models_with_nist_model(tmp_path: Path) -> None:
+    """The models directory can contain NIST and quantum defect models, which are sorted by their nu range."""
+    qd_model = ModelSQDT("Rb", "ns_1/2", [3.1311807, 0.1787], nu_range=(45, math.inf))
+    nist_model = ModelSQDTNist.from_nist_file("Rb", "ns_1/2", RUBIDIUM_NIST_DATA_FILE.resolve(), nu_range=(0, 45))
+    (tmp_path / "a_ns_1_2.json").write_text(json.dumps(qd_model.to_dict()))
+    (tmp_path / "b_ns_1_2_nist.json").write_text(json.dumps(nist_model.to_dict()))
+    model_set = ModelSetSQDT("Rb", models=tmp_path)
+    loaded_nist_model, loaded_qd_model = model_set.get_models(qd_model.channel)
+    assert isinstance(loaded_nist_model, ModelSQDTNist)
+    assert isinstance(loaded_qd_model, ModelSQDT)
+    assert model_set.get_model(40, qd_model.channel) is loaded_nist_model  # nu = 36.9
+    assert model_set.get_model(50, qd_model.channel) is loaded_qd_model  # nu = 46.9
+    with pytest.raises(ValueError, match="None of the SQDT models"):
+        model_set.get_model(25, qd_model.channel)  # nu = 21.9, but no NIST level for n = 25
+
+
+def test_nu_ranges_of_a_channel_must_not_overlap() -> None:
+    low_n = ModelSQDT("Rb", "ns_1/2", [3.1], nu_range=(0, 30))
+    high_n = ModelSQDT("Rb", "ns_1/2", [3.2], nu_range=(29, math.inf))
+    with pytest.raises(ValueError, match="overlap"):
+        _ = ModelSetSQDT("Rb", models=[high_n, low_n]).models
+    # touching nu ranges and overlapping nu ranges of different channels are fine
+    other_channel = ModelSQDT("Rb", "np_1/2", [2.6], nu_range=(0, math.inf))
+    high_n = ModelSQDT("Rb", "ns_1/2", [3.2], nu_range=(30, math.inf))
+    assert ModelSetSQDT("Rb", models=[high_n, low_n, other_channel]).models == [high_n, low_n, other_channel]
+
+
+def test_model_set_uses_nist_model_in_its_nu_range() -> None:
+    """Within the nu range of the NIST model the NIST levels are used, otherwise the quantum defects."""
+    sqdt = get_sqdt("Rb")
+    angular = AngularKetLS(l_r=0, j_tot=0.5, f_tot=0.5, species="Rb")
+    nist_model, qd_model = sqdt.get_models(angular)
+    assert sqdt.get_model(5, angular) is nist_model
+    assert sqdt.calc_nui(5, angular) == nist_model.calc_nui(5)
+    assert sqdt.calc_nui(5, angular) != pytest.approx(qd_model.calc_nui(5), abs=1e-3)
+    with pytest.raises(ValueError, match="no energy level for n=1000"):
+        nist_model.calc_nui(1000)
+    assert sqdt.get_model(60, angular) is qd_model
+    assert sqdt.calc_nui(60, angular) == qd_model.calc_nui(60)
+    with pytest.raises(ValueError, match="None of the SQDT models"):
+        sqdt.calc_nui(15, angular)  # nu = 11.9, but no NIST level for n = 15
+
+
+def test_model_set_without_quantum_defects_uses_nist_models() -> None:
+    """Without quantum defects, only the NIST levels in the nu range of the NIST models are available.
+
+    Only channels without any model (e.g. higher l) have zero quantum defects.
+    """
+    sqdt = get_sqdt("Yb174_ion")
+    assert all(isinstance(model, ModelSQDTNist) for model in sqdt.models)
+    angular = AngularKetLS(l_r=0, j_tot=0.5, f_tot=0.5, species="Yb174_ion")
+    assert sqdt.calc_nui(6, angular) == sqdt.get_models(angular)[0].calc_nui(6)
+    with pytest.raises(ValueError, match="None of the SQDT models"):
+        sqdt.calc_nui(60, angular)
+    angular_h = AngularKetLS(l_r=5, j_tot=4.5, f_tot=4.5, species="Yb174_ion")
+    assert sqdt.get_models(angular_h) == []
+    assert sqdt.calc_nui(60, angular_h) == 60
+
+
+def test_model_set_without_models() -> None:
+    """Without any models (e.g. for hydrogen), all channels have zero quantum defects."""
+    sqdt = get_sqdt("H")
+    assert sqdt.models == []
+    angular = AngularKetLS(l_r=0, j_tot=0.5, f_tot=0.5, species="H")
+    assert sqdt.calc_nui(60, angular) == 60
