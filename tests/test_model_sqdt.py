@@ -8,9 +8,19 @@ from pathlib import Path
 import pytest
 import rydstate.species.rubidium
 from rydstate.angular import AngularKetJJ, AngularKetLS
-from rydstate.qdt import Model, ModelSetSQDT, ModelSQDT, ModelSQDTBase, ModelSQDTNist, get_sqdt, register_model_set_sqdt
+from rydstate.qdt import (
+    Model,
+    ModelSetSQDT,
+    ModelSQDT,
+    ModelSQDTBase,
+    ModelSQDTFit,
+    ModelSQDTNist,
+    get_sqdt,
+    register_model_set_sqdt,
+)
 from rydstate.qdt.sqdt.model_set_sqdt import _SQDT_MODEL_SETS
 from rydstate.qdt.sqdt.model_sqdt_nist import _load_nist_energies_by_channel
+from rydstate.rydberg_state import RydbergStateSQDTAlkali
 
 
 def test_channel_from_short_label() -> None:
@@ -64,6 +74,23 @@ def test_calc_nui() -> None:
     model = ModelSQDT("Rb", "ns_1/2", [3.1311807, 0.1787])
     n = 50
     assert model.calc_nui(n) == pytest.approx(n - 3.1311807 - 0.1787 / (n - 3.1311807) ** 2)
+
+
+def test_calc_energy() -> None:
+    """The energy of a state is the ionization threshold plus the binding energy of nui = n - delta(n)."""
+    model = ModelSQDT("Cs", "np_3/2", [3.5590676, 0.37469])
+    n = 50
+    reduced_mass_au = model.element_properties.reduced_mass_au
+    binding_energy_au = -0.5 * reduced_mass_au / model.calc_nui(n) ** 2
+    assert model.calc_binding_energy_au(n=n) == pytest.approx(binding_energy_au, rel=1e-14)
+    assert model.calc_energy_au(n=n) == pytest.approx(model.ionization_threshold_au + binding_energy_au, rel=1e-14)
+    state = RydbergStateSQDTAlkali("Cs", n=n, l=1, j=1.5)
+    assert get_sqdt("Cs").get_model(n, state.angular).calc_energy_au(n=n) == pytest.approx(state.get_energy("a.u."))
+    # n is keyword-only, so that a nu meant for ModelMQDT.calc_energy_au(nu) is not taken as n
+    with pytest.raises(TypeError):
+        model.calc_energy_au(48.4)  # type: ignore [misc, arg-type]
+    with pytest.raises(TypeError):
+        model.calc_energy_au(nu=48.4)  # type: ignore [call-arg]
 
 
 def test_model_set_uses_model_of_n_range(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -164,6 +191,20 @@ def test_to_dict() -> None:
         "quantum_defects": [3.1311807],
         "reference": None,
     }
+
+
+def test_fit_info() -> None:
+    """The optional fit info is stored in the description, but not copied into a fittable model."""
+    fit_info = {"method": "rydstate.fit.fit_sqdt_models", "datasets": {"Rb/test": 10}}
+    model = ModelSQDT("Rb", "ns_1/2", [3.1311807, 0.1787], fit_info=fit_info)
+    data = model.to_dict()
+    assert data["fit_info"] == fit_info
+    assert "fit_info" not in ModelSQDT("Rb", "ns_1/2", [3.1311807, 0.1787]).to_dict()
+    loaded = ModelSQDT.from_dict(json.loads(json.dumps(data)))
+    assert loaded.fit_info == fit_info
+
+    assert ModelSQDTFit.from_model(model).fit_info is None
+    assert model.fit_info == fit_info
 
 
 def test_from_dict_optional_keys() -> None:
@@ -298,6 +339,13 @@ def test_nist_model_of_single_channel() -> None:
     channel = AngularKetLS(l_r=20, j_tot=20.5, f_tot=20.5, species="Rb")
     with pytest.raises(ValueError, match="has no energy levels of this channel"):
         ModelSQDTNist.from_nist_file("Rb", channel, RUBIDIUM_NIST_DATA_FILE)
+
+
+def test_nist_model_calc_energy() -> None:
+    """The energy of a NIST model is its measured energy level."""
+    model = ModelSQDTNist.from_nist_file("Rb", "np_3/2", RUBIDIUM_NIST_DATA_FILE)
+    for n, energy_au in model.energies.items():
+        assert model.calc_energy_au(n=n) == pytest.approx(energy_au, rel=1e-12)
 
 
 def test_nist_model_json_round_trip(tmp_path: Path) -> None:
@@ -443,3 +491,62 @@ def test_model_set_without_models() -> None:
     assert sqdt.models == []
     angular = AngularKetLS(l_r=0, j_tot=0.5, f_tot=0.5, species="H")
     assert sqdt.calc_nui(60, angular) == 60
+
+
+def test_fit_nui_gradient() -> None:
+    """The analytic derivatives of nui agree with central finite differences.
+
+    nui is linear in the higher orders and only weakly nonlinear in delta_0, so a large step is accurate.
+    """
+    model = ModelSQDTFit("Cs", "nf_5/2", [0.0334149, -0.20036, 0.2825])
+    n = 30
+    step = 1e-3
+    parameters = model.get_parameters()
+    for index, derivative in enumerate(model.calc_nui_gradient(n)):
+        shifted = [list(parameters), list(parameters)]
+        shifted[0][index] += step
+        shifted[1][index] -= step
+        model.set_parameters(shifted[0])
+        upper = model.calc_nui(n)
+        model.set_parameters(shifted[1])
+        lower = model.calc_nui(n)
+        model.set_parameters(parameters)
+        assert derivative == pytest.approx((upper - lower) / (2 * step), rel=1e-6, abs=1e-12)
+
+
+def test_fit_binding_energy_gradient() -> None:
+    """The analytic derivatives of the binding energy agree with central finite differences."""
+    model = ModelSQDTFit("Cs", "nf_5/2", [0.0334149, -0.20036, 0.2825])
+    n = 30
+    step = 1e-3
+    parameters = model.get_parameters()
+    for index, derivative in enumerate(model.calc_binding_energy_gradient(n)):
+        shifted = [list(parameters), list(parameters)]
+        shifted[0][index] += step
+        shifted[1][index] -= step
+        model.set_parameters(shifted[0])
+        upper = model.calc_binding_energy_au(n=n)
+        model.set_parameters(shifted[1])
+        lower = model.calc_binding_energy_au(n=n)
+        model.set_parameters(parameters)
+        assert derivative == pytest.approx((upper - lower) / (2 * step), rel=1e-5, abs=1e-18)
+
+
+def test_fit_to_model() -> None:
+    """to_model returns an independent ModelSQDT with the present parameters and the fit info."""
+    model_fit = ModelSQDTFit.from_model(
+        ModelSQDT("Rb", "ns_1/2", [3.1311807, 0.1787], reference="test", n_range=(9, 99))
+    )
+    model_fit.set_parameters([3.13, 0.18])
+    model = model_fit.to_model({"chi2": 1.0})
+    assert type(model) is ModelSQDT
+    assert model.quantum_defects == (3.13, 0.18)
+    assert (model.reference, model.n_range, model.fit_info) == ("test", (9, 99), {"chi2": 1.0})
+    model_fit.set_parameters([3.0, 0.1])
+    assert model.quantum_defects == (3.13, 0.18)
+    assert model_fit.to_model().fit_info is None
+
+    class ModelSQDTOtherFit(ModelSQDTFit):
+        pass
+
+    assert type(ModelSQDTOtherFit.from_model(model).to_model()) is ModelSQDT  # a subclass overrides to_model
