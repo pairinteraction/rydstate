@@ -6,8 +6,8 @@ The fits of the species are described by fit config files, see :mod:`rydstate.fi
 """
 
 from rydstate.fit.fit_config import ConfigFit, check_fit, fit_from_config, write_fit
-from rydstate.fit.fit_sqdt import FitResult, Measurement, SQDTLevel, fit_sqdt_models
-from rydstate.fit.measurements import load_measurements, load_metadata
+from rydstate.fit.fit_sqdt import FitResult, fit_sqdt_models
+from rydstate.fit.measurements import Measurement, SQDTLevel, load_measurements, load_metadata
 
 __all__ = [
     "ConfigFit",

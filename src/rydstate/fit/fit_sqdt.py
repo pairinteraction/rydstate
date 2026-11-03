@@ -8,87 +8,14 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 from scipy.optimize import least_squares
 
-from rydstate.angular.angular_ket import AngularKetBase, AngularKetLS
-from rydstate.angular.short_label import format_short_label, parse_short_label
 from rydstate.qdt.sqdt.model_sqdt_fit import ModelSQDTFit
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from rydstate.fit.measurements import Measurement, SQDTLevel
     from rydstate.qdt.sqdt.model_sqdt import ModelSQDT, ModelSQDTBase
     from rydstate.units import NDArray
-
-
-@dataclass(frozen=True)
-class SQDTLevel:
-    """A Rydberg level, identified by the short label of its channel (e.g. "np_3/2") and its principal quantum number.
-
-    The channel label must be the name of the SQDT model describing the level, see :class:`~rydstate.qdt.ModelSQDT`.
-    """
-
-    channel: str
-    n: int
-
-    def __str__(self) -> str:
-        return self.channel.replace("n", str(self.n), 1)
-
-    @classmethod
-    def from_label(cls, label: str, species: str) -> SQDTLevel:
-        """Create a level from its short label including n, e.g. "45p_3/2" or "5s 40d 1D2".
-
-        The label is the short label of the channel (see
-        :meth:`~rydstate.angular.angular_ket.AngularKetBase.get_short_label`) with the principal quantum number n
-        in place of the placeholder "n". The channel is stored with its canonical short label.
-
-        Args:
-            label: The short label of the level.
-            species: The species, which determines the format of the label (single or two valence electrons).
-
-        """
-        for template in (AngularKetLS.short_label_template_single_valence, AngularKetLS.short_label_template):
-            try:
-                values = parse_short_label(template, label)
-            except ValueError:
-                continue
-            if "n" in values:
-                if extra := sorted(values.keys() & {"m", "label"}):
-                    raise ValueError(
-                        f"The label {label!r} of a level must not contain {extra}, "
-                        "a level is given by its channel and n."
-                    )
-                channel = AngularKetBase.from_short_label(format_short_label(template, {**values, "n": None}), species)
-                return cls(channel.get_short_label(), int(values["n"]))
-        raise ValueError(f"The label {label!r} is no short label of a level with principal quantum number n.")
-
-
-@dataclass(frozen=True)
-class Measurement:
-    """A measured energy of a Rydberg level, or a measured interval between two Rydberg levels.
-
-    The measured value is E(upper) if lower is None, i.e. the energy of the level measured from the ground state
-    (the zero of the energies of rydstate), otherwise the interval E(upper) - E(lower).
-    """
-
-    upper: SQDTLevel
-    value_au: float
-    """Measured energy or interval in atomic units (Hartree)."""
-    uncertainty_au: float
-    """Uncertainty (standard deviation) of the measured value in atomic units (Hartree)."""
-    lower: SQDTLevel | None = None
-    dataset: str = ""
-    """Name of the dataset the measurement belongs to, used for free offsets, see :func:`fit_sqdt_models`."""
-    label: str = ""
-    reference: str = ""
-    """The publication of the measured value, e.g. "Shen 2024, Phys. Rev. Lett. 133, 233005, https://doi.org/..."."""
-
-    def __post_init__(self) -> None:
-        if not self.uncertainty_au > 0:
-            raise ValueError(f"The uncertainty of the measurement {self} must be positive.")
-
-    @property
-    def levels(self) -> tuple[SQDTLevel, ...]:
-        """The measured level, or the upper and the lower level of an interval."""
-        return (self.upper,) if self.lower is None else (self.upper, self.lower)
 
 
 @dataclass
@@ -207,7 +134,7 @@ def fit_sqdt_models(
     level_models = {
         level: _get_model(level, all_models) for measurement in measurements for level in measurement.levels
     }
-    # the levels of each measurement with the sign of their energy in the measured value (+ upper, - lower level)
+    # the levels of each measurement with the sign of their energy in the measured value (+ level, - lower level)
     signed_levels = [list(zip(measurement.levels, (1.0, -1.0), strict=False)) for measurement in measurements]
 
     # parameter vector: the quantum defects of the free models, followed by the free offsets
@@ -217,7 +144,7 @@ def fit_sqdt_models(
     }
     start = ends[-1]
     offset_rows = np.array(
-        [row for row, m in enumerate(measurements) if m.lower is None and m.dataset in free_offsets], dtype=int
+        [row for row, m in enumerate(measurements) if m.lower_level is None and m.dataset in free_offsets], dtype=int
     )
     offset_columns = np.array(
         [start + list(free_offsets).index(measurements[row].dataset) for row in offset_rows], dtype=int

@@ -59,7 +59,7 @@ def test_fit_intervals_with_fixed_model() -> None:
             SQDTLevel("ns_1/2", n + 4),
             TRUE_NS.calc_energy_au(n=n + 4) - TRUE_NP.calc_energy_au(n=n),
             SIGMA_AU,
-            lower=SQDTLevel("np_3/2", n),
+            lower_level=SQDTLevel("np_3/2", n),
         )
         for n in range(40, 90, 5)
     ]
@@ -95,7 +95,7 @@ def test_fitted_models_have_fit_info() -> None:
             SQDTLevel("ns_1/2", n + 4),
             TRUE_NS.calc_energy_au(n=n + 4) - TRUE_NP.calc_energy_au(n=n),
             SIGMA_AU,
-            lower=SQDTLevel("np_3/2", n),
+            lower_level=SQDTLevel("np_3/2", n),
             dataset="intervals",
             reference="Intervals 2026",
         )
@@ -138,7 +138,7 @@ def test_fit_errors() -> None:
     with pytest.raises(ValueError, match="contain duplicates"):
         fit_sqdt_models([ModelSQDTFit("Cs", "np_3/2", [3.5])], measurements, free_offsets=["", ""])
     intervals = [
-        Measurement(SQDTLevel("np_3/2", n + 1), 1.0, SIGMA_AU, lower=SQDTLevel("np_3/2", n), dataset="intervals")
+        Measurement(SQDTLevel("np_3/2", n + 1), 1.0, SIGMA_AU, lower_level=SQDTLevel("np_3/2", n), dataset="intervals")
         for n in range(30, 40)
     ]
     with pytest.raises(ValueError, match=r"do not determine the parameters \['offset intervals'\]"):
@@ -160,7 +160,7 @@ def test_fitted_models_can_be_fixed_in_a_second_fit() -> None:
             SQDTLevel("ns_1/2", n + 4),
             TRUE_NS.calc_energy_au(n=n + 4) - fitted_np.calc_energy_au(n=n),
             SIGMA_AU,
-            lower=SQDTLevel("np_3/2", n),
+            lower_level=SQDTLevel("np_3/2", n),
         )
         for n in range(40, 90, 5)
     ]
@@ -254,7 +254,7 @@ def test_covariance_of_a_model_with_another_number_of_parameters() -> None:
             SQDTLevel("ns_1/2", n + 4),
             TRUE_NS.calc_energy_au(n=n + 4) - TRUE_NP.calc_energy_au(n=n),
             SIGMA_AU,
-            lower=SQDTLevel("np_3/2", n),
+            lower_level=SQDTLevel("np_3/2", n),
         )
         for n in range(40, 90, 5)
     ]

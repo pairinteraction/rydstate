@@ -10,6 +10,7 @@ import pytest
 from rydstate import units
 from rydstate.fit import SQDTLevel, check_fit, fit_from_config, load_measurements, write_fit
 from rydstate.fit.fit_config import _summary, main
+from rydstate.fit.measurements import MEASUREMENTS_COLUMNS
 from rydstate.qdt import ModelSetSQDT, ModelSQDT
 
 FITS_DIRECTORY = Path(__file__).parents[1] / "fits"
@@ -29,9 +30,7 @@ def write_dataset(
     directory.mkdir(parents=True)
     (directory / "metadata.json").write_text(json.dumps({"species": species, "reference": reference}))
     with (directory / "measurements.csv").open("w", newline="") as file:
-        writer = csv.DictWriter(
-            file, fieldnames=["level", "lower_level", "value", "uncertainty", "unit", "source_label"]
-        )
+        writer = csv.DictWriter(file, fieldnames=MEASUREMENTS_COLUMNS)
         writer.writeheader()
         writer.writerows(rows)
 
@@ -97,14 +96,14 @@ def test_load_measurements(tmp_path: Path) -> None:
 
     assert len(measurements) == 5
     first, last = measurements[0], measurements[-1]
-    assert first.upper == SQDTLevel("np_3/2", 30)
-    assert first.lower is None
+    assert first.level == SQDTLevel("np_3/2", 30)
+    assert first.lower_level is None
     assert first.value_au == pytest.approx(TRUE_NP.calc_energy_au(n=30), rel=1e-15)
     assert first.uncertainty_au == pytest.approx(units.user_to_au(SIGMA_MHZ, "MHz", "energy"))
     assert first.dataset == "test2026"
-    assert first.label == "30P3/2"
+    assert first.source_label == "30P3/2"
     assert first.reference == "Test 2026, J. Test 1, 1"
-    assert last.lower == SQDTLevel("np_3/2", 41)
+    assert last.lower_level == SQDTLevel("np_3/2", 41)
 
     rows = level_rows(TRUE_NP, range(30, 32))
     rows[1]["source_label"] = rows[0]["source_label"]

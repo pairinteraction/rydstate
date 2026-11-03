@@ -58,7 +58,8 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
     from os import PathLike
 
-    from rydstate.fit.fit_sqdt import FitResult, Measurement
+    from rydstate.fit.fit_sqdt import FitResult
+    from rydstate.fit.measurements import Measurement
 
 CONFIG_KEYS = {"species", "data_directory", "models_directory", "report_file", "series", "datasets", "comment"}
 SERIES_KEYS = {"orders", "n_min", "start", "comment"}
@@ -234,7 +235,7 @@ def _select(
 ) -> tuple[list[Measurement], dict[str, Any]]:
     """Return the measurements of a dataset that are used, and how many were not used for which reason."""
     exclude: dict[str, str] = options.get("exclude", {})
-    if missing := set(exclude) - {m.label for m in measurements}:
+    if missing := set(exclude) - {m.source_label for m in measurements}:
         raise ValueError(f"{where}: the excluded values {sorted(missing)} are not in the dataset.")
     channels = options.get("channels", series)
     if isinstance(channels, str):
@@ -243,9 +244,9 @@ def _select(
     if unknown := channels - set(series):
         raise ValueError(f"{where}: the channels {sorted(unknown)} are not fitted series.")
     reasons: dict[str, Callable[[Measurement], bool]] = {
-        "excluded": lambda m: m.label in exclude,
-        "energies not used": lambda m: m.lower is None and not options.get("energies", True),
-        "intervals not used": lambda m: m.lower is not None and not options.get("intervals", True),
+        "excluded": lambda m: m.source_label in exclude,
+        "energies not used": lambda m: m.lower_level is None and not options.get("energies", True),
+        "intervals not used": lambda m: m.lower_level is not None and not options.get("intervals", True),
         "level without fitted series": lambda m: any(level.channel not in series for level in m.levels),
         "level not in channels": lambda m: any(level.channel not in channels for level in m.levels),
         "level below n_min": lambda m: any(level.n < options.get("n_min", 0) for level in m.levels),
@@ -329,7 +330,7 @@ def _summary(fit: ConfigFit, outlier_sigmas: float = 3) -> str:
     )
     lines.append(f"{len(outliers)} values with abs(residual) > {outlier_sigmas:g} sigma (residual = fit - measured):")
     lines += [
-        f"  {m.dataset:20s} {m.label:24s} {z:+6.1f} sigma {residual * mhz * 1e3:+10.1f} kHz"
+        f"  {m.dataset:20s} {m.source_label:24s} {z:+6.1f} sigma {residual * mhz * 1e3:+10.1f} kHz"
         for z, residual, m in outliers
     ]
     return "\n".join(lines)
